@@ -15,6 +15,9 @@
  */
 package org.springframework.security.config.annotation.authentication;
 
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.Assert;
@@ -39,5 +42,10 @@ public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> imp
 
     public T userDetailsService() {
         return userDetailsService;
+    }
+
+    public AuthenticationManager authenticationManager() throws Exception {
+        DaoAuthenticationProviderSecurityBuilder authenticationProvider = authenticationProvider(build());
+        return AuthenticationSecurityBuilders.authenticationManager(authenticationProvider).build();
     }
 }

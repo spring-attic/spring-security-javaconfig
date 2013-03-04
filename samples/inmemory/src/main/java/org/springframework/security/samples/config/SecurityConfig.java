@@ -1,9 +1,8 @@
 package org.springframework.security.samples.config;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.hasRole;
-import static org.springframework.security.config.annotation.SecurityExpressions.permitAll;
+import static org.springframework.security.config.annotation.SecurityExpressions.*;
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.antMatchers;
+import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

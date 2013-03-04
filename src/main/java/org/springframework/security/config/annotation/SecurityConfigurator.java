@@ -1,6 +1,7 @@
 package org.springframework.security.config.annotation;
 
 
+// TODO do we need this interface?
 public interface SecurityConfigurator<B extends SecurityBuilder<?>> {
     void init(B builder) throws Exception;
 

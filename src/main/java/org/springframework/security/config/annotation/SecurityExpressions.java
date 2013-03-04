@@ -39,4 +39,6 @@ public class SecurityExpressions {
         String anyAuthorities = StringUtils.join(authorities, "','");
         return "hasAnyAuthority('" + anyAuthorities + "')";
     }
+
+    private SecurityExpressions() {}
 }

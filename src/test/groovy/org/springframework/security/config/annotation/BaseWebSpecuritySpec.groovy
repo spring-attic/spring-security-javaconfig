@@ -17,6 +17,9 @@ package org.springframework.security.config.annotation;
 
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.FilterChainProxy;
 
@@ -27,24 +30,23 @@ import spock.lang.Specification
  *
  * @author Rob Winch
  */
-abstract class BaseSpringSpec extends Specification {
-    @AutoCleanup
-    ConfigurableApplicationContext context
+abstract class BaseWebSpecuritySpec extends BaseSpringSpec {
+    FilterChainProxy springSecurityFilterChain
+    MockHttpServletRequest request
+    MockHttpServletResponse response
+    MockFilterChain chain
 
-    def cleanup() {
-        SecurityContextHolder.clearContext()
+    def setup() {
+        request = new MockHttpServletRequest()
+        response = new MockHttpServletResponse()
+        chain = new MockFilterChain()
     }
+
 
     def loadConfig(Class<?>... configs) {
-        context = new AnnotationConfigApplicationContext(configs)
-        context
+        super.loadConfig(configs)
+        springSecurityFilterChain = context.getBean(FilterChainProxy)
     }
 
-    def findFilter(Class<?> filter, int index = 0) {
-        filterChain(index).filters.find { filter.isAssignableFrom(it.class)}
-    }
 
-    def filterChain(int index=0) {
-        context.getBean(FilterChainProxy).filterChains[index]
-    }
 }

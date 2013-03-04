@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
+// TODO should be configurator
 public class LogoutFilterSecurityBuilder implements SecurityBuilder<LogoutFilter> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
