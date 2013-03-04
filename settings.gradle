@@ -1,0 +1,10 @@
+rootProject.name = 'spring-security-javaconfig'
+
+def samplesDirName = "samples"
+File samplesDir = new File(rootDir, samplesDirName)
+samplesDir.eachDir { sampleDir ->
+    def moduleName = "samples/$sampleDir.name"
+    include moduleName
+    def p = findProject(":$moduleName")
+    p.name = "spring-security-samples-$sampleDir.name"
+}

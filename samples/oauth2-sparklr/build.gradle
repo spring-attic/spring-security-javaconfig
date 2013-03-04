@@ -1,0 +1,21 @@
+ext.springOauthVersion = "1.0.1.BUILD-SNAPSHOT"
+
+dependencies {
+    compile rootProject,
+            "org.springframework.security:spring-security-taglibs:$springSecurityVersion",
+            "org.springframework.security.oauth:spring-security-oauth2:$springOauthVersion",
+            "org.springframework:spring-jdbc:$springVersion",
+            "org.springframework:spring-tx:$springVersion",
+            "org.codehaus.jackson:jackson-mapper-asl:1.8.3"
+
+    testCompile "org.apache.httpcomponents:httpclient:4.1.2"
+}
+
+
+eclipse {
+	wtp {
+		component {
+			contextPath = '/sparklr2'
+		}
+	}
+}

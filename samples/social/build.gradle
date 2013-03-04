@@ -1,0 +1,12 @@
+ext.springSocialVersion = "1.1.0.BUILD-SNAPSHOT"
+
+dependencies {
+    compile rootProject,
+            "org.springframework.social:spring-social-core:$springSocialVersion",
+            "org.springframework.social:spring-social-facebook:$springSocialVersion",
+            "org.springframework.social:spring-social-facebook-web:$springSocialVersion",
+            "org.springframework.social:spring-social-twitter:$springSocialVersion",
+            "org.springframework.social:spring-social-linkedin:1.0.0.BUILD-SNAPSHOT",
+            "org.springframework.social:spring-social-web:$springSocialVersion",
+            "org.springframework.social:spring-social-security:$springSocialVersion"
+}

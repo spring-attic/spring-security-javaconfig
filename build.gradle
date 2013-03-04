@@ -1,0 +1,181 @@
+
+buildscript {
+    repositories {
+        maven { url 'http://repo.springsource.org/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.2'
+    }
+}
+
+ext.aspectjVersion  = "1.7.1"
+ext.slf4jVersion = '1.6.3'
+ext.jettyVersion = '7.1.6.v20100715'
+ext.springVersion = "3.2.1.RELEASE"
+ext.springSecurityVersion = '3.1.3.RELEASE'
+ext.apacheDsVersion = '1.5.5'
+
+ext.apacheDsDependencies = ["org.apache.directory.server:apacheds-core:$apacheDsVersion",
+            "org.apache.directory.server:apacheds-core-entry:$apacheDsVersion",
+            "org.apache.directory.server:apacheds-protocol-shared:$apacheDsVersion",
+            "org.apache.directory.server:apacheds-protocol-ldap:$apacheDsVersion",
+            "org.apache.directory.server:apacheds-server-jndi:$apacheDsVersion",
+            "org.apache.directory.shared:shared-ldap:0.9.15"]
+
+configure(allprojects) { p->
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+    apply plugin: 'eclipse-wtp'
+
+    apply from:  "${rootProject.projectDir}/publish-maven.gradle"
+
+    group = 'org.springframework.security'
+
+    [compileJava, compileTestJava]*.options*.compilerArgs = ['-Xlint:none']
+
+    test.systemProperty("java.awt.headless", "true")
+
+    sourceCompatibility=1.6
+    targetCompatibility=1.6
+
+    repositories {
+        maven { url "http://repo.springsource.org/libs-snapshot" }
+        mavenCentral()
+    }
+
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.springframework') {
+                details.useVersion springVersion
+            }
+            if (details.requested.group == 'org.springframework.security' && details.requested.version.endsWith(".RELEASE")) {
+                details.useVersion springSecurityVersion
+            }
+            if (details.requested.group == 'org.slf4j') {
+                details.useVersion slf4jVersion
+            }
+        }
+    }
+
+    dependencies {
+        groovy "org.codehaus.groovy:groovy:1.8.8"
+
+        compile "org.springframework.security:spring-security-core:$springSecurityVersion",
+                "org.springframework.security:spring-security-web:$springSecurityVersion",
+                "org.springframework:spring-core:$springVersion",
+                "org.springframework:spring-web:$springVersion"
+
+        optional "javax.annotation:jsr250-api:1.0",
+                 "org.springframework.security:spring-security-ldap:$springSecurityVersion"
+
+        provided 'javax.servlet:javax.servlet-api:3.0.1'
+
+        testCompile "org.springframework:spring-test:$springVersion",
+                    "org.easytesting:fest-assert:1.4",
+                    "junit:junit:4.8",
+                    "org.spockframework:spock-core:0.7-groovy-1.8",
+                    "org.spockframework:spock-spring:0.7-groovy-1.8"
+    }
+
+    jar {
+        manifest.attributes['Implementation-Title'] = p.name
+        manifest.attributes['Implementation-Version'] = p.version
+    }
+
+    javadoc {
+        options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+        options.author = true
+        options.header = project.name
+    }
+
+    task sourcesJar(type: Jar, dependsOn:classes) {
+        classifier = 'sources'
+        from sourceSets.main.allJava
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+}
+
+configure(rootProject) {
+    dependencies {
+        optional "org.aspectj:aspectjrt:${aspectjVersion}",
+                 apacheDsDependencies,
+                 "org.springframework.security:spring-security-ldap:$springSecurityVersion"
+
+        optional "org.slf4j:slf4j-api:$slf4jVersion"
+    }
+
+}
+
+def warSamples = subprojects.findAll { project -> project.path.contains('samples') && project.path != ":spring-security-samples-messages" }
+
+configure(warSamples) {
+    apply plugin: 'war'
+
+    configurations {
+        integrationTestCompile {
+            extendsFrom testCompile
+        }
+        integrationTestRuntime {
+            extendsFrom integrationTestCompile, testRuntime
+        }
+        ['commons-logging','log4j'].each { groupName -> all*.exclude group: groupName }
+    }
+
+    sourceSets {
+        integrationTest {
+            groovy.srcDir file('src/it/groovy')
+            resources.srcDir file('src/it/resources')
+            compileClasspath = sourceSets.main.output + sourceSets.test.output + configurations.integrationTestCompile
+            runtimeClasspath = output + compileClasspath + configurations.integrationTestRuntime
+        }
+    }
+
+    eclipse {
+        classpath.plusConfigurations += configurations.integrationTestRuntime
+        wtp {
+            component {
+                contextPath = 'sample'
+            }
+        }
+    }
+
+    dependencies {
+
+        providedCompile "javax.servlet:javax.servlet-api:3.0.1"
+
+        compile rootProject,
+                project(":spring-security-samples-messages"),
+                "org.springframework:spring-webmvc:$springVersion",
+                "org.springframework:spring-jdbc:$springVersion",
+                "org.slf4j:slf4j-api:$slf4jVersion",
+                "org.slf4j:log4j-over-slf4j:$slf4jVersion",
+                "org.slf4j:jul-to-slf4j:$slf4jVersion",
+                "org.slf4j:jcl-over-slf4j:$slf4jVersion",
+                "javax.servlet:jstl:1.2",
+                "javax.validation:validation-api:1.0.0.GA",
+                "org.hibernate:hibernate-validator:4.2.0.Final"
+
+        runtime "opensymphony:sitemesh:2.4.2",
+                'cglib:cglib-nodep:2.2.2',
+                'ch.qos.logback:logback-classic:0.9.30'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    description = 'Generates gradlew[.bat] scripts'
+    gradleVersion = '1.4'
+}

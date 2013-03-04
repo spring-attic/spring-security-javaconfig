@@ -1,0 +1,213 @@
+/*
+ * Copyright 2002-2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package org.springframework.security.config.annotation.web;
+
+import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.mock.web.MockFilterChain
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.security.access.AccessDecisionManager
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.ConfigAttribute
+import org.springframework.security.authentication.AnonymousAuthenticationToken
+import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.crypto.codec.Base64;
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.FilterChainProxy
+import org.springframework.security.web.FilterInvocation
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.access.ExceptionTranslationFilter
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.NullSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter
+import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+import org.springframework.security.web.util.AntPathRequestMatcher
+import org.springframework.security.web.util.AnyRequestMatcher;
+import org.springframework.security.web.util.RequestMatcher
+
+/**
+ * Tests to verify that all the functionality of <anonymous> attributes is present
+ *
+ * @author Rob Winch
+ *
+ */
+public class NamespaceHttpBasicTests extends BaseSpringSpec {
+    FilterChainProxy springSecurityFilterChain
+    MockHttpServletRequest request
+    MockHttpServletResponse response
+    MockFilterChain chain
+
+    def setup() {
+        request = new MockHttpServletRequest()
+        response = new MockHttpServletResponse()
+        chain = new MockFilterChain()
+    }
+
+    def "http/http-basic"() {
+        setup:
+        loadConfig(HttpBasicConfig)
+        springSecurityFilterChain = context.getBean(FilterChainProxy)
+        when:
+        springSecurityFilterChain.doFilter(request,response,chain)
+        then:
+        response.status == HttpServletResponse.SC_FORBIDDEN
+        when: "fail to log in"
+        setup()
+        login("user","invalid")
+        springSecurityFilterChain.doFilter(request,response,chain)
+        then: "unauthorized"
+        response.status == HttpServletResponse.SC_UNAUTHORIZED
+        response.getHeader("WWW-Authenticate") == 'Basic realm="Spring Security Application"'
+        when: "login success"
+        setup()
+        login()
+        then: "sent to default succes page"
+        !response.committed
+    }
+
+    @Configuration
+    static class HttpBasicConfig extends BaseWebConfig {
+        @Bean
+        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
+            new FilterChainProxySecurityBuilder()
+                    .securityFilterChains(
+                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
+                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
+                                .permitAll())
+                            .apply(new HttpBasicSecurityFilterConfigurator())
+            )
+        }
+    }
+
+    def "http@realm"() {
+        setup:
+        loadConfig(CustomHttpBasicConfig)
+        springSecurityFilterChain = context.getBean(FilterChainProxy)
+        when:
+        login("user","invalid")
+        springSecurityFilterChain.doFilter(request,response,chain)
+        then: "unauthorized"
+        response.status == HttpServletResponse.SC_UNAUTHORIZED
+        response.getHeader("WWW-Authenticate") == 'Basic realm="Custom Realm"'
+    }
+
+    @Configuration
+    static class CustomHttpBasicConfig extends BaseWebConfig {
+        @Bean
+        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
+            new FilterChainProxySecurityBuilder()
+                    .securityFilterChains(
+                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
+                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
+                                .permitAll())
+                            .apply(new HttpBasicSecurityFilterConfigurator()
+                                .realmName("Custom Realm"))
+            )
+        }
+    }
+
+    def "http-basic@authentication-details-source-ref"() {
+        when:
+        loadConfig(AuthenticationDetailsSourceHttpBasicConfig)
+        springSecurityFilterChain = context.getBean(FilterChainProxy)
+        then:
+        findFilter(BasicAuthenticationFilter).authenticationDetailsSource.class == CustomAuthenticationDetailsSource
+    }
+
+    @Configuration
+    static class AuthenticationDetailsSourceHttpBasicConfig extends BaseWebConfig {
+        @Bean
+        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
+            new FilterChainProxySecurityBuilder()
+                    .securityFilterChains(
+                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
+                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
+                                .permitAll())
+                            .apply(new HttpBasicSecurityFilterConfigurator()
+                                .authenticationDetailsSource(new CustomAuthenticationDetailsSource()))
+            )
+        }
+    }
+
+    static class CustomAuthenticationDetailsSource extends WebAuthenticationDetailsSource {}
+
+    def "http-basic@entry-point-ref"() {
+        setup:
+        loadConfig(EntryPointRefHttpBasicConfig)
+        springSecurityFilterChain = context.getBean(FilterChainProxy)
+        when:
+        springSecurityFilterChain.doFilter(request,response,chain)
+        then:
+        response.status == HttpServletResponse.SC_FORBIDDEN
+        when: "fail to log in"
+        setup()
+        login("user","invalid")
+        springSecurityFilterChain.doFilter(request,response,chain)
+        then: "custom"
+        response.status == HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+        when: "login success"
+        setup()
+        login()
+        then: "sent to default succes page"
+        !response.committed
+    }
+
+    @Configuration
+    static class EntryPointRefHttpBasicConfig extends BaseWebConfig {
+        @Bean
+        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
+            new FilterChainProxySecurityBuilder()
+                    .securityFilterChains(
+                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
+                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
+                                .permitAll())
+                            .apply(new HttpBasicSecurityFilterConfigurator()
+                                .authenticationEntryPoint(new AuthenticationEntryPoint() {
+                                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
+                                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                                    }
+                                }))
+            )
+        }
+    }
+
+    def login(String username="user",String password="password") {
+        def credentials = username + ":" + password
+        request.addHeader("Authorization", "Basic " + credentials.bytes.encodeBase64())
+    }
+}
