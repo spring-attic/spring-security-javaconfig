@@ -107,6 +107,10 @@ configure(allprojects) { p->
         archives sourcesJar
         archives javadocJar
     }
+
+    test {
+        systemProperties['apacheDSWorkDir'] = "${buildDir}/apacheDSWork"
+    }
 }
 
 configure(rootProject) {
