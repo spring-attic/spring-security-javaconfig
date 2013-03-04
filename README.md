@@ -38,6 +38,8 @@ You will then need to include the Spring Security Java Configuration jar.
 Getting Started
 ======================
 
+The following configuration
+
     import static org.springframework.security.config.annotation.SecurityExpressions.*;
     import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
     import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*;
@@ -72,6 +74,38 @@ Getting Started
             ).authenticationManager();
         }
     }
+
+is similar to the following XML configuration:
+
+    <http security="none" pattern="/resources/**"/>
+    <http use-expressions="true">
+      <intercept-url pattern="/logout" access="permitAll"/>
+      <intercept-url pattern="/login" access="permitAll"/>
+      <intercept-url pattern="/signup" access="permitAll"/>
+      <intercept-url pattern="/about" access="permitAll"/>
+      <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+      <logout
+          logout-success-url="/login?logout"
+          logout-url="/logout"
+      <form-login
+          authentication-failure-url="/login?error"
+          login-page="/login"
+          login-processing-url="/login" <!-- but only POST -->
+          password-parameter="password"
+          username-parameter="username"
+      />
+    </http>
+    <authentication-manager>
+      <authentication-provider>
+        <user-service>
+          <user username="user" password="password" authorities="ROLE_USER"/>
+          <user username="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+        </user-service>
+      </authentication-provider>
+    </authentication-manager>
+
+Notice that Spring Security uses different defaults that will make your HTTP requests appear more RESTful. For example, the URL /login POST is used to
+authenticate users. The URL /login GET is used to request the user for credentials (i.e. present a login form).
 
 Samples
 ===============================
