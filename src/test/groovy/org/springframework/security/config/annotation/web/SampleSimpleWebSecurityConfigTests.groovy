@@ -16,10 +16,9 @@
 package org.springframework.security.config.annotation.web;
 
 
-import static org.springframework.security.config.annotation.SecurityExpressions.*;
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*;
 import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -34,7 +33,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
-import org.springframework.security.config.annotation.authentication.SimpleWebSecurityConfig;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfiguratorTests.FormLoginConfig
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -127,10 +125,10 @@ public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
                 .ignoring(antMatchers("/resources/**"))
         }
 
-        protected FilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder() {
+        protected ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder() {
             return interceptUrls()
-                .interceptUrl(antMatchers("/signup","/about"), permitAll)
-                .interceptUrl(antMatchers("/**"), hasRole("ROLE_USER"));
+                .permitAll(antMatchers("/signup","/about"))
+                .hasRole(antMatchers("/**"), "USER");
         }
 
         protected SecurityFilterChainSecurityBuilder configure(

@@ -15,10 +15,9 @@
  */
 package org.springframework.security.config.annotation.web
 
-import static org.springframework.security.config.annotation.SecurityExpressions.hasRole
-import static org.springframework.security.config.annotation.SecurityExpressions.permitAll
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.beans.factory.BeanCreationException
 import org.springframework.context.ConfigurableApplicationContext

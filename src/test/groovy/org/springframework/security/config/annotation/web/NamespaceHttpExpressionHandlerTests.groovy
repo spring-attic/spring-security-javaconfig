@@ -15,10 +15,9 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.*
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*
-
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.io.IOException;
 
@@ -88,11 +87,11 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
             )
         }
         protected fsiSourceBldr() {
-            new FilterInvocationSecurityMetadataSourceSecurityBuilder()
+            interceptUrls()
                     .expressionHandler(EXPRESSION_HANDLER)
-                    .interceptUrl(antMatchers("/users**","/sessions/**"), hasRole("ADMIN"))
-                    .interceptUrl(antMatchers("/signup"), permitAll)
-                    .antInterceptUrl("/**", hasRole("USER"));
+                    .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
+                    .permitAll(antMatchers("/signup"))
+                    .hasRole(antMatchers("/**"), "USER");
         }
     }
 }

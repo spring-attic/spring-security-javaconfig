@@ -1,11 +1,9 @@
 package org.springframework.security.samples.config;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.hasRole;
-import static org.springframework.security.config.annotation.SecurityExpressions.permitAll;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.authenticationManager;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.jdbcUserDetailsManager;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.user;
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.antMatchers;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
+import static org.springframework.security.config.annotation.SecurityExpressions.*;
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
 
 import javax.sql.DataSource;
 
@@ -17,8 +15,8 @@ import org.springframework.security.config.annotation.method.EnableGlobalMethodS
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerSecurityBuilder;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 
@@ -44,10 +42,10 @@ public class SecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder builder() throws Exception {
-        FilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = new FilterInvocationSecurityMetadataSourceSecurityBuilder()
-            .interceptUrl(antMatchers("/users**","/sessions/**"), hasRole("ADMIN"))
-            .interceptUrl(antMatchers("/resources/**","/signup"), permitAll)
-            .antInterceptUrl("/**", hasRole("USER"));
+        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
+            .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
+            .permitAll(antMatchers("/resources/**","/signup"))
+            .hasRole(antMatchers("/**"), "USER");
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/resources/**"))

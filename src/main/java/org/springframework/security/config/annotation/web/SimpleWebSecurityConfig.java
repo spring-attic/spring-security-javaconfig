@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.config.annotation.authentication;
+package org.springframework.security.config.annotation.web;
 
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
-import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder;
-import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 
 /**
  * @author Rob Winch
@@ -42,7 +37,7 @@ public abstract class SimpleWebSecurityConfig {
             .permitAll();
     }
 
-    protected abstract FilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder();
+    protected abstract BaseFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder();
 
     @Bean
     public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {

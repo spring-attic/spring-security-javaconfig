@@ -40,9 +40,9 @@ Getting Started
 
 The following configuration
 
-    import static org.springframework.security.config.annotation.SecurityExpressions.*;
     import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-    import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*;
+    import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+    import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
     @Configuration
     public static class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
@@ -53,10 +53,10 @@ The following configuration
                 .ignoring(antMatchers("/resources/**"))
         }
 
-        protected FilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder() {
+        protected ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder() {
             return interceptUrls()
-                .interceptUrl(antMatchers("/signup","/about"), permitAll)
-                .interceptUrl(antMatchers("/**"), hasRole("ROLE_USER"));
+                .permitAll(antMatchers("/signup","/about"))
+                .hasRole(antMatchers("/**"), "USER");
         }
 
         protected SecurityFilterChainSecurityBuilder configure(

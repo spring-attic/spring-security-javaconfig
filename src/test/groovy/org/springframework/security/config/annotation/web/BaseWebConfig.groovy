@@ -15,10 +15,9 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.hasRole
-import static org.springframework.security.config.annotation.SecurityExpressions.permitAll
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -34,9 +33,9 @@ import org.springframework.security.config.annotation.provisioning.InMemoryUserD
 @EnableWebSecurity
 class BaseWebConfig extends BaseAuthenticationConfig {
     protected fsiSourceBldr() {
-        new FilterInvocationSecurityMetadataSourceSecurityBuilder()
-                .interceptUrl(antMatchers("/users**","/sessions/**"), hasRole("ADMIN"))
-                .interceptUrl(antMatchers("/signup"), permitAll)
-                .antInterceptUrl("/**", hasRole("USER"));
+        interceptUrls()
+                .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
+                .permitAll(antMatchers("/signup"))
+                .hasRole(antMatchers("/**"), "USER");
     }
 }

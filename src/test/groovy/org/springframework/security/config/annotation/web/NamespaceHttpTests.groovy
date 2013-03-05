@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation.web;
 
 
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 import static org.springframework.security.config.annotation.SecurityExpressions.*
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
 import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*
@@ -397,10 +398,9 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
         protected fsiSourceBldr() {
             new FilterInvocationSecurityMetadataSourceSecurityBuilder()
-                    .disableExpressions(true)
                     .interceptUrl(antMatchers("/users**","/sessions/**"), "ROLE_USER")
                     .interceptUrl(antMatchers("/signup"), "ROLE_ANONYMOUS")
-                    .antInterceptUrl("/**", "ROLE_USER");
+                    .interceptUrl(antMatchers("/**"), "ROLE_USER");
         }
     }
 }

@@ -15,24 +15,14 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.vote.ConsensusBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
@@ -44,7 +34,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
  * @since 3.2
  */
 public class DefaultSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
-    private FilterInvocationSecurityMetadataSourceSecurityBuilder securityMetadataSource;
+    private BaseFilterInvocationSecurityMetadataSourceSecurityBuilder securityMetadataSource;
     private LogoutFilterSecurityBuilder logoutFilterSecurityBuilder = new LogoutFilterSecurityBuilder();
     private boolean permitAll;
     private AnonymousSecurityFilterConfigurator anonymousConfigurator = new AnonymousSecurityFilterConfigurator();
@@ -53,7 +43,7 @@ public class DefaultSecurityFilterConfigurator implements SecurityConfigurator<S
     private AccessDecisionManager accessDecisionManager;
     private Boolean filterSecurityInterceptorOncePerRequest;
 
-    public DefaultSecurityFilterConfigurator(FilterInvocationSecurityMetadataSourceSecurityBuilder securityMetadataSource) {
+    public DefaultSecurityFilterConfigurator(BaseFilterInvocationSecurityMetadataSourceSecurityBuilder securityMetadataSource) {
         super();
         this.securityMetadataSource = securityMetadataSource;
     }
@@ -118,7 +108,7 @@ public class DefaultSecurityFilterConfigurator implements SecurityConfigurator<S
         return this;
     }
 
-    public FilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationSecurityMetadataSourceBuilder() {
+    BaseFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationSecurityMetadataSourceBuilder() {
         return securityMetadataSource;
     }
 

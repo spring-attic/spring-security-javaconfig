@@ -1,10 +1,8 @@
 package org.springframework.security.samples.config;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.hasRole;
-import static org.springframework.security.config.annotation.SecurityExpressions.permitAll;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.authenticationManager;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.ldapAuthenticationProvider;
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.antMatchers;
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +11,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
@@ -53,11 +51,11 @@ public class SecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder builder() throws Exception {
-        FilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = new FilterInvocationSecurityMetadataSourceSecurityBuilder()
+        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
             // TODO type safe configAttributes
-            .interceptUrl(antMatchers("/users**","/sessions/**"), hasRole("ADMIN"))
-            .interceptUrl(antMatchers("/resources/**","/signup"), permitAll)
-            .antInterceptUrl("/**", hasRole("USER"));
+            .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
+            .permitAll(antMatchers("/resources/**","/signup"))
+            .hasRole(antMatchers("/**"), "USER");
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/resources/**"))

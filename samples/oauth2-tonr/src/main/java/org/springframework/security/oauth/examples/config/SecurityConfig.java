@@ -1,11 +1,8 @@
 package org.springframework.security.oauth.examples.config;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.hasRole;
-import static org.springframework.security.config.annotation.SecurityExpressions.permitAll;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.authenticationManager;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.inMemoryAuthentication;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.user;
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.antMatchers;
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
@@ -39,9 +36,9 @@ public class SecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder builder(OAuth2ClientContextFilter oauth2ClientFilter) throws Exception {
-        FilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = new FilterInvocationSecurityMetadataSourceSecurityBuilder()
-            .interceptUrl(antMatchers("/sparklr/**","/facebook/**"), hasRole("USER"))
-            .antInterceptUrl("/**", permitAll);
+        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
+            .hasRole(antMatchers("/sparklr/**","/facebook/**"), "USER")
+            .permitAll(antMatchers("/**"));
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/resources/**"))

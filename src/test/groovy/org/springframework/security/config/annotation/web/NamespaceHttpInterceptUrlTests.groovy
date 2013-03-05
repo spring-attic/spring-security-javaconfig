@@ -15,10 +15,9 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.*
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*
-
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.io.IOException;
 
@@ -210,19 +209,19 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
             )
         }
 
-        private FilterInvocationSecurityMetadataSourceSecurityBuilder fsiSourceBldr() {
+        private ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fsiSourceBldr() {
             // intercept-url@access demonstration
-            new FilterInvocationSecurityMetadataSourceSecurityBuilder()
+            interceptUrls()
                     // the line below is similar to intercept-url@pattern:
                     //    <intercept-url pattern="/users**" access="hasRole('ROLE_ADMIN')"/>
                     //    <intercept-url pattern="/sessions/**" access="hasRole('ROLE_ADMIN')"/>
-                    .interceptUrl(antMatchers("/users**","/sessions/**"), hasRole("ADMIN"))
+                    .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
                     // the line below is similar to intercept-url@method:
                     //    <intercept-url pattern="/admin/post" access="hasRole('ROLE_ADMIN')" method="POST"/>
                     //    <intercept-url pattern="/admin/another-post/**" access="hasRole('ROLE_ADMIN')" method="POST"/>
-                    .interceptUrl(antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**"), hasRole("ADMIN"))
-                    .interceptUrl(antMatchers("/signup"), permitAll)
-                    .antInterceptUrl("/**", hasRole("USER"));
+                    .hasRole(antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**"), "ADMIN")
+                    .permitAll(antMatchers("/signup"))
+                    .hasRole(antMatchers("/**"), "USER");
         }
     }
 

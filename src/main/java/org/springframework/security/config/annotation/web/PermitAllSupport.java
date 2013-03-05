@@ -16,6 +16,11 @@
 package org.springframework.security.config.annotation.web;
 
 
+import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.config.annotation.web.BaseFilterInvocationSecurityMetadataSourceSecurityBuilder.UrlMapping;
+import org.springframework.security.web.util.AntPathRequestMatcher;
+
+
 /**
  *
  * @author Rob Winch
@@ -26,9 +31,12 @@ final class PermitAllSupport {
     public static void permitAll(SecurityFilterChainSecurityBuilder builder, String... urls) {
         DefaultSecurityFilterConfigurator configurator = builder.getConfigurator(DefaultSecurityFilterConfigurator.class);
         if(configurator != null) {
-            FilterInvocationSecurityMetadataSourceSecurityBuilder fisBldr = configurator.filterInvocationSecurityMetadataSourceBuilder();
+            BaseFilterInvocationSecurityMetadataSourceSecurityBuilder fisBldr = configurator.filterInvocationSecurityMetadataSourceBuilder();
+            if(!(fisBldr instanceof ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder)) {
+                throw new IllegalStateException(fisBldr + " is not supported with PermitAll use "+ fisBldr);
+            }
             for(String url : urls) {
-                fisBldr.insertAntInterceptUrl(url, "permitAll");
+                fisBldr.addMapping(0, new UrlMapping(new AntPathRequestMatcher(url), SecurityConfig.createList(ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.permitAll)));
             }
         }
     }

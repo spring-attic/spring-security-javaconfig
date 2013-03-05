@@ -1,23 +1,20 @@
 package org.springframework.security.oauth.examples.sparklr.config;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.*;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.authenticationManager;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.authenticationProvider;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.inMemoryAuthentication;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.user;
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.antMatchers;
-
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
+import static org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.HttpBasicSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
@@ -59,21 +56,21 @@ public class SecurityConfiguration {
             OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint,
             OAuth2AuthenticationProcessingFilter resourcesServerFilter,
             OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler) throws Exception {
-        FilterInvocationSecurityMetadataSourceSecurityBuilder tokenFiMetadataSourceBldr = new FilterInvocationSecurityMetadataSourceSecurityBuilder()
+        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder tokenFiMetadataSourceBldr = interceptUrls()
             .interceptUrl(antMatchers("/oauth/token"), fullyAuthenticated);
-        FilterInvocationSecurityMetadataSourceSecurityBuilder userClientFiMetadataSourceBldr = new FilterInvocationSecurityMetadataSourceSecurityBuilder()
+        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder userClientFiMetadataSourceBldr = interceptUrls()
             .interceptUrl(new RegexRequestMatcher("/oauth/users/([^/].*?)/tokens/.*", "DELETE"), "#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
             .interceptUrl(new RegexRequestMatcher("/oauth/users/.*", "GET"),"#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
             .interceptUrl(new RegexRequestMatcher("/oauth/clients/.*", "GET"),"#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
             .expressionHandler(oauthWebExpressionHandler);
-        FilterInvocationSecurityMetadataSourceSecurityBuilder photoFiMetadataSourceBldr = new FilterInvocationSecurityMetadataSourceSecurityBuilder()
-            .interceptUrl(antMatchers("/photos"), hasAnyAuthority("ROLE_USER","SCOPE_TRUST"))
-            .interceptUrl(antMatchers("/photos/trusted/**"), hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST"))
-            .interceptUrl(antMatchers("/photos/user/**"), hasAnyAuthority("ROLE_USER","SCOPE_TRUST"))
-            .interceptUrl(antMatchers("/photos/**"), hasAnyAuthority("ROLE_USER","SCOPE_READ"));
-        FilterInvocationSecurityMetadataSourceSecurityBuilder fiMetadataSourceBldr = new FilterInvocationSecurityMetadataSourceSecurityBuilder()
-            .interceptUrl(antMatchers("/oauth/**"), hasRole("USER"))
-            .interceptUrl(antMatchers("/**"), permitAll);
+        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder photoFiMetadataSourceBldr = interceptUrls()
+            .hasAnyAuthority(antMatchers("/photos"), "ROLE_USER","SCOPE_TRUST")
+            .hasAnyAuthority(antMatchers("/photos/trusted/**"), "ROLE_CLIENT","SCOPE_TRUST")
+            .hasAnyAuthority(antMatchers("/photos/user/**"), "ROLE_USER","SCOPE_TRUST")
+            .hasAnyAuthority(antMatchers("/photos/**"), "ROLE_USER","SCOPE_READ");
+        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiMetadataSourceBldr = interceptUrls()
+            .hasRole(antMatchers("/oauth/**"), "USER")
+            .permitAll(antMatchers("/**"));
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals"))

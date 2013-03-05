@@ -15,9 +15,9 @@
  */
 package org.springframework.social.showcase.config;
 
-import static org.springframework.security.config.annotation.SecurityExpressions.*;
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.antMatchers;
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import javax.sql.DataSource;
 
@@ -28,6 +28,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerSecurityBuilder;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
 import org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
@@ -84,9 +85,9 @@ public class SecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder builder() throws Exception {
-        FilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = new FilterInvocationSecurityMetadataSourceSecurityBuilder()
-            .interceptUrl(antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook"), permitAll)
-            .antInterceptUrl("/**", authenticated);
+        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
+            .permitAll(antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook"))
+            .authenticated(antMatchers("/**"));
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/resources/**"))
