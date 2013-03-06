@@ -137,6 +137,14 @@ Global configuration is quite simple. For example, the following Java Configurat
 is the equivalent of:
 
     <global-method-security pre-post-annotations="enabled"/>
+    <authentication-manager>
+      <authentication-provider>
+        <user-service>
+          <user username="user" password="password" authorities="ROLE_USER"/>
+          <user username="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+        </user-service>
+      </authentication-provider>
+    </authentication-manager>
     <beans:bean id="methodSecuriytService" class="MethodSecurityServiceImpl"/>
 
 There are additional attributes on `EnableGlobalMethodSecurity`, but in more advanced situations you may want to refer to another object. In order to do this,
@@ -169,10 +177,18 @@ override the `GlobalMethodSecurityConfiguration` class. For example, following J
 
 The configuration above is the similar to the following XML configuration:
 
-    <beans:bean id="methodSecuriytService" class="MethodSecurityServiceImpl"/>
     <global-method-security pre-post-annotations="enabled">
         <expression-handler ref="expressionHandler"/>
     </global-method-security>
+    <authentication-manager>
+      <authentication-provider>
+        <user-service>
+          <user username="user" password="password" authorities="ROLE_USER"/>
+          <user username="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+        </user-service>
+      </authentication-provider>
+    </authentication-manager>
+    <beans:bean id="methodSecuriytService" class="MethodSecurityServiceImpl"/>
     <beans:bean id="expressionHandler" class="CustomExpressionHandler"/>
 
 Additional Samples
