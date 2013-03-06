@@ -12,5 +12,7 @@ rebel.xml
 build/
 .idea
 atlassian-ide-plugin.xml
+*.ipr
+*.iws
 *.iml
 out

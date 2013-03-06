@@ -45,7 +45,7 @@ The following configuration
     import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
     @Configuration
-    public static class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
+    public class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
         protected FilterChainProxySecurityBuilder configure(
                 FilterChainProxySecurityBuilder securityFilterChains) {
             return securityFilterChains
@@ -111,8 +111,8 @@ Samples
 ===============================
 
 We include a number of complete [Sample Web Applications](./samples/) that use Spring Security Java Configuration. Also refer to the tests
-for further examples. You will notice a convention of Namesapce<Security Element>Tests where <Security Element> is the Security Namespace
-Ellement. For example, to learn how the <http> element and its attributes map to Spring Security Java Configuration look in the NamespaceHttpTests
+for further examples. You will notice a convention of Namespace<Security Element>Tests where <Security Element> is the Security Namespace
+Element. For example, to learn how the <http> element and its attributes map to Spring Security Java Configuration look in the NamespaceHttpTests
 
 Contributing
 ==============
