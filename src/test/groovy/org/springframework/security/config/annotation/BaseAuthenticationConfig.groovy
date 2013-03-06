@@ -34,13 +34,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 class BaseAuthenticationConfig {
     @Bean
     public AuthenticationManager authenticationMgr() throws Exception {
-        return authenticationManager((UserDetailsServiceSecurityBuilder<? extends UserDetailsService>)userDetailsManager()).build();
-    }
-
-    @Bean
-    public InMemoryUserDetailsManagerSecurityBuilder userDetailsManager() throws Exception {
         return inMemoryAuthentication(
-        user("user").password("password").roles("USER"),
-        user("admin").password("password").roles("USER", "ADMIN"));
+            user("user").password("password").roles("USER"),
+            user("admin").password("password").roles("USER", "ADMIN")).authenticationManager();
     }
 }
