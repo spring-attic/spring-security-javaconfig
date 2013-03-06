@@ -38,6 +38,11 @@ You will then need to include the Spring Security Java Configuration jar.
 Getting Started
 ======================
 
+Below are a few things you can do to get up and running quickly.
+
+Sample Web Configuration
+----------------------
+
 The following configuration
 
     import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
@@ -107,8 +112,71 @@ is similar to the following XML configuration:
 Notice that Spring Security uses different defaults that will make your HTTP requests appear more RESTful. For example, the URL /login POST is used to
 authenticate users. The URL /login GET is used to request the user for credentials (i.e. present a login form).
 
-Samples
-===============================
+Sample Global Security Configuration
+-------------
+
+Global configuration is quite simple. For example, the following Java Configuration:
+
+    @Configuration
+    @EnableGlobalMethodSecurity(prePostEnabled=true)
+    public class SampleWebSecurityConfig {
+        @Bean
+        public MethodSecurityService methodSecurityService() {
+            return new MethodSecurityServiceImpl()
+        }
+
+        @Bean
+        public AuthenticationManager authenticationMgr() throws Exception {
+            return inMemoryAuthentication(
+                user("user").password("password").roles("USER"),
+                user("admin").password("password").roles("USER", "ADMIN")
+            ).authenticationManager();
+        }
+    }
+
+is the equivalent of:
+
+    <global-method-security pre-post-annotations="enabled"/>
+    <beans:bean id="methodSecuriytService" class="MethodSecurityServiceImpl"/>
+
+There are additional attributes on `EnableGlobalMethodSecurity`, but in more advanced situations you may want to refer to another object. In order to do this,
+override the `GlobalMethodSecurityConfiguration` class. For example, following Java configuration demonstrates how to override the MethodExpressionHandler to use
+`CustomPermissionEvaluator`.
+
+    @Configuration
+    @EnableGlobalMethodSecurity(prePostEnabled=true)
+    public class CustomPermissionEvaluatorWebSecurityConfig extends GlobalMethodSecurityConfiguration {
+        @Bean
+        public MethodSecurityService methodSecurityService() {
+            return new MethodSecurityServiceImpl()
+        }
+
+        @Override
+        protected MethodSecurityExpressionHandler expressionHandler() {
+            DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+            expressionHandler.setPermissionEvaluator(new CustomPermissionEvaluator());
+            return expressionHandler;
+        }
+
+        @Bean
+        public AuthenticationManager authenticationMgr() throws Exception {
+            return inMemoryAuthentication(
+                user("user").password("password").roles("USER"),
+                user("admin").password("password").roles("USER", "ADMIN")
+            ).authenticationManager();
+        }
+    }
+
+The configuration above is the similar to the following XML configuration:
+
+    <beans:bean id="methodSecuriytService" class="MethodSecurityServiceImpl"/>
+    <global-method-security pre-post-annotations="enabled">
+        <expression-handler ref="expressionHandler"/>
+    </global-method-security>
+    <beans:bean id="expressionHandler" class="CustomExpressionHandler"/>
+
+Additional Samples
+-------------
 
 We include a number of complete [Sample Web Applications](./samples/) that use Spring Security Java Configuration. Also refer to the tests
 for further examples. You will notice a convention of Namespace<Security Element>Tests where <Security Element> is the Security Namespace
