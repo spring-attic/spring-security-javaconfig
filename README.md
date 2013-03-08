@@ -50,7 +50,7 @@ The following configuration
     import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
     @Configuration
-    public class 1 extends SimpleWebSecurityConfig {
+    public class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
         protected void authorizeUrls(ExpressionUrlAuthorizationBuilder interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
