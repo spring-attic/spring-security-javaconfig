@@ -86,8 +86,8 @@ public class SecurityConfig {
     @Bean
     public FilterChainProxySecurityBuilder builder() throws Exception {
         ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
-            .permitAll(antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook"))
-            .authenticated(antMatchers("/**"));
+            .antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook").permitAll()
+            .antMatchers("/**").authenticated();
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/resources/**"))

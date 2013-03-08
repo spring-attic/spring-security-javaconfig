@@ -37,8 +37,8 @@ public class SecurityConfig {
     @Bean
     public FilterChainProxySecurityBuilder builder(OAuth2ClientContextFilter oauth2ClientFilter) throws Exception {
         ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
-            .hasRole(antMatchers("/sparklr/**","/facebook/**"), "USER")
-            .permitAll(antMatchers("/**"));
+            .antMatchers("/sparklr/**","/facebook/**").hasRole("USER")
+            .antMatchers("/**").permitAll();
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/resources/**"))

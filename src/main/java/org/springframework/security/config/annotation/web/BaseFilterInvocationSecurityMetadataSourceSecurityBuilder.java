@@ -16,15 +16,19 @@
 package org.springframework.security.config.annotation.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.vote.ConsensusBased;
 import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.AuthorizedUrl;
+import org.springframework.security.config.annotation.web.util.RequestMatchers;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
 
@@ -32,7 +36,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  *
  */
-abstract class BaseFilterInvocationSecurityMetadataSourceSecurityBuilder implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
+abstract class BaseFilterInvocationSecurityMetadataSourceSecurityBuilder<T> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
 
     List<UrlMapping> getUrlMappings() {
@@ -50,6 +54,30 @@ abstract class BaseFilterInvocationSecurityMetadataSourceSecurityBuilder impleme
     final AccessDecisionManager createDefaultAccessDecisionManager() {
         return new ConsensusBased(decisionVoters());
     }
+
+    public T antMatchers(HttpMethod method, String... antPatterns) {
+        return authorizedUrl(RequestMatchers.antMatchers(method, antPatterns));
+    }
+
+    public T antMatchers(String... antPatterns) {
+        return authorizedUrl(RequestMatchers.antMatchers(antPatterns));
+    }
+
+    public T regexMatchers(HttpMethod method, String... regexPatterns) {
+        return authorizedUrl(RequestMatchers.antMatchers(method, regexPatterns));
+    }
+
+    public T regexMatchers(String... regexPatterns) {
+        return authorizedUrl(RequestMatchers.regexMatchers(regexPatterns));
+    }
+
+    public T requestMatchers(RequestMatcher... requestMatchers) {
+        return authorizedUrl(Arrays.asList(requestMatchers));
+    }
+
+    abstract T authorizedUrl(List<RequestMatcher> requestMatchers);
+
+    public abstract FilterInvocationSecurityMetadataSource build();
 
     /**
      * @return

@@ -36,10 +36,9 @@ public class SecurityConfig {
     @Bean
     public FilterChainProxySecurityBuilder builder() throws Exception {
         ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
-            // TODO type safe configAttributes
-            .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
-            .permitAll(antMatchers("/resources/**","/signup"))
-            .hasRole(antMatchers("/**"), "USER");
+            .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+            .antMatchers("/resources/**","/signup").permitAll()
+            .antMatchers("/**").hasRole("USER");
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/resources/**"))

@@ -21,12 +21,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.access.vote.ConsensusBased;
+import org.springframework.security.config.annotation.web.util.RequestMatchers;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
@@ -37,7 +37,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder extends BaseFilterInvocationSecurityMetadataSourceSecurityBuilder {
+public class ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder extends BaseFilterInvocationSecurityMetadataSourceSecurityBuilder<ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.AuthorizedUrl> {
     public static final String permitAll = "permitAll";
     public static final String authenticated = "authenticated";
     public static final String fullyAuthenticated = "fullyAuthenticated";
@@ -49,38 +49,45 @@ public class ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder ext
         return this;
     }
 
-
-    /**
-     * @param string
-     * @return
-     */
-    public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder authenticated(
-            List<RequestMatcher> requestMatchers) {
-        return interceptUrl(requestMatchers, SecurityConfig.createList(authenticated));
+    AuthorizedUrl authorizedUrl(List requestMatchers) {
+        return new AuthorizedUrl(requestMatchers);
     }
 
-    public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasRole(List<RequestMatcher> requestMatchers, String role) {
-        return interceptUrl(requestMatchers, SecurityConfig.createList(hasRole(role)));
-    }
+    public class AuthorizedUrl {
+        private List<RequestMatcher> requestMatchers;
 
-    public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder permitAll(List<RequestMatcher> requestMatchers) {
-        return interceptUrl(requestMatchers, SecurityConfig.createList(permitAll));
-    }
+        private AuthorizedUrl(List<RequestMatcher> requestMatchers) {
+            this.requestMatchers = requestMatchers;
+        }
 
-    public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasAuthority(List<RequestMatcher> requestMatchers, String authority) {
-        return interceptUrl(requestMatchers, SecurityConfig.createList(hasAuthority(authority)));
-    }
+        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasRole(String role) {
+            return configAttribute(ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.hasRole(role));
+        }
 
-    public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasAnyAuthority(List<RequestMatcher> requestMatchers, String... authorities) {
-        return interceptUrl(requestMatchers, SecurityConfig.createList(hasAnyAuthority(authorities)));
-    }
+        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasAuthority(String authority) {
+            return configAttribute(ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.hasAuthority(authority));
+        }
 
-    public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrl(RequestMatcher requestMatcher, String configAttribute) {
-        return interceptUrl(Arrays.asList(requestMatcher), SecurityConfig.createList(configAttribute));
-    }
+        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasAnyAuthority(String... authorities) {
+            return configAttribute(ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.hasAnyAuthority(authorities));
+        }
 
-    public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, String configAttribute) {
-        return interceptUrl(requestMatchers, SecurityConfig.createList(configAttribute));
+        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder permitAll() {
+            return configAttribute(permitAll);
+        }
+
+        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder authenticated() {
+            return configAttribute(authenticated);
+        }
+
+        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fullyAuthenticated() {
+            return configAttribute(fullyAuthenticated);
+        }
+
+        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder configAttribute(String attribute) {
+            interceptUrl(requestMatchers, SecurityConfig.createList(attribute));
+            return ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.this;
+        }
     }
 
     private ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {

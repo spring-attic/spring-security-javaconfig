@@ -215,13 +215,13 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                     // the line below is similar to intercept-url@pattern:
                     //    <intercept-url pattern="/users**" access="hasRole('ROLE_ADMIN')"/>
                     //    <intercept-url pattern="/sessions/**" access="hasRole('ROLE_ADMIN')"/>
-                    .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
+                    .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
                     // the line below is similar to intercept-url@method:
                     //    <intercept-url pattern="/admin/post" access="hasRole('ROLE_ADMIN')" method="POST"/>
                     //    <intercept-url pattern="/admin/another-post/**" access="hasRole('ROLE_ADMIN')" method="POST"/>
-                    .hasRole(antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**"), "ADMIN")
-                    .permitAll(antMatchers("/signup"))
-                    .hasRole(antMatchers("/**"), "USER");
+                    .antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**").hasRole("ADMIN")
+                    .antMatchers("/signup").permitAll()
+                    .antMatchers("/**").hasRole("USER");
         }
     }
 

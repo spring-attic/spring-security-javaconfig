@@ -29,13 +29,14 @@ import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.util.StringUtils;
 
 /**
  *
  * @author Rob Winch
  * @since 3.2
  */
-public class FilterInvocationSecurityMetadataSourceSecurityBuilder extends BaseFilterInvocationSecurityMetadataSourceSecurityBuilder implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
+public class FilterInvocationSecurityMetadataSourceSecurityBuilder extends BaseFilterInvocationSecurityMetadataSourceSecurityBuilder<FilterInvocationSecurityMetadataSourceSecurityBuilder.AuthorizedUrl> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
 
     public FilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrl(RequestMatcher requestMatcher, String... configAttributes) {
         return interceptUrl(Arrays.asList(requestMatcher), SecurityConfig.createList(configAttributes));
@@ -61,5 +62,64 @@ public class FilterInvocationSecurityMetadataSourceSecurityBuilder extends BaseF
 
     public FilterInvocationSecurityMetadataSource build() {
         return new DefaultFilterInvocationSecurityMetadataSource(createRequestMap());
+    }
+
+    public class AuthorizedUrl {
+        private List<RequestMatcher> requestMatchers;
+
+        private AuthorizedUrl(List<RequestMatcher> requestMatchers) {
+            this.requestMatchers = requestMatchers;
+        }
+
+        public FilterInvocationSecurityMetadataSourceSecurityBuilder hasRole(String role) {
+            return configAttribute(FilterInvocationSecurityMetadataSourceSecurityBuilder.hasRole(role));
+        }
+
+        public FilterInvocationSecurityMetadataSourceSecurityBuilder hasAnyRole(String role) {
+            return configAttribute(FilterInvocationSecurityMetadataSourceSecurityBuilder.hasAnyRole(role));
+        }
+
+        public FilterInvocationSecurityMetadataSourceSecurityBuilder hasAuthority(String authority) {
+            return configAttribute(FilterInvocationSecurityMetadataSourceSecurityBuilder.hasAuthority(authority));
+        }
+
+        public FilterInvocationSecurityMetadataSourceSecurityBuilder hasAnyAuthority(String... authorities) {
+            return configAttribute(FilterInvocationSecurityMetadataSourceSecurityBuilder.hasAnyAuthority(authorities));
+        }
+
+        public FilterInvocationSecurityMetadataSourceSecurityBuilder configAttribute(String... attributes) {
+            interceptUrl(requestMatchers, SecurityConfig.createList(attributes));
+            return FilterInvocationSecurityMetadataSourceSecurityBuilder.this;
+        }
+    }
+
+    AuthorizedUrl authorizedUrl(List requestMatchers) {
+        return new AuthorizedUrl(requestMatchers);
+    }
+
+    /**
+     * @param role
+     * @return
+     */
+    public static String hasRole(String role) {
+        return "ROLE_" + role;
+    }
+
+    /**
+     * @param role
+     * @return
+     */
+    public static String hasAnyRole(String... roles) {
+        return "'ROLE_" + StringUtils.arrayToDelimitedString(roles, "','ROLE_") + "'";
+    }
+
+
+    public static String hasAuthority(String authority) {
+        return "hasAuthority('" + authority + "')";
+    }
+
+    public static String hasAnyAuthority(String... authorities) {
+        String anyAuthorities = StringUtils.arrayToDelimitedString(authorities, "','");
+        return "'" + anyAuthorities + "'";
     }
 }

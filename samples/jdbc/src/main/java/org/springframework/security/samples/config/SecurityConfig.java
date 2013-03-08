@@ -2,7 +2,6 @@ package org.springframework.security.samples.config;
 
 import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-import static org.springframework.security.config.annotation.SecurityExpressions.*;
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
 
 import javax.sql.DataSource;
@@ -43,9 +42,9 @@ public class SecurityConfig {
     @Bean
     public FilterChainProxySecurityBuilder builder() throws Exception {
         ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
-            .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
-            .permitAll(antMatchers("/resources/**","/signup"))
-            .hasRole(antMatchers("/**"), "USER");
+                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                .antMatchers("/resources/**","/signup").permitAll()
+                .antMatchers("/**").hasRole("USER");
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/resources/**"))

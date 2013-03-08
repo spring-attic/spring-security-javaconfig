@@ -8,6 +8,7 @@ import static org.springframework.security.config.annotation.web.ExpressionFilte
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder;
@@ -57,20 +58,20 @@ public class SecurityConfiguration {
             OAuth2AuthenticationProcessingFilter resourcesServerFilter,
             OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler) throws Exception {
         ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder tokenFiMetadataSourceBldr = interceptUrls()
-            .interceptUrl(antMatchers("/oauth/token"), fullyAuthenticated);
+            .antMatchers("/oauth/token").fullyAuthenticated();
         ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder userClientFiMetadataSourceBldr = interceptUrls()
-            .interceptUrl(new RegexRequestMatcher("/oauth/users/([^/].*?)/tokens/.*", "DELETE"), "#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
-            .interceptUrl(new RegexRequestMatcher("/oauth/users/.*", "GET"),"#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
-            .interceptUrl(new RegexRequestMatcher("/oauth/clients/.*", "GET"),"#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
+            .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
+            .regexMatchers(HttpMethod.GET, "/oauth/users/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
+            .regexMatchers(HttpMethod.GET, "/oauth/clients/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
             .expressionHandler(oauthWebExpressionHandler);
         ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder photoFiMetadataSourceBldr = interceptUrls()
-            .hasAnyAuthority(antMatchers("/photos"), "ROLE_USER","SCOPE_TRUST")
-            .hasAnyAuthority(antMatchers("/photos/trusted/**"), "ROLE_CLIENT","SCOPE_TRUST")
-            .hasAnyAuthority(antMatchers("/photos/user/**"), "ROLE_USER","SCOPE_TRUST")
-            .hasAnyAuthority(antMatchers("/photos/**"), "ROLE_USER","SCOPE_READ");
+            .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+            .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
+            .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+            .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
         ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiMetadataSourceBldr = interceptUrls()
-            .hasRole(antMatchers("/oauth/**"), "USER")
-            .permitAll(antMatchers("/**"));
+            .antMatchers("/oauth/**").hasRole("USER")
+            .antMatchers("/**").permitAll();
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals"))

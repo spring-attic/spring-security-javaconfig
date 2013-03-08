@@ -34,8 +34,8 @@ import org.springframework.security.config.annotation.provisioning.InMemoryUserD
 class BaseWebConfig extends BaseAuthenticationConfig {
     protected fsiSourceBldr() {
         interceptUrls()
-                .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
-                .permitAll(antMatchers("/signup"))
-                .hasRole(antMatchers("/**"), "USER");
+                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                .antMatchers("/signup").permitAll()
+                .antMatchers("/**").hasRole("USER");
     }
 }

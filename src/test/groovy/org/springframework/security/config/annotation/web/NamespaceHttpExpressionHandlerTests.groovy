@@ -89,9 +89,9 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
         protected fsiSourceBldr() {
             interceptUrls()
                     .expressionHandler(EXPRESSION_HANDLER)
-                    .hasRole(antMatchers("/users**","/sessions/**"), "ADMIN")
-                    .permitAll(antMatchers("/signup"))
-                    .hasRole(antMatchers("/**"), "USER");
+                    .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                    .antMatchers("/signup").permitAll()
+                    .antMatchers("/**").hasRole("USER");
         }
     }
 }

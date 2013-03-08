@@ -60,8 +60,8 @@ The following configuration
 
         protected ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder() {
             return interceptUrls()
-                .permitAll(antMatchers("/signup","/about"))
-                .hasRole(antMatchers("/**"), "USER");
+                .antMatchers("/signup","/about").permitAll()
+                .antMatchers("/**").hasRole("USER");
         }
 
         protected SecurityFilterChainSecurityBuilder configure(

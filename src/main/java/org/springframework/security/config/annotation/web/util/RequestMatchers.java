@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.AntPathRequestMatcher;
+import org.springframework.security.web.util.RegexRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
@@ -40,5 +41,18 @@ public class RequestMatchers {
 
     public static List<RequestMatcher> antMatchers(String...antPatterns) {
         return antMatchers(null, antPatterns);
+    }
+
+    public static List<RequestMatcher> regexMatchers(HttpMethod httpMethod, String...regexPatterns) {
+        String method = httpMethod == null ? null : httpMethod.toString();
+        List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+        for(String pattern : regexPatterns) {
+            matchers.add(new RegexRequestMatcher(pattern, method));
+        }
+        return matchers;
+    }
+
+    public static List<RequestMatcher> regexMatchers(String...regexPatterns) {
+        return antMatchers(null, regexPatterns);
     }
 }
