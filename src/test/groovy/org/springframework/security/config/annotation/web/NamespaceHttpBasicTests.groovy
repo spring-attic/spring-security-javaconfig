@@ -15,50 +15,20 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*
-
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.mock.web.MockFilterChain
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.security.access.AccessDecisionManager
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.ConfigAttribute
-import org.springframework.security.authentication.AnonymousAuthenticationToken
-import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.config.annotation.BaseSpringSpec;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.crypto.codec.Base64;
-import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.FilterChainProxy
-import org.springframework.security.web.FilterInvocation
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-import org.springframework.security.web.access.ExceptionTranslationFilter
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.NullSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter
-import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
-import org.springframework.security.web.util.AntPathRequestMatcher
-import org.springframework.security.web.util.AnyRequestMatcher;
-import org.springframework.security.web.util.RequestMatcher
 
 /**
  * Tests to verify that all the functionality of <anonymous> attributes is present

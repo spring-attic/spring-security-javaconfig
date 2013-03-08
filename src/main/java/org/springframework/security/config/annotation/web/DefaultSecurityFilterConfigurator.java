@@ -34,7 +34,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
  * @since 3.2
  */
 public class DefaultSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
-    private BaseFilterInvocationSecurityMetadataSourceSecurityBuilder securityMetadataSource;
+    private BaseUrlAuthorizationBuilder securityMetadataSource;
     private LogoutFilterSecurityBuilder logoutFilterSecurityBuilder = new LogoutFilterSecurityBuilder();
     private boolean permitAll;
     private AnonymousSecurityFilterConfigurator anonymousConfigurator = new AnonymousSecurityFilterConfigurator();
@@ -43,7 +43,7 @@ public class DefaultSecurityFilterConfigurator implements SecurityConfigurator<S
     private AccessDecisionManager accessDecisionManager;
     private Boolean filterSecurityInterceptorOncePerRequest;
 
-    public DefaultSecurityFilterConfigurator(BaseFilterInvocationSecurityMetadataSourceSecurityBuilder securityMetadataSource) {
+    public DefaultSecurityFilterConfigurator(BaseUrlAuthorizationBuilder securityMetadataSource) {
         super();
         this.securityMetadataSource = securityMetadataSource;
     }
@@ -108,7 +108,7 @@ public class DefaultSecurityFilterConfigurator implements SecurityConfigurator<S
         return this;
     }
 
-    BaseFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationSecurityMetadataSourceBuilder() {
+    BaseUrlAuthorizationBuilder filterInvocationSecurityMetadataSourceBuilder() {
         return securityMetadataSource;
     }
 

@@ -33,7 +33,7 @@ import org.springframework.security.config.annotation.BaseSpringSpec;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder;
+import org.springframework.security.config.annotation.web.UrlAuthorizationBuilder;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;

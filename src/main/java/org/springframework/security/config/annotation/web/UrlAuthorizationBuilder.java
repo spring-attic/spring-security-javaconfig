@@ -36,17 +36,17 @@ import org.springframework.util.StringUtils;
  * @author Rob Winch
  * @since 3.2
  */
-public class FilterInvocationSecurityMetadataSourceSecurityBuilder extends BaseFilterInvocationSecurityMetadataSourceSecurityBuilder<FilterInvocationSecurityMetadataSourceSecurityBuilder.AuthorizedUrl> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
+public class UrlAuthorizationBuilder extends BaseUrlAuthorizationBuilder<UrlAuthorizationBuilder.AuthorizedUrl> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
 
-    public FilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrl(RequestMatcher requestMatcher, String... configAttributes) {
+    public UrlAuthorizationBuilder interceptUrl(RequestMatcher requestMatcher, String... configAttributes) {
         return interceptUrl(Arrays.asList(requestMatcher), SecurityConfig.createList(configAttributes));
     }
 
-    public FilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, String... configAttributes) {
+    public UrlAuthorizationBuilder interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, String... configAttributes) {
         return interceptUrl(requestMatchers, SecurityConfig.createList(configAttributes));
     }
 
-    public FilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+    public UrlAuthorizationBuilder interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
         for(RequestMatcher requestMatcher : requestMatchers) {
             addMapping(new UrlMapping(requestMatcher, configAttributes));
         }
@@ -71,25 +71,25 @@ public class FilterInvocationSecurityMetadataSourceSecurityBuilder extends BaseF
             this.requestMatchers = requestMatchers;
         }
 
-        public FilterInvocationSecurityMetadataSourceSecurityBuilder hasRole(String role) {
-            return configAttribute(FilterInvocationSecurityMetadataSourceSecurityBuilder.hasRole(role));
+        public UrlAuthorizationBuilder hasRole(String role) {
+            return configAttribute(UrlAuthorizationBuilder.hasRole(role));
         }
 
-        public FilterInvocationSecurityMetadataSourceSecurityBuilder hasAnyRole(String role) {
-            return configAttribute(FilterInvocationSecurityMetadataSourceSecurityBuilder.hasAnyRole(role));
+        public UrlAuthorizationBuilder hasAnyRole(String role) {
+            return configAttribute(UrlAuthorizationBuilder.hasAnyRole(role));
         }
 
-        public FilterInvocationSecurityMetadataSourceSecurityBuilder hasAuthority(String authority) {
-            return configAttribute(FilterInvocationSecurityMetadataSourceSecurityBuilder.hasAuthority(authority));
+        public UrlAuthorizationBuilder hasAuthority(String authority) {
+            return configAttribute(UrlAuthorizationBuilder.hasAuthority(authority));
         }
 
-        public FilterInvocationSecurityMetadataSourceSecurityBuilder hasAnyAuthority(String... authorities) {
-            return configAttribute(FilterInvocationSecurityMetadataSourceSecurityBuilder.hasAnyAuthority(authorities));
+        public UrlAuthorizationBuilder hasAnyAuthority(String... authorities) {
+            return configAttribute(UrlAuthorizationBuilder.hasAnyAuthority(authorities));
         }
 
-        public FilterInvocationSecurityMetadataSourceSecurityBuilder configAttribute(String... attributes) {
+        public UrlAuthorizationBuilder configAttribute(String... attributes) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attributes));
-            return FilterInvocationSecurityMetadataSourceSecurityBuilder.this;
+            return UrlAuthorizationBuilder.this;
         }
     }
 

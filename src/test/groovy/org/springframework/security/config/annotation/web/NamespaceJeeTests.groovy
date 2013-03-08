@@ -15,8 +15,6 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.config.annotation.web.FilterInvocationSecurityMetadataSourceSecurityBuilder.*
-
 import java.io.IOException;
 
 import javax.servlet.ServletException;

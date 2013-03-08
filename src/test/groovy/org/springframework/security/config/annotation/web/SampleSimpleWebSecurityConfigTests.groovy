@@ -87,7 +87,6 @@ public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
 
     /**
      * <code>
-     *   <http security="none" pattern="/resources/**"/>
      *   <http use-expressions="true">
      *     <intercept-url pattern="/logout" access="permitAll"/>
      *     <intercept-url pattern="/login" access="permitAll"/>
@@ -118,22 +117,15 @@ public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
      */
     @Configuration
     public static class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
-        protected FilterChainProxySecurityBuilder configure(
-                FilterChainProxySecurityBuilder securityFilterChains) {
-            return securityFilterChains
-                // spring security ignores these URLs
-                .ignoring(antMatchers("/resources/**"))
-        }
-
-        protected ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder() {
-            return interceptUrls()
+        protected void authorizeUrls(ExpressionUrlAuthorizationBuilder interceptUrls) {
+            interceptUrls
                 .antMatchers("/signup","/about").permitAll()
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected SecurityFilterChainSecurityBuilder configure(
+        protected void configure(
                 SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-            return springSecurityFilterChain
+            springSecurityFilterChain
                 .apply(formLogin()
                     // ensure the URLs for login are publicly accessible
                     .permitAll());

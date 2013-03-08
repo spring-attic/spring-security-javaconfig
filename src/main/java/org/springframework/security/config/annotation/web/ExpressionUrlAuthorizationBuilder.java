@@ -16,17 +16,14 @@
 package org.springframework.security.config.annotation.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.config.annotation.web.util.RequestMatchers;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
@@ -37,14 +34,14 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder extends BaseFilterInvocationSecurityMetadataSourceSecurityBuilder<ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.AuthorizedUrl> {
+public class ExpressionUrlAuthorizationBuilder extends BaseUrlAuthorizationBuilder<ExpressionUrlAuthorizationBuilder.AuthorizedUrl> {
     public static final String permitAll = "permitAll";
     public static final String authenticated = "authenticated";
     public static final String fullyAuthenticated = "fullyAuthenticated";
 
     private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
-    public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
+    public ExpressionUrlAuthorizationBuilder expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
         this.expressionHandler = expressionHandler;
         return this;
     }
@@ -60,37 +57,37 @@ public class ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder ext
             this.requestMatchers = requestMatchers;
         }
 
-        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasRole(String role) {
-            return configAttribute(ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.hasRole(role));
+        public ExpressionUrlAuthorizationBuilder hasRole(String role) {
+            return configAttribute(ExpressionUrlAuthorizationBuilder.hasRole(role));
         }
 
-        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasAuthority(String authority) {
-            return configAttribute(ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.hasAuthority(authority));
+        public ExpressionUrlAuthorizationBuilder hasAuthority(String authority) {
+            return configAttribute(ExpressionUrlAuthorizationBuilder.hasAuthority(authority));
         }
 
-        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder hasAnyAuthority(String... authorities) {
-            return configAttribute(ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.hasAnyAuthority(authorities));
+        public ExpressionUrlAuthorizationBuilder hasAnyAuthority(String... authorities) {
+            return configAttribute(ExpressionUrlAuthorizationBuilder.hasAnyAuthority(authorities));
         }
 
-        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder permitAll() {
+        public ExpressionUrlAuthorizationBuilder permitAll() {
             return configAttribute(permitAll);
         }
 
-        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder authenticated() {
+        public ExpressionUrlAuthorizationBuilder authenticated() {
             return configAttribute(authenticated);
         }
 
-        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fullyAuthenticated() {
+        public ExpressionUrlAuthorizationBuilder fullyAuthenticated() {
             return configAttribute(fullyAuthenticated);
         }
 
-        public ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder configAttribute(String attribute) {
+        public ExpressionUrlAuthorizationBuilder configAttribute(String attribute) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attribute));
-            return ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.this;
+            return ExpressionUrlAuthorizationBuilder.this;
         }
     }
 
-    private ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+    private ExpressionUrlAuthorizationBuilder interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
         for(RequestMatcher requestMatcher : requestMatchers) {
             addMapping(new UrlMapping(requestMatcher, configAttributes));
         }

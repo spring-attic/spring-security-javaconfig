@@ -3,7 +3,7 @@ package org.springframework.security.oauth.examples.sparklr.config;
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
 import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-import static org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder.*;
+import static org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationBuilder.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationBuilder;
 import org.springframework.security.config.annotation.web.HttpBasicSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
@@ -57,19 +57,19 @@ public class SecurityConfiguration {
             OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint,
             OAuth2AuthenticationProcessingFilter resourcesServerFilter,
             OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler) throws Exception {
-        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder tokenFiMetadataSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationBuilder tokenFiMetadataSourceBldr = interceptUrls()
             .antMatchers("/oauth/token").fullyAuthenticated();
-        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder userClientFiMetadataSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationBuilder userClientFiMetadataSourceBldr = interceptUrls()
             .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
             .regexMatchers(HttpMethod.GET, "/oauth/users/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
             .regexMatchers(HttpMethod.GET, "/oauth/clients/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
             .expressionHandler(oauthWebExpressionHandler);
-        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder photoFiMetadataSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationBuilder photoFiMetadataSourceBldr = interceptUrls()
             .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
             .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
             .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
             .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
-        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiMetadataSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationBuilder fiMetadataSourceBldr = interceptUrls()
             .antMatchers("/oauth/**").hasRole("USER")
             .antMatchers("/**").permitAll();
 

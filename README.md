@@ -50,23 +50,16 @@ The following configuration
     import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
     @Configuration
-    public class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
-        protected FilterChainProxySecurityBuilder configure(
-                FilterChainProxySecurityBuilder securityFilterChains) {
-            return securityFilterChains
-                // spring security ignores these URLs
-                .ignoring(antMatchers("/resources/**"))
-        }
-
-        protected ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder() {
-            return interceptUrls()
+    public class 1 extends SimpleWebSecurityConfig {
+        protected void authorizeUrls(ExpressionUrlAuthorizationBuilder interceptUrls) {
+            interceptUrls
                 .antMatchers("/signup","/about").permitAll()
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected SecurityFilterChainSecurityBuilder configure(
+        protected void configure(
                 SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-            return springSecurityFilterChain
+            springSecurityFilterChain
                 .apply(formLogin()
                     // ensure the URLs for login are publicly accessible
                     .permitAll());
@@ -82,7 +75,6 @@ The following configuration
 
 is similar to the following XML configuration:
 
-    <http security="none" pattern="/resources/**"/>
     <http use-expressions="true">
       <intercept-url pattern="/logout" access="permitAll"/>
       <intercept-url pattern="/login" access="permitAll"/>

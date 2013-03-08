@@ -16,9 +16,13 @@
 package org.springframework.security.config.annotation.web;
 
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.web.util.RequestMatcher;
 
 /**
  * @author Rob Winch
@@ -33,24 +37,34 @@ public abstract class SimpleWebSecurityConfig {
     }
 
     protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-        return new DefaultSecurityFilterConfigurator(filterInvocationBuilder())
+        ExpressionUrlAuthorizationBuilder interceptUrls = new ExpressionUrlAuthorizationBuilder();
+        authorizeUrls(interceptUrls);
+        return new DefaultSecurityFilterConfigurator(interceptUrls)
             .permitAll();
     }
 
-    protected abstract BaseFilterInvocationSecurityMetadataSourceSecurityBuilder filterInvocationBuilder();
+    protected abstract void authorizeUrls(ExpressionUrlAuthorizationBuilder interceptUrls);
 
     @Bean
     public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {
         SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationMgr())
             .apply(defaultFilterConfigurator());
+        configure(springSecurityFilterChain);
 
-        return configure(new FilterChainProxySecurityBuilder()
-            .securityFilterChains(
-                configure(springSecurityFilterChain)
-            ));
+        FilterChainProxySecurityBuilder result = new FilterChainProxySecurityBuilder()
+            .securityFilterChains(springSecurityFilterChain);
+        configure(result);
+        return result;
     }
 
-    protected abstract FilterChainProxySecurityBuilder configure(FilterChainProxySecurityBuilder securityFilterChains);
+    protected void configure(FilterChainProxySecurityBuilder securityFilterChains){
+        securityFilterChains
+            .ignoring(ignoredRequests());
+    }
 
-    protected abstract SecurityFilterChainSecurityBuilder configure(SecurityFilterChainSecurityBuilder springSecurityFilterChain);
+    protected List<RequestMatcher> ignoredRequests() {
+        return Collections.emptyList();
+    }
+
+    protected abstract void configure(SecurityFilterChainSecurityBuilder springSecurityFilterChain);
 }

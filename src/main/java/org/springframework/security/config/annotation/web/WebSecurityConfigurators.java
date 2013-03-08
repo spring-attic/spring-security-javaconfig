@@ -22,8 +22,8 @@ package org.springframework.security.config.annotation.web;
  *
  */
 public final class WebSecurityConfigurators {
-    public static ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder interceptUrls() {
-        return new ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder();
+    public static ExpressionUrlAuthorizationBuilder interceptUrls() {
+        return new ExpressionUrlAuthorizationBuilder();
     }
 
     public static FormLoginSecurityFilterConfigurator formLogin() throws Exception {

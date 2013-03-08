@@ -11,7 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationBuilder;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
@@ -51,7 +51,7 @@ public class SecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder builder() throws Exception {
-        ExpressionFilterInvocationSecurityMetadataSourceSecurityBuilder fiSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationBuilder fiSourceBldr = interceptUrls()
                 .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
                 .antMatchers("/resources/**","/signup").permitAll()
                 .antMatchers("/**").hasRole("USER");
