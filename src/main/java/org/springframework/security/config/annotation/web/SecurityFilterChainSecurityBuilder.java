@@ -82,12 +82,17 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
 
     public SecurityFilterChainSecurityBuilder applyDefaultConfigurators() throws Exception {
         exceptionHandling();
+        sessionManagement();
         securityContext();
         requestCache();
         anonymous();
         servletApi();
         logout();
         return this;
+    }
+
+    public SessionManagementConfigurator sessionManagement() throws Exception {
+        return apply(new SessionManagementConfigurator());
     }
 
     public ExpressionUrlAuthorizationRegistry authorizeUrls() throws Exception {

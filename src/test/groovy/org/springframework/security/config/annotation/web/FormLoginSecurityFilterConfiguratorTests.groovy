@@ -35,11 +35,15 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.logout.LogoutFilter
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
+import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.security.web.util.AnyRequestMatcher
 import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  *
@@ -58,12 +62,14 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
         filterChains[1].filters.collect { it.class.name.contains('$') ? it.class.superclass : it.class } ==
                 [SecurityContextPersistenceFilter, LogoutFilter, UsernamePasswordAuthenticationFilter,
                  RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter,
-                 AnonymousAuthenticationFilter, ExceptionTranslationFilter, FilterSecurityInterceptor ]
+                 AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, FilterSecurityInterceptor ]
         UsernamePasswordAuthenticationFilter authFilter = filterChains[1].filters.find { it instanceof UsernamePasswordAuthenticationFilter}
         authFilter.usernameParameter == "username"
         authFilter.passwordParameter == "password"
         authFilter.failureHandler.defaultFailureUrl == "/login?error"
         authFilter.successHandler.defaultTargetUrl == "/"
+        SessionFixationProtectionStrategy sessionStrategy = ReflectionTestUtils.getField(authFilter,"sessionStrategy")
+        sessionStrategy.migrateSessionAttributes
         authFilter.requiresAuthentication(new MockHttpServletRequest(requestURI : "/login", method: "POST"), new MockHttpServletResponse())
         !authFilter.requiresAuthentication(new MockHttpServletRequest(requestURI : "/login", method: "GET"), new MockHttpServletResponse())
 

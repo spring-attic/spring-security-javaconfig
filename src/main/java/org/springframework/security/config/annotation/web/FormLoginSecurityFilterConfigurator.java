@@ -26,6 +26,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 /**
  *
@@ -70,6 +71,10 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityFilterC
         usernamePasswordFilter.setAuthenticationFailureHandler(failureHandler);
         if(authenticationDetailsSource != null) {
             usernamePasswordFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
+        }
+        SessionAuthenticationStrategy sessionAuthenticationStrategy = builder.getSharedObject(SessionAuthenticationStrategy.class);
+        if(sessionAuthenticationStrategy != null) {
+            usernamePasswordFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
         }
         usernamePasswordFilter.afterPropertiesSet();
         builder.addFilter(usernamePasswordFilter);

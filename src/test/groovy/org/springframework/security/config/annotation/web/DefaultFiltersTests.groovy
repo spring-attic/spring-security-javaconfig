@@ -48,6 +48,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
+import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.security.web.util.AnyRequestMatcher
 import org.springframework.security.web.util.RequestMatcher;
 
@@ -126,7 +127,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
         filterChains[1].requestMatcher instanceof AnyRequestMatcher
         filterChains[1].filters.collect { it.class } ==
                 [SecurityContextPersistenceFilter, LogoutFilter, RequestCacheAwareFilter,
-                 SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter,
+                 SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter,
                  ExceptionTranslationFilter, FilterSecurityInterceptor ]
     }
 
