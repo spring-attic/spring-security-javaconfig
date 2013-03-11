@@ -53,6 +53,6 @@ public class RequestMatchers {
     }
 
     public static List<RequestMatcher> regexMatchers(String...regexPatterns) {
-        return antMatchers(null, regexPatterns);
+        return regexMatchers(null, regexPatterns);
     }
 }
