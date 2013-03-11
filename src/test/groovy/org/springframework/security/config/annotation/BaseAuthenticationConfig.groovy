@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.UserDetailsServiceSecurityBuilder;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
-import org.springframework.security.config.annotation.web.UrlAuthorizationBuilder
+import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 

@@ -209,7 +209,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
             )
         }
 
-        private ExpressionUrlAuthorizationBuilder fsiSourceBldr() {
+        private ExpressionUrlAuthorizationRegistry fsiSourceBldr() {
             // intercept-url@access demonstration
             interceptUrls()
                     // the line below is similar to intercept-url@pattern:

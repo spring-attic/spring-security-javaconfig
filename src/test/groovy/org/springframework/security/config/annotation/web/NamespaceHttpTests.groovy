@@ -396,7 +396,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         }
 
         protected fsiSourceBldr() {
-            new UrlAuthorizationBuilder()
+            new UrlAuthorizationRegistry()
                     .interceptUrl(antMatchers("/users**","/sessions/**"), "ROLE_USER")
                     .interceptUrl(antMatchers("/signup"), "ROLE_ANONYMOUS")
                     .interceptUrl(antMatchers("/**"), "ROLE_USER");

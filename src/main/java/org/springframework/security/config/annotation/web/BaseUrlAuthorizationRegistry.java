@@ -27,7 +27,7 @@ import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.vote.ConsensusBased;
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationBuilder.AuthorizedUrl;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry.AuthorizedUrl;
 import org.springframework.security.config.annotation.web.util.RequestMatchers;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
@@ -36,7 +36,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  *
  */
-abstract class BaseUrlAuthorizationBuilder<T> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
+abstract class BaseUrlAuthorizationRegistry<T> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
 
     List<UrlMapping> getUrlMappings() {

@@ -28,9 +28,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerSecurityBuilder;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationBuilder;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.UrlAuthorizationBuilder;
+import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
@@ -85,7 +85,7 @@ public class SecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder builder() throws Exception {
-        ExpressionUrlAuthorizationBuilder fiSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationRegistry fiSourceBldr = interceptUrls()
             .antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook").permitAll()
             .antMatchers("/**").authenticated();
 

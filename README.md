@@ -51,7 +51,7 @@ The following configuration
 
     @Configuration
     public class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
-        protected void authorizeUrls(ExpressionUrlAuthorizationBuilder interceptUrls) {
+        protected void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
                 .antMatchers("/**").hasRole("USER");

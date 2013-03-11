@@ -37,13 +37,13 @@ public abstract class SimpleWebSecurityConfig {
     }
 
     protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-        ExpressionUrlAuthorizationBuilder interceptUrls = new ExpressionUrlAuthorizationBuilder();
+        ExpressionUrlAuthorizationRegistry interceptUrls = new ExpressionUrlAuthorizationRegistry();
         authorizeUrls(interceptUrls);
         return new DefaultSecurityFilterConfigurator(interceptUrls)
             .permitAll();
     }
 
-    protected abstract void authorizeUrls(ExpressionUrlAuthorizationBuilder interceptUrls);
+    protected abstract void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls);
 
     @Bean
     public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {

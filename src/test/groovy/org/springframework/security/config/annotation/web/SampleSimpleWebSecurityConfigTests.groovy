@@ -117,7 +117,7 @@ public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
      */
     @Configuration
     public static class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
-        protected void authorizeUrls(ExpressionUrlAuthorizationBuilder interceptUrls) {
+        protected void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
                 .antMatchers("/**").hasRole("USER");
