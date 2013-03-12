@@ -16,8 +16,9 @@
 package org.springframework.security.config.annotation.web
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
+
+import java.util.List;
 
 import org.springframework.beans.factory.BeanCreationException
 import org.springframework.context.ConfigurableApplicationContext
@@ -49,6 +50,7 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
 import org.springframework.security.web.util.AnyRequestMatcher
+import org.springframework.security.web.util.RequestMatcher;
 
 import spock.lang.AutoCleanup
 import spock.lang.Specification
@@ -103,13 +105,13 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class NullWebInvocationPrivilegeEvaluatorConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                        .apply(new FormLoginSecurityFilterConfigurator())
-                )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain.formLogin()
+        }
+
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return null;
         }
     }
 
@@ -131,15 +133,11 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FilterChainProxyBuilderIgnoringConfig extends BaseWebConfig {
-
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .ignoring(antMatchers("/resources/**"))
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                        .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr()).permitAll())
-                )
+        protected List<RequestMatcher> ignoredRequests() {
+            return antMatchers("/resources/**")
+        }
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -161,14 +159,11 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class DefaultFiltersConfigPermitAll extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .ignoring(antMatchers("/resources/**"))
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr()).permitAll())
-            )
+        protected List<RequestMatcher> ignoredRequests() {
+            return antMatchers("/resources/**")
+        }
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 }

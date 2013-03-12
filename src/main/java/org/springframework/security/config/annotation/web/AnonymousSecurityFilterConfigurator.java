@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
-public class AnonymousSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class AnonymousSecurityFilterConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
     private String key;
     private AuthenticationProvider authenticationProvider;
     private AnonymousAuthenticationFilter authenticationFilter;

@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web;
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.io.IOException;
@@ -34,6 +34,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AnonymousAuthenticationToken
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -75,23 +76,25 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
 
     @Configuration
     @EnableWebSecurity
-    static class ExpressionHandlerConfig extends BaseAuthenticationConfig {
+    static class ExpressionHandlerConfig extends SimpleWebSecurityConfig {
         static EXPRESSION_HANDLER;
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain)
+                throws Exception {
         }
-        protected fsiSourceBldr() {
-            interceptUrls()
-                    .expressionHandler(EXPRESSION_HANDLER)
-                    .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                    .antMatchers("/signup").permitAll()
-                    .antMatchers("/**").hasRole("USER");
+
+        protected AuthenticationManager authenticationMgr() throws Exception {
+            return new BaseAuthenticationConfig().authenticationMgr()
+        }
+
+        protected void authorizeUrls(
+                ExpressionUrlAuthorizationRegistry interceptUrls) {
+            interceptUrls
+                .expressionHandler(EXPRESSION_HANDLER)
+                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                .antMatchers("/signup").permitAll()
+                .antMatchers("/**").hasRole("USER");
         }
     }
 }

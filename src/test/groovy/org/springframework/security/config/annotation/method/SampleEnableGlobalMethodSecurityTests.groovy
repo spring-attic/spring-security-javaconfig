@@ -17,7 +17,7 @@ package org.springframework.security.config.annotation.method;
 
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.io.Serializable;

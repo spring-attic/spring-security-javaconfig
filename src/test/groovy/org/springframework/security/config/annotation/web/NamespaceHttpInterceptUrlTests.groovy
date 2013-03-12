@@ -16,7 +16,6 @@
 package org.springframework.security.config.annotation.web;
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.io.IOException;
@@ -37,6 +36,7 @@ import org.springframework.security.access.AccessDecisionManager
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.authentication.AnonymousAuthenticationToken
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
@@ -189,39 +189,40 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
 
     @Configuration
     @EnableWebSecurity
-    static class HttpInterceptUrlConfig extends BaseAuthenticationConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new ChannelSecurityFilterConfigurator()
-                                    // NOTE: channel security is configured separately of authorization (i.e. intercept-url@access
-                                    // the line below is similar to intercept-url@requires-channel="https":
-                                    //    <intercept-url pattern="/login" requires-channel="https"/>
-                                    //    <intercept-url pattern="/secured/**" requires-channel="https"/>
-                                    .requireSecure(antMatchers("/login","/secured/**"))
-                                    // the line below is similar to intercept-url@requires-channel="http":
-                                    //    <intercept-url pattern="/**" requires-channel="http"/>
-                                    .requireInsecure(antMatchers("/**")))
-            )
+    static class HttpInterceptUrlConfig extends SimpleWebSecurityConfig {
+        protected AuthenticationManager authenticationMgr() throws Exception {
+            return inMemoryAuthentication().authenticationManager();
         }
 
-        private ExpressionUrlAuthorizationRegistry fsiSourceBldr() {
-            // intercept-url@access demonstration
-            interceptUrls()
-                    // the line below is similar to intercept-url@pattern:
-                    //    <intercept-url pattern="/users**" access="hasRole('ROLE_ADMIN')"/>
-                    //    <intercept-url pattern="/sessions/**" access="hasRole('ROLE_ADMIN')"/>
-                    .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                    // the line below is similar to intercept-url@method:
-                    //    <intercept-url pattern="/admin/post" access="hasRole('ROLE_ADMIN')" method="POST"/>
-                    //    <intercept-url pattern="/admin/another-post/**" access="hasRole('ROLE_ADMIN')" method="POST"/>
-                    .antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**").hasRole("ADMIN")
-                    .antMatchers("/signup").permitAll()
-                    .antMatchers("/**").hasRole("USER");
+        @Override
+        protected void authorizeUrls(
+                ExpressionUrlAuthorizationRegistry interceptUrls) {
+             interceptUrls
+                // the line below is similar to intercept-url@pattern:
+                //    <intercept-url pattern="/users**" access="hasRole('ROLE_ADMIN')"/>
+                //    <intercept-url pattern="/sessions/**" access="hasRole('ROLE_ADMIN')"/>
+                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                // the line below is similar to intercept-url@method:
+                //    <intercept-url pattern="/admin/post" access="hasRole('ROLE_ADMIN')" method="POST"/>
+                //    <intercept-url pattern="/admin/another-post/**" access="hasRole('ROLE_ADMIN')" method="POST"/>
+                .antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**").hasRole("ADMIN")
+                .antMatchers("/signup").permitAll()
+                .antMatchers("/**").hasRole("USER");
+        }
+
+        protected void configure(
+                SecurityFilterChainSecurityBuilder builder)
+                throws Exception {
+                    builder
+                        .requiresChannel()
+                            // NOTE: channel security is configured separately of authorization (i.e. intercept-url@access
+                            // the line below is similar to intercept-url@requires-channel="https":
+                            //    <intercept-url pattern="/login" requires-channel="https"/>
+                            //    <intercept-url pattern="/secured/**" requires-channel="https"/>
+                            .requireSecure(antMatchers("/login","/secured/**"))
+                            // the line below is similar to intercept-url@requires-channel="http":
+                            //    <intercept-url pattern="/**" requires-channel="http"/>
+                            .requireInsecure(antMatchers("/**"))
         }
     }
 

@@ -74,9 +74,22 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
         return configurators;
     }
 
-    public SecurityFilterChainSecurityBuilder apply(SecurityConfigurator<SecurityFilterChainSecurityBuilder> configurer) throws Exception {
+    public <T extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> T apply(T configurer) throws Exception {
+        configurer.setBuilder(this);
         this.configurators.add(configurer);
-        return this;
+        return configurer;
+    }
+
+    public FormLoginSecurityFilterConfigurator formLogin() throws Exception {
+        return apply(new FormLoginSecurityFilterConfigurator());
+    }
+
+    public ChannelSecurityFilterConfigurator requiresChannel() throws Exception {
+        return apply(new ChannelSecurityFilterConfigurator());
+    }
+
+    public HttpBasicSecurityFilterConfigurator httpBasic() throws Exception {
+        return apply(new HttpBasicSecurityFilterConfigurator());
     }
 
     @SuppressWarnings("unchecked")

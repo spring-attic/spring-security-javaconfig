@@ -17,7 +17,6 @@ package org.springframework.security.config.annotation.web;
 
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.context.annotation.Bean
@@ -34,7 +33,6 @@ import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
-import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfiguratorTests.FormLoginConfig
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation
@@ -124,11 +122,8 @@ public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
         }
 
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-            springSecurityFilterChain
-                .apply(formLogin()
-                    // ensure the URLs for login are publicly accessible
-                    .permitAll());
+                SecurityFilterChainSecurityBuilder builder) {
+            builder.formLogin().permitAll()
         }
 
         protected AuthenticationManager authenticationMgr() throws Exception {

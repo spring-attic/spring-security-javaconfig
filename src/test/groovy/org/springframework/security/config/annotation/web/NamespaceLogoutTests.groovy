@@ -97,14 +97,9 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpLogoutConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -127,19 +122,16 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpLogoutConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .withLogout(new LogoutFilterSecurityBuilder()
-                                    .deleteCookies("remove")
-                                    .invalidateHttpSession(false)
-                                    .logoutUrl("/custom-logout")
-                                    .logoutSuccessUrl("/logout-success"))
-                                .permitAll())
-            )
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator()
+                .withLogout(new LogoutFilterSecurityBuilder()
+                        .deleteCookies("remove")
+                        .invalidateHttpSession(false)
+                        .logoutUrl("/custom-logout")
+                        .logoutSuccessUrl("/logout-success"));
+        }
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -160,17 +152,14 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class SuccessHandlerRefHttpLogoutConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
             SimpleUrlLogoutSuccessHandler logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler(defaultTargetUrl:"/SuccessHandlerRefHttpLogoutConfig")
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .withLogout(new LogoutFilterSecurityBuilder()
-                                    .logoutSuccessHandler(logoutSuccessHandler))
-                                .permitAll())
-            )
+            return super.defaultFilterConfigurator()
+                .withLogout(new LogoutFilterSecurityBuilder()
+                        .logoutSuccessHandler(logoutSuccessHandler));
+        }
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 

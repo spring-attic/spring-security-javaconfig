@@ -16,7 +16,9 @@
 package org.springframework.social.showcase.config;
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+
+import java.util.List;
+
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import javax.sql.DataSource;
@@ -30,6 +32,7 @@ import org.springframework.security.config.annotation.web.DefaultSecurityFilterC
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
+import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
 import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
@@ -39,6 +42,7 @@ import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.social.security.SocialAuthenticationFilter;
 import org.springframework.social.security.SocialAuthenticationProvider;
 
@@ -48,7 +52,7 @@ import org.springframework.social.security.SocialAuthenticationProvider;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig extends SimpleWebSecurityConfig {
     @Autowired
     private DataSource dataSource;
 
@@ -68,43 +72,40 @@ public class SecurityConfig {
         return Encryptors.noOpText();
     }
 
-    @Bean
-    public AuthenticationManager authenticationMgr() throws Exception {
-        return authenticationManager(
-            authenticationProvider(userDetailsManager()).passwordEncoder(passwordEncoder())
-        )
-        .authenticationProvider(socialAuthenticationProvider).build();
+    protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+        return super.defaultFilterConfigurator()
+                .withLogout(new LogoutFilterSecurityBuilder()
+                    .deleteCookies("JSESSIONID")
+                    .logoutUrl("/signout"));
     }
 
-    @Bean
-    public JdbcUserDetailsManagerSecurityBuilder userDetailsManager() throws Exception {
-        return jdbcUserDetailsManager(dataSource)
-                .usersByUsernameQuery("select username, password, true from Account where username = ?")
-                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?");
+    protected List<RequestMatcher> ignoredRequests() {
+        return antMatchers("/resources/**");
     }
 
-    @Bean
-    public FilterChainProxySecurityBuilder builder() throws Exception {
-        ExpressionUrlAuthorizationRegistry fiSourceBldr = interceptUrls()
+    protected void authorizeUrls(
+            ExpressionUrlAuthorizationRegistry interceptUrls) {
+        interceptUrls
             .antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook").permitAll()
             .antMatchers("/**").authenticated();
+    }
 
-        return new FilterChainProxySecurityBuilder()
-            .ignoring(antMatchers("/resources/**"))
-            .securityFilterChains(
-                new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                    .apply(new DefaultSecurityFilterConfigurator(fiSourceBldr)
-                        .withLogout(new LogoutFilterSecurityBuilder()
-                                .deleteCookies("JSESSIONID")
-                                .logoutUrl("/signout"))
-                        .permitAll())
-                    .apply(new FormLoginSecurityFilterConfigurator()
-                        .loginPage("/signin")
-                        .loginProcessingUrl("/signin/authenticate")
-                        .failureUrl("/signin?param.error=bad_credentials")
-                        .permitAll()
-                    )
-                    .addFilterBefore(socialAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
-            );
+    protected void configure(
+            SecurityFilterChainSecurityBuilder builder)
+            throws Exception {
+        builder
+            .addFilterBefore(socialAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
+            .formLogin()
+                .loginPage("/signin")
+                .loginProcessingUrl("/signin/authenticate")
+                .failureUrl("/signin?param.error=bad_credentials")
+                .permitAll();
+
+    }
+
+    protected AuthenticationManager authenticationMgr() throws Exception {
+        return jdbcUserDetailsManager(dataSource)
+                .usersByUsernameQuery("select username, password, true from Account where username = ?")
+                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?").authenticationManager();
     }
 }

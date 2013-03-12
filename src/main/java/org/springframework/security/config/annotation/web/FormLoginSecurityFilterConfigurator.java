@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
-import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -33,7 +32,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @author Rob Winch
  * @since 3.2
  */
-public class FormLoginSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class FormLoginSecurityFilterConfigurator extends AbstractSecurityFilterConfigurator {
     private UsernamePasswordAuthenticationFilter usernamePasswordFilter = new UsernamePasswordAuthenticationFilter() {
         @Override
         protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -49,6 +48,7 @@ public class FormLoginSecurityFilterConfigurator implements SecurityConfigurator
     private String loginPage;
     private String loginProcessingUrl;
     private String failureUrl;
+
 
     public FormLoginSecurityFilterConfigurator() {
         loginUrl("/login");

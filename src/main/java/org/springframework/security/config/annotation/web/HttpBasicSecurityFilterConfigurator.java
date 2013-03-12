@@ -29,7 +29,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpBasicSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
     private BasicAuthenticationFilter basicAuthenticationFilter;
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;

@@ -72,15 +72,9 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpBasicConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new HttpBasicSecurityFilterConfigurator())
-            )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain.httpBasic();
         }
     }
 
@@ -98,16 +92,9 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpBasicConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new HttpBasicSecurityFilterConfigurator()
-                                .realmName("Custom Realm"))
-            )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain.httpBasic().realmName("Custom Realm");
         }
     }
 
@@ -121,16 +108,9 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class AuthenticationDetailsSourceHttpBasicConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new HttpBasicSecurityFilterConfigurator()
-                                .authenticationDetailsSource(new CustomAuthenticationDetailsSource()))
-            )
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain.httpBasic().authenticationDetailsSource(new CustomAuthenticationDetailsSource())
         }
     }
 
@@ -159,20 +139,13 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class EntryPointRefHttpBasicConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new HttpBasicSecurityFilterConfigurator()
-                                .authenticationEntryPoint(new AuthenticationEntryPoint() {
-                                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-                                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-                                    }
-                                }))
-            )
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain.httpBasic().authenticationEntryPoint(new AuthenticationEntryPoint() {
+                public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                }
+            })
         }
     }
 

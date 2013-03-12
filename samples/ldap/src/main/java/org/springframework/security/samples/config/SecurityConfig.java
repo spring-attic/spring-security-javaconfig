@@ -1,22 +1,22 @@
 package org.springframework.security.samples.config;
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.authenticationManager;
+import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.ldapAuthenticationProvider;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.antMatchers;
+
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.server.ApacheDSContainer;
+import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -26,9 +26,27 @@ public class SecurityConfig {
 
     private String password = "secret";
 
-    @Bean
-    public AuthenticationManager authenticationMgr() throws Exception {
+    protected List<RequestMatcher> ignoredRequests() {
+        return antMatchers("/resources/**");
+    }
+
+    protected AuthenticationManager authenticationMgr() throws Exception {
         return authenticationManager(ldapAuthenticationProvider(contextSource()).userDnPatterns("uid={0},ou=people").groupSearchFilter("(member={0})")).build();
+    }
+
+    protected void authorizeUrls(
+            ExpressionUrlAuthorizationRegistry interceptUrls) {
+        interceptUrls
+            .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+            .antMatchers("/resources/**","/signup").permitAll()
+            .antMatchers("/**").hasRole("USER");
+    }
+
+    protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) throws Exception {
+        springSecurityFilterChain
+            .formLogin()
+            .permitAll();
     }
 
     @Bean
@@ -46,21 +64,5 @@ public class SecurityConfig {
         ApacheDSContainer apacheDSContainer = new ApacheDSContainer("dc=springframework,dc=org", "classpath:/users.ldif");
         apacheDSContainer.setPort(33389);
         return apacheDSContainer;
-    }
-
-
-    @Bean
-    public FilterChainProxySecurityBuilder builder() throws Exception {
-        ExpressionUrlAuthorizationRegistry fiSourceBldr = interceptUrls()
-                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                .antMatchers("/resources/**","/signup").permitAll()
-                .antMatchers("/**").hasRole("USER");
-
-        return new FilterChainProxySecurityBuilder()
-            .ignoring(antMatchers("/resources/**"))
-            .securityFilterChains(
-                new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                    .apply(new DefaultSecurityFilterConfigurator(fiSourceBldr).permitAll())
-                    .apply(new FormLoginSecurityFilterConfigurator().permitAll()));
     }
 }

@@ -67,16 +67,16 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterBeforeConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
-                            .apply(new FormLoginSecurityFilterConfigurator())
-            )
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return null; // do not add the default filters to make testing easier
         }
 
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain
+                .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
+                .formLogin()
+        }
     }
 
     def "http/custom-filter@after"() {
@@ -88,16 +88,15 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterAfterConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
-                            .apply(new FormLoginSecurityFilterConfigurator())
-            )
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return null; // do not add the default filters to make testing easier
         }
-
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain
+                .addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
+                .formLogin()
+        }
     }
 
     // FIXME addFilter should override
@@ -111,14 +110,14 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterPositionConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new FormLoginSecurityFilterConfigurator())
-                            .addFilter(new CustomFilter())
-            )
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return null; // do not add the default filters to make testing easier
+        }
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain
+                .addFilter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
+                .formLogin()
         }
 
     }

@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright 2002-2013 the original author or authors.
  *
@@ -15,8 +17,10 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -103,15 +107,12 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new FormLoginSecurityFilterConfigurator())
-            )
+        protected List<RequestMatcher> ignoredRequests() {
+            return antMatchers("/resources/**")
+        }
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                springSecurityFilterChain.formLogin()
         }
     }
 
@@ -143,21 +144,16 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new FormLoginSecurityFilterConfigurator()
-                                .usernameParameter("j_username")
-                                .passwordParameter("j_password")
-                                .loginPage("/authentication/login")
-                                .failureUrl("/authentication/login?failed")
-                                .loginProcessingUrl("/authentication/login/process")
-                                .defaultSuccessUrl("/default"))
-            )
+        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+
+                builder
+                    .formLogin()
+                        .usernameParameter("j_username")
+                        .passwordParameter("j_password")
+                        .loginPage("/authentication/login")
+                        .failureUrl("/authentication/login?failed")
+                        .loginProcessingUrl("/authentication/login/process")
+                        .defaultSuccessUrl("/default")
         }
     }
 
@@ -186,18 +182,23 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomRefsConfig extends BaseWebConfig {
+
+        @Override
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+
+        }
+
         @Bean
         public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
             new FilterChainProxySecurityBuilder()
                     .securityFilterChains(
                     new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new FormLoginSecurityFilterConfigurator()
+                            .formLogin()
                                 .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure"))
                                 .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" ))
                                 .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
-                                )
+                                .and()
             )
         }
     }

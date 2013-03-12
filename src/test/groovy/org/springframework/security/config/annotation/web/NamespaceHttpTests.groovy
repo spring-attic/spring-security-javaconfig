@@ -20,12 +20,15 @@ import static org.springframework.security.config.annotation.web.util.RequestMat
 import static org.springframework.security.config.annotation.SecurityExpressions.*
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.AccessDecisionManager
 import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -67,15 +70,13 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class AccessDecisionManagerRefConfig extends BaseWebConfig {
         static AccessDecisionManager ACCESS_DECISION_MGR
 
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .accessDecisionManager(ACCESS_DECISION_MGR)
-                                .permitAll())
-            )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+        }
+
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator()
+                .accessDecisionManager(ACCESS_DECISION_MGR);
         }
     }
 
@@ -88,15 +89,12 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .accessDeniedPage("/AccessDeniedPageConfig")
-                                .permitAll())
-            )
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator().accessDeniedPage("/AccessDeniedPageConfig");
+        }
+
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -110,14 +108,12 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class AuthenticationManagerRefConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+        protected AuthenticationManager authenticationMgr() throws Exception {
+            // point this to any AuthenticationManager
+            return super.authenticationMgr();
+        }
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -134,14 +130,8 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class DefaultUrlRewritingConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -156,17 +146,12 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class EnableUrlRewritingConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
             HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository()
             repository.disableUrlRewriting = false // explicitly configured (not necessary due to default values)
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .securityContextRepsitory(repository)
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+
+            springSecurityFilterChain.securityContextRepsitory(repository)
         }
     }
 
@@ -179,15 +164,9 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class EntryPointRefConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/EntryPointRefConfig"))
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+            builder
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/EntryPointRefConfig"))
         }
     }
 
@@ -200,15 +179,9 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class JaasApiProvisionConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .addFilter(new JaasApiIntegrationFilter())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+            builder
+                .addFilter(new JaasApiIntegrationFilter())
         }
     }
 
@@ -223,15 +196,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class OncePerRequestConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
-        }
+        protected void configure(SecurityFilterChainSecurityBuilder builder) {}
     }
 
     // http@path-type is not available (instead request matcher instances are used)
@@ -247,16 +212,8 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class RealmConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                            .apply(new HttpBasicSecurityFilterConfigurator()
-                                .realmName("RealmConfig"))
-                )
+        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+            builder.httpBasic().realmName("RealmConfig")
         }
     }
 
@@ -267,24 +224,13 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         loadConfig(RequestMatcherRefConfig)
         then:
         filterChain(0).requestMatcher.pattern == "/api/**"
-        filterChain(1).requestMatcher.class == AnyRequestMatcher
     }
 
     @Configuration
     static class RequestMatcherRefConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            RequestMatcher requestMatcher = new AntPathRequestMatcher("/api/**")
-            new FilterChainProxySecurityBuilder()
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .requestMatcher(requestMatcher) // request-matcher-ref
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll()),
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                )
+
+        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+            builder.requestMatcher(new AntPathRequestMatcher("/api/**"))
         }
     }
 
@@ -300,15 +246,10 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class SecurityNoneConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .ignoring(antMatchers("/resources/**","/public/**")) // security=none
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                )
+        protected List<RequestMatcher> ignoredRequests() {
+            return antMatchers("/resources/**","/public/**") // security=none
+        }
+        protected void configure(SecurityFilterChainSecurityBuilder builder) {
         }
     }
 
@@ -321,15 +262,10 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class SecurityContextRepoConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .securityContextRepsitory(new NullSecurityContextRepository()) // security-context-repository-ref
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain
+                .securityContextRepsitory(new NullSecurityContextRepository()) // security-context-repository-ref
         }
     }
 
@@ -342,16 +278,13 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class ServletApiProvisionConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll()
-                                .disableServletApiProvision(true)
-                            )
-                )
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator()
+                .disableServletApiProvision(true);
+        }
+
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -364,14 +297,9 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class ServletApiProvisionDefaultsConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-                )
+
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -392,6 +320,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
                 .securityFilterChains(
                     new SecurityFilterChainSecurityBuilder(authenticationMgr())
                             .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr()))
+                            .and()
                 )
         }
 

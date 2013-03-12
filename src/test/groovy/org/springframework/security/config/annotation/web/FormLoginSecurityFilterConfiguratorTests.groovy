@@ -16,8 +16,9 @@
 package org.springframework.security.config.annotation.web
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
+
+import java.util.List;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
@@ -39,6 +40,7 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
 import org.springframework.security.web.util.AnyRequestMatcher
+import org.springframework.security.web.util.RequestMatcher;
 
 /**
  *
@@ -75,15 +77,14 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FormLoginConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .ignoring(antMatchers("/resources/**"))
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                        .apply(new FormLoginSecurityFilterConfigurator())
-                        .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr()))
-                )
+        protected List<RequestMatcher> ignoredRequests() {
+            return antMatchers("/resources/**")
+        }
+
+        @Override
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain.formLogin()
         }
     }
 
@@ -107,15 +108,14 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FormLoginConfigPermitAll extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .ignoring(antMatchers("/resources/**"))
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                        .apply(new FormLoginSecurityFilterConfigurator().permitAll())
-                        .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr()))
-                )
+        protected List<RequestMatcher> ignoredRequests() {
+            return antMatchers("/resources/**")
+        }
+
+        @Override
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            springSecurityFilterChain.formLogin().permitAll()
         }
     }
 }

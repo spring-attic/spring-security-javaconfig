@@ -32,9 +32,7 @@ import org.springframework.security.web.util.RequestMatcher;
 @EnableWebSecurity
 public abstract class SimpleWebSecurityConfig {
 
-    protected AuthenticationManager authenticationMgr() throws Exception {
-        return null;
-    }
+    protected abstract AuthenticationManager authenticationMgr() throws Exception;
 
     protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
         ExpressionUrlAuthorizationRegistry interceptUrls = new ExpressionUrlAuthorizationRegistry();
@@ -47,24 +45,26 @@ public abstract class SimpleWebSecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {
-        SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationMgr())
-            .apply(defaultFilterConfigurator());
+        DefaultSecurityFilterConfigurator defaultFilterConfigurator = defaultFilterConfigurator();
+        SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationMgr());
+        if(defaultFilterConfigurator != null) {
+            springSecurityFilterChain.apply(defaultFilterConfigurator);
+        }
         configure(springSecurityFilterChain);
 
         FilterChainProxySecurityBuilder result = new FilterChainProxySecurityBuilder()
             .securityFilterChains(springSecurityFilterChain);
+        result.ignoring(ignoredRequests());
         configure(result);
         return result;
     }
 
     protected void configure(FilterChainProxySecurityBuilder securityFilterChains){
-        securityFilterChains
-            .ignoring(ignoredRequests());
     }
 
     protected List<RequestMatcher> ignoredRequests() {
         return Collections.emptyList();
     }
 
-    protected abstract void configure(SecurityFilterChainSecurityBuilder springSecurityFilterChain);
+    protected abstract void configure(SecurityFilterChainSecurityBuilder springSecurityFilterChain) throws Exception;
 }

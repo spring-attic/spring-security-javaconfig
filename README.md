@@ -46,7 +46,6 @@ Sample Web Configuration
 The following configuration
 
     import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-    import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
     import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
     @Configuration
@@ -58,11 +57,8 @@ The following configuration
         }
 
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-            springSecurityFilterChain
-                .apply(formLogin()
-                    // ensure the URLs for login are publicly accessible
-                    .permitAll());
+                SecurityFilterChainSecurityBuilder builder) {
+            builder.formLogin().permitAll();
         }
 
         protected AuthenticationManager authenticationMgr() throws Exception {

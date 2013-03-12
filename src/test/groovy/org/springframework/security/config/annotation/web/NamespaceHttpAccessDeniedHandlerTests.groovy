@@ -44,15 +44,14 @@ public class NamespaceHttpAccessDeniedHandlerTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .accessDeniedPage("/AccessDeniedPageConfig")
-                                .permitAll())
-            )
+
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator()
+                .accessDeniedPage("/AccessDeniedPageConfig")
+        }
+
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -65,16 +64,15 @@ public class NamespaceHttpAccessDeniedHandlerTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedHandlerRefConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
+
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
             CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler()
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .accessDeniedHandler(accessDeniedHandler)
-                                .permitAll())
-            )
+            return super.defaultFilterConfigurator()
+                .accessDeniedHandler(accessDeniedHandler)
+        }
+
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
 
         static class CustomAccessDeniedHandler implements AccessDeniedHandler {

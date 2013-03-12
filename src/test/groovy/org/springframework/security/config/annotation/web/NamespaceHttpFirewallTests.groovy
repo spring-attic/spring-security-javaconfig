@@ -93,14 +93,8 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpFirewallConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -117,15 +111,12 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpFirewallConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .httpFirewall(new CustomHttpFirewall())
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+        }
+        protected void configure(
+                FilterChainProxySecurityBuilder securityFilterChains) {
+            securityFilterChains.httpFirewall(new CustomHttpFirewall())
         }
     }
 

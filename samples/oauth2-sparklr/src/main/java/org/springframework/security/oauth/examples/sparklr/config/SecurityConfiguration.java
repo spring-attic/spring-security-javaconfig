@@ -1,9 +1,8 @@
 package org.springframework.security.oauth.examples.sparklr.config;
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
+
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-import static org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,11 +11,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.HttpBasicSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
@@ -57,19 +54,19 @@ public class SecurityConfiguration {
             OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint,
             OAuth2AuthenticationProcessingFilter resourcesServerFilter,
             OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler) throws Exception {
-        ExpressionUrlAuthorizationRegistry tokenFiMetadataSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationRegistry tokenFiMetadataSourceBldr = new ExpressionUrlAuthorizationRegistry()
             .antMatchers("/oauth/token").fullyAuthenticated();
-        ExpressionUrlAuthorizationRegistry userClientFiMetadataSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationRegistry userClientFiMetadataSourceBldr = new ExpressionUrlAuthorizationRegistry()
             .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
             .regexMatchers(HttpMethod.GET, "/oauth/users/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
             .regexMatchers(HttpMethod.GET, "/oauth/clients/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
             .expressionHandler(oauthWebExpressionHandler);
-        ExpressionUrlAuthorizationRegistry photoFiMetadataSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationRegistry photoFiMetadataSourceBldr = new ExpressionUrlAuthorizationRegistry()
             .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
             .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
             .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
             .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
-        ExpressionUrlAuthorizationRegistry fiMetadataSourceBldr = interceptUrls()
+        ExpressionUrlAuthorizationRegistry fiMetadataSourceBldr = new ExpressionUrlAuthorizationRegistry()
             .antMatchers("/oauth/**").hasRole("USER")
             .antMatchers("/**").permitAll();
 
@@ -79,43 +76,49 @@ public class SecurityConfiguration {
                 new SecurityFilterChainSecurityBuilder(clientAuthenticationManager())
                     .requestMatcher(new AntPathRequestMatcher("/oauth/token"))
                     .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .apply(new DefaultSecurityFilterConfigurator(tokenFiMetadataSourceBldr)
-                            .accessDeniedHandler(oauthAccessDeniedHandler)
-                            .disableAnonymous(true))
-                    .apply(new HttpBasicSecurityFilterConfigurator()
-                            .authenticationEntryPoint(oauthAuthenticationEntryPoint))
+                    .apply(new DefaultSecurityFilterConfigurator(tokenFiMetadataSourceBldr))
+                        .accessDeniedHandler(oauthAccessDeniedHandler)
+                        .disableAnonymous(true)
+                        .and()
+                    .httpBasic()
+                        .authenticationEntryPoint(oauthAuthenticationEntryPoint)
+                        .and()
                     .addFilterBefore(clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class),
 
                 new SecurityFilterChainSecurityBuilder(clientAuthenticationManager())
                     .requestMatcher(new RegexRequestMatcher("/oauth/(users|clients)/.*",null))
                     .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .apply(new DefaultSecurityFilterConfigurator(userClientFiMetadataSourceBldr)
+                    .apply(new DefaultSecurityFilterConfigurator(userClientFiMetadataSourceBldr))
                             .accessDeniedHandler(oauthAccessDeniedHandler)
-                            .disableAnonymous(true))
+                            .disableAnonymous(true)
+                            .and()
                     .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class),
 
                 new SecurityFilterChainSecurityBuilder(authManager())
                     .requestMatcher(new AntPathRequestMatcher("/photos/**"))
                     .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .apply(new DefaultSecurityFilterConfigurator(photoFiMetadataSourceBldr)
+                    .apply(new DefaultSecurityFilterConfigurator(photoFiMetadataSourceBldr))
                             .accessDeniedHandler(oauthAccessDeniedHandler)
-                            .disableAnonymous(true))
+                            .disableAnonymous(true)
+                            .and()
                     .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class),
 
                 new SecurityFilterChainSecurityBuilder(authManager())
                     .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .apply(new DefaultSecurityFilterConfigurator(fiMetadataSourceBldr)
+                    .apply(new DefaultSecurityFilterConfigurator(fiMetadataSourceBldr))
                             .accessDeniedPage("/login.jsp?authorization_error=true")
                             .withLogout(new LogoutFilterSecurityBuilder()
                                 .logoutSuccessUrl("/index.jsp")
-                                .logoutUrl("/logout.do"))
+                                .logoutUrl("/logout.do")
                             )
-                    .apply(new FormLoginSecurityFilterConfigurator()
+                            .and()
+                    .formLogin()
                             .usernameParameter("j_username")
                             .passwordParameter("j_password")
                             .failureUrl("/login.jsp?authentication_error=true")
                             .loginPage("/login.jsp")
-                            .loginProcessingUrl("/login.do"))
+                            .loginProcessingUrl("/login.do")
+                            .and()
                     .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
             );
     }

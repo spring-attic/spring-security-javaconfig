@@ -16,7 +16,6 @@
 package org.springframework.security.config.annotation.web;
 
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.WebSecurityConfigurators.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.context.annotation.Bean
@@ -31,11 +30,16 @@ import org.springframework.security.config.annotation.provisioning.InMemoryUserD
  */
 @Configuration
 @EnableWebSecurity
-class BaseWebConfig extends BaseAuthenticationConfig {
-    protected fsiSourceBldr() {
-        interceptUrls()
+abstract class BaseWebConfig extends SimpleWebSecurityConfig {
+    protected void authorizeUrls(
+            ExpressionUrlAuthorizationRegistry interceptUrls) {
+        interceptUrls
                 .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
                 .antMatchers("/signup").permitAll()
                 .antMatchers("/**").hasRole("USER");
+    }
+
+    protected AuthenticationManager authenticationMgr() throws Exception {
+        return new BaseAuthenticationConfig().authenticationMgr();
     }
 }

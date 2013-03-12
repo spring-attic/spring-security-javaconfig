@@ -42,14 +42,8 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .permitAll())
-            )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
         }
     }
 
@@ -62,15 +56,13 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousDisabledConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .disableAnonymous(true)
-                                .permitAll())
-            )
+        protected void configure(
+                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+        }
+
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator()
+                .disableAnonymous(true);
         }
     }
 
@@ -83,15 +75,13 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousGrantedAuthorityConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .withAnonymous(new AnonymousSecurityFilterConfigurator().authorities("ROLE_ANON"))
-                                .permitAll())
-            )
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+        }
+
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator()
+                .withAnonymous(new AnonymousSecurityFilterConfigurator().authorities("ROLE_ANON"))
         }
     }
 
@@ -109,15 +99,13 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousKeyConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .withAnonymous(new AnonymousSecurityFilterConfigurator().key("AnonymousKeyConfig"))
-                                .permitAll())
-            )
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+        }
+
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator()
+                .withAnonymous(new AnonymousSecurityFilterConfigurator().key("AnonymousKeyConfig"))
         }
     }
 
@@ -134,15 +122,13 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousUsernameConfig extends BaseWebConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr())
-                                .withAnonymous(new AnonymousSecurityFilterConfigurator().principal("AnonymousUsernameConfig"))
-                                .permitAll())
-            )
+        protected void configure(
+            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+        }
+
+        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+            return super.defaultFilterConfigurator()
+                .withAnonymous(new AnonymousSecurityFilterConfigurator().principal("AnonymousUsernameConfig"))
         }
     }
 }
