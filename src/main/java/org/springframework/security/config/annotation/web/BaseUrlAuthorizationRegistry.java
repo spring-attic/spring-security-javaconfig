@@ -64,7 +64,7 @@ abstract class BaseUrlAuthorizationRegistry<T> implements SecurityBuilder<Filter
     }
 
     public T regexMatchers(HttpMethod method, String... regexPatterns) {
-        return authorizedUrl(RequestMatchers.antMatchers(method, regexPatterns));
+        return authorizedUrl(RequestMatchers.regexMatchers(method, regexPatterns));
     }
 
     public T regexMatchers(String... regexPatterns) {
