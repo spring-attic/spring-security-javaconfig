@@ -17,7 +17,6 @@ package org.springframework.security.config.annotation.web;
 
 
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
 
 import java.util.List;
 
@@ -317,7 +316,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
             new FilterChainProxySecurityBuilder()
                 .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
+                    new SecurityFilterChainSecurityBuilder(authenticationManager())
                             .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr()))
                             .and()
                 )

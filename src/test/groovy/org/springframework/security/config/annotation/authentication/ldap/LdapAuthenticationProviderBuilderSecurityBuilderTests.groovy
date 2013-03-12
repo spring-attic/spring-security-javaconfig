@@ -15,8 +15,6 @@
  */
 package org.springframework.security.config.annotation.authentication.ldap
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
-
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean
@@ -28,6 +26,7 @@ import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.server.ApacheDSContainer;
@@ -41,8 +40,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSpec {
     def "default configuration"() {
         when:
-        context = new AnnotationConfigApplicationContext(DefaultLdapConfig)
-        LdapAuthenticationProvider provider = context.getBean(LdapAuthenticationProvider)
+        loadConfig(DefaultLdapConfig)
+        LdapAuthenticationProvider provider = ldapProvider()
         then:
         provider.authoritiesPopulator.groupRoleAttribute == "cn"
         provider.authoritiesPopulator.groupSearchBase == "ou=groups" // TODO should this default to "" as the namespace does?
@@ -53,63 +52,63 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
 
     @Configuration
     static class DefaultLdapConfig extends BaseLdapProviderConfig {
-        @Bean
-        public SecurityBuilder<LdapAuthenticationProvider> authenticationProviderBuilder() {
-            ldapAuthenticationProvider(contextSource());
+        protected void registerAuthentication(
+                AuthenticationRegistry registry) throws Exception {
+            registry.ldapAuthenticationProvider(contextSource())
         }
     }
 
     def "group roles custom"() {
         when:
-        context = new AnnotationConfigApplicationContext(GroupRolesConfig)
-        LdapAuthenticationProvider provider = context.getBean(LdapAuthenticationProvider)
+        loadConfig(GroupRolesConfig)
+        LdapAuthenticationProvider provider = ldapProvider()
         then:
         provider.authoritiesPopulator.groupRoleAttribute == "group"
     }
 
     @Configuration
     static class GroupRolesConfig extends BaseLdapProviderConfig {
-        @Bean
-        public SecurityBuilder<LdapAuthenticationProvider> authenticationProviderBuilder() {
-            ldapAuthenticationProvider(contextSource()).groupRoleAttribute("group");
+        protected void registerAuthentication(
+            AuthenticationRegistry registry) throws Exception {
+            registry.ldapAuthenticationProvider(contextSource()).groupRoleAttribute("group")
         }
     }
 
     def "group search custom"() {
         when:
-        context = new AnnotationConfigApplicationContext(GroupSearchConfig)
-        LdapAuthenticationProvider provider = context.getBean(LdapAuthenticationProvider)
+        loadConfig(GroupSearchConfig)
+        LdapAuthenticationProvider provider = ldapProvider()
         then:
         provider.authoritiesPopulator.groupSearchFilter == "ou=groupName"
     }
 
     @Configuration
     static class GroupSearchConfig extends BaseLdapProviderConfig {
-        @Bean
-        public SecurityBuilder<LdapAuthenticationProvider> authenticationProviderBuilder() {
-            ldapAuthenticationProvider(contextSource()).groupSearchFilter("ou=groupName");
+        protected void registerAuthentication(
+            AuthenticationRegistry registry) throws Exception {
+            registry.ldapAuthenticationProvider(contextSource()).groupSearchFilter("ou=groupName");
         }
     }
 
     def "role prefix custom"() {
         when:
-        context = new AnnotationConfigApplicationContext(RolePrefixConfig)
-        LdapAuthenticationProvider provider = context.getBean(LdapAuthenticationProvider)
+        loadConfig(RolePrefixConfig)
+        LdapAuthenticationProvider provider = ldapProvider()
         then:
         ReflectionTestUtils.getField(provider,"authoritiesMapper").prefix == "role_"
     }
 
     @Configuration
     static class RolePrefixConfig extends BaseLdapProviderConfig {
-        @Bean
-        public SecurityBuilder<LdapAuthenticationProvider> authenticationProviderBuilder() {
-            ldapAuthenticationProvider(contextSource()).rolePrefix("role_")
+        protected void registerAuthentication(
+            AuthenticationRegistry registry) throws Exception {
+            registry.ldapAuthenticationProvider(contextSource()).rolePrefix("role_")
         }
     }
 
     def "bind authentication"() {
         when:
-        context = new AnnotationConfigApplicationContext(BindAuthenticationConfig)
+        loadConfig(BindAuthenticationConfig)
         AuthenticationManager auth = context.getBean(AuthenticationManager)
         then:
         auth
@@ -118,10 +117,14 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
 
     @Configuration
     static class BindAuthenticationConfig extends BaseLdapServerConfig {
-        @Bean
-        public SecurityBuilder<LdapAuthenticationProvider> authenticationProviderBuilder() {
-            ldapAuthenticationProvider(contextSource()).userDnPatterns("uid={0},ou=people").groupSearchFilter("(member={0})");
+        protected void registerAuthentication(
+            AuthenticationRegistry registry) throws Exception {
+            registry.ldapAuthenticationProvider(contextSource()).userDnPatterns("uid={0},ou=people").groupSearchFilter("(member={0})");
         }
+    }
+
+    def ldapProvider() {
+        context.getBean(AuthenticationManager).providers[0]
     }
 
     @Configuration
@@ -136,17 +139,15 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
 
     @Configuration
     static abstract class BaseLdapProviderConfig {
-        protected abstract SecurityBuilder<LdapAuthenticationProvider> authenticationProviderBuilder();
-
         @Bean
-        public AuthenticationManager authMgr() {
-            return authenticationManager(authenticationProviderBuilder()).build()
+        public AuthenticationManager authenticationManager() {
+            AuthenticationRegistry registry = new AuthenticationRegistry();
+            registerAuthentication(registry);
+            return registry.build();
         }
 
-        @Bean
-        public AuthenticationProvider authenticationProvider() {
-            return authenticationProviderBuilder().build();
-        }
+        protected abstract void registerAuthentication(
+            AuthenticationRegistry registry) throws Exception;
 
         @Bean
         public BaseLdapPathContextSource contextSource() throws Exception {

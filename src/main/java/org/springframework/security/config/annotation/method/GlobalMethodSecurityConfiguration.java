@@ -73,7 +73,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     private MethodSecurityExpressionHandler expressionHandler;
 
     @Bean
-    public MethodSecurityInterceptor methodSecurityInterceptor() {
+    public MethodSecurityInterceptor methodSecurityInterceptor() throws Exception {
         MethodSecurityInterceptor methodSecurityInterceptor = new MethodSecurityInterceptor();
         methodSecurityInterceptor
                 .setAccessDecisionManager(accessDecisionManager());
@@ -176,7 +176,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
      *
      * @return
      */
-    protected AuthenticationManager authenticationManager() {
+    protected AuthenticationManager authenticationManager() throws Exception {
         if (authenticationManagers == null) {
             throw new NoSuchBeanDefinitionException(AuthenticationManager.class);
         }

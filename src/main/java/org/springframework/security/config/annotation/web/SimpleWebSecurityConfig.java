@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.security.web.util.RequestMatcher;
 @EnableWebSecurity
 public abstract class SimpleWebSecurityConfig {
 
-    protected abstract AuthenticationManager authenticationMgr() throws Exception;
+    protected abstract void registerAuthentication(AuthenticationRegistry authenticationRegistry) throws Exception;
 
     protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
         ExpressionUrlAuthorizationRegistry interceptUrls = new ExpressionUrlAuthorizationRegistry();
@@ -45,8 +45,11 @@ public abstract class SimpleWebSecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {
+        AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry();
+        registerAuthentication(authenticationRegistry);
+
         DefaultSecurityFilterConfigurator defaultFilterConfigurator = defaultFilterConfigurator();
-        SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationMgr());
+        SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationRegistry.build());
         if(defaultFilterConfigurator != null) {
             springSecurityFilterChain.apply(defaultFilterConfigurator);
         }

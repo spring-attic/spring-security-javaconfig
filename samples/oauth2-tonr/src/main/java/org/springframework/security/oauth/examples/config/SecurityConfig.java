@@ -1,13 +1,12 @@
 package org.springframework.security.oauth.examples.config;
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
@@ -24,10 +23,12 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
     @Autowired
     private OAuth2ClientContextFilter oauth2ClientFilter;
 
-    public AuthenticationManager authenticationMgr() throws Exception {
-        return inMemoryAuthentication(
-                user("marissa").password("wombat").roles("USER"),
-                user("sam").password("kangaroo").roles("USER")).authenticationManager();
+    protected void registerAuthentication(
+            AuthenticationRegistry registry) throws Exception {
+        registry
+            .inMemoryAuthentication()
+                .withUser("marissa").password("wombat").roles("USER").and()
+                .withUser("sam").password("kangaroo").roles("USER");
     }
 
     protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {

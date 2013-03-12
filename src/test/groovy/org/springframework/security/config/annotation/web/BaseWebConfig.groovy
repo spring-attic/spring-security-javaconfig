@@ -15,13 +15,11 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
 
 /**
@@ -39,7 +37,11 @@ abstract class BaseWebConfig extends SimpleWebSecurityConfig {
                 .antMatchers("/**").hasRole("USER");
     }
 
-    protected AuthenticationManager authenticationMgr() throws Exception {
-        return new BaseAuthenticationConfig().authenticationMgr();
+    protected void registerAuthentication(
+                AuthenticationRegistry authenticationRegistry) throws Exception {
+        authenticationRegistry
+            .inMemoryAuthentication()
+                .withUser("user").password("password").roles("USER").and()
+                .withUser("admin").password("password").roles("USER", "ADMIN").and()
     }
 }

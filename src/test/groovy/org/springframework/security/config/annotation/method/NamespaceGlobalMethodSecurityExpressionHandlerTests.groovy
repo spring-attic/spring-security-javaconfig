@@ -17,7 +17,6 @@ package org.springframework.security.config.annotation.method
 
 import static org.fest.assertions.Assertions.assertThat
 import static org.junit.Assert.fail
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
 
 import java.io.Serializable;
 

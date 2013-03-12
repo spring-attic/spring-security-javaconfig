@@ -15,11 +15,12 @@
  */
 package org.springframework.security.config.annotation
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
+import java.rmi.registry.Registry;
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.authentication.UserDetailsServiceSecurityBuilder;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
 import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry
@@ -32,10 +33,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 @Configuration
 class BaseAuthenticationConfig {
+    protected void registerAuthentication(
+                AuthenticationRegistry authenticationRegistry) throws Exception {
+        authenticationRegistry
+            .inMemoryAuthentication()
+                .withUser("user").password("password").roles("USER").and()
+                .withUser("admin").password("password").roles("USER", "ADMIN").and()
+    }
+
     @Bean
-    public AuthenticationManager authenticationMgr() throws Exception {
-        return inMemoryAuthentication(
-            user("user").password("password").roles("USER"),
-            user("admin").password("password").roles("USER", "ADMIN")).authenticationManager();
+    public AuthenticationManager authenticationManager() {
+        AuthenticationRegistry registry = new AuthenticationRegistry();
+        registerAuthentication(registry);
+        return registry.build();
     }
 }

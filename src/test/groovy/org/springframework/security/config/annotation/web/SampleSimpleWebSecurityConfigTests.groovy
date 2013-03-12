@@ -16,7 +16,6 @@
 package org.springframework.security.config.annotation.web;
 
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.context.annotation.Bean
@@ -32,6 +31,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterChainProxy;
@@ -123,14 +123,14 @@ public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
 
         protected void configure(
                 SecurityFilterChainSecurityBuilder builder) {
-            builder.formLogin().permitAll()
+            builder.formLogin().permitAll();
         }
 
-        protected AuthenticationManager authenticationMgr() throws Exception {
-            return inMemoryAuthentication(
-                user("user").password("password").roles("USER"),
-                user("admin").password("password").roles("USER", "ADMIN")
-            ).authenticationManager();
+        protected void registerAuthentication(AuthenticationRegistry registry) {
+            registry
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER").and()
+                    .withUser("admin").password("password").roles("USER", "ADMIN").and();
         }
     }
 }

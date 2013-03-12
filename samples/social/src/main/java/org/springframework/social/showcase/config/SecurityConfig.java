@@ -15,28 +15,22 @@
  */
 package org.springframework.social.showcase.config;
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.antMatchers;
 
 import java.util.List;
-
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerSecurityBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
-import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
+import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -103,9 +97,11 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
 
     }
 
-    protected AuthenticationManager authenticationMgr() throws Exception {
-        return jdbcUserDetailsManager(dataSource)
+    protected void registerAuthentication(
+            AuthenticationRegistry registry) throws Exception {
+        registry
+            .jdbcUserDetailsManager(dataSource)
                 .usersByUsernameQuery("select username, password, true from Account where username = ?")
-                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?").authenticationManager();
+                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?");
     }
 }

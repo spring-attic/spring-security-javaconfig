@@ -16,7 +16,9 @@
 package org.springframework.security.config.annotation.authentication.ldap;
 
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerSecurityBuilder;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
@@ -30,7 +32,7 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
  * @since 3.2
  */
 public class LdapAuthenticationProviderBuilderSecurityBuilder implements
-        SecurityBuilder<LdapAuthenticationProvider> {
+        SecurityBuilder<AuthenticationManager> {
     private String groupRoleAttribute = "cn";
     private String groupSearchBase = "ou=groups";
     private String groupSearchFilter = "(uniqueMember={0})";
@@ -45,8 +47,11 @@ public class LdapAuthenticationProviderBuilderSecurityBuilder implements
         this.contextSource = contextSource;
     }
 
-    @Override
-    public LdapAuthenticationProvider build() throws Exception {
+    public AuthenticationManager build() throws Exception {
+        return new AuthenticationManagerSecurityBuilder().authenticationProvider(ldapAuthenticationProvider()).build();
+    }
+
+    public LdapAuthenticationProvider ldapAuthenticationProvider() throws Exception {
         BaseLdapPathContextSource contextSource = getContextSource();
         BindAuthenticator ldapAuthenticator = new BindAuthenticator(
                 contextSource);

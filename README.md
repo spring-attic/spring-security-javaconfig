@@ -45,8 +45,6 @@ Sample Web Configuration
 
 The following configuration
 
-    import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-
     @Configuration
     public class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
         protected void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls) {
@@ -60,11 +58,11 @@ The following configuration
             builder.formLogin().permitAll();
         }
 
-        protected AuthenticationManager authenticationMgr() throws Exception {
-            return inMemoryAuthentication(
-                user("user").password("password").roles("USER"),
-                user("admin").password("password").roles("USER", "ADMIN")
-            ).authenticationManager();
+        protected void registerAuthentication(AuthenticationRegistry registry) {
+            registry
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER").and()
+                    .withUser("admin").password("password").roles("USER", "ADMIN").and();
         }
     }
 

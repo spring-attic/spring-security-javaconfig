@@ -15,8 +15,6 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.io.IOException;
@@ -37,6 +35,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterInvocation
@@ -76,16 +75,12 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
 
     @Configuration
     @EnableWebSecurity
-    static class ExpressionHandlerConfig extends SimpleWebSecurityConfig {
+    static class ExpressionHandlerConfig extends BaseWebConfig {
         static EXPRESSION_HANDLER;
 
         protected void configure(
                 SecurityFilterChainSecurityBuilder springSecurityFilterChain)
                 throws Exception {
-        }
-
-        protected AuthenticationManager authenticationMgr() throws Exception {
-            return new BaseAuthenticationConfig().authenticationMgr()
         }
 
         protected void authorizeUrls(

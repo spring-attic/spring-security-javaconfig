@@ -18,8 +18,14 @@ package org.springframework.security.config.annotation.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.UserDetailsServiceSecurityBuilder;
+import org.springframework.security.config.annotation.authentication.UserSecurityBuilder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.UserDetailsManager;
 
@@ -35,18 +41,65 @@ public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerSecur
         super(userDetailsManager);
     }
 
-    @Override
-    public UserDetailsManager build() throws Exception {
+    public AuthenticationManager build() throws Exception {
         for(SecurityBuilder<UserDetails> userBuilder : userBuilders) {
             userDetailsService.createUser(userBuilder.build());
         }
         return super.build();
     }
 
-    public final T withUsers(SecurityBuilder<UserDetails>... userBuilders) throws Exception {
-        for(SecurityBuilder<UserDetails> userBuilder : userBuilders) {
-            this.userBuilders.add(userBuilder);
+    public final UserSecurityBuilder<T> withUser(String username) {
+        UserSecurityBuilder<T> userBuilder = new UserSecurityBuilder<T>((T)this);
+        userBuilder.username(username);
+        this.userBuilders.add(userBuilder);
+        return userBuilder;
+    }
+
+    public static class UserSecurityBuilder<T> implements SecurityBuilder<UserDetails> {
+        private String username;
+        private String password;
+        private List<GrantedAuthority> authorities;
+        private boolean accountNonExpired = true;
+        private boolean accountNonLocked = true;
+        private boolean credentialsNonExpired = true;
+        private boolean enabled = true;
+        private final T builder;
+
+        private UserSecurityBuilder(T builder) {
+            this.builder = builder;
         }
-        return (T) this;
+
+        public T and() {
+            return builder;
+        }
+
+        public UserSecurityBuilder<T> username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public UserSecurityBuilder<T> password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public UserSecurityBuilder<T> roles(String... roles) {
+            List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(roles.length);
+            for(String role : roles) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_"+role));
+            }
+            this.authorities = authorities;
+            return this;
+        }
+
+        public UserSecurityBuilder<T> authorities(String... authorities) {
+            this.authorities = AuthorityUtils.createAuthorityList(authorities);
+            return this;
+        }
+
+        public UserDetails build() {
+            return new User(username, password, enabled, accountNonExpired,
+                    credentialsNonExpired, accountNonLocked, authorities);
+        }
     }
 }

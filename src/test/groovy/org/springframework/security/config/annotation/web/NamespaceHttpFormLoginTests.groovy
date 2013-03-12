@@ -186,20 +186,12 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         @Override
         protected void configure(
                 SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-
-        }
-
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                    .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationMgr())
-                            .formLogin()
-                                .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure"))
-                                .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" ))
-                                .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
-                                .and()
-            )
+                springSecurityFilterChain
+                    .formLogin()
+                        .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure"))
+                        .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" ))
+                        .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
+                        .and();
         }
     }
 

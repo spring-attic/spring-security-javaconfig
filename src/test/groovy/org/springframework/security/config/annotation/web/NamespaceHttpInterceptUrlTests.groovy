@@ -15,7 +15,6 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.io.IOException;
@@ -40,6 +39,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -190,10 +190,6 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class HttpInterceptUrlConfig extends SimpleWebSecurityConfig {
-        protected AuthenticationManager authenticationMgr() throws Exception {
-            return inMemoryAuthentication().authenticationManager();
-        }
-
         @Override
         protected void authorizeUrls(
                 ExpressionUrlAuthorizationRegistry interceptUrls) {
@@ -223,6 +219,14 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                             // the line below is similar to intercept-url@requires-channel="http":
                             //    <intercept-url pattern="/**" requires-channel="http"/>
                             .requireInsecure(antMatchers("/**"))
+        }
+        @Override
+        protected void registerAuthentication(
+                AuthenticationRegistry authenticationRegistry) throws Exception {
+            authenticationRegistry
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER").and()
+                    .withUser("admin").password("password").roles("USER", "ADMIN").and()
         }
     }
 

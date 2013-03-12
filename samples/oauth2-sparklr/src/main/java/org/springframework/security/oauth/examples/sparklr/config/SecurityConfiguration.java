@@ -1,7 +1,5 @@
 package org.springframework.security.oauth.examples.sparklr.config;
 
-import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
@@ -35,17 +34,18 @@ public class SecurityConfiguration {
 
     @Bean
     public AuthenticationManager clientAuthenticationManager() throws Exception {
-        return authenticationManager(authenticationProvider(clientDetailsService)).build();
+        return new AuthenticationRegistry()
+            .userDetails(clientDetailsService)
+            .build();
     }
 
     @Bean(name = {"authManager",BeanIds.AUTHENTICATION_MANAGER})
     public AuthenticationManager authManager() throws Exception {
-        return authenticationManager(
-            inMemoryAuthentication(
-                user("marissa").password("koala").roles("USER"),
-                user("paul").password("emu").roles("USER")
-            )
-        ).build();
+        return new AuthenticationRegistry()
+            .inMemoryAuthentication()
+                .withUser("marissa").password("koala").roles("USER").and()
+                .withUser("paul").password("emu").roles("USER").and()
+            .build();
     }
 
     @Bean
