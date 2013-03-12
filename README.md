@@ -111,11 +111,12 @@ Global configuration is quite simple. For example, the following Java Configurat
         }
 
         @Bean
-        public AuthenticationManager authenticationMgr() throws Exception {
-            return inMemoryAuthentication(
-                user("user").password("password").roles("USER"),
-                user("admin").password("password").roles("USER", "ADMIN")
-            ).authenticationManager();
+        public AuthenticationManager authenticationManager() throws Exception {
+            return new AuthenticationRegistry()
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER").and()
+                    .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                .build();
         }
     }
 
@@ -151,12 +152,13 @@ override the `GlobalMethodSecurityConfiguration` class. For example, following J
             return expressionHandler;
         }
 
-        @Bean
-        public AuthenticationManager authenticationMgr() throws Exception {
-            return inMemoryAuthentication(
-                user("user").password("password").roles("USER"),
-                user("admin").password("password").roles("USER", "ADMIN")
-            ).authenticationManager();
+        @Override
+        protected AuthenticationManager authenticationManager() throws Exception {
+            return new AuthenticationRegistry()
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER").and()
+                    .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                .build();
         }
     }
 
