@@ -17,7 +17,6 @@ package org.springframework.security.config.annotation.web;
 
 
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-import static org.springframework.security.config.annotation.SecurityExpressions.*
 import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*
 
 import java.util.List;
