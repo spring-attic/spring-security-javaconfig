@@ -46,7 +46,6 @@ Sample Web Configuration
 The following configuration
 
     import static org.springframework.security.config.annotation.authentication.AuthenticationSecurityBuilders.*;
-    import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
     @Configuration
     public class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
