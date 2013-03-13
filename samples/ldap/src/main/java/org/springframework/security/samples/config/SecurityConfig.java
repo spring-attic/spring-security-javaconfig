@@ -11,13 +11,14 @@ import org.springframework.security.config.annotation.authentication.Authenticat
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
+import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.server.ApacheDSContainer;
 import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig extends SimpleWebSecurityConfig {
     private String userDn = "uid=admin,ou=system";
 
     private String password = "secret";
