@@ -22,21 +22,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.vote.ConsensusBased;
-import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry.AuthorizedUrl;
 import org.springframework.security.config.annotation.web.util.RequestMatchers;
-import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
  * @author Rob Winch
  *
  */
-abstract class BaseUrlAuthorizationRegistry<T> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
+abstract class BaseRequestMatcherRegistry<T> {
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
 
     List<UrlMapping> getUrlMappings() {
@@ -51,43 +45,34 @@ abstract class BaseUrlAuthorizationRegistry<T> implements SecurityBuilder<Filter
         this.urlMappings.add(index, urlMapping);
     }
 
-    final AccessDecisionManager createDefaultAccessDecisionManager() {
-        return new ConsensusBased(decisionVoters());
-    }
-
     public T antMatchers(HttpMethod method, String... antPatterns) {
-        return authorizedUrl(RequestMatchers.antMatchers(method, antPatterns));
+        return chainRequestMatchers(RequestMatchers.antMatchers(method, antPatterns));
     }
 
     public T antMatchers(String... antPatterns) {
-        return authorizedUrl(RequestMatchers.antMatchers(antPatterns));
+        return chainRequestMatchers(RequestMatchers.antMatchers(antPatterns));
     }
 
     public T regexMatchers(HttpMethod method, String... regexPatterns) {
-        return authorizedUrl(RequestMatchers.regexMatchers(method, regexPatterns));
+        return chainRequestMatchers(RequestMatchers.regexMatchers(method,
+                regexPatterns));
     }
 
     public T regexMatchers(String... regexPatterns) {
-        return authorizedUrl(RequestMatchers.regexMatchers(regexPatterns));
+        return chainRequestMatchers(RequestMatchers.regexMatchers(regexPatterns));
     }
 
     public T requestMatchers(RequestMatcher... requestMatchers) {
-        return authorizedUrl(Arrays.asList(requestMatchers));
+        return chainRequestMatchers(Arrays.asList(requestMatchers));
     }
 
-    abstract T authorizedUrl(List<RequestMatcher> requestMatchers);
+    abstract T chainRequestMatchers(List<RequestMatcher> requestMatchers);
 
-    public abstract FilterInvocationSecurityMetadataSource build();
-
-    /**
-     * @return
-     */
-    abstract List<AccessDecisionVoter> decisionVoters();
-
-    LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> createRequestMap() {
-        LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
-        for(UrlMapping mapping : getUrlMappings()) {
-            requestMap.put(mapping.getRequestMatcher(), mapping.getConfigAttrs());
+    LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> createRequestMap() {
+        LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>();
+        for (UrlMapping mapping : getUrlMappings()) {
+            requestMap.put(mapping.getRequestMatcher(),
+                    mapping.getConfigAttrs());
         }
         return requestMap;
     }

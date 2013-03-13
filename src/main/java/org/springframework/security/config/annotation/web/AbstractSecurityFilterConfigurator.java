@@ -25,8 +25,6 @@ abstract class AbstractSecurityFilterConfigurator implements SecurityConfigurato
 
     private SecurityFilterChainSecurityBuilder securityFilterChain;
 
-    public AbstractSecurityFilterConfigurator() {}
-
     public SecurityFilterChainSecurityBuilder and() throws Exception {
         if(securityFilterChain == null) {
             throw new IllegalStateException(SecurityFilterChainSecurityBuilder.class.getSimpleName() + " cannot be null");

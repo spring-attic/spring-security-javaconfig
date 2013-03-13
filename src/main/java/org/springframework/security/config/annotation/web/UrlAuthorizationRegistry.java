@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Rob Winch
  * @since 3.2
  */
-public class UrlAuthorizationRegistry extends BaseUrlAuthorizationRegistry<UrlAuthorizationRegistry.AuthorizedUrl> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
+public class UrlAuthorizationRegistry extends BaseFilterInvocationSecurityMetadataSourceBuilder<UrlAuthorizationRegistry.AuthorizedUrl> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
 
     public UrlAuthorizationRegistry interceptUrl(RequestMatcher requestMatcher, String... configAttributes) {
         return interceptUrl(Arrays.asList(requestMatcher), SecurityConfig.createList(configAttributes));
@@ -93,7 +93,7 @@ public class UrlAuthorizationRegistry extends BaseUrlAuthorizationRegistry<UrlAu
         }
     }
 
-    AuthorizedUrl authorizedUrl(List requestMatchers) {
+    AuthorizedUrl chainRequestMatchers(List requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }
 

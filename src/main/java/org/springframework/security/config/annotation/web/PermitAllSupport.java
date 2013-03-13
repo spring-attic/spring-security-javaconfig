@@ -17,7 +17,7 @@ package org.springframework.security.config.annotation.web;
 
 
 import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.config.annotation.web.BaseUrlAuthorizationRegistry.UrlMapping;
+import org.springframework.security.config.annotation.web.BaseRequestMatcherRegistry.UrlMapping;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 
 
@@ -31,7 +31,7 @@ final class PermitAllSupport {
     public static void permitAll(SecurityFilterChainSecurityBuilder builder, String... urls) {
         DefaultSecurityFilterConfigurator configurator = builder.getConfigurator(DefaultSecurityFilterConfigurator.class);
         if(configurator != null) {
-            BaseUrlAuthorizationRegistry fisBldr = configurator.filterInvocationSecurityMetadataSourceBuilder();
+            BaseFilterInvocationSecurityMetadataSourceBuilder<?> fisBldr = configurator.filterInvocationSecurityMetadataSourceBuilder();
             if(!(fisBldr instanceof ExpressionUrlAuthorizationRegistry)) {
                 throw new IllegalStateException(fisBldr + " is not supported with PermitAll use "+ fisBldr);
             }

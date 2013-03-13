@@ -34,7 +34,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExpressionUrlAuthorizationRegistry extends BaseUrlAuthorizationRegistry<ExpressionUrlAuthorizationRegistry.AuthorizedUrl> {
+public class ExpressionUrlAuthorizationRegistry extends BaseFilterInvocationSecurityMetadataSourceBuilder<ExpressionUrlAuthorizationRegistry.AuthorizedUrl> {
     public static final String permitAll = "permitAll";
     public static final String authenticated = "authenticated";
     public static final String fullyAuthenticated = "fullyAuthenticated";
@@ -46,7 +46,7 @@ public class ExpressionUrlAuthorizationRegistry extends BaseUrlAuthorizationRegi
         return this;
     }
 
-    AuthorizedUrl authorizedUrl(List<RequestMatcher> requestMatchers) {
+    AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }
 

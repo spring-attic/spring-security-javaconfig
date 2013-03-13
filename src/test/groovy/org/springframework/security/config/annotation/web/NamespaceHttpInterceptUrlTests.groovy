@@ -215,10 +215,10 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                             // the line below is similar to intercept-url@requires-channel="https":
                             //    <intercept-url pattern="/login" requires-channel="https"/>
                             //    <intercept-url pattern="/secured/**" requires-channel="https"/>
-                            .requireSecure(antMatchers("/login","/secured/**"))
+                            .antMatchers("/login","/secured/**").requiresSecure()
                             // the line below is similar to intercept-url@requires-channel="http":
                             //    <intercept-url pattern="/**" requires-channel="http"/>
-                            .requireInsecure(antMatchers("/**"))
+                            .antMatchers("/**").requiresInsecure()
         }
         @Override
         protected void registerAuthentication(

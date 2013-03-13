@@ -30,8 +30,8 @@ import spock.lang.Specification;
  * @author Rob Winch
  *
  */
-class BaseUrlAuthorizationRegistryTests extends Specification {
-    BaseUrlAuthorizationRegistry<List<RequestMatcher>> registry = new UrlAuthorizationRegistryStub()
+class BaseRequestMatcherRegistryTests extends Specification {
+    BaseRequestMatcherRegistryStub registry = new BaseRequestMatcherRegistryStub()
 
     def "regexMatchers(GET,'/a.*') uses RegexRequestMatcher"() {
         when:
@@ -61,12 +61,12 @@ class BaseUrlAuthorizationRegistryTests extends Specification {
         matchers.collect {it.class } == [AntPathRequestMatcher]
     }
 
-    static class UrlAuthorizationRegistryStub extends BaseUrlAuthorizationRegistry<List<RequestMatcher>> {
+    static class BaseRequestMatcherRegistryStub extends BaseRequestMatcherRegistry<List<RequestMatcher>> {
         List<AccessDecisionVoter> decisionVoters() {
             return null;
         }
 
-        List<RequestMatcher> authorizedUrl(List<RequestMatcher> requestMatchers) {
+        List<RequestMatcher> chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             return requestMatchers;
         }
 

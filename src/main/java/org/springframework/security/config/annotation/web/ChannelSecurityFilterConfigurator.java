@@ -36,11 +36,24 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class ChannelSecurityFilterConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl> implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private InsecureChannelProcessor insecureChannelProcessor = new InsecureChannelProcessor();
     private SecureChannelProcessor secureChannelProcessor = new SecureChannelProcessor();
+    private SecurityFilterChainSecurityBuilder securityFilterChain;
+
+    public SecurityFilterChainSecurityBuilder and() throws Exception {
+        if(securityFilterChain == null) {
+            throw new IllegalStateException(SecurityFilterChainSecurityBuilder.class.getSimpleName() + " cannot be null");
+        }
+        return securityFilterChain;
+    }
+
+    public void setBuilder(
+            SecurityFilterChainSecurityBuilder securityFilterChain) {
+        this.securityFilterChain = securityFilterChain;
+    }
 
     @Override
     public void init(SecurityFilterChainSecurityBuilder builder)
@@ -60,13 +73,6 @@ public class ChannelSecurityFilterConfigurator extends AbstractSecurityFilterCon
         builder.addFilter(channelFilter);
     }
 
-    public ChannelSecurityFilterConfigurator requireSecure(List<RequestMatcher> matchers) {
-        return addAttribute(secureChannelProcessor.getSecureKeyword(), matchers);
-    }
-
-    public ChannelSecurityFilterConfigurator requireInsecure(List<RequestMatcher> matchers) {
-        return addAttribute(insecureChannelProcessor.getInsecureKeyword(), matchers);
-    }
 
     private ChannelSecurityFilterConfigurator addAttribute(String attribute, List<RequestMatcher> matchers) {
         for(RequestMatcher matcher : matchers) {
@@ -74,5 +80,25 @@ public class ChannelSecurityFilterConfigurator extends AbstractSecurityFilterCon
             requestMap.put(matcher, attrs);
         }
         return this;
+    }
+
+    AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+        return new AuthorizedUrl(requestMatchers);
+    }
+
+    public class AuthorizedUrl {
+        private List<RequestMatcher> requestMatchers;
+
+        private AuthorizedUrl(List<RequestMatcher> requestMatchers) {
+            this.requestMatchers = requestMatchers;
+        }
+
+        public ChannelSecurityFilterConfigurator requiresSecure() {
+            return addAttribute(secureChannelProcessor.getSecureKeyword(), requestMatchers);
+        }
+
+        public ChannelSecurityFilterConfigurator requiresInsecure() {
+            return addAttribute(insecureChannelProcessor.getInsecureKeyword(), requestMatchers);
+        }
     }
 }
