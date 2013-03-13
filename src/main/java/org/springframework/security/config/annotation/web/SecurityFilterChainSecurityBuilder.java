@@ -17,8 +17,10 @@ package org.springframework.security.config.annotation.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +55,7 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
     private RequestMatcher requestMatcher = new AnyRequestMatcher();
     private FilterComparator comparitor = new FilterComparator();
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
-    private final List<SecurityConfigurator<SecurityFilterChainSecurityBuilder>> configurators = new ArrayList<SecurityConfigurator<SecurityFilterChainSecurityBuilder>>();
+    private final LinkedHashMap<Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>>, SecurityConfigurator<SecurityFilterChainSecurityBuilder>> configurators = new LinkedHashMap<Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>>, SecurityConfigurator<SecurityFilterChainSecurityBuilder>>();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
     public SecurityFilterChainSecurityBuilder(AuthenticationManager authenticationManager) {
@@ -70,13 +72,11 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
         initDefaults(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    public List<SecurityConfigurator<SecurityFilterChainSecurityBuilder>> getConfigurators() {
-        return configurators;
-    }
-
+    @SuppressWarnings("unchecked")
     public <T extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> T apply(T configurer) throws Exception {
         configurer.setBuilder(this);
-        this.configurators.add(configurer);
+        Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> clazz = (Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>>) configurer.getClass();
+        this.configurators.put(clazz, configurer);
         return configurer;
     }
 
@@ -93,13 +93,9 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
     }
 
     @SuppressWarnings("unchecked")
-    public <C extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> C getConfigurator(Class<C> clazz) {
-        for(SecurityConfigurator<SecurityFilterChainSecurityBuilder> configurer : configurators) {
-            if(configurer.getClass().isAssignableFrom(clazz)) {
-                return (C) configurer;
-            }
-        }
-        return null;
+    <C extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> C getConfigurator(Class<C> clazz) {
+        Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> c = (Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>>) clazz;
+        return (C) configurators.get(c);
     }
 
     public void defaultSharedObject(Class<Object> sharedType, Object object) {
@@ -119,7 +115,7 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
     }
 
     public DefaultSecurityFilterChain build() throws Exception {
-        List<SecurityConfigurator<SecurityFilterChainSecurityBuilder>> configurators = getConfigurators();
+        Collection<SecurityConfigurator<SecurityFilterChainSecurityBuilder>> configurators = this.configurators.values();
 
         for(SecurityConfigurator<SecurityFilterChainSecurityBuilder> configurer : configurators ) {
             configurer.init(this);
