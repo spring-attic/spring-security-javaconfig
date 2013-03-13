@@ -41,27 +41,8 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private InsecureChannelProcessor insecureChannelProcessor = new InsecureChannelProcessor();
     private SecureChannelProcessor secureChannelProcessor = new SecureChannelProcessor();
-    private SecurityFilterChainSecurityBuilder securityFilterChain;
 
-    public SecurityFilterChainSecurityBuilder and() throws Exception {
-        if(securityFilterChain == null) {
-            throw new IllegalStateException(SecurityFilterChainSecurityBuilder.class.getSimpleName() + " cannot be null");
-        }
-        return securityFilterChain;
-    }
-
-    public void setBuilder(
-            SecurityFilterChainSecurityBuilder securityFilterChain) {
-        this.securityFilterChain = securityFilterChain;
-    }
-
-    @Override
-    public void init(SecurityFilterChainSecurityBuilder builder)
-            throws Exception {
-    }
-
-    @Override
-    public void configure(SecurityFilterChainSecurityBuilder builder)
+    void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(Arrays.<ChannelProcessor>asList(insecureChannelProcessor,secureChannelProcessor));

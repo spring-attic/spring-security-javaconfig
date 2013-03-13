@@ -122,16 +122,14 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpLogoutConfig extends BaseWebConfig {
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator()
-                .withLogout(new LogoutFilterSecurityBuilder()
-                        .deleteCookies("remove")
-                        .invalidateHttpSession(false)
-                        .logoutUrl("/custom-logout")
-                        .logoutSuccessUrl("/logout-success"));
-        }
         protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            SecurityFilterChainSecurityBuilder builder) {
+            builder
+                .logout()
+                    .deleteCookies("remove")
+                    .invalidateHttpSession(false)
+                    .logoutUrl("/custom-logout")
+                    .logoutSuccessUrl("/logout-success")
         }
     }
 
@@ -152,14 +150,12 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class SuccessHandlerRefHttpLogoutConfig extends BaseWebConfig {
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            SimpleUrlLogoutSuccessHandler logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler(defaultTargetUrl:"/SuccessHandlerRefHttpLogoutConfig")
-            return super.defaultFilterConfigurator()
-                .withLogout(new LogoutFilterSecurityBuilder()
-                        .logoutSuccessHandler(logoutSuccessHandler));
-        }
         protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            SecurityFilterChainSecurityBuilder builder) {
+        	SimpleUrlLogoutSuccessHandler logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler(defaultTargetUrl:"/SuccessHandlerRefHttpLogoutConfig")
+            builder
+                .logout()
+                    .logoutSuccessHandler(logoutSuccessHandler)
         }
     }
 

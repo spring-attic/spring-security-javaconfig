@@ -17,8 +17,7 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityFilterC
     private Object principal = "anonymousUser";
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
-    @Override
-    public void init(SecurityFilterChainSecurityBuilder builder)
+    void doInit(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         if(authenticationProvider == null) {
             authenticationProvider = new AnonymousAuthenticationProvider(getKey());
@@ -27,6 +26,12 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityFilterC
             authenticationFilter = new AnonymousAuthenticationFilter(getKey(), principal, authorities);
         }
         builder.getAuthenticationBuilder().authenticationProvider(authenticationProvider);
+    }
+
+    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+            throws Exception {
+        authenticationFilter.afterPropertiesSet();
+        builder.addFilter(authenticationFilter);
     }
 
     public AnonymousSecurityFilterConfigurator key(String key) {
@@ -63,11 +68,5 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityFilterC
             key = UUID.randomUUID().toString();
         }
         return key;
-    }
-    @Override
-    public void configure(SecurityFilterChainSecurityBuilder builder)
-            throws Exception {
-        authenticationFilter.afterPropertiesSet();
-        builder.addFilter(authenticationFilter);
     }
 }

@@ -38,7 +38,7 @@ public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityFilterC
         realmName("Spring Security Application");
     }
 
-    public void configure(SecurityFilterChainSecurityBuilder builder) throws Exception {
+    void doConfigure(SecurityFilterChainSecurityBuilder builder) throws Exception {
         AuthenticationManager authenticationManager = builder.authenticationManager();
         basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {
@@ -63,10 +63,5 @@ public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityFilterC
     public HttpBasicSecurityFilterConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
         return this;
-    }
-
-    @Override
-    public void init(SecurityFilterChainSecurityBuilder builder)
-            throws Exception {
     }
 }

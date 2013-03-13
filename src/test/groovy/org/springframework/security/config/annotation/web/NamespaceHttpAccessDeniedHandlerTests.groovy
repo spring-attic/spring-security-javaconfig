@@ -44,14 +44,11 @@ public class NamespaceHttpAccessDeniedHandlerTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
-
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator()
-                .accessDeniedPage("/AccessDeniedPageConfig")
-        }
-
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                SecurityFilterChainSecurityBuilder builder) {
+            builder.
+                exceptionHandling()
+                    .accessDeniedPage("/AccessDeniedPageConfig")
         }
     }
 
@@ -64,15 +61,12 @@ public class NamespaceHttpAccessDeniedHandlerTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedHandlerRefConfig extends BaseWebConfig {
-
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler()
-            return super.defaultFilterConfigurator()
-                .accessDeniedHandler(accessDeniedHandler)
-        }
-
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                SecurityFilterChainSecurityBuilder builder) {
+            CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler()
+            builder.
+                exceptionHandling()
+                    .accessDeniedHandler(accessDeniedHandler)
         }
 
         static class CustomAccessDeniedHandler implements AccessDeniedHandler {

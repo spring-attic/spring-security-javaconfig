@@ -30,7 +30,7 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.config.annotation.BaseSpringSpec;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
+import org.springframework.security.config.annotation.web.ExceptionHandlingConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
 import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry;
@@ -109,8 +109,9 @@ class DefaultFiltersTests extends BaseSpringSpec {
             springSecurityFilterChain.formLogin()
         }
 
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return null;
+        @Override
+        protected void applyDefaults(SecurityFilterChainSecurityBuilder builder)
+                throws Exception {
         }
     }
 

@@ -29,14 +29,10 @@ import org.springframework.security.web.util.AntPathRequestMatcher;
 final class PermitAllSupport {
 
     public static void permitAll(SecurityFilterChainSecurityBuilder builder, String... urls) {
-        DefaultSecurityFilterConfigurator configurator = builder.getConfigurator(DefaultSecurityFilterConfigurator.class);
+        ExpressionUrlAuthorizationRegistry configurator = builder.getConfigurator(ExpressionUrlAuthorizationRegistry.class);
         if(configurator != null) {
-            BaseFilterInvocationSecurityMetadataSourceBuilder<?> fisBldr = configurator.filterInvocationSecurityMetadataSourceBuilder();
-            if(!(fisBldr instanceof ExpressionUrlAuthorizationRegistry)) {
-                throw new IllegalStateException(fisBldr + " is not supported with PermitAll use "+ fisBldr);
-            }
             for(String url : urls) {
-                fisBldr.addMapping(0, new UrlMapping(new AntPathRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizationRegistry.permitAll)));
+                configurator.addMapping(0, new UrlMapping(new AntPathRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizationRegistry.permitAll)));
             }
         }
     }

@@ -25,10 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
 import org.springframework.security.crypto.encrypt.Encryptors;
@@ -66,13 +64,6 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
         return Encryptors.noOpText();
     }
 
-    protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-        return super.defaultFilterConfigurator()
-                .withLogout(new LogoutFilterSecurityBuilder()
-                    .deleteCookies("JSESSIONID")
-                    .logoutUrl("/signout"));
-    }
-
     protected List<RequestMatcher> ignoredRequests() {
         return antMatchers("/resources/**");
     }
@@ -89,12 +80,16 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
             throws Exception {
         builder
             .addFilterBefore(socialAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
+            .logout()
+                .deleteCookies("JSESSIONID")
+                .logoutUrl("/signout")
+                .permitAll()
+                .and()
             .formLogin()
                 .loginPage("/signin")
                 .loginProcessingUrl("/signin/authenticate")
                 .failureUrl("/signin?param.error=bad_credentials")
                 .permitAll();
-
     }
 
     protected void registerAuthentication(

@@ -69,9 +69,5 @@ class BaseRequestMatcherRegistryTests extends Specification {
         List<RequestMatcher> chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             return requestMatchers;
         }
-
-        public FilterInvocationSecurityMetadataSource build() {
-            return null;
-        }
     }
 }

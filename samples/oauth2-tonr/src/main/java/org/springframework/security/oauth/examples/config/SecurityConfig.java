@@ -7,10 +7,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
@@ -31,13 +29,6 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
                 .withUser("sam").password("kangaroo").roles("USER");
     }
 
-    protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-        return super.defaultFilterConfigurator()
-            .withLogout(new LogoutFilterSecurityBuilder()
-                .logoutSuccessUrl("/login.jsp")
-                .logoutUrl("/logout.do"));
-    }
-
     protected void authorizeUrls(
             ExpressionUrlAuthorizationRegistry interceptUrls) {
         interceptUrls
@@ -53,6 +44,11 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
             SecurityFilterChainSecurityBuilder builder) throws Exception {
         builder
             .addFilterAfter(oauth2ClientFilter, ExceptionTranslationFilter.class)
+            .logout()
+                .logoutSuccessUrl("/login.jsp")
+                .logoutUrl("/logout.do")
+                .permitAll()
+                .and()
             .formLogin()
                 .loginPage("/login.jsp")
                 .loginProcessingUrl("/login.do")

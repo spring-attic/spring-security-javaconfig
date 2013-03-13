@@ -22,8 +22,34 @@ import org.springframework.security.config.annotation.SecurityConfigurator;
  *
  */
 abstract class AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
-
     private SecurityFilterChainSecurityBuilder securityFilterChain;
+
+    private boolean disabled;
+
+    public SecurityFilterChainSecurityBuilder disable() {
+        this.disabled = true;
+        return securityFilterChain;
+    }
+
+    public final void init(SecurityFilterChainSecurityBuilder builder)
+            throws Exception {
+        if(disabled) {
+            return;
+        }
+        doInit(builder);
+    }
+
+    void doInit(SecurityFilterChainSecurityBuilder builder) throws Exception {}
+
+    public final void configure(SecurityFilterChainSecurityBuilder builder)
+            throws Exception {
+        if(disabled) {
+            return;
+        }
+        doConfigure(builder);
+    }
+
+    void doConfigure(SecurityFilterChainSecurityBuilder builder) throws Exception {}
 
     public SecurityFilterChainSecurityBuilder and() throws Exception {
         if(securityFilterChain == null) {

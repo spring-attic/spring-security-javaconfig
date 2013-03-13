@@ -26,6 +26,7 @@ import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
@@ -36,7 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Rob Winch
  * @since 3.2
  */
-public class UrlAuthorizationRegistry extends BaseFilterInvocationSecurityMetadataSourceBuilder<UrlAuthorizationRegistry.AuthorizedUrl> implements SecurityBuilder<FilterInvocationSecurityMetadataSource> {
+public class UrlAuthorizationRegistry extends BaseInterceptUrlConfigurator<UrlAuthorizationRegistry.AuthorizedUrl> implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
 
     public UrlAuthorizationRegistry interceptUrl(RequestMatcher requestMatcher, String... configAttributes) {
         return interceptUrl(Arrays.asList(requestMatcher), SecurityConfig.createList(configAttributes));
@@ -60,7 +61,7 @@ public class UrlAuthorizationRegistry extends BaseFilterInvocationSecurityMetada
         return decisionVoters;
     }
 
-    public FilterInvocationSecurityMetadataSource build() {
+    FilterInvocationSecurityMetadataSource createMetadataSource() {
         return new DefaultFilterInvocationSecurityMetadataSource(createRequestMap());
     }
 

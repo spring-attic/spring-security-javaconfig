@@ -57,12 +57,8 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousDisabledConfig extends BaseWebConfig {
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-        }
-
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator()
-                .disableAnonymous(true);
+                SecurityFilterChainSecurityBuilder builder) {
+                builder.anonymous().disable()
         }
     }
 
@@ -76,12 +72,8 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousGrantedAuthorityConfig extends BaseWebConfig {
         protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-        }
-
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator()
-                .withAnonymous(new AnonymousSecurityFilterConfigurator().authorities("ROLE_ANON"))
+            SecurityFilterChainSecurityBuilder builder) {
+            builder.anonymous().authorities("ROLE_ANON")
         }
     }
 
@@ -100,12 +92,8 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousKeyConfig extends BaseWebConfig {
         protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-        }
-
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator()
-                .withAnonymous(new AnonymousSecurityFilterConfigurator().key("AnonymousKeyConfig"))
+            SecurityFilterChainSecurityBuilder builder) {
+            builder.anonymous().key("AnonymousKeyConfig")
         }
     }
 
@@ -123,12 +111,8 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousUsernameConfig extends BaseWebConfig {
         protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-        }
-
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator()
-                .withAnonymous(new AnonymousSecurityFilterConfigurator().principal("AnonymousUsernameConfig"))
+            SecurityFilterChainSecurityBuilder builder) {
+            builder.anonymous().principal("AnonymousUsernameConfig")
         }
     }
 }

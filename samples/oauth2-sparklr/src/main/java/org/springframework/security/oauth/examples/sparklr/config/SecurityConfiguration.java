@@ -9,11 +9,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.LogoutFilterSecurityBuilder;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
@@ -54,21 +51,6 @@ public class SecurityConfiguration {
             OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint,
             OAuth2AuthenticationProcessingFilter resourcesServerFilter,
             OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler) throws Exception {
-        ExpressionUrlAuthorizationRegistry tokenFiMetadataSourceBldr = new ExpressionUrlAuthorizationRegistry()
-            .antMatchers("/oauth/token").fullyAuthenticated();
-        ExpressionUrlAuthorizationRegistry userClientFiMetadataSourceBldr = new ExpressionUrlAuthorizationRegistry()
-            .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
-            .regexMatchers(HttpMethod.GET, "/oauth/users/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
-            .regexMatchers(HttpMethod.GET, "/oauth/clients/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
-            .expressionHandler(oauthWebExpressionHandler);
-        ExpressionUrlAuthorizationRegistry photoFiMetadataSourceBldr = new ExpressionUrlAuthorizationRegistry()
-            .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
-            .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
-            .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
-            .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
-        ExpressionUrlAuthorizationRegistry fiMetadataSourceBldr = new ExpressionUrlAuthorizationRegistry()
-            .antMatchers("/oauth/**").hasRole("USER")
-            .antMatchers("/**").permitAll();
 
         return new FilterChainProxySecurityBuilder()
             .ignoring(antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals"))
@@ -76,42 +58,64 @@ public class SecurityConfiguration {
                 new SecurityFilterChainSecurityBuilder(clientAuthenticationManager())
                     .requestMatcher(new AntPathRequestMatcher("/oauth/token"))
                     .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .apply(new DefaultSecurityFilterConfigurator(tokenFiMetadataSourceBldr))
+                    .applyDefaultConfigurators()
+                    .exceptionHandling()
                         .accessDeniedHandler(oauthAccessDeniedHandler)
-                        .disableAnonymous(true)
+                        .and()
+                    .logout()
                         .and()
                     .httpBasic()
                         .authenticationEntryPoint(oauthAuthenticationEntryPoint)
                         .and()
-                    .addFilterBefore(clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class),
+                    .addFilterBefore(clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class)
+                    .authorizeUrls()
+                        .antMatchers("/oauth/token").fullyAuthenticated()
+                        .and(),
 
                 new SecurityFilterChainSecurityBuilder(clientAuthenticationManager())
                     .requestMatcher(new RegexRequestMatcher("/oauth/(users|clients)/.*",null))
                     .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .apply(new DefaultSecurityFilterConfigurator(userClientFiMetadataSourceBldr))
-                            .accessDeniedHandler(oauthAccessDeniedHandler)
-                            .disableAnonymous(true)
-                            .and()
-                    .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class),
+                    .applyDefaultConfigurators()
+                    .exceptionHandling()
+                        .accessDeniedHandler(oauthAccessDeniedHandler)
+                        .and()
+                    .logout()
+                        .and()
+                    .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
+                    .authorizeUrls()
+                        .expressionHandler(oauthWebExpressionHandler)
+                        .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
+                        .regexMatchers(HttpMethod.GET, "/oauth/users/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
+                        .regexMatchers(HttpMethod.GET, "/oauth/clients/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
+                        .and(),
 
                 new SecurityFilterChainSecurityBuilder(authManager())
                     .requestMatcher(new AntPathRequestMatcher("/photos/**"))
                     .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .apply(new DefaultSecurityFilterConfigurator(photoFiMetadataSourceBldr))
-                            .accessDeniedHandler(oauthAccessDeniedHandler)
-                            .disableAnonymous(true)
-                            .and()
-                    .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class),
+                    .applyDefaultConfigurators()
+                    .exceptionHandling()
+                        .accessDeniedHandler(oauthAccessDeniedHandler)
+                        .and()
+                    .logout()
+                        .and()
+                    .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
+                    .authorizeUrls()
+                        .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+                        .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
+                        .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+                        .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ")
+                        .and(),
 
                 new SecurityFilterChainSecurityBuilder(authManager())
                     .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .apply(new DefaultSecurityFilterConfigurator(fiMetadataSourceBldr))
-                            .accessDeniedPage("/login.jsp?authorization_error=true")
-                            .withLogout(new LogoutFilterSecurityBuilder()
-                                .logoutSuccessUrl("/index.jsp")
-                                .logoutUrl("/logout.do")
-                            )
-                            .and()
+                    .applyDefaultConfigurators()
+                    .exceptionHandling()
+                        .accessDeniedPage("/login.jsp?authorization_error=true")
+                        .and()
+                    .logout()
+                        .logoutSuccessUrl("/index.jsp")
+                        .logoutUrl("/logout.do")
+                        .and()
                     .formLogin()
                             .usernameParameter("j_username")
                             .passwordParameter("j_password")
@@ -120,6 +124,10 @@ public class SecurityConfiguration {
                             .loginProcessingUrl("/login.do")
                             .and()
                     .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
+                    .authorizeUrls()
+                        .antMatchers("/oauth/**").hasRole("USER")
+                        .antMatchers("/**").permitAll()
+                        .and()
             );
     }
 }

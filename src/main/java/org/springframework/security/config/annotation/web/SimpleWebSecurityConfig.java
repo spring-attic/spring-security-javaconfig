@@ -34,11 +34,9 @@ public abstract class SimpleWebSecurityConfig {
 
     protected abstract void registerAuthentication(AuthenticationRegistry authenticationRegistry) throws Exception;
 
-    protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-        ExpressionUrlAuthorizationRegistry interceptUrls = new ExpressionUrlAuthorizationRegistry();
-        authorizeUrls(interceptUrls);
-        return new DefaultSecurityFilterConfigurator(interceptUrls)
-            .permitAll();
+    protected void applyDefaults(SecurityFilterChainSecurityBuilder builder) throws Exception {
+        builder.applyDefaultConfigurators();
+        authorizeUrls(builder.authorizeUrls());
     }
 
     protected abstract void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls);
@@ -48,11 +46,8 @@ public abstract class SimpleWebSecurityConfig {
         AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry();
         registerAuthentication(authenticationRegistry);
 
-        DefaultSecurityFilterConfigurator defaultFilterConfigurator = defaultFilterConfigurator();
         SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationRegistry.build());
-        if(defaultFilterConfigurator != null) {
-            springSecurityFilterChain.apply(defaultFilterConfigurator);
-        }
+        applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
 
         FilterChainProxySecurityBuilder result = new FilterChainProxySecurityBuilder()

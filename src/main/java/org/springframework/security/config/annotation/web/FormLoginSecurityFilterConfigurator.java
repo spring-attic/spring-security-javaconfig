@@ -57,14 +57,14 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityFilterC
         passwordParameter("password");
     }
 
-    public void init(SecurityFilterChainSecurityBuilder builder) throws Exception {
+    void doInit(SecurityFilterChainSecurityBuilder builder) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(builder, loginPage, loginProcessingUrl, failureUrl);
         }
         builder.authenticationEntryPoint(authenticationEntryPoint);
     }
 
-    public void configure(SecurityFilterChainSecurityBuilder builder) throws Exception {
+    void doConfigure(SecurityFilterChainSecurityBuilder builder) throws Exception {
         usernamePasswordFilter.setAuthenticationManager(builder.authenticationManager());
         usernamePasswordFilter.setAuthenticationSuccessHandler(successHandler);
         usernamePasswordFilter.setAuthenticationFailureHandler(failureHandler);

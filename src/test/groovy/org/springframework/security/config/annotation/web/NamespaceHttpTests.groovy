@@ -69,12 +69,8 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         static AccessDecisionManager ACCESS_DECISION_MGR
 
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
-        }
-
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator()
-                .accessDecisionManager(ACCESS_DECISION_MGR);
+                SecurityFilterChainSecurityBuilder builder) {
+            builder.authorizeUrls().accessDecisionManager(ACCESS_DECISION_MGR)
         }
     }
 
@@ -87,12 +83,9 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator().accessDeniedPage("/AccessDeniedPageConfig");
-        }
-
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                SecurityFilterChainSecurityBuilder builder) {
+            builder.exceptionHandling().accessDeniedPage("/AccessDeniedPageConfig")
         }
     }
 
@@ -276,13 +269,9 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class ServletApiProvisionConfig extends BaseWebConfig {
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return super.defaultFilterConfigurator()
-                .disableServletApiProvision(true);
-        }
-
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                SecurityFilterChainSecurityBuilder builder) {
+            builder.servletApi().disable()
         }
     }
 
@@ -317,16 +306,12 @@ public class NamespaceHttpTests extends BaseSpringSpec {
             new FilterChainProxySecurityBuilder()
                 .securityFilterChains(
                     new SecurityFilterChainSecurityBuilder(authenticationManager())
-                            .apply(new DefaultSecurityFilterConfigurator(fsiSourceBldr()))
-                            .and()
+                            .apply(new UrlAuthorizationRegistry())
+                                .antMatchers("/users**","/sessions/**").hasRole("USER")
+                                .antMatchers("/signup").hasRole("ANONYMOUS")
+                                .antMatchers("/**").hasRole("USER")
+                                .and()
                 )
-        }
-
-        protected fsiSourceBldr() {
-            new UrlAuthorizationRegistry()
-                    .interceptUrl(antMatchers("/users**","/sessions/**"), "ROLE_USER")
-                    .interceptUrl(antMatchers("/signup"), "ROLE_ANONYMOUS")
-                    .interceptUrl(antMatchers("/**"), "ROLE_USER");
         }
     }
 }

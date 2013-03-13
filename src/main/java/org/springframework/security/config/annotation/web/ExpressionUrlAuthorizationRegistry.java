@@ -20,21 +20,24 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
  * @author Rob Winch
  * @since 3.2
  */
-public class ExpressionUrlAuthorizationRegistry extends BaseFilterInvocationSecurityMetadataSourceBuilder<ExpressionUrlAuthorizationRegistry.AuthorizedUrl> {
+public class ExpressionUrlAuthorizationRegistry extends BaseInterceptUrlConfigurator<ExpressionUrlAuthorizationRegistry.AuthorizedUrl> {
     public static final String permitAll = "permitAll";
     public static final String authenticated = "authenticated";
     public static final String fullyAuthenticated = "fullyAuthenticated";
@@ -48,6 +51,38 @@ public class ExpressionUrlAuthorizationRegistry extends BaseFilterInvocationSecu
 
     AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
+    }
+
+    private ExpressionUrlAuthorizationRegistry interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+        for(RequestMatcher requestMatcher : requestMatchers) {
+            addMapping(new UrlMapping(requestMatcher, configAttributes));
+        }
+        return this;
+    }
+
+    final List<AccessDecisionVoter> decisionVoters() {
+        List<AccessDecisionVoter> decisionVoters = new ArrayList<AccessDecisionVoter>();
+        WebExpressionVoter expressionVoter = new WebExpressionVoter();
+        expressionVoter.setExpressionHandler(expressionHandler);
+        decisionVoters.add(expressionVoter);
+        return decisionVoters;
+    }
+
+    ExpressionBasedFilterInvocationSecurityMetadataSource createMetadataSource() {
+        return new ExpressionBasedFilterInvocationSecurityMetadataSource(createRequestMap(), expressionHandler);
+    }
+
+    public static String hasRole(String role) {
+        return "hasRole('ROLE_" + role + "')";
+    }
+
+    public static String hasAuthority(String authority) {
+        return "hasAuthority('" + authority + "')";
+    }
+
+    public static String hasAnyAuthority(String... authorities) {
+        String anyAuthorities = StringUtils.join(authorities, "','");
+        return "hasAnyAuthority('" + anyAuthorities + "')";
     }
 
     public class AuthorizedUrl {
@@ -86,37 +121,4 @@ public class ExpressionUrlAuthorizationRegistry extends BaseFilterInvocationSecu
             return ExpressionUrlAuthorizationRegistry.this;
         }
     }
-
-    private ExpressionUrlAuthorizationRegistry interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
-        for(RequestMatcher requestMatcher : requestMatchers) {
-            addMapping(new UrlMapping(requestMatcher, configAttributes));
-        }
-        return this;
-    }
-
-    final List<AccessDecisionVoter> decisionVoters() {
-        List<AccessDecisionVoter> decisionVoters = new ArrayList<AccessDecisionVoter>();
-        WebExpressionVoter expressionVoter = new WebExpressionVoter();
-        expressionVoter.setExpressionHandler(expressionHandler);
-        decisionVoters.add(expressionVoter);
-        return decisionVoters;
-    }
-
-    public ExpressionBasedFilterInvocationSecurityMetadataSource build() {
-        return new ExpressionBasedFilterInvocationSecurityMetadataSource(createRequestMap(), expressionHandler);
-    }
-
-    public static String hasRole(String role) {
-        return "hasRole('ROLE_" + role + "')";
-    }
-
-    public static String hasAuthority(String authority) {
-        return "hasAuthority('" + authority + "')";
-    }
-
-    public static String hasAnyAuthority(String... authorities) {
-        String anyAuthorities = StringUtils.join(authorities, "','");
-        return "hasAnyAuthority('" + anyAuthorities + "')";
-    }
-
 }

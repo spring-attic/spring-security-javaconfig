@@ -3,7 +3,7 @@ package org.springframework.security.config.annotation.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -11,16 +11,15 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
-// TODO should be configurator
-public class LogoutFilterSecurityBuilder implements SecurityBuilder<LogoutFilter> {
+public class LogoutConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";
     private LogoutSuccessHandler logoutSuccessHandler;
     private String logoutUrl = "/logout";
+    private boolean permitAll;
 
-    @Override
-    public LogoutFilter build() throws Exception {
+    private LogoutFilter createLogoutFilter() throws Exception {
         logoutHandlers.add(contextLogoutHandler);
         LogoutHandler[] handlers = logoutHandlers.toArray(new LogoutHandler[logoutHandlers.size()]);
         LogoutFilter result = new LogoutFilter(getLogoutSuccessHandler(), handlers);
@@ -29,27 +28,36 @@ public class LogoutFilterSecurityBuilder implements SecurityBuilder<LogoutFilter
         return result;
     }
 
-    public LogoutFilterSecurityBuilder addLogoutHandler(LogoutHandler logoutHandler) {
+    public LogoutConfigurator permitAll() {
+        return permitAll(true);
+    }
+
+    public LogoutConfigurator permitAll(boolean permitAll) {
+        this.permitAll = permitAll;
+        return this;
+    }
+
+    public LogoutConfigurator addLogoutHandler(LogoutHandler logoutHandler) {
         this.logoutHandlers.add(logoutHandler);
         return this;
     }
 
-    public LogoutFilterSecurityBuilder invalidateHttpSession(boolean invalidateHttpSession) {
+    public LogoutConfigurator invalidateHttpSession(boolean invalidateHttpSession) {
         contextLogoutHandler.setInvalidateHttpSession(invalidateHttpSession);
         return this;
     }
 
-    public LogoutFilterSecurityBuilder logoutUrl(String logoutUrl) {
+    public LogoutConfigurator logoutUrl(String logoutUrl) {
         this.logoutUrl = logoutUrl;
         return this;
     }
 
-    public LogoutFilterSecurityBuilder logoutSuccessUrl(String logoutSuccessUrl) {
+    public LogoutConfigurator logoutSuccessUrl(String logoutSuccessUrl) {
         this.logoutSuccessUrl = logoutSuccessUrl;
         return this;
     }
 
-    public LogoutFilterSecurityBuilder logoutSuccessHandler(LogoutSuccessHandler logoutSuccessHandler) {
+    public LogoutConfigurator logoutSuccessHandler(LogoutSuccessHandler logoutSuccessHandler) {
         this.logoutSuccessHandler = logoutSuccessHandler;
         return this;
     }
@@ -63,7 +71,7 @@ public class LogoutFilterSecurityBuilder implements SecurityBuilder<LogoutFilter
         return logoutSuccessHandler;
     }
 
-    public LogoutFilterSecurityBuilder deleteCookies(String... cookieNamesToClear) {
+    public LogoutConfigurator deleteCookies(String... cookieNamesToClear) {
         return addLogoutHandler(new CookieClearingLogoutHandler(cookieNamesToClear));
     }
 
@@ -73,5 +81,18 @@ public class LogoutFilterSecurityBuilder implements SecurityBuilder<LogoutFilter
 
     String getLogoutUrl() {
         return logoutUrl;
+    }
+
+    void doInit(SecurityFilterChainSecurityBuilder builder)
+            throws Exception {
+        if(permitAll) {
+            PermitAllSupport.permitAll(builder, this.logoutUrl, this.logoutSuccessUrl);
+        }
+    }
+
+    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+            throws Exception {
+        LogoutFilter logoutFilter = createLogoutFilter();
+        builder.addFilter(logoutFilter);
     }
 }

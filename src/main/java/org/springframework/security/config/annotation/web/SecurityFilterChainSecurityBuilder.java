@@ -80,6 +80,44 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
         return configurer;
     }
 
+    public SecurityFilterChainSecurityBuilder applyDefaultConfigurators() throws Exception {
+        exceptionHandling();
+        securityContext();
+        requestCache();
+        anonymous();
+        servletApi();
+        logout();
+        return this;
+    }
+
+    public ExpressionUrlAuthorizationRegistry authorizeUrls() throws Exception {
+        return apply(new ExpressionUrlAuthorizationRegistry());
+    }
+
+    public RequestCacheConfigurator requestCache() throws Exception {
+        return apply(new RequestCacheConfigurator());
+    }
+
+    public ExceptionHandlingConfigurator exceptionHandling() throws Exception {
+        return apply(new ExceptionHandlingConfigurator());
+    }
+
+    public SecurityContextConfigurator securityContext() throws Exception {
+        return apply(new SecurityContextConfigurator());
+    }
+
+    public ServletApiConfigurator servletApi() throws Exception {
+        return apply(new ServletApiConfigurator());
+    }
+
+    public LogoutConfigurator logout() throws Exception {
+        return apply(new LogoutConfigurator());
+    }
+
+    public AnonymousSecurityFilterConfigurator anonymous() throws Exception {
+        return apply(new AnonymousSecurityFilterConfigurator());
+    }
+
     public FormLoginSecurityFilterConfigurator formLogin() throws Exception {
         return apply(new FormLoginSecurityFilterConfigurator());
     }

@@ -67,8 +67,9 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterBeforeConfig extends BaseWebConfig {
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return null; // do not add the default filters to make testing easier
+        protected void applyDefaults(SecurityFilterChainSecurityBuilder builder)
+                throws Exception {
+            // do not add the default filters to make testing easier
         }
 
         protected void configure(
@@ -88,8 +89,9 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterAfterConfig extends BaseWebConfig {
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
-            return null; // do not add the default filters to make testing easier
+        protected void applyDefaults(SecurityFilterChainSecurityBuilder builder)
+                throws Exception {
+            // do not add the default filters to make testing easier
         }
         protected void configure(
             SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
@@ -110,7 +112,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterPositionConfig extends BaseWebConfig {
-        protected DefaultSecurityFilterConfigurator defaultFilterConfigurator() {
+        protected ExceptionHandlingConfigurator defaultFilterConfigurator() {
             return null; // do not add the default filters to make testing easier
         }
         protected void configure(
