@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
@@ -19,7 +18,6 @@ import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity
 public class SecurityConfig extends SimpleWebSecurityConfig {
     @Autowired
     private DataSource dataSource;
