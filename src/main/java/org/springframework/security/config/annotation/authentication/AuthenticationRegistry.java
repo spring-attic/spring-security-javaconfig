@@ -59,7 +59,9 @@ public class AuthenticationRegistry implements SecurityBuilder<AuthenticationMan
     }
 
     public AuthenticationManager build() throws Exception {
+        if(builder == null) {
+            throw new IllegalStateException("builder must be initialized");
+        }
         return builder.build();
     }
-
 }

@@ -36,16 +36,21 @@ import org.springframework.security.provisioning.UserDetailsManager;
  */
 public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerSecurityBuilder<T>> extends UserDetailsServiceSecurityBuilder<UserDetailsManager> {
     private List<SecurityBuilder<UserDetails>> userBuilders = new ArrayList<SecurityBuilder<UserDetails>>();
+    private AuthenticationManager manager;
 
     public UserDetailsManagerSecurityBuilder(UserDetailsManager userDetailsManager) {
         super(userDetailsManager);
     }
 
     public AuthenticationManager build() throws Exception {
+        if(manager != null) {
+            return manager;
+        }
         for(SecurityBuilder<UserDetails> userBuilder : userBuilders) {
             userDetailsService.createUser(userBuilder.build());
         }
-        return super.build();
+        manager = super.build();
+        return manager;
     }
 
     public final UserSecurityBuilder<T> withUser(String username) {

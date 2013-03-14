@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.web.util.RequestMatcher;
 
@@ -31,6 +33,7 @@ import org.springframework.security.web.util.RequestMatcher;
 @Configuration
 @EnableWebSecurity
 public abstract class SimpleWebSecurityConfig {
+    private AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry();
 
     protected abstract void registerAuthentication(AuthenticationRegistry authenticationRegistry) throws Exception;
 
@@ -43,7 +46,6 @@ public abstract class SimpleWebSecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {
-        AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry();
         registerAuthentication(authenticationRegistry);
 
         SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationRegistry.build());
@@ -55,6 +57,12 @@ public abstract class SimpleWebSecurityConfig {
         result.ignoring(ignoredRequests());
         configure(result);
         return result;
+    }
+
+    @Bean
+    @DependsOn("springSecurityFilterChainBuilder")
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authenticationRegistry.build();
     }
 
     protected void configure(FilterChainProxySecurityBuilder securityFilterChains){

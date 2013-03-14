@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
@@ -14,6 +15,7 @@ import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 public class SecurityConfig extends SimpleWebSecurityConfig {
     protected List<RequestMatcher> ignoredRequests() {
         return antMatchers("/resources/**");
