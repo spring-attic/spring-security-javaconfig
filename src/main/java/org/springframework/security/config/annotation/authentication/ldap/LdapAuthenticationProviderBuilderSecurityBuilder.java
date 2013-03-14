@@ -116,7 +116,7 @@ public class LdapAuthenticationProviderBuilderSecurityBuilder implements
         return this;
     }
 
-    private BaseLdapPathContextSource getContextSource() throws Exception {
+    private BaseLdapPathContextSource getContextSource() {
         return contextSource;
     }
 }

@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
@@ -63,6 +64,11 @@ public abstract class SimpleWebSecurityConfig {
     @DependsOn("springSecurityFilterChainBuilder")
     public AuthenticationManager authenticationManager() throws Exception {
         return authenticationRegistry.build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return authenticationRegistry.userDetailsService();
     }
 
     protected void configure(FilterChainProxySecurityBuilder securityFilterChains){

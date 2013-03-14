@@ -21,34 +21,34 @@ import org.springframework.social.showcase.security.SimpleSocialUsersDetailServi
 @Configuration
 public class SocialSecurityConfig {
 
-	@Inject
-	private Environment environment;
+    @Inject
+    private Environment environment;
 
-	@Inject
-	private UsersConnectionRepository usersConnectionRepository;
-	
-	@Bean 
-	public SocialAuthenticationFilter socialAuthenticationFilter(AuthenticationManager authenticationManager, RememberMeServices rememberMeServices, SocialAuthenticationServiceLocator authenticationServiceLocator) {
-		SocialAuthenticationFilter socialAuthenticationFilter = new SocialAuthenticationFilter(authenticationManager, userIdSource(), usersConnectionRepository, authenticationServiceLocator);
-		socialAuthenticationFilter.setSignupUrl("/spring-social-showcase/signup"); // TODO: Fix filter to handle in-app paths
-		socialAuthenticationFilter.setRememberMeServices(rememberMeServices);
-		return socialAuthenticationFilter;
-	}
+    @Inject
+    private UsersConnectionRepository usersConnectionRepository;
 
-	@Bean
-	public AuthenticationProvider socialAuthenticationProvider(UserDetailsService userDetailsService) {
-		return new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService(userDetailsService));
-	}
-	
-	@Bean
-	public SocialUserDetailsService socialUsersDetailsService(UserDetailsService userDetailsService) {
-		return new SimpleSocialUsersDetailService(userDetailsService);
-	}
-	
-	@Bean
-	public UserIdSource userIdSource() {
-		return new AuthenticationUserIdExtractor();
-	}
-	
+    @Bean
+    public SocialAuthenticationFilter socialAuthenticationFilter(AuthenticationManager authenticationManager, SocialAuthenticationServiceLocator authenticationServiceLocator) {
+        SocialAuthenticationFilter socialAuthenticationFilter = new SocialAuthenticationFilter(authenticationManager, userIdSource(), usersConnectionRepository, authenticationServiceLocator);
+        socialAuthenticationFilter.setSignupUrl("/spring-social-showcase/signup"); // TODO: Fix filter to handle in-app paths
+// FIXME add remember me        socialAuthenticationFilter.setRememberMeServices(rememberMeServices);
+        return socialAuthenticationFilter;
+    }
+
+    @Bean
+    public AuthenticationProvider socialAuthenticationProvider(UserDetailsService userDetailsService) {
+        return new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService(userDetailsService));
+    }
+
+    @Bean
+    public SocialUserDetailsService socialUsersDetailsService(UserDetailsService userDetailsService) {
+        return new SimpleSocialUsersDetailService(userDetailsService);
+    }
+
+    @Bean
+    public UserIdSource userIdSource() {
+        return new AuthenticationUserIdExtractor();
+    }
+
 }
 

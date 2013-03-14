@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderBuilderSecurityBuilder;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
@@ -30,32 +31,44 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  *
  */
 public class AuthenticationRegistry implements SecurityBuilder<AuthenticationManager> {
-    private SecurityBuilder<AuthenticationManager> builder;
+    private final AuthenticationManagerSecurityBuilder builder = new AuthenticationManagerSecurityBuilder();
+    private UserDetailsService userDetailsService;
 
     public InMemoryUserDetailsManagerSecurityBuilder inMemoryAuthentication() {
         InMemoryUserDetailsManagerSecurityBuilder inMemoryBuilder = new InMemoryUserDetailsManagerSecurityBuilder();
-        builder = inMemoryBuilder;
+        userDetails(inMemoryBuilder.userDetailsService());
         return inMemoryBuilder;
     }
 
     // FIXME what if ldap not on classpath?
-    public LdapAuthenticationProviderBuilderSecurityBuilder ldapAuthenticationProvider(BaseLdapPathContextSource contextSource) {
+    public LdapAuthenticationProviderBuilderSecurityBuilder ldapAuthenticationProvider(BaseLdapPathContextSource contextSource) throws Exception {
         LdapAuthenticationProviderBuilderSecurityBuilder ldapBuilder = new LdapAuthenticationProviderBuilderSecurityBuilder(contextSource);
-        builder = ldapBuilder;
+        authenticationProvider(ldapBuilder.ldapAuthenticationProvider());
         return ldapBuilder;
     }
 
     // FIXME what if DataSource not on classpath?
     public JdbcUserDetailsManagerSecurityBuilder jdbcUserDetailsManager(DataSource dataSource) {
         JdbcUserDetailsManagerSecurityBuilder jdbcBuilder = new JdbcUserDetailsManagerSecurityBuilder(dataSource);
-        builder = jdbcBuilder;
+        userDetails(jdbcBuilder.userDetailsService());
         return jdbcBuilder;
     }
 
     public DaoAuthenticationProviderSecurityBuilder userDetails(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+        builder.userDetails(userDetailsService);
         DaoAuthenticationProviderSecurityBuilder udsBuilder = new DaoAuthenticationProviderSecurityBuilder(userDetailsService);
-        builder = udsBuilder;
         return udsBuilder;
+    }
+
+    public DaoAuthenticationProviderSecurityBuilder authenticationProvider(AuthenticationProvider authenticationProvider) {
+        builder.authenticationProvider(authenticationProvider);
+        DaoAuthenticationProviderSecurityBuilder udsBuilder = new DaoAuthenticationProviderSecurityBuilder(userDetailsService);
+        return udsBuilder;
+    }
+
+    public UserDetailsService userDetailsService() {
+        return userDetailsService;
     }
 
     public AuthenticationManager build() throws Exception {

@@ -46,19 +46,14 @@ public class AuthenticationManagerSecurityBuilder implements SecurityBuilder<Aut
         return this;
     }
 
-    public AuthenticationManagerSecurityBuilder authenticationProvider(AuthenticationProvider authenticationProvider) throws Exception {
+    public AuthenticationManagerSecurityBuilder authenticationProvider(AuthenticationProvider authenticationProvider) {
         providers.add(authenticationProvider);
         return this;
     }
 
-    public AuthenticationManagerSecurityBuilder authenticationProvider(SecurityBuilder<? extends AuthenticationProvider> authenticationProviderBuilder) throws Exception {
-        return authenticationProvider(authenticationProviderBuilder.build());
-    }
-
-    public AuthenticationManagerSecurityBuilder userDetails(SecurityBuilder<? extends UserDetailsService> userDetailsServiceBuilder) throws Exception {
+    public AuthenticationManagerSecurityBuilder userDetails(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsServiceBuilder.build());
-        providers.add(provider);
-        return this;
+        provider.setUserDetailsService(userDetailsService);
+        return authenticationProvider(provider);
     }
 }

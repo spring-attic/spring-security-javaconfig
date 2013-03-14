@@ -19,11 +19,16 @@ import static org.springframework.security.config.annotation.web.util.RequestMat
 
 import java.util.List;
 
+import javax.servlet.Filter;
 import javax.sql.DataSource;
 
+import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.target.LazyInitTargetSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
@@ -35,8 +40,6 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.util.RequestMatcher;
-import org.springframework.social.security.SocialAuthenticationFilter;
-import org.springframework.social.security.SocialAuthenticationProvider;
 
 /**
  * Security Configuration.
@@ -46,13 +49,10 @@ import org.springframework.social.security.SocialAuthenticationProvider;
 @EnableWebSecurity
 public class SecurityConfig extends SimpleWebSecurityConfig {
     @Autowired
+    private ConfigurableApplicationContext context;
+
+    @Autowired
     private DataSource dataSource;
-
-    @Autowired
-    private SocialAuthenticationFilter socialAuthenticationFilter;
-
-    @Autowired
-    private SocialAuthenticationProvider socialAuthenticationProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -79,7 +79,7 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
             SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         builder
-            .addFilterBefore(socialAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterBefore(lazySocialAuthenticationFilter(), AbstractPreAuthenticatedProcessingFilter.class)
             .logout()
                 .deleteCookies("JSESSIONID")
                 .logoutUrl("/signout")
@@ -98,5 +98,27 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
             .jdbcUserDetailsManager(dataSource)
                 .usersByUsernameQuery("select username, password, true from Account where username = ?")
                 .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?");
+        registry
+            .authenticationProvider(lazySocialAuthenticationProvider());
+    }
+
+    @Bean
+    public Filter lazySocialAuthenticationFilter() {
+        return lazyBean("socialAuthenticationFilter",Filter.class);
+    }
+
+    @Bean
+    public AuthenticationProvider lazySocialAuthenticationProvider() {
+        return lazyBean("socialAuthenticationProvider", AuthenticationProvider.class);
+    }
+
+    private <T> T lazyBean(String targetBeanName, Class<T> interfaceName) {
+        LazyInitTargetSource lazyTargetSource = new LazyInitTargetSource();
+        lazyTargetSource.setTargetBeanName(targetBeanName);
+        lazyTargetSource.setBeanFactory(context);
+        ProxyFactoryBean proxyFactory = new ProxyFactoryBean();
+        proxyFactory.setTargetSource(lazyTargetSource);
+        proxyFactory.setInterfaces(new Class[] { interfaceName });
+        return (T) proxyFactory.getObject();
     }
 }
