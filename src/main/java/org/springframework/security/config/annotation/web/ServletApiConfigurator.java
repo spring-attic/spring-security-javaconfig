@@ -15,13 +15,15 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
 /**
  * @author Rob Winch
  *
  */
-public class ServletApiConfigurator extends AbstractSecurityFilterConfigurator {
+public class ServletApiConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
     private SecurityContextHolderAwareRequestFilter securityContextRequestFilter = new SecurityContextHolderAwareRequestFilter();
 
     public ServletApiConfigurator rolePrefix(String rolePrefix) {
@@ -29,7 +31,7 @@ public class ServletApiConfigurator extends AbstractSecurityFilterConfigurator {
         return this;
     }
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         securityContextRequestFilter.afterPropertiesSet();
         builder.addFilter(securityContextRequestFilter);

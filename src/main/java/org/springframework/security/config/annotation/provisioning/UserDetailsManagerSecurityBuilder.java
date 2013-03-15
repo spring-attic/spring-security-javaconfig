@@ -18,10 +18,8 @@ package org.springframework.security.config.annotation.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.UserDetailsServiceSecurityBuilder;
-import org.springframework.security.config.annotation.authentication.UserSecurityBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,21 +34,16 @@ import org.springframework.security.provisioning.UserDetailsManager;
  */
 public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerSecurityBuilder<T>> extends UserDetailsServiceSecurityBuilder<UserDetailsManager> {
     private List<SecurityBuilder<UserDetails>> userBuilders = new ArrayList<SecurityBuilder<UserDetails>>();
-    private AuthenticationManager manager;
 
     public UserDetailsManagerSecurityBuilder(UserDetailsManager userDetailsManager) {
         super(userDetailsManager);
     }
 
-    public AuthenticationManager build() throws Exception {
-        if(manager != null) {
-            return manager;
-        }
+    public UserDetailsManager build() throws Exception {
         for(SecurityBuilder<UserDetails> userBuilder : userBuilders) {
             userDetailsService.createUser(userBuilder.build());
         }
-        manager = super.build();
-        return manager;
+        return (UserDetailsManager) super.build();
     }
 
     public final UserSecurityBuilder<T> withUser(String username) {

@@ -22,6 +22,7 @@ import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.ConsensusBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
@@ -31,7 +32,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  */
 abstract class BaseInterceptUrlConfigurator<T> extends
         BaseRequestMatcherRegistry<T> implements
-        SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+        SecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
     private Boolean filterSecurityInterceptorOncePerRequest;
 
     private AccessDecisionManager accessDecisionManager;
@@ -59,7 +60,7 @@ abstract class BaseInterceptUrlConfigurator<T> extends
         return new ConsensusBased(decisionVoters());
     }
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         FilterSecurityInterceptor securityInterceptor = securityInterceptor(builder.authenticationManager());
         if(filterSecurityInterceptorOncePerRequest != null) {

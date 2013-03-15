@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.config.annotation.web;
+package org.springframework.security.config.annotation;
 
-import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
+
 
 /**
  * @author Rob Winch
  *
  */
-abstract class AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
-    private SecurityFilterChainSecurityBuilder securityFilterChain;
+public abstract class AbstractSecurityConfigurator<T,B extends SecurityBuilder<T>> implements SecurityConfigurator<T,B> {
+    private B securityBuilder;
 
     private boolean disabled;
 
-    public SecurityFilterChainSecurityBuilder disable() {
+    public B disable() {
         this.disabled = true;
-        return securityFilterChain;
+        return securityBuilder;
     }
 
-    public final void init(SecurityFilterChainSecurityBuilder builder)
+    public final void init(B builder)
             throws Exception {
         if(disabled) {
             return;
@@ -39,9 +40,9 @@ abstract class AbstractSecurityFilterConfigurator implements SecurityConfigurato
         doInit(builder);
     }
 
-    void doInit(SecurityFilterChainSecurityBuilder builder) throws Exception {}
+    protected void doInit(B builder) throws Exception {}
 
-    public final void configure(SecurityFilterChainSecurityBuilder builder)
+    public final void configure(B builder)
             throws Exception {
         if(disabled) {
             return;
@@ -49,17 +50,17 @@ abstract class AbstractSecurityFilterConfigurator implements SecurityConfigurato
         doConfigure(builder);
     }
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder) throws Exception {}
+    protected void doConfigure(B builder) throws Exception {}
 
-    public SecurityFilterChainSecurityBuilder and() throws Exception {
-        if(securityFilterChain == null) {
+    public B and() throws Exception {
+        if(securityBuilder == null) {
             throw new IllegalStateException(SecurityFilterChainSecurityBuilder.class.getSimpleName() + " cannot be null");
         }
-        return securityFilterChain;
+        return (B) securityBuilder;
     }
 
     public void setBuilder(
-            SecurityFilterChainSecurityBuilder securityFilterChain) {
-        this.securityFilterChain = securityFilterChain;
+            B securityFilterChain) {
+        this.securityBuilder = securityFilterChain;
     }
 }

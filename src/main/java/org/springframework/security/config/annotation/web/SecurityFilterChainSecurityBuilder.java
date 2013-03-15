@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +29,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
-import org.springframework.security.config.annotation.authentication.AuthenticationManagerSecurityBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -47,7 +47,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<DefaultSecurityFilterChain>{
+public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> implements SecurityBuilder<DefaultSecurityFilterChain>{
 
     private AuthenticationManager authenticationManager;
 
@@ -55,7 +55,6 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
     private RequestMatcher requestMatcher = new AnyRequestMatcher();
     private FilterComparator comparitor = new FilterComparator();
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
-    private final LinkedHashMap<Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>>, SecurityConfigurator<SecurityFilterChainSecurityBuilder>> configurators = new LinkedHashMap<Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>>, SecurityConfigurator<SecurityFilterChainSecurityBuilder>>();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
     public SecurityFilterChainSecurityBuilder(AuthenticationManager authenticationManager) {
@@ -72,14 +71,6 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
         initDefaults(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> T apply(T configurer) throws Exception {
-        configurer.setBuilder(this);
-        Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> clazz = (Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>>) configurer.getClass();
-        this.configurators.put(clazz, configurer);
-        return configurer;
-    }
-
     public SecurityFilterChainSecurityBuilder applyDefaultConfigurators() throws Exception {
         exceptionHandling();
         sessionManagement();
@@ -89,6 +80,11 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
         servletApi();
         logout();
         return this;
+    }
+
+    protected <C extends SecurityConfigurator<DefaultSecurityFilterChain, SecurityFilterChainSecurityBuilder>> C getConfigurator(
+            Class<C> clazz) {
+        return super.getConfigurator(clazz);
     }
 
     public SessionManagementConfigurator sessionManagement() throws Exception {
@@ -135,12 +131,6 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
         return apply(new HttpBasicSecurityFilterConfigurator());
     }
 
-    @SuppressWarnings("unchecked")
-    <C extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> C getConfigurator(Class<C> clazz) {
-        Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>> c = (Class<? extends SecurityConfigurator<SecurityFilterChainSecurityBuilder>>) clazz;
-        return (C) configurators.get(c);
-    }
-
     public void defaultSharedObject(Class<Object> sharedType, Object object) {
         if(!sharedObjects.containsKey(sharedType)) {
             this.sharedObjects.put(sharedType, object);
@@ -158,21 +148,18 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
     }
 
     public DefaultSecurityFilterChain build() throws Exception {
-        Collection<SecurityConfigurator<SecurityFilterChainSecurityBuilder>> configurators = this.configurators.values();
+        init();
 
-        for(SecurityConfigurator<SecurityFilterChainSecurityBuilder> configurer : configurators ) {
-            configurer.init(this);
-        }
-        this.authenticationManager = getAuthenticationBuilder().build();
-        for(SecurityConfigurator<SecurityFilterChainSecurityBuilder> configurer : configurators) {
-            configurer.configure(this);
-        }
+        this.authenticationManager = getAuthenticationRegistry().build();
+
+        configure();
+
         Collections.sort(filters,comparitor);
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }
 
-    public AuthenticationManagerSecurityBuilder getAuthenticationBuilder() {
-        return getSharedObject(AuthenticationManagerSecurityBuilder.class);
+    public AuthenticationRegistry getAuthenticationRegistry() {
+        return getSharedObject(AuthenticationRegistry.class);
     }
 
     public SecurityFilterChainSecurityBuilder securityContextRepsitory(SecurityContextRepository securityContextRepository) {
@@ -219,8 +206,8 @@ public class SecurityFilterChainSecurityBuilder implements SecurityBuilder<Defau
         securityContextRepository.setDisableUrlRewriting(true);
         setSharedObject(SecurityContextRepository.class, securityContextRepository);
 
-        AuthenticationManagerSecurityBuilder authenticationManagerBuilder = new AuthenticationManagerSecurityBuilder()
+        AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry()
                 .parentAuthenticationManager(parent);
-        setSharedObject(AuthenticationManagerSecurityBuilder.class, authenticationManagerBuilder);
+        setSharedObject(AuthenticationRegistry.class, authenticationRegistry);
     }
 }

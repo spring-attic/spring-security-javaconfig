@@ -3,7 +3,8 @@ package org.springframework.security.config.annotation.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -11,7 +12,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
-public class LogoutConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class LogoutConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";
@@ -83,14 +84,14 @@ public class LogoutConfigurator extends AbstractSecurityFilterConfigurator imple
         return logoutUrl;
     }
 
-    void doInit(SecurityFilterChainSecurityBuilder builder)
+    protected void doInit(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(builder, this.logoutUrl, this.logoutSuccessUrl);
         }
     }
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         LogoutFilter logoutFilter = createLogoutFilter();
         builder.addFilter(logoutFilter);

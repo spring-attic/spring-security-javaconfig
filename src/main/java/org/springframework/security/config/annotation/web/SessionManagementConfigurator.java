@@ -15,9 +15,11 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
@@ -29,7 +31,7 @@ import org.springframework.security.web.session.SessionManagementFilter;
  * @author Rob Winch
  *
  */
-public class SessionManagementConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class SessionManagementConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
     private SessionManagementFilter sessionManagementFilter;
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
@@ -58,12 +60,12 @@ public class SessionManagementConfigurator extends AbstractSecurityFilterConfigu
         return this;
     }
 
-    void doInit(SecurityFilterChainSecurityBuilder builder)
+    protected void doInit(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         builder.setSharedObject(SessionAuthenticationStrategy.class, getSessionAuthenticationStrategy());
     }
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         sessionManagementFilter = new SessionManagementFilter(builder.getSharedObject(SecurityContextRepository.class), getSessionAuthenticationStrategy());
         builder.addFilter(sessionManagementFilter);

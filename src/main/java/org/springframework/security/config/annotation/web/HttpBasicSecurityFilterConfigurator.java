@@ -19,8 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -29,7 +30,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
     private BasicAuthenticationFilter basicAuthenticationFilter;
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
@@ -38,7 +39,7 @@ public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityFilterC
         realmName("Spring Security Application");
     }
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder) throws Exception {
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder) throws Exception {
         AuthenticationManager authenticationManager = builder.authenticationManager();
         basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {

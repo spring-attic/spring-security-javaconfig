@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation.authentication;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.Assert;
@@ -25,8 +26,8 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> implements
-        SecurityBuilder<AuthenticationManager> {
+public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationRegistry> implements
+        SecurityBuilder<T> {
     protected final T userDetailsService;
 
     public UserDetailsServiceSecurityBuilder(T userDetailsService) {
@@ -34,11 +35,18 @@ public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> imp
         this.userDetailsService = userDetailsService;
     }
 
-    public AuthenticationManager build() throws Exception {
-        return new DaoAuthenticationProviderSecurityBuilder(userDetailsService).build();
+    public T build() throws Exception {
+        return (T) userDetailsService;
     }
 
-    public T userDetailsService() {
+    public T userDetailsService() throws Exception {
+        if(userDetailsService == null) {
+            build();
+        }
         return userDetailsService;
+    }
+
+    protected void doConfigure(AuthenticationRegistry builder) throws Exception {
+        builder.add(build());
     }
 }

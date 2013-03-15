@@ -5,19 +5,20 @@ import java.util.UUID;
 
 import org.springframework.security.authentication.AnonymousAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
-public class AnonymousSecurityFilterConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
     private String key;
     private AuthenticationProvider authenticationProvider;
     private AnonymousAuthenticationFilter authenticationFilter;
     private Object principal = "anonymousUser";
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
-    void doInit(SecurityFilterChainSecurityBuilder builder)
+    protected void doInit(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         if(authenticationProvider == null) {
             authenticationProvider = new AnonymousAuthenticationProvider(getKey());
@@ -25,10 +26,10 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityFilterC
         if(authenticationFilter == null) {
             authenticationFilter = new AnonymousAuthenticationFilter(getKey(), principal, authorities);
         }
-        builder.getAuthenticationBuilder().authenticationProvider(authenticationProvider);
+        builder.getAuthenticationRegistry().add(authenticationProvider);
     }
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         authenticationFilter.afterPropertiesSet();
         builder.addFilter(authenticationFilter);

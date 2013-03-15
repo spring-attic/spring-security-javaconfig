@@ -100,6 +100,7 @@ public class SampleEnableGlobalMethodSecurityTests extends BaseSpringSpec {
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                    .and()
                 .build();
         }
     }
@@ -138,6 +139,7 @@ public class SampleEnableGlobalMethodSecurityTests extends BaseSpringSpec {
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                    .and()
                 .build();
         }
     }

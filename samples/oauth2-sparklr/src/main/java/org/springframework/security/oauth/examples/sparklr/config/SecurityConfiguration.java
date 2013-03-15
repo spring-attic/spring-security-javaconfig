@@ -33,7 +33,8 @@ public class SecurityConfiguration {
     public AuthenticationManager clientAuthenticationManager() throws Exception {
         return new AuthenticationRegistry()
             .userDetails(clientDetailsService)
-            .build();
+            .and()
+        .build();
     }
 
     @Bean(name = {"authManager",BeanIds.AUTHENTICATION_MANAGER})
@@ -42,7 +43,8 @@ public class SecurityConfiguration {
             .inMemoryAuthentication()
                 .withUser("marissa").password("koala").roles("USER").and()
                 .withUser("paul").password("emu").roles("USER").and()
-            .build();
+            .and()
+        .build();
     }
 
     @Bean

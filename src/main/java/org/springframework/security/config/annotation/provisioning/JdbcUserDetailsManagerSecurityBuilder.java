@@ -50,25 +50,25 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
     }
 
     @Override
-    public AuthenticationManager build() throws Exception {
+    public JdbcUserDetailsManager build() throws Exception {
         if(!initScripts.isEmpty()) {
             initDatabase().afterPropertiesSet();
         }
-        return super.build();
+        return (JdbcUserDetailsManager) super.build();
     }
 
-    public JdbcUserDetailsManagerSecurityBuilder usersByUsernameQuery(String query) {
+    public JdbcUserDetailsManagerSecurityBuilder usersByUsernameQuery(String query) throws Exception {
         userDetailsService().setUsersByUsernameQuery(query);
         return this;
     }
 
-    public JdbcUserDetailsManagerSecurityBuilder authoritiesByUsernameQuery(String query) {
+    public JdbcUserDetailsManagerSecurityBuilder authoritiesByUsernameQuery(String query) throws Exception {
         userDetailsService().setAuthoritiesByUsernameQuery(query);
         return this;
     }
 
     @Override
-    public JdbcUserDetailsManager userDetailsService() {
+    public JdbcUserDetailsManager userDetailsService() throws Exception {
         return (JdbcUserDetailsManager) super.userDetailsService();
     }
 

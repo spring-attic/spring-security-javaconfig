@@ -15,7 +15,8 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
@@ -25,7 +26,7 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExceptionHandlingConfigurator extends AbstractSecurityFilterConfigurator implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
 
     private AccessDeniedHandler accessDeniedHandler;
 
@@ -40,7 +41,7 @@ public class ExceptionHandlingConfigurator extends AbstractSecurityFilterConfigu
         return this;
     }
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder) throws Exception {
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder) throws Exception {
         ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(builder.authenticationEntryPoint());
         if(accessDeniedHandler != null) {
             exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);

@@ -47,9 +47,7 @@ public abstract class SimpleWebSecurityConfig {
 
     @Bean
     public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {
-        registerAuthentication(authenticationRegistry);
-
-        SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationRegistry.build());
+        SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationManager());
         applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
 
@@ -61,8 +59,8 @@ public abstract class SimpleWebSecurityConfig {
     }
 
     @Bean
-    @DependsOn("springSecurityFilterChainBuilder")
     public AuthenticationManager authenticationManager() throws Exception {
+        registerAuthentication(authenticationRegistry);
         return authenticationRegistry.build();
     }
 

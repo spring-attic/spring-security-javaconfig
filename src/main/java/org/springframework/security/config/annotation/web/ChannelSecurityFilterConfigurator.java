@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.access.channel.ChannelProcessor;
@@ -36,13 +35,13 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl> implements SecurityConfigurator<SecurityFilterChainSecurityBuilder> {
+public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private InsecureChannelProcessor insecureChannelProcessor = new InsecureChannelProcessor();
     private SecureChannelProcessor secureChannelProcessor = new SecureChannelProcessor();
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(Arrays.<ChannelProcessor>asList(insecureChannelProcessor,secureChannelProcessor));

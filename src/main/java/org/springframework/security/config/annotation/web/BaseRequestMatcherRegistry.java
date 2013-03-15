@@ -23,14 +23,16 @@ import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.config.annotation.web.util.RequestMatchers;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
  * @author Rob Winch
  *
  */
-abstract class BaseRequestMatcherRegistry<T> extends AbstractSecurityFilterConfigurator {
+abstract class BaseRequestMatcherRegistry<T> extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
 
     List<UrlMapping> getUrlMappings() {

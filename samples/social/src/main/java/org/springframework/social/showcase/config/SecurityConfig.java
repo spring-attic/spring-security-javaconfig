@@ -97,9 +97,9 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
         registry
             .jdbcUserDetailsManager(dataSource)
                 .usersByUsernameQuery("select username, password, true from Account where username = ?")
-                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?");
-        registry
-            .authenticationProvider(lazySocialAuthenticationProvider());
+                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?")
+                .and()
+           .add(lazySocialAuthenticationProvider());
     }
 
     @Bean

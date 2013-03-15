@@ -15,15 +15,17 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 
 /**
  * @author Rob Winch
  *
  */
-public class RequestCacheConfigurator extends AbstractSecurityFilterConfigurator {
+public class RequestCacheConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
 
-    void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
         RequestCacheAwareFilter requestCacheFilter = new RequestCacheAwareFilter();
         builder.addFilter(requestCacheFilter);
