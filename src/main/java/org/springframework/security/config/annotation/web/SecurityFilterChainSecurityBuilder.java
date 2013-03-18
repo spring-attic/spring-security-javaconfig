@@ -162,7 +162,12 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }
 
-    public AuthenticationRegistry getAuthenticationRegistry() {
+    public SecurityFilterChainSecurityBuilder authenticationProvider(AuthenticationProvider authenticationProvider) {
+        getAuthenticationRegistry().add(authenticationProvider);
+        return this;
+    }
+
+    private AuthenticationRegistry getAuthenticationRegistry() {
         return getSharedObject(AuthenticationRegistry.class);
     }
 

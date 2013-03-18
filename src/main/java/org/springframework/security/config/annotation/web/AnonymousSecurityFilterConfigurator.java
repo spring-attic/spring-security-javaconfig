@@ -26,7 +26,7 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigu
         if(authenticationFilter == null) {
             authenticationFilter = new AnonymousAuthenticationFilter(getKey(), principal, authorities);
         }
-        builder.getAuthenticationRegistry().add(authenticationProvider);
+        builder.authenticationProvider(authenticationProvider);
     }
 
     protected void doConfigure(SecurityFilterChainSecurityBuilder builder)

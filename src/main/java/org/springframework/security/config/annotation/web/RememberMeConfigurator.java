@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -70,26 +69,18 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
         logoutConfigurator.addLogoutHandler(logoutHandler);
 
         RememberMeAuthenticationProvider authenticationProvider = new RememberMeAuthenticationProvider(key);
-        builder.getAuthenticationRegistry().add(authenticationProvider);
-
-
+        builder.authenticationProvider(authenticationProvider);
     }
 
     @Override
     protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
             throws Exception {
-        AuthenticationManager authenticationManager = builder.getAuthenticationRegistry().build();
-        RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(authenticationManager, rememberMeServices);
-
+        RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(builder.authenticationManager(), rememberMeServices);
         builder.addFilter(rememberMeFilter);
     }
 
     private UserDetailsService getUserDetailsService(SecurityFilterChainSecurityBuilder builder) {
-        UserDetailsService userDetailsService = builder.getAuthenticationRegistry().userDetailsService();
-        if(userDetailsService == null) {
-            return builder.getSharedObject(UserDetailsService.class);
-        }
-        return userDetailsService;
+        return builder.getSharedObject(UserDetailsService.class);
     }
 
     private String getKey() {
