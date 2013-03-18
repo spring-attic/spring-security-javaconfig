@@ -18,8 +18,6 @@ package org.springframework.security.config.annotation;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-import org.springframework.security.web.DefaultSecurityFilterChain;
-
 /**
  *
  * @author Rob Winch
@@ -27,13 +25,16 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
  * @param <T> The object that this builder returns
  * @param <B> The type of this builder (that is returned by the base class)
  */
-public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>> implements SecurityBuilder<T> {
+public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>> extends AbstractSecurityBuilder<T> {
 
     private final LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>> configurators = new LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>>();
 
     @SuppressWarnings("unchecked")
     public <C extends SecurityConfigurator<T, B>> C apply(C configurer)
             throws Exception {
+        if(isBuilt()) {
+            throw new IllegalStateException("Cannot apply "+configurer+" to already built object");
+        }
         configurer.setBuilder((B) this);
         Class<? extends SecurityConfigurator<T, B>> clazz = (Class<? extends SecurityConfigurator<T, B>>) configurer
                 .getClass();

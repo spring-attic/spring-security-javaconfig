@@ -85,7 +85,7 @@ public class AuthenticationRegistry extends AbstractConfiguredBuilder<Authentica
         return this;
     }
 
-    public AuthenticationManager build() throws Exception {
+    protected AuthenticationManager doBuild() throws Exception {
         init();
         configure();
         return new ProviderManager(authenticationProviders,

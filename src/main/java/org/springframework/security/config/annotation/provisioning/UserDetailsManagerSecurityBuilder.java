@@ -39,11 +39,11 @@ public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerSecur
         super(userDetailsManager);
     }
 
-    public UserDetailsManager build() throws Exception {
+    public UserDetailsManager userDetailsService() throws Exception {
         for(SecurityBuilder<UserDetails> userBuilder : userBuilders) {
             userDetailsService.createUser(userBuilder.build());
         }
-        return (UserDetailsManager) super.build();
+        return (UserDetailsManager) super.userDetailsService();
     }
 
     public final UserSecurityBuilder<T> withUser(String username) {

@@ -147,7 +147,7 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
         return (C) this.sharedObjects.get(sharedType);
     }
 
-    public DefaultSecurityFilterChain build() throws Exception {
+    protected DefaultSecurityFilterChain doBuild() throws Exception {
         init();
 
         this.authenticationManager = getAuthenticationRegistry().build();

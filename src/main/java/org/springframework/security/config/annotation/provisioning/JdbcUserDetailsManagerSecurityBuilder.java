@@ -27,7 +27,6 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 /**
@@ -49,14 +48,6 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
         this.dataSource = dataSource;
     }
 
-    @Override
-    public JdbcUserDetailsManager build() throws Exception {
-        if(!initScripts.isEmpty()) {
-            initDatabase().afterPropertiesSet();
-        }
-        return (JdbcUserDetailsManager) super.build();
-    }
-
     public JdbcUserDetailsManagerSecurityBuilder usersByUsernameQuery(String query) throws Exception {
         userDetailsService().setUsersByUsernameQuery(query);
         return this;
@@ -69,6 +60,9 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
 
     @Override
     public JdbcUserDetailsManager userDetailsService() throws Exception {
+        if(!initScripts.isEmpty()) {
+            initDatabase().afterPropertiesSet();
+        }
         return (JdbcUserDetailsManager) super.userDetailsService();
     }
 
