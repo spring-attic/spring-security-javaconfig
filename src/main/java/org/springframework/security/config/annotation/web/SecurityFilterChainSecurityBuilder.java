@@ -91,6 +91,10 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
         return apply(new SessionManagementConfigurator());
     }
 
+    public RememberMeConfigurator rememberMe() throws Exception {
+        return apply(new RememberMeConfigurator());
+    }
+
     public ExpressionUrlAuthorizationRegistry authorizeUrls() throws Exception {
         return apply(new ExpressionUrlAuthorizationRegistry());
     }

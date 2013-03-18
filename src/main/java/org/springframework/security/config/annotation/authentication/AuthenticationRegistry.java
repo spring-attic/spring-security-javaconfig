@@ -79,6 +79,7 @@ public class AuthenticationRegistry extends AbstractConfiguredBuilder<Authentica
 
     public AuthenticationRegistry add(
             UserDetailsService userDetailsService) throws Exception {
+        this.userDetailsService = userDetailsService;
         DaoAuthenticationConfigurator provider = new DaoAuthenticationConfigurator(userDetailsService);
         provider.init(this);
         provider.configure(this);

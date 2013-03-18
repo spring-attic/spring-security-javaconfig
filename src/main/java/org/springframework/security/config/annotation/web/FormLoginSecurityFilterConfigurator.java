@@ -25,6 +25,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -77,6 +78,10 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
         SessionAuthenticationStrategy sessionAuthenticationStrategy = builder.getSharedObject(SessionAuthenticationStrategy.class);
         if(sessionAuthenticationStrategy != null) {
             usernamePasswordFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
+        }
+        RememberMeServices rememberMeServices = builder.getSharedObject(RememberMeServices.class);
+        if(rememberMeServices != null) {
+            usernamePasswordFilter.setRememberMeServices(rememberMeServices);
         }
         usernamePasswordFilter.afterPropertiesSet();
         builder.addFilter(usernamePasswordFilter);

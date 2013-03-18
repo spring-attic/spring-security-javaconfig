@@ -48,6 +48,7 @@ public abstract class SimpleWebSecurityConfig {
     @Bean
     public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {
         SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationManager());
+        springSecurityFilterChain.setSharedObject(UserDetailsService.class, authenticationRegistry.userDetailsService());
         applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
 
