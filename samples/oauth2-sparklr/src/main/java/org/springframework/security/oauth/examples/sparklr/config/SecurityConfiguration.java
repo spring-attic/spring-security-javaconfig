@@ -1,6 +1,8 @@
 package org.springframework.security.oauth.examples.sparklr.config;
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.antMatchers;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,9 +11,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
-import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
@@ -22,12 +25,28 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
+import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
     @Autowired
     private ClientDetailsUserDetailsService clientDetailsService;
+
+    @Autowired
+    private ClientCredentialsTokenEndpointFilter clientCredentialsTokenEndpointFilter;
+
+    @Autowired
+    private OAuth2AccessDeniedHandler oauthAccessDeniedHandler;
+
+    @Autowired
+    private OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint;
+
+    @Autowired
+    private OAuth2AuthenticationProcessingFilter resourcesServerFilter;
+
+    @Autowired
+    private OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler;
 
     @Bean
     public AuthenticationManager clientAuthenticationManager() throws Exception {
@@ -47,89 +66,168 @@ public class SecurityConfiguration {
         .build();
     }
 
-    @Bean
-    public FilterChainProxySecurityBuilder builder(ClientCredentialsTokenEndpointFilter clientCredentialsTokenEndpointFilter,
-            OAuth2AccessDeniedHandler oauthAccessDeniedHandler,
-            OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint,
-            OAuth2AuthenticationProcessingFilter resourcesServerFilter,
-            OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler) throws Exception {
+    @Configuration
+    public static class OAuthTokenSecurityConfig extends WebSecurityConfigurerAdapater {
+        @Autowired
+        private SecurityConfiguration securityConfig;
 
-        return new FilterChainProxySecurityBuilder()
-            .ignoring(antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals"))
-            .securityFilterChains(
-                new SecurityFilterChainSecurityBuilder(clientAuthenticationManager())
-                    .requestMatcher(new AntPathRequestMatcher("/oauth/token"))
-                    .authenticationEntryPoint(oauthAuthenticationEntryPoint)
+        protected void registerAuthentication(
+                AuthenticationRegistry authenticationRegistry) throws Exception {
+        }
+
+        public AuthenticationManager authenticationManager() throws Exception {
+            return securityConfig.clientAuthenticationManager();
+        }
+
+        public List<RequestMatcher> ignoredRequests() {
+            return antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals");
+        }
+
+        protected void authorizeUrls(
+                ExpressionUrlAuthorizationRegistry interceptUrls) {
+            interceptUrls
+                .antMatchers("/oauth/token").fullyAuthenticated();
+        }
+
+        protected void configure(
+                DefaultSecurityFilterChainBuilder builder)
+                throws Exception {
+            builder
+                .order(1)
+                .requestMatcher(new AntPathRequestMatcher("/oauth/token"))
+                .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                     .applyDefaultConfigurators()
                     .exceptionHandling()
-                        .accessDeniedHandler(oauthAccessDeniedHandler)
+                        .accessDeniedHandler(securityConfig.oauthAccessDeniedHandler)
                         .and()
                     .logout()
                         .and()
                     .httpBasic()
-                        .authenticationEntryPoint(oauthAuthenticationEntryPoint)
+                        .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                         .and()
-                    .addFilterBefore(clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class)
-                    .authorizeUrls()
-                        .antMatchers("/oauth/token").fullyAuthenticated()
-                        .and(),
+                    .addFilterBefore(securityConfig.clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class);
+        }
+    }
 
-                new SecurityFilterChainSecurityBuilder(clientAuthenticationManager())
-                    .requestMatcher(new RegexRequestMatcher("/oauth/(users|clients)/.*",null))
-                    .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .applyDefaultConfigurators()
-                    .exceptionHandling()
-                        .accessDeniedHandler(oauthAccessDeniedHandler)
-                        .and()
-                    .logout()
-                        .and()
-                    .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
-                    .authorizeUrls()
-                        .expressionHandler(oauthWebExpressionHandler)
-                        .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
-                        .regexMatchers(HttpMethod.GET, "/oauth/users/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
-                        .regexMatchers(HttpMethod.GET, "/oauth/clients/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
-                        .and(),
+    @Configuration
+    public static class OAuthClientUserClientSecurityConfig extends WebSecurityConfigurerAdapater {
+        @Autowired
+        private SecurityConfiguration securityConfig;
 
-                new SecurityFilterChainSecurityBuilder(authManager())
-                    .requestMatcher(new AntPathRequestMatcher("/photos/**"))
-                    .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .applyDefaultConfigurators()
-                    .exceptionHandling()
-                        .accessDeniedHandler(oauthAccessDeniedHandler)
-                        .and()
-                    .logout()
-                        .and()
-                    .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
-                    .authorizeUrls()
-                        .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
-                        .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
-                        .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
-                        .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ")
-                        .and(),
+        protected void registerAuthentication(
+                AuthenticationRegistry authenticationRegistry) throws Exception {
+        }
 
-                new SecurityFilterChainSecurityBuilder(authManager())
-                    .authenticationEntryPoint(oauthAuthenticationEntryPoint)
-                    .applyDefaultConfigurators()
-                    .exceptionHandling()
-                        .accessDeniedPage("/login.jsp?authorization_error=true")
+        public AuthenticationManager authenticationManager() throws Exception {
+            return securityConfig.clientAuthenticationManager();
+        }
+
+        protected void authorizeUrls(
+                ExpressionUrlAuthorizationRegistry interceptUrls) {
+            interceptUrls
+                .expressionHandler(securityConfig.oauthWebExpressionHandler)
+                .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
+                .regexMatchers(HttpMethod.GET, "/oauth/users/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
+                .regexMatchers(HttpMethod.GET, "/oauth/clients/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')");
+        }
+
+        protected void configure(
+                DefaultSecurityFilterChainBuilder builder)
+                throws Exception {
+            builder
+                .order(2)
+                .requestMatcher(new RegexRequestMatcher("/oauth/(users|clients)/.*",null))
+                .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
+                .applyDefaultConfigurators()
+                .exceptionHandling()
+                    .accessDeniedHandler(securityConfig.oauthAccessDeniedHandler)
+                    .and()
+                .logout()
+                    .and()
+                .addFilterBefore(securityConfig.resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class);
+        }
+    }
+
+    @Configuration
+    public static class OAuthPhotosSecurityConfig extends WebSecurityConfigurerAdapater {
+        @Autowired
+        private SecurityConfiguration securityConfig;
+
+        protected void registerAuthentication(
+                AuthenticationRegistry authenticationRegistry) throws Exception {
+        }
+
+        public AuthenticationManager authenticationManager() throws Exception {
+            return securityConfig.clientAuthenticationManager();
+        }
+
+        protected void authorizeUrls(
+                ExpressionUrlAuthorizationRegistry interceptUrls) {
+            interceptUrls
+                .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+                .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
+                .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+                .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
+        }
+
+        protected void configure(
+                DefaultSecurityFilterChainBuilder builder)
+                throws Exception {
+            builder
+                .order(3)
+                .requestMatcher(new AntPathRequestMatcher("/photos/**"))
+                .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
+                .applyDefaultConfigurators()
+                .exceptionHandling()
+                    .accessDeniedHandler(securityConfig.oauthAccessDeniedHandler)
+                    .and()
+                .logout()
+                    .and()
+                .addFilterBefore(securityConfig.resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class);
+        }
+    }
+
+    @Configuration
+    public static class FormLoginSecurityConfig extends WebSecurityConfigurerAdapater {
+        @Autowired
+        private SecurityConfiguration securityConfig;
+
+        protected void registerAuthentication(
+                AuthenticationRegistry authenticationRegistry) throws Exception {
+        }
+
+        public AuthenticationManager authenticationManager() throws Exception {
+            return securityConfig.authManager();
+        }
+
+        protected void authorizeUrls(
+                ExpressionUrlAuthorizationRegistry interceptUrls) {
+            interceptUrls
+                .antMatchers("/oauth/**").hasRole("USER")
+                .antMatchers("/**").permitAll();
+        }
+
+        protected void configure(
+                DefaultSecurityFilterChainBuilder builder)
+                throws Exception {
+            builder
+                .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
+                .applyDefaultConfigurators()
+                .exceptionHandling()
+                    .accessDeniedPage("/login.jsp?authorization_error=true")
+                    .and()
+                .logout()
+                    .logoutSuccessUrl("/index.jsp")
+                    .logoutUrl("/logout.do")
+                    .and()
+                .formLogin()
+                        .usernameParameter("j_username")
+                        .passwordParameter("j_password")
+                        .failureUrl("/login.jsp?authentication_error=true")
+                        .loginPage("/login.jsp")
+                        .loginProcessingUrl("/login.do")
                         .and()
-                    .logout()
-                        .logoutSuccessUrl("/index.jsp")
-                        .logoutUrl("/logout.do")
-                        .and()
-                    .formLogin()
-                            .usernameParameter("j_username")
-                            .passwordParameter("j_password")
-                            .failureUrl("/login.jsp?authentication_error=true")
-                            .loginPage("/login.jsp")
-                            .loginProcessingUrl("/login.do")
-                            .and()
-                    .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
-                    .authorizeUrls()
-                        .antMatchers("/oauth/**").hasRole("USER")
-                        .antMatchers("/**").permitAll()
-                        .and()
-            );
+                .addFilterBefore(securityConfig.resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class);
+        }
     }
 }

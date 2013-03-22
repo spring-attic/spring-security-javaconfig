@@ -32,8 +32,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
-import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
+import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -47,7 +47,7 @@ import org.springframework.security.web.util.RequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends SimpleWebSecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapater {
     @Autowired
     private ConfigurableApplicationContext context;
 
@@ -64,7 +64,7 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
         return Encryptors.noOpText();
     }
 
-    protected List<RequestMatcher> ignoredRequests() {
+    public List<RequestMatcher> ignoredRequests() {
         return antMatchers("/resources/**");
     }
 
@@ -76,7 +76,7 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
     }
 
     protected void configure(
-            SecurityFilterChainSecurityBuilder builder)
+            DefaultSecurityFilterChainBuilder builder)
             throws Exception {
         builder
             .addFilterBefore(lazySocialAuthenticationFilter(), AbstractPreAuthenticatedProcessingFilter.class)

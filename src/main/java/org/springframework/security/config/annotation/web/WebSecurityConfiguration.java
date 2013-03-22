@@ -15,16 +15,25 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.OrderComparator;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.util.Assert;
 
 /**
@@ -35,12 +44,7 @@ import org.springframework.util.Assert;
 @Configuration
 public class WebSecurityConfiguration {
     @Autowired(required = false)
-    private FilterChainProxySecurityBuilder filterChainProxyBuilder;
-
-    @Bean
-    public FilterChainProxy springSecurityFilterChain() throws Exception {
-        return filterChainProxyBuilder().build();
-    }
+    private WebSecurityConfigurerAdapater[] webSecurityConfigurerAdapaters;
 
     @Bean
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {
@@ -48,13 +52,72 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
+    public FilterChainProxy springSecurityFilterChain() throws Exception {
+        SpringSecurityFilterChainBuilder springSecurityFilterChainBuilder = springSecurityFilterChainBuilder();
+        return springSecurityFilterChainBuilder.build();
+    }
+
+    @Bean
+    public SpringSecurityFilterChainBuilder springSecurityFilterChainBuilder() throws Exception {
+        SpringSecurityFilterChainBuilder springSecurityFilterChain = new SpringSecurityFilterChainBuilder()
+            .securityFilterChains(filterChainBuilders())
+            .ignoring(requestToIgnore());
+        for(WebSecurityConfigurerAdapater adapater : webSecurityConfiguredAdapters()) {
+            adapater.configure(springSecurityFilterChain);
+        }
+        return springSecurityFilterChain;
+    }
+
+    /**
+     * @return
+     */
+    private List<? extends RequestMatcher> requestToIgnore() {
+        List<RequestMatcher> result = new ArrayList<RequestMatcher>();
+        for(WebSecurityConfigurerAdapater adapter : webSecurityConfiguredAdapters()) {
+            result.addAll(adapter.ignoredRequests());
+        }
+        return result;
+    }
+
+    @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
+    public AuthenticationManager authenticationManager() throws Exception {
+        for(WebSecurityConfigurerAdapater adapter : webSecurityConfiguredAdapters()) {
+            AuthenticationManager authenticationManager = adapter.authenticationManager();
+            if(authenticationManager != null) {
+                return authenticationManager;
+            }
+        }
+        return null;
+    }
+
+    @Bean(name=BeanIds.USER_DETAILS_SERVICE)
+    public UserDetailsService userDetailsService() throws Exception {
+        for(WebSecurityConfigurerAdapater adapter : webSecurityConfiguredAdapters()) {
+            UserDetailsService userDetailsService = adapter.userDetailsService();
+            if(userDetailsService != null) {
+                return userDetailsService;
+            }
+        }
+        return null;
+    }
+
+    @Bean
     public WebInvocationPrivilegeEvaluator privilegeEvaluator() throws Exception {
-        FilterSecurityInterceptor securityInterceptor = filterChainProxyBuilder().securityInterceptor();
+        FilterSecurityInterceptor securityInterceptor = springSecurityFilterChainBuilder().securityInterceptor();
         return securityInterceptor == null ? null : new DefaultWebInvocationPrivilegeEvaluator(securityInterceptor);
     }
 
-    private FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-        Assert.state(filterChainProxyBuilder != null, "FilterChainProxyBuilder is required");
-        return filterChainProxyBuilder;
+    private DefaultSecurityFilterChainBuilder[] filterChainBuilders() throws Exception {
+        DefaultSecurityFilterChainBuilder[] result = new DefaultSecurityFilterChainBuilder[webSecurityConfiguredAdapters().length];
+        for(int i=0;i<webSecurityConfigurerAdapaters.length;i++) {
+            result[i] = webSecurityConfigurerAdapaters[i].defaultSecurityFilterChainBuilder();
+        }
+        Arrays.sort(result,OrderComparator.INSTANCE);
+        return result;
+    }
+
+    private WebSecurityConfigurerAdapater[] webSecurityConfiguredAdapters() {
+        Assert.state(webSecurityConfigurerAdapaters != null, "At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity");
+        return webSecurityConfigurerAdapaters;
     }
 }

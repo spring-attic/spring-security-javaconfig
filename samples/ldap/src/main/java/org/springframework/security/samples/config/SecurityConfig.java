@@ -10,20 +10,20 @@ import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
-import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
+import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.server.ApacheDSContainer;
 import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends SimpleWebSecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapater {
     private String userDn = "uid=admin,ou=system";
 
     private String password = "secret";
 
-    protected List<RequestMatcher> ignoredRequests() {
+    public List<RequestMatcher> ignoredRequests() {
         return antMatchers("/resources/**");
     }
 
@@ -44,7 +44,7 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
     }
 
     protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) throws Exception {
+            DefaultSecurityFilterChainBuilder springSecurityFilterChain) throws Exception {
         springSecurityFilterChain
             .formLogin()
             .permitAll();

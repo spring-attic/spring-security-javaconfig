@@ -69,8 +69,11 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         static AccessDecisionManager ACCESS_DECISION_MGR
 
         protected void configure(
-                SecurityFilterChainSecurityBuilder builder) {
-            builder.authorizeUrls().accessDecisionManager(ACCESS_DECISION_MGR)
+                DefaultSecurityFilterChainBuilder builder) {
+            builder
+                .authorizeUrls()
+                    .antMatchers("/**").permitAll()
+                    .accessDecisionManager(ACCESS_DECISION_MGR)
         }
     }
 
@@ -84,7 +87,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
         protected void configure(
-                SecurityFilterChainSecurityBuilder builder) {
+                DefaultSecurityFilterChainBuilder builder) {
             builder.exceptionHandling().accessDeniedPage("/AccessDeniedPageConfig")
         }
     }
@@ -104,7 +107,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
             return super.authenticationMgr();
         }
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
         }
     }
 
@@ -122,7 +125,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class DefaultUrlRewritingConfig extends BaseWebConfig {
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
         }
     }
 
@@ -138,7 +141,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class EnableUrlRewritingConfig extends BaseWebConfig {
         protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+            DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
             HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository()
             repository.disableUrlRewriting = false // explicitly configured (not necessary due to default values)
 
@@ -155,7 +158,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class EntryPointRefConfig extends BaseWebConfig {
-        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+        protected void configure(DefaultSecurityFilterChainBuilder builder) {
             builder
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/EntryPointRefConfig"))
         }
@@ -170,7 +173,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class JaasApiProvisionConfig extends BaseWebConfig {
-        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+        protected void configure(DefaultSecurityFilterChainBuilder builder) {
             builder
                 .addFilter(new JaasApiIntegrationFilter())
         }
@@ -187,7 +190,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class OncePerRequestConfig extends BaseWebConfig {
-        protected void configure(SecurityFilterChainSecurityBuilder builder) {}
+        protected void configure(DefaultSecurityFilterChainBuilder builder) {}
     }
 
     // http@path-type is not available (instead request matcher instances are used)
@@ -203,7 +206,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class RealmConfig extends BaseWebConfig {
-        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+        protected void configure(DefaultSecurityFilterChainBuilder builder) {
             builder.httpBasic().realmName("RealmConfig")
         }
     }
@@ -220,7 +223,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class RequestMatcherRefConfig extends BaseWebConfig {
 
-        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+        protected void configure(DefaultSecurityFilterChainBuilder builder) {
             builder.requestMatcher(new AntPathRequestMatcher("/api/**"))
         }
     }
@@ -237,10 +240,10 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class SecurityNoneConfig extends BaseWebConfig {
-        protected List<RequestMatcher> ignoredRequests() {
+        public List<RequestMatcher> ignoredRequests() {
             return antMatchers("/resources/**","/public/**") // security=none
         }
-        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+        protected void configure(DefaultSecurityFilterChainBuilder builder) {
         }
     }
 
@@ -254,7 +257,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class SecurityContextRepoConfig extends BaseWebConfig {
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
             springSecurityFilterChain
                 .securityContextRepsitory(new NullSecurityContextRepository()) // security-context-repository-ref
         }
@@ -270,7 +273,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class ServletApiProvisionConfig extends BaseWebConfig {
         protected void configure(
-                SecurityFilterChainSecurityBuilder builder) {
+                DefaultSecurityFilterChainBuilder builder) {
             builder.servletApi().disable()
         }
     }
@@ -286,7 +289,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class ServletApiProvisionDefaultsConfig extends BaseWebConfig {
 
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
         }
     }
 
@@ -300,18 +303,18 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     @EnableWebSecurity
-    static class DisableUseExpressionsConfig extends BaseAuthenticationConfig {
-        @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
-                .securityFilterChains(
-                    new SecurityFilterChainSecurityBuilder(authenticationManager())
-                            .apply(new UrlAuthorizationRegistry())
-                                .antMatchers("/users**","/sessions/**").hasRole("USER")
-                                .antMatchers("/signup").hasRole("ANONYMOUS")
-                                .antMatchers("/**").hasRole("USER")
-                                .and()
-                )
+    static class DisableUseExpressionsConfig extends BaseWebConfig {
+
+        protected void authorizeUrls(
+                ExpressionUrlAuthorizationRegistry interceptUrls) {
+        }
+
+        protected void configure(DefaultSecurityFilterChainBuilder builder) throws Exception {
+            builder
+                .apply(new UrlAuthorizationRegistry())
+                    .antMatchers("/users**","/sessions/**").hasRole("USER")
+                    .antMatchers("/signup").hasRole("ANONYMOUS")
+                    .antMatchers("/**").hasRole("USER")
         }
     }
 }

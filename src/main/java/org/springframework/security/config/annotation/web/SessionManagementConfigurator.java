@@ -31,7 +31,7 @@ import org.springframework.security.web.session.SessionManagementFilter;
  * @author Rob Winch
  *
  */
-public class SessionManagementConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
+public class SessionManagementConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
     private SessionManagementFilter sessionManagementFilter;
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
@@ -60,12 +60,12 @@ public class SessionManagementConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
-    protected void doInit(SecurityFilterChainSecurityBuilder builder)
+    protected void doInit(DefaultSecurityFilterChainBuilder builder)
             throws Exception {
         builder.setSharedObject(SessionAuthenticationStrategy.class, getSessionAuthenticationStrategy());
     }
 
-    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(DefaultSecurityFilterChainBuilder builder)
             throws Exception {
         sessionManagementFilter = new SessionManagementFilter(builder.getSharedObject(SecurityContextRepository.class), getSessionAuthenticationStrategy());
         builder.addFilter(sessionManagementFilter);

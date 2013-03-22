@@ -28,7 +28,7 @@ import org.springframework.security.config.annotation.provisioning.InMemoryUserD
  */
 @Configuration
 @EnableWebSecurity
-abstract class BaseWebConfig extends SimpleWebSecurityConfig {
+abstract class BaseWebConfig extends WebSecurityConfigurerAdapater {
     protected void authorizeUrls(
             ExpressionUrlAuthorizationRegistry interceptUrls) {
         interceptUrls

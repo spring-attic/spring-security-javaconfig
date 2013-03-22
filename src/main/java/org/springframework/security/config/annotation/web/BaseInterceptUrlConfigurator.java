@@ -32,7 +32,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  */
 abstract class BaseInterceptUrlConfigurator<T> extends
         BaseRequestMatcherRegistry<T> implements
-        SecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
+        SecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
     private Boolean filterSecurityInterceptorOncePerRequest;
 
     private AccessDecisionManager accessDecisionManager;
@@ -60,9 +60,13 @@ abstract class BaseInterceptUrlConfigurator<T> extends
         return new ConsensusBased(decisionVoters());
     }
 
-    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(DefaultSecurityFilterChainBuilder builder)
             throws Exception {
-        FilterSecurityInterceptor securityInterceptor = securityInterceptor(builder.authenticationManager());
+        FilterInvocationSecurityMetadataSource metadataSource = createMetadataSource();
+        if(metadataSource == null) {
+            return;
+        }
+        FilterSecurityInterceptor securityInterceptor = securityInterceptor(metadataSource , builder.authenticationManager());
         if(filterSecurityInterceptorOncePerRequest != null) {
             securityInterceptor.setObserveOncePerRequest(filterSecurityInterceptorOncePerRequest);
         }
@@ -70,9 +74,9 @@ abstract class BaseInterceptUrlConfigurator<T> extends
         builder.setSharedObject(FilterSecurityInterceptor.class, securityInterceptor);
     }
 
-    private FilterSecurityInterceptor securityInterceptor(AuthenticationManager authenticationManager) throws Exception {
+    private FilterSecurityInterceptor securityInterceptor(FilterInvocationSecurityMetadataSource metadataSource, AuthenticationManager authenticationManager) throws Exception {
         FilterSecurityInterceptor securityInterceptor = new FilterSecurityInterceptor();
-        securityInterceptor.setSecurityMetadataSource(createMetadataSource());
+        securityInterceptor.setSecurityMetadataSource(metadataSource);
         securityInterceptor.setAccessDecisionManager(accessDecisionManager());
         securityInterceptor.setAuthenticationManager(authenticationManager);
         securityInterceptor.afterPropertiesSet();

@@ -33,14 +33,14 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class FilterChainProxySecurityBuilder extends AbstractSecurityBuilder<FilterChainProxy> {
+public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<FilterChainProxy> {
     private List<RequestMatcher> ignoredRequests = new ArrayList<RequestMatcher>();
-    private List<SecurityFilterChainSecurityBuilder> filterChains = new ArrayList<SecurityFilterChainSecurityBuilder>();
+    private List<DefaultSecurityFilterChainBuilder> filterChains = new ArrayList<DefaultSecurityFilterChainBuilder>();
     private FilterSecurityInterceptor filterSecurityInterceptor;
     private HttpFirewall httpFirewall;
 
     // TODO change this to SecurityBuilder<SecurityFilterChain> when we eliminate the need for creating a global WebInvocationPrivilegeEvaluator
-    public FilterChainProxySecurityBuilder securityFilterChains(SecurityFilterChainSecurityBuilder... securityFilterChainBuilders) {
+    public SpringSecurityFilterChainBuilder securityFilterChains(DefaultSecurityFilterChainBuilder... securityFilterChainBuilders) {
         filterChains = Arrays.asList(securityFilterChainBuilders);
         return this;
     }
@@ -52,7 +52,7 @@ public class FilterChainProxySecurityBuilder extends AbstractSecurityBuilder<Fil
         for(RequestMatcher ignoredRequest : ignoredRequests) {
             securityFilterChains.add(new DefaultSecurityFilterChain(ignoredRequest));
         }
-        for(SecurityFilterChainSecurityBuilder builder : filterChains) {
+        for(DefaultSecurityFilterChainBuilder builder : filterChains) {
             securityFilterChains.add(builder.build());
             this.filterSecurityInterceptor = builder.getSharedObject(FilterSecurityInterceptor.class);
         }
@@ -63,12 +63,12 @@ public class FilterChainProxySecurityBuilder extends AbstractSecurityBuilder<Fil
         return filterChainProxy;
     }
 
-    public FilterChainProxySecurityBuilder httpFirewall(HttpFirewall httpFirewall) {
+    public SpringSecurityFilterChainBuilder httpFirewall(HttpFirewall httpFirewall) {
         this.httpFirewall = httpFirewall;
         return this;
     }
 
-    public FilterChainProxySecurityBuilder ignoring(List<? extends RequestMatcher> requestsToIgnore) {
+    public SpringSecurityFilterChainBuilder ignoring(List<? extends RequestMatcher> requestsToIgnore) {
         this.ignoredRequests = new ArrayList<RequestMatcher>(requestsToIgnore);
         return this;
     }

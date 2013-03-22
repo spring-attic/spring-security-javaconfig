@@ -32,10 +32,10 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.config.annotation.BaseSpringSpec;
 import org.springframework.security.config.annotation.web.ExceptionHandlingConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.FilterChainProxySecurityBuilder;
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
 import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
-import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
+import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.DefaultSecurityFilterChain
@@ -61,32 +61,32 @@ import spock.lang.Specification
  */
 class DefaultFiltersTests extends BaseSpringSpec {
 
-    def "FilterChainProxyBuilder cannot be null"() {
+    def "DefaultSecurityFilterChainBuilder cannot be null"() {
         when:
         context = new AnnotationConfigApplicationContext(FilterChainProxyBuilderMissingConfig)
         then:
         BeanCreationException e = thrown()
-        e.message.contains "FilterChainProxyBuilder is required"
+        e.message.contains "At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity"
     }
 
     @Configuration
     @EnableWebSecurity
     static class FilterChainProxyBuilderMissingConfig { }
 
-    def "FilterChainProxyBuilder no SecurityFilterBuilder specified"() {
+    def "FilterChainProxyBuilder no DefaultSecurityFilterChainBuilder specified"() {
         when:
         context = new AnnotationConfigApplicationContext(FilterChainProxyBuilderNoSecurityFilterBuildersConfig)
         then:
         BeanCreationException e = thrown()
-        e.message.contains "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains"
+        e.message.contains "At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity"
     }
 
     @Configuration
     @EnableWebSecurity
     static class FilterChainProxyBuilderNoSecurityFilterBuildersConfig {
         @Bean
-        public FilterChainProxySecurityBuilder filterChainProxyBuilder() {
-            new FilterChainProxySecurityBuilder()
+        public SpringSecurityFilterChainBuilder filterChainProxyBuilder() {
+            new SpringSecurityFilterChainBuilder()
                 .ignoring(antMatchers("/resources/**"))
         }
     }
@@ -106,12 +106,12 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class NullWebInvocationPrivilegeEvaluatorConfig extends BaseWebConfig {
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
             springSecurityFilterChain.formLogin()
         }
 
         @Override
-        protected void applyDefaults(SecurityFilterChainSecurityBuilder builder)
+        protected void applyDefaults(DefaultSecurityFilterChainBuilder builder)
                 throws Exception {
         }
     }
@@ -134,11 +134,11 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FilterChainProxyBuilderIgnoringConfig extends BaseWebConfig {
-        protected List<RequestMatcher> ignoredRequests() {
+        public List<RequestMatcher> ignoredRequests() {
             return antMatchers("/resources/**")
         }
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
         }
     }
 
@@ -160,11 +160,11 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class DefaultFiltersConfigPermitAll extends BaseWebConfig {
-        protected List<RequestMatcher> ignoredRequests() {
+        public List<RequestMatcher> ignoredRequests() {
             return antMatchers("/resources/**")
         }
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
         }
     }
 }

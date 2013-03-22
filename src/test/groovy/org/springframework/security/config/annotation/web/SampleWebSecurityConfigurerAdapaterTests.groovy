@@ -57,10 +57,10 @@ import org.springframework.security.web.util.RequestMatcher
  * @author Rob Winch
  *
  */
-public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
+public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySpec {
     def "README Sample works"() {
         setup:
-        loadConfig(SampleSimpleWebSecurityConfig)
+        loadConfig(SampleWebSecurityConfigurerAdapater)
         when:
         springSecurityFilterChain.doFilter(request,response,chain)
         then:
@@ -114,7 +114,8 @@ public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
      * @author Rob Winch
      */
     @Configuration
-    public static class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
+    @EnableWebSecurity
+    public static class SampleWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
         protected void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
@@ -122,8 +123,10 @@ public class SampleSimpleWebSecurityConfigTests extends BaseWebSpecuritySpec {
         }
 
         protected void configure(
-                SecurityFilterChainSecurityBuilder builder) {
-            builder.formLogin().permitAll();
+                DefaultSecurityFilterChainBuilder builder) {
+            builder
+                .formLogin()
+                    .permitAll();
         }
 
         protected void registerAuthentication(AuthenticationRegistry registry) {

@@ -79,7 +79,7 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
         static EXPRESSION_HANDLER;
 
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain)
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain)
                 throws Exception {
         }
 

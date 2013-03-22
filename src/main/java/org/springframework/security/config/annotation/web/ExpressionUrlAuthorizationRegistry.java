@@ -17,6 +17,7 @@ package org.springframework.security.config.annotation.web;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -69,7 +70,8 @@ public class ExpressionUrlAuthorizationRegistry extends BaseInterceptUrlConfigur
     }
 
     ExpressionBasedFilterInvocationSecurityMetadataSource createMetadataSource() {
-        return new ExpressionBasedFilterInvocationSecurityMetadataSource(createRequestMap(), expressionHandler);
+        LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = createRequestMap();
+        return requestMap.isEmpty() ? null : new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, expressionHandler);
     }
 
     public static String hasRole(String role) {

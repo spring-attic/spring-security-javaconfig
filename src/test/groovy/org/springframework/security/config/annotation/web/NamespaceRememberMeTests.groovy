@@ -128,7 +128,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
     @Configuration
     static class RememberMeConfig extends BaseWebConfig {
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
                 springSecurityFilterChain
                     .formLogin()
                         .and()

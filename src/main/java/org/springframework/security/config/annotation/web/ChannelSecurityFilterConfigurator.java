@@ -41,7 +41,7 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
     private InsecureChannelProcessor insecureChannelProcessor = new InsecureChannelProcessor();
     private SecureChannelProcessor secureChannelProcessor = new SecureChannelProcessor();
 
-    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(DefaultSecurityFilterChainBuilder builder)
             throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(Arrays.<ChannelProcessor>asList(insecureChannelProcessor,secureChannelProcessor));

@@ -32,7 +32,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  *
  */
-abstract class BaseRequestMatcherRegistry<T> extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
+abstract class BaseRequestMatcherRegistry<T> extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
 
     List<UrlMapping> getUrlMappings() {

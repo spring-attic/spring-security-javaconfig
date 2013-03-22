@@ -24,9 +24,9 @@ import org.springframework.security.web.context.SecurityContextRepository;
  * @author Rob Winch
  *
  */
-public class SecurityContextConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
+public class SecurityContextConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
 
-    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(DefaultSecurityFilterChainBuilder builder)
             throws Exception {
         SecurityContextPersistenceFilter securityContextFilter = new SecurityContextPersistenceFilter(builder.getSharedObject(SecurityContextRepository.class));
         securityContextFilter.afterPropertiesSet();

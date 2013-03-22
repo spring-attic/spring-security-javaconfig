@@ -9,15 +9,15 @@ import org.springframework.security.config.annotation.authentication.Authenticat
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
-import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
+import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
-public class SecurityConfig extends SimpleWebSecurityConfig {
-    protected List<RequestMatcher> ignoredRequests() {
+public class SecurityConfig extends WebSecurityConfigurerAdapater {
+    public List<RequestMatcher> ignoredRequests() {
         return antMatchers("/resources/**");
     }
 
@@ -38,7 +38,7 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
     }
 
     protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) throws Exception {
+            DefaultSecurityFilterChainBuilder springSecurityFilterChain) throws Exception {
         springSecurityFilterChain
             .formLogin()
             .permitAll();

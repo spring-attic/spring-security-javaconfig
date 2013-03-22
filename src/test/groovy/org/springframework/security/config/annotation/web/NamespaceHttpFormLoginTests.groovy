@@ -107,11 +107,11 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginConfig extends BaseWebConfig {
-        protected List<RequestMatcher> ignoredRequests() {
+        public List<RequestMatcher> ignoredRequests() {
             return antMatchers("/resources/**")
         }
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
                 springSecurityFilterChain.formLogin()
         }
     }
@@ -144,7 +144,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomConfig extends BaseWebConfig {
-        protected void configure(SecurityFilterChainSecurityBuilder builder) {
+        protected void configure(DefaultSecurityFilterChainBuilder builder) {
 
                 builder
                     .formLogin()
@@ -185,7 +185,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
         @Override
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
                 springSecurityFilterChain
                     .formLogin()
                         .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure"))

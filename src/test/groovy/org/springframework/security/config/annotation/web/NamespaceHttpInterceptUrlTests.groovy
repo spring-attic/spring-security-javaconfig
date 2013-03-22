@@ -189,7 +189,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
 
     @Configuration
     @EnableWebSecurity
-    static class HttpInterceptUrlConfig extends SimpleWebSecurityConfig {
+    static class HttpInterceptUrlConfig extends WebSecurityConfigurerAdapater {
         @Override
         protected void authorizeUrls(
                 ExpressionUrlAuthorizationRegistry interceptUrls) {
@@ -207,7 +207,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
         }
 
         protected void configure(
-                SecurityFilterChainSecurityBuilder builder)
+                DefaultSecurityFilterChainBuilder builder)
                 throws Exception {
                     builder
                         .requiresChannel()

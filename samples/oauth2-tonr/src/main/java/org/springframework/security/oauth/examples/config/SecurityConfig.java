@@ -9,15 +9,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
-import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
+import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends SimpleWebSecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapater {
     @Autowired
     private OAuth2ClientContextFilter oauth2ClientFilter;
 
@@ -36,12 +36,12 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
             .antMatchers("/**");
     }
 
-    protected List<RequestMatcher> ignoredRequests() {
+    public List<RequestMatcher> ignoredRequests() {
         return antMatchers("/resources/**");
     }
 
     protected void configure(
-            SecurityFilterChainSecurityBuilder builder) throws Exception {
+            DefaultSecurityFilterChainBuilder builder) throws Exception {
         builder
             .addFilterAfter(oauth2ClientFilter, ExceptionTranslationFilter.class)
             .logout()

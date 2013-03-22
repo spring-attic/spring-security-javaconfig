@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
-public class LogoutConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> {
+public class LogoutConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";
@@ -84,14 +84,14 @@ public class LogoutConfigurator extends AbstractSecurityConfigurator<DefaultSecu
         return logoutUrl;
     }
 
-    protected void doInit(SecurityFilterChainSecurityBuilder builder)
+    protected void doInit(DefaultSecurityFilterChainBuilder builder)
             throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(builder, this.logoutUrl, this.logoutSuccessUrl);
         }
     }
 
-    protected void doConfigure(SecurityFilterChainSecurityBuilder builder)
+    protected void doConfigure(DefaultSecurityFilterChainBuilder builder)
             throws Exception {
         LogoutFilter logoutFilter = createLogoutFilter();
         builder.addFilter(logoutFilter);

@@ -19,8 +19,6 @@ package org.springframework.security.config.annotation.web;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,51 +28,56 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  *
  */
-@Configuration
-@EnableWebSecurity
-public abstract class SimpleWebSecurityConfig {
+public abstract class WebSecurityConfigurerAdapater {
     private AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry();
+    private AuthenticationManager authenticationManager;
 
     protected abstract void registerAuthentication(AuthenticationRegistry authenticationRegistry) throws Exception;
 
-    protected void applyDefaults(SecurityFilterChainSecurityBuilder builder) throws Exception {
+    protected void applyDefaults(DefaultSecurityFilterChainBuilder builder) throws Exception {
         builder.applyDefaultConfigurators();
         authorizeUrls(builder.authorizeUrls());
     }
 
     protected abstract void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls);
 
-    @Bean
-    public FilterChainProxySecurityBuilder springSecurityFilterChainBuilder() throws Exception {
-        SecurityFilterChainSecurityBuilder springSecurityFilterChain = new SecurityFilterChainSecurityBuilder(authenticationManager());
+    public DefaultSecurityFilterChainBuilder defaultSecurityFilterChainBuilder() throws Exception {
+        DefaultSecurityFilterChainBuilder springSecurityFilterChain = new DefaultSecurityFilterChainBuilder(authenticationManager());
         springSecurityFilterChain.setSharedObject(UserDetailsService.class, authenticationRegistry.userDetailsService());
         applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
-
-        FilterChainProxySecurityBuilder result = new FilterChainProxySecurityBuilder()
-            .securityFilterChains(springSecurityFilterChain);
-        result.ignoring(ignoredRequests());
-        configure(result);
-        return result;
+        return springSecurityFilterChain;
     }
 
-    @Bean
     public AuthenticationManager authenticationManager() throws Exception {
+        if(authenticationManager == null) {
+            authenticationManager = createAuthenticationManager();
+        }
+        return authenticationManager;
+    }
+
+    private AuthenticationManager createAuthenticationManager() throws Exception {
         registerAuthentication(authenticationRegistry);
         return authenticationRegistry.build();
     }
 
-    @Bean
     public UserDetailsService userDetailsService() {
         return authenticationRegistry.userDetailsService();
     }
 
-    protected void configure(FilterChainProxySecurityBuilder securityFilterChains){
+    final void performConfigure(SpringSecurityFilterChainBuilder securityFilterChains){
+        securityFilterChains
+            .ignoring(ignoredRequests());
+        configure(securityFilterChains);
     }
 
-    protected List<RequestMatcher> ignoredRequests() {
+    protected void configure(SpringSecurityFilterChainBuilder securityFilterChains){
+
+    }
+
+    public List<RequestMatcher> ignoredRequests() {
         return Collections.emptyList();
     }
 
-    protected abstract void configure(SecurityFilterChainSecurityBuilder springSecurityFilterChain) throws Exception;
+    protected abstract void configure(DefaultSecurityFilterChainBuilder springSecurityFilterChain) throws Exception;
 }

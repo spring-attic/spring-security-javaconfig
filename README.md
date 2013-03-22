@@ -46,16 +46,18 @@ Sample Web Configuration
 The following configuration
 
     @Configuration
-    public class SampleSimpleWebSecurityConfig extends SimpleWebSecurityConfig {
+    @EnableWebSecurity
+    public static class SampleWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
         protected void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(
-                SecurityFilterChainSecurityBuilder builder) {
-            builder.formLogin().permitAll();
+        protected void configure(DefaultSecurityFilterChainBuilder builder) {
+            builder
+                .formLogin()
+                    .permitAll();
         }
 
         protected void registerAuthentication(AuthenticationRegistry registry) {

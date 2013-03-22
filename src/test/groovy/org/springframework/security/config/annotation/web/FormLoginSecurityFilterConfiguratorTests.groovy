@@ -82,13 +82,13 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FormLoginConfig extends BaseWebConfig {
-        protected List<RequestMatcher> ignoredRequests() {
+        public List<RequestMatcher> ignoredRequests() {
             return antMatchers("/resources/**")
         }
 
         @Override
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
             springSecurityFilterChain.formLogin()
         }
     }
@@ -113,13 +113,13 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FormLoginConfigPermitAll extends BaseWebConfig {
-        protected List<RequestMatcher> ignoredRequests() {
+        public List<RequestMatcher> ignoredRequests() {
             return antMatchers("/resources/**")
         }
 
         @Override
         protected void configure(
-                SecurityFilterChainSecurityBuilder springSecurityFilterChain) {
+                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
             springSecurityFilterChain.formLogin().permitAll()
         }
     }

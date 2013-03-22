@@ -3,26 +3,28 @@ package org.springframework.security.samples.config;
 
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.antMatchers;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.SecurityFilterChainSecurityBuilder;
-import org.springframework.security.config.annotation.web.SimpleWebSecurityConfig;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends SimpleWebSecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapater {
     @Autowired
     private DataSource dataSource;
 
-    protected List<RequestMatcher> ignoredRequests() {
+    public List<RequestMatcher> ignoredRequests() {
         return antMatchers("/resources/**");
     }
 
@@ -35,6 +37,11 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
                 .withDefaultSchema();
     }
 
+    @Bean public Object now() {
+        System.out.println(dataSource);
+        return new Date();
+    }
+
     protected void authorizeUrls(
             ExpressionUrlAuthorizationRegistry interceptUrls) {
         interceptUrls
@@ -44,7 +51,7 @@ public class SecurityConfig extends SimpleWebSecurityConfig {
     }
 
     protected void configure(
-            SecurityFilterChainSecurityBuilder springSecurityFilterChain) throws Exception {
+            DefaultSecurityFilterChainBuilder springSecurityFilterChain) throws Exception {
         springSecurityFilterChain
             .formLogin()
             .permitAll();

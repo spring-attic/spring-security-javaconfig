@@ -115,6 +115,7 @@ configure(allprojects) { p->
 
 configure(rootProject) {
     dependencies {
+        compile "org.springframework.security:spring-security-config:$springSecurityVersion"
         optional "org.aspectj:aspectjrt:${aspectjVersion}",
                  apacheDsDependencies,
                  "org.springframework.security:spring-security-ldap:$springSecurityVersion"

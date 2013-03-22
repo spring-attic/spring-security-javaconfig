@@ -17,7 +17,6 @@ package org.springframework.security.config.annotation.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +24,7 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 
+import org.springframework.core.Ordered;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -47,7 +47,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,SecurityFilterChainSecurityBuilder> implements SecurityBuilder<DefaultSecurityFilterChain>{
+public class DefaultSecurityFilterChainBuilder extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> implements SecurityBuilder<DefaultSecurityFilterChain>, Ordered {
 
     private AuthenticationManager authenticationManager;
 
@@ -56,22 +56,24 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
     private FilterComparator comparitor = new FilterComparator();
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
+    private int order = LOWEST_PRECEDENCE;
 
-    public SecurityFilterChainSecurityBuilder(AuthenticationManager authenticationManager) {
+
+    public DefaultSecurityFilterChainBuilder(AuthenticationManager authenticationManager) {
         initDefaults(authenticationManager);
     }
 
-    public SecurityFilterChainSecurityBuilder(AuthenticationProvider provider) {
+    public DefaultSecurityFilterChainBuilder(AuthenticationProvider provider) {
         this(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    public SecurityFilterChainSecurityBuilder(UserDetailsService userDetailsService) {
+    public DefaultSecurityFilterChainBuilder(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         initDefaults(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    public SecurityFilterChainSecurityBuilder applyDefaultConfigurators() throws Exception {
+    public DefaultSecurityFilterChainBuilder applyDefaultConfigurators() throws Exception {
         exceptionHandling();
         sessionManagement();
         securityContext();
@@ -82,7 +84,7 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
         return this;
     }
 
-    protected <C extends SecurityConfigurator<DefaultSecurityFilterChain, SecurityFilterChainSecurityBuilder>> C getConfigurator(
+    protected <C extends SecurityConfigurator<DefaultSecurityFilterChain, DefaultSecurityFilterChainBuilder>> C getConfigurator(
             Class<C> clazz) {
         return super.getConfigurator(clazz);
     }
@@ -162,7 +164,7 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }
 
-    public SecurityFilterChainSecurityBuilder authenticationProvider(AuthenticationProvider authenticationProvider) {
+    public DefaultSecurityFilterChainBuilder authenticationProvider(AuthenticationProvider authenticationProvider) {
         getAuthenticationRegistry().add(authenticationProvider);
         return this;
     }
@@ -171,28 +173,33 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
         return getSharedObject(AuthenticationRegistry.class);
     }
 
-    public SecurityFilterChainSecurityBuilder securityContextRepsitory(SecurityContextRepository securityContextRepository) {
+    public DefaultSecurityFilterChainBuilder securityContextRepsitory(SecurityContextRepository securityContextRepository) {
         this.setSharedObject(SecurityContextRepository.class, securityContextRepository);
         return this;
     }
 
-    public SecurityFilterChainSecurityBuilder addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
+    public DefaultSecurityFilterChainBuilder addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerAfter(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public SecurityFilterChainSecurityBuilder addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
+    public DefaultSecurityFilterChainBuilder addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerBefore(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public SecurityFilterChainSecurityBuilder addFilter(Filter filter) {
+    public DefaultSecurityFilterChainBuilder addFilter(Filter filter) {
         this.filters.add(filter);
         return this;
     }
 
-    public SecurityFilterChainSecurityBuilder requestMatcher(RequestMatcher requestMatcher) {
+    public DefaultSecurityFilterChainBuilder requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
+        return this;
+    }
+
+    public DefaultSecurityFilterChainBuilder order(int order) {
+        this.order = order;
         return this;
     }
 
@@ -205,7 +212,7 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
         return authenticationEntryPoint;
     }
 
-    public SecurityFilterChainSecurityBuilder authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+    public DefaultSecurityFilterChainBuilder authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         return this;
     }
@@ -218,5 +225,9 @@ public class SecurityFilterChainSecurityBuilder extends AbstractConfiguredBuilde
         AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry()
                 .parentAuthenticationManager(parent);
         setSharedObject(AuthenticationRegistry.class, authenticationRegistry);
+    }
+
+    public int getOrder() {
+        return order;
     }
 }
