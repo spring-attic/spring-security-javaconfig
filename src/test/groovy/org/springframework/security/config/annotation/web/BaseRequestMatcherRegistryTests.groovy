@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
@@ -61,7 +62,7 @@ class BaseRequestMatcherRegistryTests extends Specification {
         matchers.collect {it.class } == [AntPathRequestMatcher]
     }
 
-    static class BaseRequestMatcherRegistryStub extends BaseRequestMatcherRegistry<List<RequestMatcher>> {
+    static class BaseRequestMatcherRegistryStub extends BaseRequestMatcherRegistry<List<RequestMatcher>,DefaultSecurityFilterChain,HttpConfiguration> {
         List<AccessDecisionVoter> decisionVoters() {
             return null;
         }

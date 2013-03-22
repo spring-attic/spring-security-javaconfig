@@ -31,7 +31,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  *
  */
 abstract class BaseInterceptUrlConfigurator<T> extends
-        BaseRequestMatcherRegistry<T> implements
+        BaseRequestMatcherRegistry<T,DefaultSecurityFilterChain,HttpConfiguration> implements
         SecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
     private Boolean filterSecurityInterceptorOncePerRequest;
 

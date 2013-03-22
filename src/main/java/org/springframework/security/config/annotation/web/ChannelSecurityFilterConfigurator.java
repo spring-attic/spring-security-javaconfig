@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.access.channel.ChannelProcessor;
@@ -35,7 +36,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl> {
+public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private InsecureChannelProcessor insecureChannelProcessor = new InsecureChannelProcessor();

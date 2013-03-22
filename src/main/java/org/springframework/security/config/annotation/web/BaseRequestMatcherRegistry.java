@@ -24,15 +24,20 @@ import java.util.List;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.web.util.RequestMatchers;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
+ *
  * @author Rob Winch
  *
+ * @param <C> The object that is returned or Chained after creating the RequestMatcher
+ * @param <O> The Object being built by Builder B
+ * @param <B> The Builder that is building Object O
  */
-abstract class BaseRequestMatcherRegistry<T> extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> extends AbstractSecurityConfigurator<O,B> {
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
 
     List<UrlMapping> getUrlMappings() {
@@ -47,28 +52,28 @@ abstract class BaseRequestMatcherRegistry<T> extends AbstractSecurityConfigurato
         this.urlMappings.add(index, urlMapping);
     }
 
-    public T antMatchers(HttpMethod method, String... antPatterns) {
+    public C antMatchers(HttpMethod method, String... antPatterns) {
         return chainRequestMatchers(RequestMatchers.antMatchers(method, antPatterns));
     }
 
-    public T antMatchers(String... antPatterns) {
+    public C antMatchers(String... antPatterns) {
         return chainRequestMatchers(RequestMatchers.antMatchers(antPatterns));
     }
 
-    public T regexMatchers(HttpMethod method, String... regexPatterns) {
+    public C regexMatchers(HttpMethod method, String... regexPatterns) {
         return chainRequestMatchers(RequestMatchers.regexMatchers(method,
                 regexPatterns));
     }
 
-    public T regexMatchers(String... regexPatterns) {
+    public C regexMatchers(String... regexPatterns) {
         return chainRequestMatchers(RequestMatchers.regexMatchers(regexPatterns));
     }
 
-    public T requestMatchers(RequestMatcher... requestMatchers) {
+    public C requestMatchers(RequestMatcher... requestMatchers) {
         return chainRequestMatchers(Arrays.asList(requestMatchers));
     }
 
-    abstract T chainRequestMatchers(List<RequestMatcher> requestMatchers);
+    abstract C chainRequestMatchers(List<RequestMatcher> requestMatchers);
 
     LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> createRequestMap() {
         LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>();

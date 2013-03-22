@@ -6,10 +6,10 @@ package org.springframework.security.config.annotation;
  *
  * @author Rob Winch
  *
- * @param <T> The object being built by B
- * @param <B> The SecurityBuilder that builds objects of type T
+ * @param <O> The object being built by B
+ * @param <B> The SecurityBuilder that builds objects of type O
  */
-public interface SecurityConfigurator<T,B extends SecurityBuilder<T>> {
+public interface SecurityConfigurator<O,B extends SecurityBuilder<O>> {
     void init(B builder) throws Exception;
 
     void configure(B builder) throws Exception;
