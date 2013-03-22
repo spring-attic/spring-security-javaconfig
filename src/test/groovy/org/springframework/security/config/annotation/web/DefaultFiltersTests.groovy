@@ -36,6 +36,7 @@ import org.springframework.security.config.annotation.web.SpringSecurityFilterCh
 import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.DefaultSecurityFilterChain
@@ -134,8 +135,9 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FilterChainProxyBuilderIgnoringConfig extends BaseWebConfig {
-        public List<RequestMatcher> ignoredRequests() {
-            return antMatchers("/resources/**")
+        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+            ignoredRequests
+                .antMatchers("/resources/**");
         }
         protected void configure(
                 HttpConfiguration springSecurityFilterChain) {
@@ -160,8 +162,9 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class DefaultFiltersConfigPermitAll extends BaseWebConfig {
-        public List<RequestMatcher> ignoredRequests() {
-            return antMatchers("/resources/**")
+        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+            ignoredRequests
+                .antMatchers("/resources/**");
         }
         protected void configure(
                 HttpConfiguration springSecurityFilterChain) {

@@ -27,6 +27,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.FilterChainProxy
@@ -82,8 +83,9 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FormLoginConfig extends BaseWebConfig {
-        public List<RequestMatcher> ignoredRequests() {
-            return antMatchers("/resources/**")
+        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+            ignoredRequests
+                .antMatchers("/resources/**");
         }
 
         @Override
@@ -113,8 +115,9 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FormLoginConfigPermitAll extends BaseWebConfig {
-        public List<RequestMatcher> ignoredRequests() {
-            return antMatchers("/resources/**")
+        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+            ignoredRequests
+                .antMatchers("/resources/**");
         }
 
         @Override

@@ -26,7 +26,6 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.web.util.RequestMatchers;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**

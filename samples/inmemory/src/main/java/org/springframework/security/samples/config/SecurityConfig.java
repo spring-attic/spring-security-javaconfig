@@ -1,24 +1,22 @@
 package org.springframework.security.samples.config;
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-
-import java.util.List;
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
-import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapater {
-    public List<RequestMatcher> ignoredRequests() {
-        return antMatchers("/resources/**");
+
+    protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+        ignoredRequests
+            .antMatchers("/resources/**");
     }
 
     protected void registerAuthentication(

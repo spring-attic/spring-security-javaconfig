@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
@@ -79,8 +80,9 @@ public class SecurityConfiguration {
             return securityConfig.clientAuthenticationManager();
         }
 
-        public List<RequestMatcher> ignoredRequests() {
-            return antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals");
+        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+            ignoredRequests
+                .antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals");
         }
 
         protected void authorizeUrls(

@@ -152,7 +152,7 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
     static class SuccessHandlerRefHttpLogoutConfig extends BaseWebConfig {
         protected void configure(
             HttpConfiguration builder) {
-        	SimpleUrlLogoutSuccessHandler logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler(defaultTargetUrl:"/SuccessHandlerRefHttpLogoutConfig")
+            SimpleUrlLogoutSuccessHandler logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler(defaultTargetUrl:"/SuccessHandlerRefHttpLogoutConfig")
             builder
                 .logout()
                     .logoutSuccessHandler(logoutSuccessHandler)

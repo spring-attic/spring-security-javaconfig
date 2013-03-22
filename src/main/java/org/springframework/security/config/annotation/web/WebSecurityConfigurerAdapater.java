@@ -16,13 +16,10 @@
 package org.springframework.security.config.annotation.web;
 
 
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.util.RequestMatcher;
 
 /**
  * @author Rob Winch
@@ -66,8 +63,7 @@ public abstract class WebSecurityConfigurerAdapater {
     }
 
     final void performConfigure(SpringSecurityFilterChainBuilder securityFilterChains){
-        securityFilterChains
-            .ignoring(ignoredRequests());
+        ignoredRequests(securityFilterChains.ignoring());
         configure(securityFilterChains);
     }
 
@@ -75,8 +71,8 @@ public abstract class WebSecurityConfigurerAdapater {
 
     }
 
-    public List<RequestMatcher> ignoredRequests() {
-        return Collections.emptyList();
+    protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+
     }
 
     protected abstract void configure(HttpConfiguration springSecurityFilterChain) throws Exception;

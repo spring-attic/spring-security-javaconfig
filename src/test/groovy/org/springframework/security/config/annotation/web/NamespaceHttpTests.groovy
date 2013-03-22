@@ -27,8 +27,8 @@ import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterInvocation
 import org.springframework.security.web.access.ExceptionTranslationFilter
@@ -240,9 +240,11 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class SecurityNoneConfig extends BaseWebConfig {
-        public List<RequestMatcher> ignoredRequests() {
-            return antMatchers("/resources/**","/public/**") // security=none
+        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+            ignoredRequests
+                .antMatchers("/resources/**","/public/**");
         }
+
         protected void configure(HttpConfiguration builder) {
         }
     }

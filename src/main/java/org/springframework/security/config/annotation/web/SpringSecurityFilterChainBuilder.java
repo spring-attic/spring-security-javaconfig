@@ -38,6 +38,7 @@ public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<Fi
     private List<HttpConfiguration> filterChains = new ArrayList<HttpConfiguration>();
     private FilterSecurityInterceptor filterSecurityInterceptor;
     private HttpFirewall httpFirewall;
+    private final IgnoredRequestRegistry ignoredRequestRegistry = new IgnoredRequestRegistry();
 
     // TODO change this to SecurityBuilder<SecurityFilterChain> when we eliminate the need for creating a global WebInvocationPrivilegeEvaluator
     public SpringSecurityFilterChainBuilder securityFilterChains(HttpConfiguration... securityFilterChainBuilders) {
@@ -68,9 +69,22 @@ public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<Fi
         return this;
     }
 
-    public SpringSecurityFilterChainBuilder ignoring(List<? extends RequestMatcher> requestsToIgnore) {
-        this.ignoredRequests = new ArrayList<RequestMatcher>(requestsToIgnore);
-        return this;
+    public IgnoredRequestRegistry ignoring() {
+        return ignoredRequestRegistry;
+    }
+
+    public final class IgnoredRequestRegistry extends BaseRequestMatcherRegistry<IgnoredRequestRegistry,FilterChainProxy,SpringSecurityFilterChainBuilder> {
+
+        IgnoredRequestRegistry chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+            ignoredRequests.addAll(requestMatchers);
+            return this;
+        }
+
+        public SpringSecurityFilterChainBuilder and() {
+            return SpringSecurityFilterChainBuilder.this;
+        }
+
+        private IgnoredRequestRegistry(){}
     }
 
     public FilterSecurityInterceptor securityInterceptor() {

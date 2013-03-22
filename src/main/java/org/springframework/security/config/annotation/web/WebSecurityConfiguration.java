@@ -15,9 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +31,6 @@ import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEval
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.util.Assert;
 
 /**
@@ -60,23 +57,11 @@ public class WebSecurityConfiguration {
     @Bean
     public SpringSecurityFilterChainBuilder springSecurityFilterChainBuilder() throws Exception {
         SpringSecurityFilterChainBuilder springSecurityFilterChain = new SpringSecurityFilterChainBuilder()
-            .securityFilterChains(filterChainBuilders())
-            .ignoring(requestToIgnore());
+            .securityFilterChains(filterChainBuilders());
         for(WebSecurityConfigurerAdapater adapater : webSecurityConfiguredAdapters()) {
-            adapater.configure(springSecurityFilterChain);
+            adapater.performConfigure(springSecurityFilterChain);
         }
         return springSecurityFilterChain;
-    }
-
-    /**
-     * @return
-     */
-    private List<? extends RequestMatcher> requestToIgnore() {
-        List<RequestMatcher> result = new ArrayList<RequestMatcher>();
-        for(WebSecurityConfigurerAdapater adapter : webSecurityConfiguredAdapters()) {
-            result.addAll(adapter.ignoredRequests());
-        }
-        return result;
     }
 
     @Bean(name=BeanIds.AUTHENTICATION_MANAGER)

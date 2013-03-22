@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.server.ApacheDSContainer;
 import org.springframework.security.web.util.RequestMatcher;
@@ -23,8 +24,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
 
     private String password = "secret";
 
-    public List<RequestMatcher> ignoredRequests() {
-        return antMatchers("/resources/**");
+    protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+        ignoredRequests
+            .antMatchers("/resources/**");
     }
 
     protected void registerAuthentication(
