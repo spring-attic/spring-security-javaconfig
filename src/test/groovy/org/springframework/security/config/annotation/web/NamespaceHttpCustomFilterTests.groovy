@@ -67,13 +67,13 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterBeforeConfig extends BaseWebConfig {
-        protected void applyDefaults(DefaultSecurityFilterChainBuilder builder)
+        protected void applyDefaults(HttpConfiguration builder)
                 throws Exception {
             // do not add the default filters to make testing easier
         }
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain
                 .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
@@ -89,12 +89,12 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterAfterConfig extends BaseWebConfig {
-        protected void applyDefaults(DefaultSecurityFilterChainBuilder builder)
+        protected void applyDefaults(HttpConfiguration builder)
                 throws Exception {
             // do not add the default filters to make testing easier
         }
         protected void configure(
-            DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+            HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain
                 .addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
@@ -116,7 +116,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
             return null; // do not add the default filters to make testing easier
         }
         protected void configure(
-            DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+            HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain
                 .addFilter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()

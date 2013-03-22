@@ -123,7 +123,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
         }
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder) {
+                HttpConfiguration builder) {
             builder
                 .formLogin()
                     .permitAll();

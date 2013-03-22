@@ -26,7 +26,7 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
+public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
 
     private AccessDeniedHandler accessDeniedHandler;
 
@@ -41,7 +41,7 @@ public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
-    protected void doConfigure(DefaultSecurityFilterChainBuilder builder) throws Exception {
+    protected void doConfigure(HttpConfiguration builder) throws Exception {
         ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(builder.authenticationEntryPoint());
         if(accessDeniedHandler != null) {
             exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);

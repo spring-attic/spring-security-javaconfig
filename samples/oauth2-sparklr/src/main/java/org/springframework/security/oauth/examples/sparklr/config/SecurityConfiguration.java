@@ -11,7 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
@@ -90,7 +90,7 @@ public class SecurityConfiguration {
         }
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder)
+                HttpConfiguration builder)
                 throws Exception {
             builder
                 .order(1)
@@ -132,7 +132,7 @@ public class SecurityConfiguration {
         }
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder)
+                HttpConfiguration builder)
                 throws Exception {
             builder
                 .order(2)
@@ -171,7 +171,7 @@ public class SecurityConfiguration {
         }
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder)
+                HttpConfiguration builder)
                 throws Exception {
             builder
                 .order(3)
@@ -208,7 +208,7 @@ public class SecurityConfiguration {
         }
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder)
+                HttpConfiguration builder)
                 throws Exception {
             builder
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)

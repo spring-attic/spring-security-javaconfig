@@ -43,7 +43,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
         }
     }
 
@@ -57,7 +57,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousDisabledConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder) {
+                HttpConfiguration builder) {
                 builder.anonymous().disable()
         }
     }
@@ -72,7 +72,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousGrantedAuthorityConfig extends BaseWebConfig {
         protected void configure(
-            DefaultSecurityFilterChainBuilder builder) {
+            HttpConfiguration builder) {
             builder.anonymous().authorities("ROLE_ANON")
         }
     }
@@ -92,7 +92,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousKeyConfig extends BaseWebConfig {
         protected void configure(
-            DefaultSecurityFilterChainBuilder builder) {
+            HttpConfiguration builder) {
             builder.anonymous().key("AnonymousKeyConfig")
         }
     }
@@ -111,7 +111,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousUsernameConfig extends BaseWebConfig {
         protected void configure(
-            DefaultSecurityFilterChainBuilder builder) {
+            HttpConfiguration builder) {
             builder.anonymous().principal("AnonymousUsernameConfig")
         }
     }

@@ -107,8 +107,8 @@ public class WebSecurityConfiguration {
         return securityInterceptor == null ? null : new DefaultWebInvocationPrivilegeEvaluator(securityInterceptor);
     }
 
-    private DefaultSecurityFilterChainBuilder[] filterChainBuilders() throws Exception {
-        DefaultSecurityFilterChainBuilder[] result = new DefaultSecurityFilterChainBuilder[webSecurityConfiguredAdapters().length];
+    private HttpConfiguration[] filterChainBuilders() throws Exception {
+        HttpConfiguration[] result = new HttpConfiguration[webSecurityConfiguredAdapters().length];
         for(int i=0;i<webSecurityConfigurerAdapaters.length;i++) {
             result[i] = webSecurityConfigurerAdapaters[i].defaultSecurityFilterChainBuilder();
         }

@@ -69,7 +69,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         static AccessDecisionManager ACCESS_DECISION_MGR
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder) {
+                HttpConfiguration builder) {
             builder
                 .authorizeUrls()
                     .antMatchers("/**").permitAll()
@@ -87,7 +87,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder) {
+                HttpConfiguration builder) {
             builder.exceptionHandling().accessDeniedPage("/AccessDeniedPageConfig")
         }
     }
@@ -107,7 +107,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
             return super.authenticationMgr();
         }
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
         }
     }
 
@@ -125,7 +125,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class DefaultUrlRewritingConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
         }
     }
 
@@ -141,7 +141,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class EnableUrlRewritingConfig extends BaseWebConfig {
         protected void configure(
-            DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+            HttpConfiguration springSecurityFilterChain) {
             HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository()
             repository.disableUrlRewriting = false // explicitly configured (not necessary due to default values)
 
@@ -158,7 +158,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class EntryPointRefConfig extends BaseWebConfig {
-        protected void configure(DefaultSecurityFilterChainBuilder builder) {
+        protected void configure(HttpConfiguration builder) {
             builder
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/EntryPointRefConfig"))
         }
@@ -173,7 +173,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class JaasApiProvisionConfig extends BaseWebConfig {
-        protected void configure(DefaultSecurityFilterChainBuilder builder) {
+        protected void configure(HttpConfiguration builder) {
             builder
                 .addFilter(new JaasApiIntegrationFilter())
         }
@@ -190,7 +190,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class OncePerRequestConfig extends BaseWebConfig {
-        protected void configure(DefaultSecurityFilterChainBuilder builder) {}
+        protected void configure(HttpConfiguration builder) {}
     }
 
     // http@path-type is not available (instead request matcher instances are used)
@@ -206,7 +206,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class RealmConfig extends BaseWebConfig {
-        protected void configure(DefaultSecurityFilterChainBuilder builder) {
+        protected void configure(HttpConfiguration builder) {
             builder.httpBasic().realmName("RealmConfig")
         }
     }
@@ -223,7 +223,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class RequestMatcherRefConfig extends BaseWebConfig {
 
-        protected void configure(DefaultSecurityFilterChainBuilder builder) {
+        protected void configure(HttpConfiguration builder) {
             builder.requestMatcher(new AntPathRequestMatcher("/api/**"))
         }
     }
@@ -243,7 +243,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         public List<RequestMatcher> ignoredRequests() {
             return antMatchers("/resources/**","/public/**") // security=none
         }
-        protected void configure(DefaultSecurityFilterChainBuilder builder) {
+        protected void configure(HttpConfiguration builder) {
         }
     }
 
@@ -257,7 +257,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class SecurityContextRepoConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain
                 .securityContextRepsitory(new NullSecurityContextRepository()) // security-context-repository-ref
         }
@@ -273,7 +273,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class ServletApiProvisionConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder) {
+                HttpConfiguration builder) {
             builder.servletApi().disable()
         }
     }
@@ -289,7 +289,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class ServletApiProvisionDefaultsConfig extends BaseWebConfig {
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
         }
     }
 
@@ -309,7 +309,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
                 ExpressionUrlAuthorizationRegistry interceptUrls) {
         }
 
-        protected void configure(DefaultSecurityFilterChainBuilder builder) throws Exception {
+        protected void configure(HttpConfiguration builder) throws Exception {
             builder
                 .apply(new UrlAuthorizationRegistry())
                     .antMatchers("/users**","/sessions/**").hasRole("USER")

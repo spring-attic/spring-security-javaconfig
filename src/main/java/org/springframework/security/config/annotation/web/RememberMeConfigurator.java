@@ -33,7 +33,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
  * @author Rob Winch
  *
  */
-public class RememberMeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
+public class RememberMeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private DataSource dataSource;
     private String key;
@@ -54,7 +54,7 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
     }
 
     @Override
-    protected void doInit(DefaultSecurityFilterChainBuilder builder)
+    protected void doInit(HttpConfiguration builder)
             throws Exception {
         String key = getKey();
         UserDetailsService userDetailsService = getUserDetailsService(builder);
@@ -73,13 +73,13 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
     }
 
     @Override
-    protected void doConfigure(DefaultSecurityFilterChainBuilder builder)
+    protected void doConfigure(HttpConfiguration builder)
             throws Exception {
         RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(builder.authenticationManager(), rememberMeServices);
         builder.addFilter(rememberMeFilter);
     }
 
-    private UserDetailsService getUserDetailsService(DefaultSecurityFilterChainBuilder builder) {
+    private UserDetailsService getUserDetailsService(HttpConfiguration builder) {
         return builder.getSharedObject(UserDetailsService.class);
     }
 

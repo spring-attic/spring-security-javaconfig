@@ -35,7 +35,7 @@ import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
 import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.DefaultSecurityFilterChain
@@ -106,12 +106,12 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class NullWebInvocationPrivilegeEvaluatorConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain.formLogin()
         }
 
         @Override
-        protected void applyDefaults(DefaultSecurityFilterChainBuilder builder)
+        protected void applyDefaults(HttpConfiguration builder)
                 throws Exception {
         }
     }
@@ -138,7 +138,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
             return antMatchers("/resources/**")
         }
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
         }
     }
 
@@ -164,7 +164,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
             return antMatchers("/resources/**")
         }
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
         }
     }
 }

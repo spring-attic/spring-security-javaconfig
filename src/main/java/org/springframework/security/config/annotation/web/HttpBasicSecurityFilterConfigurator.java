@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
+public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
     private BasicAuthenticationFilter basicAuthenticationFilter;
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
@@ -39,7 +39,7 @@ public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityConfigu
         realmName("Spring Security Application");
     }
 
-    protected void doConfigure(DefaultSecurityFilterChainBuilder builder) throws Exception {
+    protected void doConfigure(HttpConfiguration builder) throws Exception {
         AuthenticationManager authenticationManager = builder.authenticationManager();
         basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {

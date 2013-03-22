@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation;
 
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 
 
 /**
@@ -54,7 +54,7 @@ public abstract class AbstractSecurityConfigurator<T,B extends SecurityBuilder<T
 
     public B and() throws Exception {
         if(securityBuilder == null) {
-            throw new IllegalStateException(DefaultSecurityFilterChainBuilder.class.getSimpleName() + " cannot be null");
+            throw new IllegalStateException(HttpConfiguration.class.getSimpleName() + " cannot be null");
         }
         return (B) securityBuilder;
     }

@@ -10,7 +10,7 @@ import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.DefaultSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.server.ApacheDSContainer;
@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
     }
 
     protected void configure(
-            DefaultSecurityFilterChainBuilder springSecurityFilterChain) throws Exception {
+            HttpConfiguration springSecurityFilterChain) throws Exception {
         springSecurityFilterChain
             .formLogin()
             .permitAll();

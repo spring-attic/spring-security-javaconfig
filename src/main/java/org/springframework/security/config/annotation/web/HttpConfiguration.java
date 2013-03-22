@@ -47,7 +47,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class DefaultSecurityFilterChainBuilder extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> implements SecurityBuilder<DefaultSecurityFilterChain>, Ordered {
+public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain>, Ordered {
 
     private AuthenticationManager authenticationManager;
 
@@ -59,21 +59,21 @@ public class DefaultSecurityFilterChainBuilder extends AbstractConfiguredBuilder
     private int order = LOWEST_PRECEDENCE;
 
 
-    public DefaultSecurityFilterChainBuilder(AuthenticationManager authenticationManager) {
+    public HttpConfiguration(AuthenticationManager authenticationManager) {
         initDefaults(authenticationManager);
     }
 
-    public DefaultSecurityFilterChainBuilder(AuthenticationProvider provider) {
+    public HttpConfiguration(AuthenticationProvider provider) {
         this(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    public DefaultSecurityFilterChainBuilder(UserDetailsService userDetailsService) {
+    public HttpConfiguration(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         initDefaults(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    public DefaultSecurityFilterChainBuilder applyDefaultConfigurators() throws Exception {
+    public HttpConfiguration applyDefaultConfigurators() throws Exception {
         exceptionHandling();
         sessionManagement();
         securityContext();
@@ -84,7 +84,7 @@ public class DefaultSecurityFilterChainBuilder extends AbstractConfiguredBuilder
         return this;
     }
 
-    protected <C extends SecurityConfigurator<DefaultSecurityFilterChain, DefaultSecurityFilterChainBuilder>> C getConfigurator(
+    protected <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurator(
             Class<C> clazz) {
         return super.getConfigurator(clazz);
     }
@@ -164,7 +164,7 @@ public class DefaultSecurityFilterChainBuilder extends AbstractConfiguredBuilder
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }
 
-    public DefaultSecurityFilterChainBuilder authenticationProvider(AuthenticationProvider authenticationProvider) {
+    public HttpConfiguration authenticationProvider(AuthenticationProvider authenticationProvider) {
         getAuthenticationRegistry().add(authenticationProvider);
         return this;
     }
@@ -173,32 +173,32 @@ public class DefaultSecurityFilterChainBuilder extends AbstractConfiguredBuilder
         return getSharedObject(AuthenticationRegistry.class);
     }
 
-    public DefaultSecurityFilterChainBuilder securityContextRepsitory(SecurityContextRepository securityContextRepository) {
+    public HttpConfiguration securityContextRepsitory(SecurityContextRepository securityContextRepository) {
         this.setSharedObject(SecurityContextRepository.class, securityContextRepository);
         return this;
     }
 
-    public DefaultSecurityFilterChainBuilder addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
+    public HttpConfiguration addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerAfter(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public DefaultSecurityFilterChainBuilder addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
+    public HttpConfiguration addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerBefore(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public DefaultSecurityFilterChainBuilder addFilter(Filter filter) {
+    public HttpConfiguration addFilter(Filter filter) {
         this.filters.add(filter);
         return this;
     }
 
-    public DefaultSecurityFilterChainBuilder requestMatcher(RequestMatcher requestMatcher) {
+    public HttpConfiguration requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
         return this;
     }
 
-    public DefaultSecurityFilterChainBuilder order(int order) {
+    public HttpConfiguration order(int order) {
         this.order = order;
         return this;
     }
@@ -212,7 +212,7 @@ public class DefaultSecurityFilterChainBuilder extends AbstractConfiguredBuilder
         return authenticationEntryPoint;
     }
 
-    public DefaultSecurityFilterChainBuilder authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+    public HttpConfiguration authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         return this;
     }

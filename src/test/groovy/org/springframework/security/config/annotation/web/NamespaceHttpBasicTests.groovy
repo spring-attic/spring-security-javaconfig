@@ -73,7 +73,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
     @Configuration
     static class HttpBasicConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain.httpBasic();
         }
     }
@@ -93,7 +93,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
     @Configuration
     static class CustomHttpBasicConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain.httpBasic().realmName("Custom Realm");
         }
     }
@@ -109,7 +109,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
     @Configuration
     static class AuthenticationDetailsSourceHttpBasicConfig extends BaseWebConfig {
         protected void configure(
-            DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+            HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain.httpBasic().authenticationDetailsSource(new CustomAuthenticationDetailsSource())
         }
     }
@@ -140,7 +140,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
     @Configuration
     static class EntryPointRefHttpBasicConfig extends BaseWebConfig {
         protected void configure(
-            DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+            HttpConfiguration springSecurityFilterChain) {
             springSecurityFilterChain.httpBasic().authenticationEntryPoint(new AuthenticationEntryPoint() {
                 public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)

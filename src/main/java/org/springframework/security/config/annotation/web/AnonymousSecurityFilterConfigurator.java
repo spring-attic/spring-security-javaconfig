@@ -11,14 +11,14 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
-public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
+public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
     private String key;
     private AuthenticationProvider authenticationProvider;
     private AnonymousAuthenticationFilter authenticationFilter;
     private Object principal = "anonymousUser";
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
-    protected void doInit(DefaultSecurityFilterChainBuilder builder)
+    protected void doInit(HttpConfiguration builder)
             throws Exception {
         if(authenticationProvider == null) {
             authenticationProvider = new AnonymousAuthenticationProvider(getKey());
@@ -29,7 +29,7 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigu
         builder.authenticationProvider(authenticationProvider);
     }
 
-    protected void doConfigure(DefaultSecurityFilterChainBuilder builder)
+    protected void doConfigure(HttpConfiguration builder)
             throws Exception {
         authenticationFilter.afterPropertiesSet();
         builder.addFilter(authenticationFilter);

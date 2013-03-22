@@ -207,7 +207,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
         }
 
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder)
+                HttpConfiguration builder)
                 throws Exception {
                     builder
                         .requiresChannel()

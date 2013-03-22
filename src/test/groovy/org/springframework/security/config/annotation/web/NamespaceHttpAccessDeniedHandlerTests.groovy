@@ -45,7 +45,7 @@ public class NamespaceHttpAccessDeniedHandlerTests extends BaseSpringSpec {
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder) {
+                HttpConfiguration builder) {
             builder.
                 exceptionHandling()
                     .accessDeniedPage("/AccessDeniedPageConfig")
@@ -62,7 +62,7 @@ public class NamespaceHttpAccessDeniedHandlerTests extends BaseSpringSpec {
     @Configuration
     static class AccessDeniedHandlerRefConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder builder) {
+                HttpConfiguration builder) {
             CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler()
             builder.
                 exceptionHandling()

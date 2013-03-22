@@ -94,7 +94,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
     @Configuration
     static class HttpFirewallConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
         }
     }
 
@@ -112,7 +112,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
     @Configuration
     static class CustomHttpFirewallConfig extends BaseWebConfig {
         protected void configure(
-                DefaultSecurityFilterChainBuilder springSecurityFilterChain) {
+                HttpConfiguration springSecurityFilterChain) {
         }
         protected void configure(
                 SpringSecurityFilterChainBuilder securityFilterChains) {

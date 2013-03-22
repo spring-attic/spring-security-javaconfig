@@ -36,7 +36,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,DefaultSecurityFilterChainBuilder> {
+public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
     private UsernamePasswordAuthenticationFilter usernamePasswordFilter = new UsernamePasswordAuthenticationFilter() {
         @Override
         protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -61,14 +61,14 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
         passwordParameter("password");
     }
 
-    protected void doInit(DefaultSecurityFilterChainBuilder builder) throws Exception {
+    protected void doInit(HttpConfiguration builder) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(builder, loginPage, loginProcessingUrl, failureUrl);
         }
         builder.authenticationEntryPoint(authenticationEntryPoint);
     }
 
-    protected void doConfigure(DefaultSecurityFilterChainBuilder builder) throws Exception {
+    protected void doConfigure(HttpConfiguration builder) throws Exception {
         usernamePasswordFilter.setAuthenticationManager(builder.authenticationManager());
         usernamePasswordFilter.setAuthenticationSuccessHandler(successHandler);
         usernamePasswordFilter.setAuthenticationFailureHandler(failureHandler);
