@@ -47,16 +47,22 @@ The following configuration
 
     @Configuration
     @EnableWebSecurity
-    public static class SampleWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
+    public class SampleWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
+        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+            ignoredRequests
+                .antMatchers("/resources/**");
+        }
+
         protected void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(DefaultSecurityFilterChainBuilder builder) {
-            builder
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
                 .formLogin()
+                    // permitAll for any URL used with formLogin
                     .permitAll();
         }
 
@@ -70,6 +76,7 @@ The following configuration
 
 is similar to the following XML configuration:
 
+    <http security="none" pattern="/resources/**"/>
     <http use-expressions="true">
       <intercept-url pattern="/logout" access="permitAll"/>
       <intercept-url pattern="/login" access="permitAll"/>

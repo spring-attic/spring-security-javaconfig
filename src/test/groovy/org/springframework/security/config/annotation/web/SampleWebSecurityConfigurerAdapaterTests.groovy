@@ -33,6 +33,7 @@ import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation
@@ -85,6 +86,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
 
     /**
      * <code>
+     *   <http security="none" pattern="/resources/**"/>
      *   <http use-expressions="true">
      *     <intercept-url pattern="/logout" access="permitAll"/>
      *     <intercept-url pattern="/login" access="permitAll"/>
@@ -116,15 +118,18 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
     @Configuration
     @EnableWebSecurity
     public static class SampleWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
+        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+            ignoredRequests
+                .antMatchers("/resources/**");
+        }
         protected void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(
-                HttpConfiguration builder) {
-            builder
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
                 .formLogin()
                     .permitAll();
         }
