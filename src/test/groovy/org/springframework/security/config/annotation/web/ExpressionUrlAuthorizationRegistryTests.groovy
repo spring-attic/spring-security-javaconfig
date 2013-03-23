@@ -19,4 +19,12 @@ public class ExpressionUrlAuthorizationRegistryTests extends Specification {
         then:
         expression == "hasAnyAuthority('ROLE_USER','ROLE_ADMIN')"
     }
+
+    def "hasRole('ROLE_USER') is rejected due to starting with ROLE_"() {
+        when:
+        def expression = ExpressionUrlAuthorizationRegistry.hasRole("ROLE_USER")
+        then:
+        IllegalArgumentException e = thrown()
+        e.message == "role should not start with 'ROLE_' since it is automatically inserted. Got 'ROLE_USER'"
+    }
 }

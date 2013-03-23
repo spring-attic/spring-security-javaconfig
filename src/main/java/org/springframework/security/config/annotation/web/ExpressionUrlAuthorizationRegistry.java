@@ -21,17 +21,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.security.access.AccessDecisionManager;
+import org.spockframework.util.Assert;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
@@ -75,6 +73,10 @@ public class ExpressionUrlAuthorizationRegistry extends BaseInterceptUrlConfigur
     }
 
     public static String hasRole(String role) {
+        Assert.notNull(role, "role cannot be null");
+        if (role.startsWith("ROLE_")) {
+            throw new IllegalArgumentException("role should not start with 'ROLE_' since it is automatically inserted. Got '" + role + "'");
+        }
         return "hasRole('ROLE_" + role + "')";
     }
 
