@@ -1,21 +1,17 @@
 package org.springframework.security.samples.config;
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.antMatchers;
-
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.server.ApacheDSContainer;
-import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -29,12 +25,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
             .antMatchers("/resources/**");
     }
 
-    protected void registerAuthentication(
+    protected AuthenticationManager authenticationManager(
             AuthenticationRegistry authenticationRegistry) throws Exception {
-        authenticationRegistry
+        return authenticationRegistry
             .ldapAuthenticationProvider(contextSource())
                 .userDnPatterns("uid={0},ou=people")
-                .groupSearchFilter("(member={0})");
+                .groupSearchFilter("(member={0})")
+                .and()
+            .build();
     }
 
     protected void authorizeUrls(

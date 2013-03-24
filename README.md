@@ -66,11 +66,13 @@ The following configuration
                     .permitAll();
         }
 
-        protected void registerAuthentication(AuthenticationRegistry authentication) {
-            authentication
+        protected AuthenticationManager createAuthenticationManager(AuthenticationRegistry authentication) {
+            return authentication
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
-                    .withUser("admin").password("password").roles("USER", "ADMIN").and();
+                    .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                    .and()
+                .build();
         }
     }
 

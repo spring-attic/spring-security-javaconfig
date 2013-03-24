@@ -1,18 +1,14 @@
 package org.springframework.security.samples.config;
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-
-import java.util.List;
-
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 
 @Configuration
 @EnableWebSecurity
@@ -23,12 +19,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
             .antMatchers("/resources/**");
     }
 
-    protected void registerAuthentication(
+    protected AuthenticationManager authenticationManager(
             AuthenticationRegistry authenticationRegistry) throws Exception {
-        authenticationRegistry
+        return authenticationRegistry
             .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER").and()
-                .withUser("admin").password("password").roles("USER", "ADMIN").and();
+                .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                .and()
+            .build();
     }
 
     protected void authorizeUrls(

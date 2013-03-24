@@ -37,11 +37,13 @@ abstract class BaseWebConfig extends WebSecurityConfigurerAdapater {
                 .antMatchers("/**").hasRole("USER");
     }
 
-    protected void registerAuthentication(
+    protected AuthenticationManager authenticationManager(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
         authenticationRegistry
             .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER").and()
                 .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                .and()
+            .build();
     }
 }

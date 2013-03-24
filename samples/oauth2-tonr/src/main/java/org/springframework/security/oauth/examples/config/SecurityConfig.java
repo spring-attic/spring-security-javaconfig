@@ -2,6 +2,7 @@ package org.springframework.security.oauth.examples.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
@@ -17,12 +18,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
     @Autowired
     private OAuth2ClientContextFilter oauth2ClientFilter;
 
-    protected void registerAuthentication(
+    protected AuthenticationManager authenticationManager(
             AuthenticationRegistry registry) throws Exception {
-        registry
+        return registry
             .inMemoryAuthentication()
                 .withUser("marissa").password("wombat").roles("USER").and()
-                .withUser("sam").password("kangaroo").roles("USER");
+                .withUser("sam").password("kangaroo").roles("USER").and()
+                .and()
+            .build();
     }
 
     protected void authorizeUrls(

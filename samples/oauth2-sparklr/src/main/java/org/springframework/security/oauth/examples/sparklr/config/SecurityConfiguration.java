@@ -67,11 +67,8 @@ public class SecurityConfiguration {
         @Autowired
         private SecurityConfiguration securityConfig;
 
-        protected void registerAuthentication(
+        protected AuthenticationManager authenticationManager(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
-        }
-
-        public AuthenticationManager authenticationManager() throws Exception {
             return securityConfig.clientAuthenticationManager();
         }
 
@@ -109,11 +106,8 @@ public class SecurityConfiguration {
         @Autowired
         private SecurityConfiguration securityConfig;
 
-        protected void registerAuthentication(
+        protected AuthenticationManager authenticationManager(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
-        }
-
-        public AuthenticationManager authenticationManager() throws Exception {
             return securityConfig.clientAuthenticationManager();
         }
 
@@ -151,11 +145,8 @@ public class SecurityConfiguration {
         @Autowired
         private SecurityConfiguration securityConfig;
 
-        protected void registerAuthentication(
+        protected AuthenticationManager authenticationManager(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
-        }
-
-        public AuthenticationManager authenticationManager() throws Exception {
             return securityConfig.clientAuthenticationManager();
         }
 
@@ -188,11 +179,8 @@ public class SecurityConfiguration {
         @Autowired
         private SecurityConfiguration securityConfig;
 
-        protected void registerAuthentication(
+        protected AuthenticationManager authenticationManager(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
-        }
-
-        public AuthenticationManager authenticationManager() throws Exception {
             return securityConfig.authManager();
         }
 

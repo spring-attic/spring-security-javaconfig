@@ -29,7 +29,7 @@ public abstract class WebSecurityConfigurerAdapater {
     private AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry();
     private AuthenticationManager authenticationManager;
 
-    protected abstract void registerAuthentication(AuthenticationRegistry authentication) throws Exception;
+    protected abstract AuthenticationManager authenticationManager(AuthenticationRegistry authentication) throws Exception;
 
     protected void applyDefaults(HttpConfiguration http) throws Exception {
         http.applyDefaultConfigurators();
@@ -38,27 +38,26 @@ public abstract class WebSecurityConfigurerAdapater {
 
     protected abstract void authorizeUrls(ExpressionUrlAuthorizations interceptUrls);
 
-    public HttpConfiguration httpBuilder() throws Exception {
+    public HttpConfiguration httpConfiguration() throws Exception {
         HttpConfiguration springSecurityFilterChain = new HttpConfiguration(authenticationManager());
-        springSecurityFilterChain.setSharedObject(UserDetailsService.class, authenticationRegistry.userDetailsService());
+        springSecurityFilterChain.setSharedObject(UserDetailsService.class, userDetailsService());
         applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
         return springSecurityFilterChain;
     }
 
-    public AuthenticationManager authenticationManager() throws Exception {
+    public final AuthenticationManager authenticationManager() throws Exception {
         if(authenticationManager == null) {
-            authenticationManager = createAuthenticationManager();
+            authenticationManager = authenticationManager(authenticationRegistry);
         }
         return authenticationManager;
     }
 
-    private AuthenticationManager createAuthenticationManager() throws Exception {
-        registerAuthentication(authenticationRegistry);
-        return authenticationRegistry.build();
+    public final UserDetailsService userDetailsService() throws Exception {
+        return userDetailsService(authenticationRegistry);
     }
 
-    public UserDetailsService userDetailsService() {
+    protected UserDetailsService userDetailsService(AuthenticationRegistry authenticationRegistry) {
         return authenticationRegistry.userDetailsService();
     }
 

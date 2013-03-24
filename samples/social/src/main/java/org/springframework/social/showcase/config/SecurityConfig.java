@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
@@ -87,14 +88,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
                 .permitAll();
     }
 
-    protected void registerAuthentication(
+    protected AuthenticationManager authenticationManager(
             AuthenticationRegistry registry) throws Exception {
-        registry
+        return registry
             .jdbcUserDetailsManager(dataSource)
                 .usersByUsernameQuery("select username, password, true from Account where username = ?")
                 .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?")
                 .and()
-           .add(lazySocialAuthenticationProvider());
+           .add(lazySocialAuthenticationProvider())
+           .build();
     }
 
     @Bean

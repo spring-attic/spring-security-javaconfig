@@ -218,13 +218,14 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                     //    <intercept-url pattern="/**" requires-channel="http"/>
                     .antMatchers("/**").requiresInsecure()
         }
-        @Override
-        protected void registerAuthentication(
+        protected AuthenticationManager authenticationManager(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
             authenticationRegistry
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                    .and()
+                .build()
         }
     }
 

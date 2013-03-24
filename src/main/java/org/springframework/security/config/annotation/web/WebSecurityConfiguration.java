@@ -95,7 +95,7 @@ public class WebSecurityConfiguration {
     private HttpConfiguration[] httpBuilders() throws Exception {
         HttpConfiguration[] result = new HttpConfiguration[webSecurityConfiguredAdapters().length];
         for(int i=0;i<webSecurityConfigurerAdapaters.length;i++) {
-            result[i] = webSecurityConfigurerAdapaters[i].httpBuilder();
+            result[i] = webSecurityConfigurerAdapaters[i].httpConfiguration();
         }
         Arrays.sort(result,OrderComparator.INSTANCE);
         return result;

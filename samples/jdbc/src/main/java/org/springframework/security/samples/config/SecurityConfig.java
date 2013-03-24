@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
@@ -26,13 +27,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
             .antMatchers("/resources/**");
     }
 
-    protected void registerAuthentication(
+    protected AuthenticationManager authenticationManager(
             AuthenticationRegistry authenticationRegistry) throws Exception {
-        authenticationRegistry
+        return authenticationRegistry
             .jdbcUserDetailsManager(dataSource)
                 .withUser("user").password("password").roles("USER").and()
                 .withUser("admin").password("password").roles("USER", "ADMIN").and()
-                .withDefaultSchema();
+                .withDefaultSchema()
+                .and()
+            .build();
     }
 
     @Bean public Object now() {
