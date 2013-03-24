@@ -97,30 +97,30 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
         }
 
         public ExpressionUrlAuthorizations hasRole(String role) {
-            return configAttribute(ExpressionUrlAuthorizations.hasRole(role));
+            return access(ExpressionUrlAuthorizations.hasRole(role));
         }
 
         public ExpressionUrlAuthorizations hasAuthority(String authority) {
-            return configAttribute(ExpressionUrlAuthorizations.hasAuthority(authority));
+            return access(ExpressionUrlAuthorizations.hasAuthority(authority));
         }
 
         public ExpressionUrlAuthorizations hasAnyAuthority(String... authorities) {
-            return configAttribute(ExpressionUrlAuthorizations.hasAnyAuthority(authorities));
+            return access(ExpressionUrlAuthorizations.hasAnyAuthority(authorities));
         }
 
         public ExpressionUrlAuthorizations permitAll() {
-            return configAttribute(permitAll);
+            return access(permitAll);
         }
 
         public ExpressionUrlAuthorizations authenticated() {
-            return configAttribute(authenticated);
+            return access(authenticated);
         }
 
         public ExpressionUrlAuthorizations fullyAuthenticated() {
-            return configAttribute(fullyAuthenticated);
+            return access(fullyAuthenticated);
         }
 
-        public ExpressionUrlAuthorizations configAttribute(String attribute) {
+        public ExpressionUrlAuthorizations access(String attribute) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attribute));
             return ExpressionUrlAuthorizations.this;
         }

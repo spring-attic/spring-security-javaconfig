@@ -122,11 +122,11 @@ public class SecurityConfiguration {
             interceptUrls
                 .expressionHandler(securityConfig.oauthWebExpressionHandler)
                 .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")
-                    .configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
                 .regexMatchers(HttpMethod.GET, "/oauth/users/.*")
-                    .configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
                 .regexMatchers(HttpMethod.GET, "/oauth/clients/.*")
-                    .configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')");
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')");
         }
 
         protected void configure(

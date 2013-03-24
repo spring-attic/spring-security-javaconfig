@@ -71,22 +71,22 @@ public class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthoriza
         }
 
         public UrlAuthorizations hasRole(String role) {
-            return configAttribute(UrlAuthorizations.hasRole(role));
+            return access(UrlAuthorizations.hasRole(role));
         }
 
         public UrlAuthorizations hasAnyRole(String role) {
-            return configAttribute(UrlAuthorizations.hasAnyRole(role));
+            return access(UrlAuthorizations.hasAnyRole(role));
         }
 
         public UrlAuthorizations hasAuthority(String authority) {
-            return configAttribute(UrlAuthorizations.hasAuthority(authority));
+            return access(UrlAuthorizations.hasAuthority(authority));
         }
 
         public UrlAuthorizations hasAnyAuthority(String... authorities) {
-            return configAttribute(UrlAuthorizations.hasAnyAuthority(authorities));
+            return access(UrlAuthorizations.hasAnyAuthority(authorities));
         }
 
-        public UrlAuthorizations configAttribute(String... attributes) {
+        public UrlAuthorizations access(String... attributes) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attributes));
             return UrlAuthorizations.this;
         }
