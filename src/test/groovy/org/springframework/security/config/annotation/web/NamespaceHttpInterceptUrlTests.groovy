@@ -192,7 +192,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
     static class HttpInterceptUrlConfig extends WebSecurityConfigurerAdapater {
         @Override
         protected void authorizeUrls(
-                ExpressionUrlAuthorizationRegistry interceptUrls) {
+                ExpressionUrlAuthorizations interceptUrls) {
              interceptUrls
                 // the line below is similar to intercept-url@pattern:
                 //    <intercept-url pattern="/users**" access="hasRole('ROLE_ADMIN')"/>

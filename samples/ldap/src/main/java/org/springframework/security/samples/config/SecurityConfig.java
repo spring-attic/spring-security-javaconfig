@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
     }
 
     protected void authorizeUrls(
-            ExpressionUrlAuthorizationRegistry interceptUrls) {
+            ExpressionUrlAuthorizations interceptUrls) {
         interceptUrls
             .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
             .antMatchers("/resources/**","/signup").permitAll()

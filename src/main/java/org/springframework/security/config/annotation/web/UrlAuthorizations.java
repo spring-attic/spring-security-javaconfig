@@ -35,17 +35,17 @@ import org.springframework.util.StringUtils;
  * @author Rob Winch
  * @since 3.2
  */
-public class UrlAuthorizationRegistry extends BaseInterceptUrlConfigurator<UrlAuthorizationRegistry.AuthorizedUrl> {
+public class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthorizations.AuthorizedUrl> {
 
-    public UrlAuthorizationRegistry interceptUrl(RequestMatcher requestMatcher, String... configAttributes) {
+    public UrlAuthorizations interceptUrl(RequestMatcher requestMatcher, String... configAttributes) {
         return interceptUrl(Arrays.asList(requestMatcher), SecurityConfig.createList(configAttributes));
     }
 
-    public UrlAuthorizationRegistry interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, String... configAttributes) {
+    public UrlAuthorizations interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, String... configAttributes) {
         return interceptUrl(requestMatchers, SecurityConfig.createList(configAttributes));
     }
 
-    public UrlAuthorizationRegistry interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+    public UrlAuthorizations interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
         for(RequestMatcher requestMatcher : requestMatchers) {
             addMapping(new UrlMapping(requestMatcher, configAttributes));
         }
@@ -70,25 +70,25 @@ public class UrlAuthorizationRegistry extends BaseInterceptUrlConfigurator<UrlAu
             this.requestMatchers = requestMatchers;
         }
 
-        public UrlAuthorizationRegistry hasRole(String role) {
-            return configAttribute(UrlAuthorizationRegistry.hasRole(role));
+        public UrlAuthorizations hasRole(String role) {
+            return configAttribute(UrlAuthorizations.hasRole(role));
         }
 
-        public UrlAuthorizationRegistry hasAnyRole(String role) {
-            return configAttribute(UrlAuthorizationRegistry.hasAnyRole(role));
+        public UrlAuthorizations hasAnyRole(String role) {
+            return configAttribute(UrlAuthorizations.hasAnyRole(role));
         }
 
-        public UrlAuthorizationRegistry hasAuthority(String authority) {
-            return configAttribute(UrlAuthorizationRegistry.hasAuthority(authority));
+        public UrlAuthorizations hasAuthority(String authority) {
+            return configAttribute(UrlAuthorizations.hasAuthority(authority));
         }
 
-        public UrlAuthorizationRegistry hasAnyAuthority(String... authorities) {
-            return configAttribute(UrlAuthorizationRegistry.hasAnyAuthority(authorities));
+        public UrlAuthorizations hasAnyAuthority(String... authorities) {
+            return configAttribute(UrlAuthorizations.hasAnyAuthority(authorities));
         }
 
-        public UrlAuthorizationRegistry configAttribute(String... attributes) {
+        public UrlAuthorizations configAttribute(String... attributes) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attributes));
-            return UrlAuthorizationRegistry.this;
+            return UrlAuthorizations.this;
         }
     }
 

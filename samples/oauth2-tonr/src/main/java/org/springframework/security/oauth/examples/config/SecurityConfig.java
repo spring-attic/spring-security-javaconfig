@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
     }
 
     protected void authorizeUrls(
-            ExpressionUrlAuthorizationRegistry interceptUrls) {
+            ExpressionUrlAuthorizations interceptUrls) {
         interceptUrls
             .antMatchers("/sparklr/**","/facebook/**").hasRole("USER")
             .antMatchers("/**");

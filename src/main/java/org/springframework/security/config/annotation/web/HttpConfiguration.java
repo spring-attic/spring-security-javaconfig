@@ -97,8 +97,8 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return apply(new RememberMeConfigurator());
     }
 
-    public ExpressionUrlAuthorizationRegistry authorizeUrls() throws Exception {
-        return apply(new ExpressionUrlAuthorizationRegistry());
+    public ExpressionUrlAuthorizations authorizeUrls() throws Exception {
+        return apply(new ExpressionUrlAuthorizations());
     }
 
     public RequestCacheConfigurator requestCache() throws Exception {

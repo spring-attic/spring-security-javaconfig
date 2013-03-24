@@ -8,7 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
@@ -81,7 +81,7 @@ public class SecurityConfiguration {
         }
 
         protected void authorizeUrls(
-                ExpressionUrlAuthorizationRegistry interceptUrls) {
+                ExpressionUrlAuthorizations interceptUrls) {
             interceptUrls
                 .antMatchers("/oauth/token").fullyAuthenticated();
         }
@@ -118,7 +118,7 @@ public class SecurityConfiguration {
         }
 
         protected void authorizeUrls(
-                ExpressionUrlAuthorizationRegistry interceptUrls) {
+                ExpressionUrlAuthorizations interceptUrls) {
             interceptUrls
                 .expressionHandler(securityConfig.oauthWebExpressionHandler)
                 .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")
@@ -160,7 +160,7 @@ public class SecurityConfiguration {
         }
 
         protected void authorizeUrls(
-                ExpressionUrlAuthorizationRegistry interceptUrls) {
+                ExpressionUrlAuthorizations interceptUrls) {
             interceptUrls
                 .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
                 .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
@@ -197,7 +197,7 @@ public class SecurityConfiguration {
         }
 
         protected void authorizeUrls(
-                ExpressionUrlAuthorizationRegistry interceptUrls) {
+                ExpressionUrlAuthorizations interceptUrls) {
             interceptUrls
                 .antMatchers("/oauth/**").hasRole("USER")
                 .antMatchers("/**").permitAll();

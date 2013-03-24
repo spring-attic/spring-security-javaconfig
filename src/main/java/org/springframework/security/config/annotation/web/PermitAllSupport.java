@@ -29,10 +29,10 @@ import org.springframework.security.web.util.AntPathRequestMatcher;
 final class PermitAllSupport {
 
     public static void permitAll(HttpConfiguration http, String... urls) {
-        ExpressionUrlAuthorizationRegistry configurator = http.getConfigurator(ExpressionUrlAuthorizationRegistry.class);
+        ExpressionUrlAuthorizations configurator = http.getConfigurator(ExpressionUrlAuthorizations.class);
         if(configurator != null) {
             for(String url : urls) {
-                configurator.addMapping(0, new UrlMapping(new AntPathRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizationRegistry.permitAll)));
+                configurator.addMapping(0, new UrlMapping(new AntPathRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizations.permitAll)));
             }
         }
     }

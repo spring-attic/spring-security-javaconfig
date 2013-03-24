@@ -36,14 +36,14 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExpressionUrlAuthorizationRegistry extends BaseInterceptUrlConfigurator<ExpressionUrlAuthorizationRegistry.AuthorizedUrl> {
+public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<ExpressionUrlAuthorizations.AuthorizedUrl> {
     public static final String permitAll = "permitAll";
     public static final String authenticated = "authenticated";
     public static final String fullyAuthenticated = "fullyAuthenticated";
 
     private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
-    public ExpressionUrlAuthorizationRegistry expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
+    public ExpressionUrlAuthorizations expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
         this.expressionHandler = expressionHandler;
         return this;
     }
@@ -52,7 +52,7 @@ public class ExpressionUrlAuthorizationRegistry extends BaseInterceptUrlConfigur
         return new AuthorizedUrl(requestMatchers);
     }
 
-    private ExpressionUrlAuthorizationRegistry interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+    private ExpressionUrlAuthorizations interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
         for(RequestMatcher requestMatcher : requestMatchers) {
             addMapping(new UrlMapping(requestMatcher, configAttributes));
         }
@@ -96,33 +96,33 @@ public class ExpressionUrlAuthorizationRegistry extends BaseInterceptUrlConfigur
             this.requestMatchers = requestMatchers;
         }
 
-        public ExpressionUrlAuthorizationRegistry hasRole(String role) {
-            return configAttribute(ExpressionUrlAuthorizationRegistry.hasRole(role));
+        public ExpressionUrlAuthorizations hasRole(String role) {
+            return configAttribute(ExpressionUrlAuthorizations.hasRole(role));
         }
 
-        public ExpressionUrlAuthorizationRegistry hasAuthority(String authority) {
-            return configAttribute(ExpressionUrlAuthorizationRegistry.hasAuthority(authority));
+        public ExpressionUrlAuthorizations hasAuthority(String authority) {
+            return configAttribute(ExpressionUrlAuthorizations.hasAuthority(authority));
         }
 
-        public ExpressionUrlAuthorizationRegistry hasAnyAuthority(String... authorities) {
-            return configAttribute(ExpressionUrlAuthorizationRegistry.hasAnyAuthority(authorities));
+        public ExpressionUrlAuthorizations hasAnyAuthority(String... authorities) {
+            return configAttribute(ExpressionUrlAuthorizations.hasAnyAuthority(authorities));
         }
 
-        public ExpressionUrlAuthorizationRegistry permitAll() {
+        public ExpressionUrlAuthorizations permitAll() {
             return configAttribute(permitAll);
         }
 
-        public ExpressionUrlAuthorizationRegistry authenticated() {
+        public ExpressionUrlAuthorizations authenticated() {
             return configAttribute(authenticated);
         }
 
-        public ExpressionUrlAuthorizationRegistry fullyAuthenticated() {
+        public ExpressionUrlAuthorizations fullyAuthenticated() {
             return configAttribute(fullyAuthenticated);
         }
 
-        public ExpressionUrlAuthorizationRegistry configAttribute(String attribute) {
+        public ExpressionUrlAuthorizations configAttribute(String attribute) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attribute));
-            return ExpressionUrlAuthorizationRegistry.this;
+            return ExpressionUrlAuthorizations.this;
         }
     }
 }

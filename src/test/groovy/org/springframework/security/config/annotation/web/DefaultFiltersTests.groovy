@@ -33,7 +33,7 @@ import org.springframework.security.config.annotation.BaseSpringSpec;
 import org.springframework.security.config.annotation.web.ExceptionHandlingConfigurator;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
-import org.springframework.security.config.annotation.web.UrlAuthorizationRegistry;
+import org.springframework.security.config.annotation.web.UrlAuthorizations;
 import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;

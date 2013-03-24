@@ -83,7 +83,7 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
         }
 
         protected void authorizeUrls(
-                ExpressionUrlAuthorizationRegistry interceptUrls) {
+                ExpressionUrlAuthorizations interceptUrls) {
             interceptUrls
                 .expressionHandler(EXPRESSION_HANDLER)
                 .antMatchers("/users**","/sessions/**").hasRole("ADMIN")

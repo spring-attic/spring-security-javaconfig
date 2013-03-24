@@ -303,12 +303,12 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class DisableUseExpressionsConfig extends BaseWebConfig {
 
         protected void authorizeUrls(
-                ExpressionUrlAuthorizationRegistry interceptUrls) {
+                ExpressionUrlAuthorizations interceptUrls) {
         }
 
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .apply(new UrlAuthorizationRegistry())
+                .apply(new UrlAuthorizations())
                     .antMatchers("/users**","/sessions/**").hasRole("USER")
                     .antMatchers("/signup").hasRole("ANONYMOUS")
                     .antMatchers("/**").hasRole("USER")

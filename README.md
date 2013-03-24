@@ -53,7 +53,7 @@ The following configuration
                 .antMatchers("/resources/**");
         }
 
-        protected void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls) {
+        protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
                 .antMatchers("/**").hasRole("USER");

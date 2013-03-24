@@ -36,7 +36,7 @@ public abstract class WebSecurityConfigurerAdapater {
         authorizeUrls(http.authorizeUrls());
     }
 
-    protected abstract void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls);
+    protected abstract void authorizeUrls(ExpressionUrlAuthorizations interceptUrls);
 
     public HttpConfiguration httpBuilder() throws Exception {
         HttpConfiguration springSecurityFilterChain = new HttpConfiguration(authenticationManager());
