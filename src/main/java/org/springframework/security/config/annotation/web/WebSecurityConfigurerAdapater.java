@@ -29,7 +29,7 @@ public abstract class WebSecurityConfigurerAdapater {
     private AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry();
     private AuthenticationManager authenticationManager;
 
-    protected abstract void registerAuthentication(AuthenticationRegistry authenticationRegistry) throws Exception;
+    protected abstract void registerAuthentication(AuthenticationRegistry authentication) throws Exception;
 
     protected void applyDefaults(HttpConfiguration http) throws Exception {
         http.applyDefaultConfigurators();
