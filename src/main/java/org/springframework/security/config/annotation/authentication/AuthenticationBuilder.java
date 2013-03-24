@@ -35,13 +35,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * @author Rob Winch
  *
  */
-public class AuthenticationRegistry extends AbstractConfiguredBuilder<AuthenticationManager, AuthenticationRegistry>implements
+public class AuthenticationBuilder extends AbstractConfiguredBuilder<AuthenticationManager, AuthenticationBuilder>implements
         SecurityBuilder<AuthenticationManager> {
     private AuthenticationManager parentAuthenticationManager;
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
     private UserDetailsService userDetailsService;
 
-    public AuthenticationRegistry parentAuthenticationManager(
+    public AuthenticationBuilder parentAuthenticationManager(
             AuthenticationManager authenticationManager) {
         this.parentAuthenticationManager = authenticationManager;
         return this;
@@ -71,13 +71,13 @@ public class AuthenticationRegistry extends AbstractConfiguredBuilder<Authentica
         return apply(new DaoAuthenticationConfigurator(userDetailsService));
     }
 
-    public AuthenticationRegistry add(
+    public AuthenticationBuilder add(
             AuthenticationProvider authenticationProvider) {
         this.authenticationProviders.add(authenticationProvider);
         return this;
     }
 
-    public AuthenticationRegistry add(
+    public AuthenticationBuilder add(
             UserDetailsService userDetailsService) throws Exception {
         this.userDetailsService = userDetailsService;
         DaoAuthenticationConfigurator provider = new DaoAuthenticationConfigurator(userDetailsService);

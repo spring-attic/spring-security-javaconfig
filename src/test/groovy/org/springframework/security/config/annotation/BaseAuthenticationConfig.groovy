@@ -20,7 +20,7 @@ import java.rmi.registry.Registry;
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.authentication.UserDetailsServiceSecurityBuilder;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
 import org.springframework.security.config.annotation.web.UrlAuthorizations
@@ -34,7 +34,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 class BaseAuthenticationConfig {
     protected void registerAuthentication(
-                AuthenticationRegistry authenticationRegistry) throws Exception {
+                AuthenticationBuilder authenticationRegistry) throws Exception {
         authenticationRegistry
             .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER").and()
@@ -43,7 +43,7 @@ class BaseAuthenticationConfig {
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        AuthenticationRegistry registry = new AuthenticationRegistry();
+        AuthenticationBuilder registry = new AuthenticationBuilder();
         registerAuthentication(registry);
         return registry.build();
     }

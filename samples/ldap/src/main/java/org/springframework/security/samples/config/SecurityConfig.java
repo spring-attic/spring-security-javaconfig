@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
     }
 
     protected AuthenticationManager authenticationManager(
-            AuthenticationRegistry authenticationRegistry) throws Exception {
+            AuthenticationBuilder authenticationRegistry) throws Exception {
         return authenticationRegistry
             .ldapAuthenticationProvider(contextSource())
                 .userDnPatterns("uid={0},ou=people")

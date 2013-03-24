@@ -66,8 +66,8 @@ The following configuration
                     .permitAll();
         }
 
-        protected AuthenticationManager createAuthenticationManager(AuthenticationRegistry authentication) {
-            return authentication
+        protected AuthenticationManager createAuthenticationManager(AuthenticationBuilder builder) {
+            return builder
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN").and()
@@ -123,7 +123,7 @@ Global configuration is quite simple. For example, the following Java Configurat
 
         @Bean
         public AuthenticationManager authenticationManager() throws Exception {
-            return new AuthenticationRegistry()
+            return new AuthenticationBuilder()
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN").and()
@@ -165,7 +165,7 @@ override the `GlobalMethodSecurityConfiguration` class. For example, following J
 
         @Override
         protected AuthenticationManager authenticationManager() throws Exception {
-            return new AuthenticationRegistry()
+            return new AuthenticationBuilder()
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN").and()

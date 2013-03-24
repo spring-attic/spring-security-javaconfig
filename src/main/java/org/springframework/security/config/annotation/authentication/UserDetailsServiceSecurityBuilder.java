@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationRegistry> {
+public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationBuilder> {
     protected final T userDetailsService;
 
     public UserDetailsServiceSecurityBuilder(T userDetailsService) {
@@ -37,7 +37,7 @@ public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> ext
         return userDetailsService;
     }
 
-    protected void doConfigure(AuthenticationRegistry builder) throws Exception {
+    protected void doConfigure(AuthenticationBuilder builder) throws Exception {
         builder.add(userDetailsService());
     }
 }

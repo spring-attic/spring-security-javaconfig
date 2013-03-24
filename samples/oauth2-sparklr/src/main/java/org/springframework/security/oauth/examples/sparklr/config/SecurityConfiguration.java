@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
@@ -46,7 +46,7 @@ public class SecurityConfiguration {
 
     @Bean
     public AuthenticationManager clientAuthenticationManager() throws Exception {
-        return new AuthenticationRegistry()
+        return new AuthenticationBuilder()
             .userDetails(clientDetailsService)
                 .and()
             .build();
@@ -54,7 +54,7 @@ public class SecurityConfiguration {
 
     @Bean(name = {"authManager",BeanIds.AUTHENTICATION_MANAGER})
     public AuthenticationManager authManager() throws Exception {
-        return new AuthenticationRegistry()
+        return new AuthenticationBuilder()
             .inMemoryAuthentication()
                 .withUser("marissa").password("koala").roles("USER").and()
                 .withUser("paul").password("emu").roles("USER").and()
@@ -68,7 +68,7 @@ public class SecurityConfiguration {
         private SecurityConfiguration securityConfig;
 
         protected AuthenticationManager authenticationManager(
-                AuthenticationRegistry authenticationRegistry) throws Exception {
+                AuthenticationBuilder authenticationRegistry) throws Exception {
             return securityConfig.clientAuthenticationManager();
         }
 
@@ -107,7 +107,7 @@ public class SecurityConfiguration {
         private SecurityConfiguration securityConfig;
 
         protected AuthenticationManager authenticationManager(
-                AuthenticationRegistry authenticationRegistry) throws Exception {
+                AuthenticationBuilder authenticationRegistry) throws Exception {
             return securityConfig.clientAuthenticationManager();
         }
 
@@ -146,7 +146,7 @@ public class SecurityConfiguration {
         private SecurityConfiguration securityConfig;
 
         protected AuthenticationManager authenticationManager(
-                AuthenticationRegistry authenticationRegistry) throws Exception {
+                AuthenticationBuilder authenticationRegistry) throws Exception {
             return securityConfig.clientAuthenticationManager();
         }
 
@@ -180,7 +180,7 @@ public class SecurityConfiguration {
         private SecurityConfiguration securityConfig;
 
         protected AuthenticationManager authenticationManager(
-                AuthenticationRegistry authenticationRegistry) throws Exception {
+                AuthenticationBuilder authenticationRegistry) throws Exception {
             return securityConfig.authManager();
         }
 

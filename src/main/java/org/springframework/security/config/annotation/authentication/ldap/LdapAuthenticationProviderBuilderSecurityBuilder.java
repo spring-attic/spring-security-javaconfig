@@ -19,7 +19,7 @@ import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
@@ -32,7 +32,7 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
  * @author Rob Winch
  * @since 3.2
  */
-public class LdapAuthenticationProviderBuilderSecurityBuilder extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationRegistry> implements
+public class LdapAuthenticationProviderBuilderSecurityBuilder extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationBuilder> implements
         SecurityBuilder<LdapAuthenticationProvider> {
     private String groupRoleAttribute = "cn";
     private String groupSearchBase = "ou=groups";
@@ -113,7 +113,7 @@ public class LdapAuthenticationProviderBuilderSecurityBuilder extends AbstractSe
         return this;
     }
 
-    protected void doConfigure(AuthenticationRegistry builder) throws Exception {
+    protected void doConfigure(AuthenticationBuilder builder) throws Exception {
         builder.add(build());
     }
 

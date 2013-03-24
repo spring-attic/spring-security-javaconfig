@@ -2,7 +2,7 @@ package org.springframework.security.samples.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
@@ -20,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
     }
 
     protected AuthenticationManager authenticationManager(
-            AuthenticationRegistry authenticationRegistry) throws Exception {
+            AuthenticationBuilder authenticationRegistry) throws Exception {
         return authenticationRegistry
             .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER").and()

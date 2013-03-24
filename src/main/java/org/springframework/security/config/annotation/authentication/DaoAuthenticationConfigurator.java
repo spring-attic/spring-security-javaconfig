@@ -6,7 +6,7 @@ import org.springframework.security.config.annotation.AbstractSecurityConfigurat
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class DaoAuthenticationConfigurator extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationRegistry> {
+public class DaoAuthenticationConfigurator extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationBuilder> {
     private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
     public DaoAuthenticationConfigurator(UserDetailsService userDetailsService) {
@@ -18,7 +18,7 @@ public class DaoAuthenticationConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
-    protected void doConfigure(AuthenticationRegistry builder) throws Exception {
+    protected void doConfigure(AuthenticationBuilder builder) throws Exception {
         builder.add(provider);
     }
 }

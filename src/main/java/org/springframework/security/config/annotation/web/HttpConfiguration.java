@@ -32,7 +32,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -169,8 +169,8 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return this;
     }
 
-    private AuthenticationRegistry getAuthenticationRegistry() {
-        return getSharedObject(AuthenticationRegistry.class);
+    private AuthenticationBuilder getAuthenticationRegistry() {
+        return getSharedObject(AuthenticationBuilder.class);
     }
 
     public HttpConfiguration securityContextRepsitory(SecurityContextRepository securityContextRepository) {
@@ -222,9 +222,9 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         securityContextRepository.setDisableUrlRewriting(true);
         setSharedObject(SecurityContextRepository.class, securityContextRepository);
 
-        AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry()
+        AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder()
                 .parentAuthenticationManager(parent);
-        setSharedObject(AuthenticationRegistry.class, authenticationRegistry);
+        setSharedObject(AuthenticationBuilder.class, authenticationRegistry);
     }
 
     public int getOrder() {

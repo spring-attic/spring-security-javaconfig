@@ -17,7 +17,7 @@ package org.springframework.security.config.annotation.web;
 
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -26,10 +26,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  *
  */
 public abstract class WebSecurityConfigurerAdapater {
-    private AuthenticationRegistry authenticationRegistry = new AuthenticationRegistry();
+    private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
     private AuthenticationManager authenticationManager;
 
-    protected abstract AuthenticationManager authenticationManager(AuthenticationRegistry authentication) throws Exception;
+    protected abstract AuthenticationManager authenticationManager(AuthenticationBuilder authentication) throws Exception;
 
     protected void applyDefaults(HttpConfiguration http) throws Exception {
         http.applyDefaultConfigurators();
@@ -57,7 +57,7 @@ public abstract class WebSecurityConfigurerAdapater {
         return userDetailsService(authenticationRegistry);
     }
 
-    protected UserDetailsService userDetailsService(AuthenticationRegistry authenticationRegistry) {
+    protected UserDetailsService userDetailsService(AuthenticationBuilder authenticationRegistry) {
         return authenticationRegistry.userDetailsService();
     }
 
