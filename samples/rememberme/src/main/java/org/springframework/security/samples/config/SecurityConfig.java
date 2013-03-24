@@ -39,9 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
             .antMatchers("/**").hasRole("USER");
     }
 
-    protected void configure(
-            HttpConfiguration springSecurityFilterChain) throws Exception {
-        springSecurityFilterChain
+    protected void configure(HttpConfiguration http) throws Exception {
+        http
             .formLogin()
                 .permitAll()
                 .and()

@@ -35,27 +35,27 @@ import org.springframework.util.Assert;
  */
 public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<FilterChainProxy> {
     private List<RequestMatcher> ignoredRequests = new ArrayList<RequestMatcher>();
-    private List<HttpConfiguration> filterChains = new ArrayList<HttpConfiguration>();
+    private List<HttpConfiguration> httpBuilders = new ArrayList<HttpConfiguration>();
     private FilterSecurityInterceptor filterSecurityInterceptor;
     private HttpFirewall httpFirewall;
     private final IgnoredRequestRegistry ignoredRequestRegistry = new IgnoredRequestRegistry();
 
     // TODO change this to SecurityBuilder<SecurityFilterChain> when we eliminate the need for creating a global WebInvocationPrivilegeEvaluator
-    public SpringSecurityFilterChainBuilder securityFilterChains(HttpConfiguration... securityFilterChainBuilders) {
-        filterChains = Arrays.asList(securityFilterChainBuilders);
+    public SpringSecurityFilterChainBuilder securityFilterChains(HttpConfiguration... httpBuilders) {
+        this.httpBuilders = Arrays.asList(httpBuilders);
         return this;
     }
 
     protected FilterChainProxy doBuild() throws Exception {
-        Assert.state(!filterChains.isEmpty(), "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains");
-        int chainSize = ignoredRequests.size() + filterChains.size();
+        Assert.state(!httpBuilders.isEmpty(), "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains");
+        int chainSize = ignoredRequests.size() + httpBuilders.size();
         List<SecurityFilterChain> securityFilterChains = new ArrayList<SecurityFilterChain>(chainSize);
         for(RequestMatcher ignoredRequest : ignoredRequests) {
             securityFilterChains.add(new DefaultSecurityFilterChain(ignoredRequest));
         }
-        for(HttpConfiguration builder : filterChains) {
-            securityFilterChains.add(builder.build());
-            this.filterSecurityInterceptor = builder.getSharedObject(FilterSecurityInterceptor.class);
+        for(HttpConfiguration http : httpBuilders) {
+            securityFilterChains.add(http.build());
+            this.filterSecurityInterceptor = http.getSharedObject(FilterSecurityInterceptor.class);
         }
         FilterChainProxy filterChainProxy = new FilterChainProxy(securityFilterChains);
         if(httpFirewall != null) {

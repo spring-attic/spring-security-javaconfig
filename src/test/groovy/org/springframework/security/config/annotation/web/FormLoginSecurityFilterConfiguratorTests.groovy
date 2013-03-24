@@ -89,9 +89,8 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
-            springSecurityFilterChain.formLogin()
+        protected void configure(HttpConfiguration http) {
+            http.formLogin()
         }
     }
 
@@ -121,9 +120,8 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
-            springSecurityFilterChain.formLogin().permitAll()
+        protected void configure(HttpConfiguration http) {
+            http.formLogin().permitAll()
         }
     }
 }

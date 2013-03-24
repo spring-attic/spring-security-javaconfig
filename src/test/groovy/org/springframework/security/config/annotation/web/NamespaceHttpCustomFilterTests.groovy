@@ -67,14 +67,13 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterBeforeConfig extends BaseWebConfig {
-        protected void applyDefaults(HttpConfiguration builder)
+        protected void applyDefaults(HttpConfiguration http)
                 throws Exception {
             // do not add the default filters to make testing easier
         }
 
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
-            springSecurityFilterChain
+        protected void configure(HttpConfiguration http) {
+            http
                 .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
         }
@@ -89,13 +88,12 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterAfterConfig extends BaseWebConfig {
-        protected void applyDefaults(HttpConfiguration builder)
+        protected void applyDefaults(HttpConfiguration http)
                 throws Exception {
             // do not add the default filters to make testing easier
         }
-        protected void configure(
-            HttpConfiguration springSecurityFilterChain) {
-            springSecurityFilterChain
+        protected void configure(HttpConfiguration http) {
+            http
                 .addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
         }
@@ -115,9 +113,8 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
         protected ExceptionHandlingConfigurator defaultFilterConfigurator() {
             return null; // do not add the default filters to make testing easier
         }
-        protected void configure(
-            HttpConfiguration springSecurityFilterChain) {
-            springSecurityFilterChain
+        protected void configure(HttpConfiguration http) {
+            http
                 .addFilter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
         }

@@ -206,19 +206,17 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(
-                HttpConfiguration builder)
-                throws Exception {
-                    builder
-                        .requiresChannel()
-                            // NOTE: channel security is configured separately of authorization (i.e. intercept-url@access
-                            // the line below is similar to intercept-url@requires-channel="https":
-                            //    <intercept-url pattern="/login" requires-channel="https"/>
-                            //    <intercept-url pattern="/secured/**" requires-channel="https"/>
-                            .antMatchers("/login","/secured/**").requiresSecure()
-                            // the line below is similar to intercept-url@requires-channel="http":
-                            //    <intercept-url pattern="/**" requires-channel="http"/>
-                            .antMatchers("/**").requiresInsecure()
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .requiresChannel()
+                    // NOTE: channel security is configured separately of authorization (i.e. intercept-url@access
+                    // the line below is similar to intercept-url@requires-channel="https":
+                    //    <intercept-url pattern="/login" requires-channel="https"/>
+                    //    <intercept-url pattern="/secured/**" requires-channel="https"/>
+                    .antMatchers("/login","/secured/**").requiresSecure()
+                    // the line below is similar to intercept-url@requires-channel="http":
+                    //    <intercept-url pattern="/**" requires-channel="http"/>
+                    .antMatchers("/**").requiresInsecure()
         }
         @Override
         protected void registerAuthentication(

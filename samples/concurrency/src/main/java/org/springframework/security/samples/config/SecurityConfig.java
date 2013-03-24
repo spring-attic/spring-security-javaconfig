@@ -35,8 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
     }
 
     protected void configure(
-            HttpConfiguration builder) throws Exception {
-        builder
+            HttpConfiguration http) throws Exception {
+        http
             .formLogin()
                 .permitAll()
                 .and()

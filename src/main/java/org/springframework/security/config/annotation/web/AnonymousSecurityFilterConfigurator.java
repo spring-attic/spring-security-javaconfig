@@ -18,7 +18,7 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigu
     private Object principal = "anonymousUser";
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
-    protected void doInit(HttpConfiguration builder)
+    protected void doInit(HttpConfiguration http)
             throws Exception {
         if(authenticationProvider == null) {
             authenticationProvider = new AnonymousAuthenticationProvider(getKey());
@@ -26,13 +26,12 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigu
         if(authenticationFilter == null) {
             authenticationFilter = new AnonymousAuthenticationFilter(getKey(), principal, authorities);
         }
-        builder.authenticationProvider(authenticationProvider);
+        http.authenticationProvider(authenticationProvider);
     }
 
-    protected void doConfigure(HttpConfiguration builder)
-            throws Exception {
+    protected void doConfigure(HttpConfiguration http) throws Exception {
         authenticationFilter.afterPropertiesSet();
-        builder.addFilter(authenticationFilter);
+        http.addFilter(authenticationFilter);
     }
 
     public AnonymousSecurityFilterConfigurator key(String key) {

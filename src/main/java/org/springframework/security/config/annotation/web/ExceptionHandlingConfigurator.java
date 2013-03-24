@@ -41,11 +41,11 @@ public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
-    protected void doConfigure(HttpConfiguration builder) throws Exception {
-        ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(builder.authenticationEntryPoint());
+    protected void doConfigure(HttpConfiguration http) throws Exception {
+        ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(http.authenticationEntryPoint());
         if(accessDeniedHandler != null) {
             exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);
         }
-        builder.addFilter(exceptionTranslationFilter);
+        http.addFilter(exceptionTranslationFilter);
     }
 }

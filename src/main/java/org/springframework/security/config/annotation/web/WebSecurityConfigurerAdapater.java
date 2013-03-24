@@ -31,14 +31,14 @@ public abstract class WebSecurityConfigurerAdapater {
 
     protected abstract void registerAuthentication(AuthenticationRegistry authenticationRegistry) throws Exception;
 
-    protected void applyDefaults(HttpConfiguration builder) throws Exception {
-        builder.applyDefaultConfigurators();
-        authorizeUrls(builder.authorizeUrls());
+    protected void applyDefaults(HttpConfiguration http) throws Exception {
+        http.applyDefaultConfigurators();
+        authorizeUrls(http.authorizeUrls());
     }
 
     protected abstract void authorizeUrls(ExpressionUrlAuthorizationRegistry interceptUrls);
 
-    public HttpConfiguration defaultSecurityFilterChainBuilder() throws Exception {
+    public HttpConfiguration httpBuilder() throws Exception {
         HttpConfiguration springSecurityFilterChain = new HttpConfiguration(authenticationManager());
         springSecurityFilterChain.setSharedObject(UserDetailsService.class, authenticationRegistry.userDetailsService());
         applyDefaults(springSecurityFilterChain);
@@ -75,5 +75,5 @@ public abstract class WebSecurityConfigurerAdapater {
 
     }
 
-    protected abstract void configure(HttpConfiguration springSecurityFilterChain) throws Exception;
+    protected abstract void configure(HttpConfiguration http) throws Exception;
 }

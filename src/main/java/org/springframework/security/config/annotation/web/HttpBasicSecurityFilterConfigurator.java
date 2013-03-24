@@ -39,14 +39,14 @@ public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityConfigu
         realmName("Spring Security Application");
     }
 
-    protected void doConfigure(HttpConfiguration builder) throws Exception {
-        AuthenticationManager authenticationManager = builder.authenticationManager();
+    protected void doConfigure(HttpConfiguration http) throws Exception {
+        AuthenticationManager authenticationManager = http.authenticationManager();
         basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {
             basicAuthenticationFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
         }
         basicAuthenticationFilter.afterPropertiesSet();
-        builder.addFilter(basicAuthenticationFilter);
+        http.addFilter(basicAuthenticationFilter);
     }
 
     public HttpBasicSecurityFilterConfigurator realmName(String realmName) throws Exception {

@@ -42,8 +42,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousConfig extends BaseWebConfig {
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
+        protected void configure(HttpConfiguration http) {
         }
     }
 
@@ -56,9 +55,8 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousDisabledConfig extends BaseWebConfig {
-        protected void configure(
-                HttpConfiguration builder) {
-                builder.anonymous().disable()
+        protected void configure(HttpConfiguration http) {
+                http.anonymous().disable()
         }
     }
 
@@ -71,9 +69,10 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousGrantedAuthorityConfig extends BaseWebConfig {
-        protected void configure(
-            HttpConfiguration builder) {
-            builder.anonymous().authorities("ROLE_ANON")
+        protected void configure(HttpConfiguration http) {
+            http
+                .anonymous()
+                    .authorities("ROLE_ANON")
         }
     }
 
@@ -91,9 +90,9 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousKeyConfig extends BaseWebConfig {
-        protected void configure(
-            HttpConfiguration builder) {
-            builder.anonymous().key("AnonymousKeyConfig")
+        protected void configure(HttpConfiguration http) {
+            http
+                .anonymous().key("AnonymousKeyConfig")
         }
     }
 
@@ -110,9 +109,9 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousUsernameConfig extends BaseWebConfig {
-        protected void configure(
-            HttpConfiguration builder) {
-            builder.anonymous().principal("AnonymousUsernameConfig")
+        protected void configure(HttpConfiguration http) {
+            http
+                .anonymous().principal("AnonymousUsernameConfig")
         }
     }
 }

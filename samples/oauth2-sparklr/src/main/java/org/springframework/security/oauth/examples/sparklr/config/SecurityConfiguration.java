@@ -1,9 +1,5 @@
 package org.springframework.security.oauth.examples.sparklr.config;
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.antMatchers;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,11 +7,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizationRegistry;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
@@ -26,7 +22,6 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
-import org.springframework.security.web.util.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -53,8 +48,8 @@ public class SecurityConfiguration {
     public AuthenticationManager clientAuthenticationManager() throws Exception {
         return new AuthenticationRegistry()
             .userDetails(clientDetailsService)
-            .and()
-        .build();
+                .and()
+            .build();
     }
 
     @Bean(name = {"authManager",BeanIds.AUTHENTICATION_MANAGER})
@@ -63,8 +58,8 @@ public class SecurityConfiguration {
             .inMemoryAuthentication()
                 .withUser("marissa").password("koala").roles("USER").and()
                 .withUser("paul").password("emu").roles("USER").and()
-            .and()
-        .build();
+                .and()
+            .build();
     }
 
     @Configuration
@@ -91,10 +86,8 @@ public class SecurityConfiguration {
                 .antMatchers("/oauth/token").fullyAuthenticated();
         }
 
-        protected void configure(
-                HttpConfiguration builder)
-                throws Exception {
-            builder
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
                 .order(1)
                 .requestMatcher(new AntPathRequestMatcher("/oauth/token"))
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
@@ -128,15 +121,18 @@ public class SecurityConfiguration {
                 ExpressionUrlAuthorizationRegistry interceptUrls) {
             interceptUrls
                 .expressionHandler(securityConfig.oauthWebExpressionHandler)
-                .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
-                .regexMatchers(HttpMethod.GET, "/oauth/users/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
-                .regexMatchers(HttpMethod.GET, "/oauth/clients/.*").configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')");
+                .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")
+                    .configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
+                .regexMatchers(HttpMethod.GET, "/oauth/users/.*")
+                    .configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
+                .regexMatchers(HttpMethod.GET, "/oauth/clients/.*")
+                    .configAttribute("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')");
         }
 
         protected void configure(
-                HttpConfiguration builder)
+                HttpConfiguration http)
                 throws Exception {
-            builder
+            http
                 .order(2)
                 .requestMatcher(new RegexRequestMatcher("/oauth/(users|clients)/.*",null))
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
@@ -172,10 +168,8 @@ public class SecurityConfiguration {
                 .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
         }
 
-        protected void configure(
-                HttpConfiguration builder)
-                throws Exception {
-            builder
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
                 .order(3)
                 .requestMatcher(new AntPathRequestMatcher("/photos/**"))
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
@@ -209,10 +203,8 @@ public class SecurityConfiguration {
                 .antMatchers("/**").permitAll();
         }
 
-        protected void configure(
-                HttpConfiguration builder)
-                throws Exception {
-            builder
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                 .applyDefaultConfigurators()
                 .exceptionHandling()

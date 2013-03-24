@@ -106,14 +106,12 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class NullWebInvocationPrivilegeEvaluatorConfig extends BaseWebConfig {
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
-            springSecurityFilterChain.formLogin()
+        protected void configure(HttpConfiguration http) {
+            http.formLogin()
         }
 
         @Override
-        protected void applyDefaults(HttpConfiguration builder)
-                throws Exception {
+        protected void applyDefaults(HttpConfiguration http) {
         }
     }
 
@@ -139,8 +137,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
             ignoredRequests
                 .antMatchers("/resources/**");
         }
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
+        protected void configure(HttpConfiguration http) {
         }
     }
 
@@ -166,8 +163,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
             ignoredRequests
                 .antMatchers("/resources/**");
         }
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
+        protected void configure(HttpConfiguration http) {
         }
     }
 }

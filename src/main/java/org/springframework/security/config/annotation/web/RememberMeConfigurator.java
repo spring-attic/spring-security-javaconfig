@@ -54,33 +54,32 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
     }
 
     @Override
-    protected void doInit(HttpConfiguration builder)
-            throws Exception {
+    protected void doInit(HttpConfiguration http) throws Exception {
         String key = getKey();
-        UserDetailsService userDetailsService = getUserDetailsService(builder);
+        UserDetailsService userDetailsService = getUserDetailsService(http);
         TokenBasedRememberMeServices tokenRememberMeServices = new TokenBasedRememberMeServices(key, userDetailsService);
         tokenRememberMeServices.setParameter(rememberMeParameter);
         tokenRememberMeServices.setCookieName(rememberMeCookieName);
         rememberMeServices = tokenRememberMeServices;
         logoutHandler = tokenRememberMeServices;
 
-        builder.setSharedObject(RememberMeServices.class, rememberMeServices);
-        LogoutConfigurator logoutConfigurator = builder.getConfigurator(LogoutConfigurator.class);
+        http.setSharedObject(RememberMeServices.class, rememberMeServices);
+        LogoutConfigurator logoutConfigurator = http.getConfigurator(LogoutConfigurator.class);
         logoutConfigurator.addLogoutHandler(logoutHandler);
 
         RememberMeAuthenticationProvider authenticationProvider = new RememberMeAuthenticationProvider(key);
-        builder.authenticationProvider(authenticationProvider);
+        http.authenticationProvider(authenticationProvider);
     }
 
     @Override
-    protected void doConfigure(HttpConfiguration builder)
+    protected void doConfigure(HttpConfiguration http)
             throws Exception {
-        RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(builder.authenticationManager(), rememberMeServices);
-        builder.addFilter(rememberMeFilter);
+        RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(http.authenticationManager(), rememberMeServices);
+        http.addFilter(rememberMeFilter);
     }
 
-    private UserDetailsService getUserDetailsService(HttpConfiguration builder) {
-        return builder.getSharedObject(UserDetailsService.class);
+    private UserDetailsService getUserDetailsService(HttpConfiguration http) {
+        return http.getSharedObject(UserDetailsService.class);
     }
 
     private String getKey() {

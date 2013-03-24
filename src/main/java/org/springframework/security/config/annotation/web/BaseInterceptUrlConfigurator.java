@@ -60,18 +60,17 @@ abstract class BaseInterceptUrlConfigurator<T> extends
         return new ConsensusBased(decisionVoters());
     }
 
-    protected void doConfigure(HttpConfiguration builder)
-            throws Exception {
+    protected void doConfigure(HttpConfiguration http) throws Exception {
         FilterInvocationSecurityMetadataSource metadataSource = createMetadataSource();
         if(metadataSource == null) {
             return;
         }
-        FilterSecurityInterceptor securityInterceptor = securityInterceptor(metadataSource , builder.authenticationManager());
+        FilterSecurityInterceptor securityInterceptor = securityInterceptor(metadataSource , http.authenticationManager());
         if(filterSecurityInterceptorOncePerRequest != null) {
             securityInterceptor.setObserveOncePerRequest(filterSecurityInterceptorOncePerRequest);
         }
-        builder.addFilter(securityInterceptor);
-        builder.setSharedObject(FilterSecurityInterceptor.class, securityInterceptor);
+        http.addFilter(securityInterceptor);
+        http.setSharedObject(FilterSecurityInterceptor.class, securityInterceptor);
     }
 
     private FilterSecurityInterceptor securityInterceptor(FilterInvocationSecurityMetadataSource metadataSource, AuthenticationManager authenticationManager) throws Exception {

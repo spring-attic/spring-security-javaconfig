@@ -112,9 +112,9 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
             ignoredRequests
                 .antMatchers("/resources/**")
         }
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
-                springSecurityFilterChain.formLogin()
+        protected void configure(HttpConfiguration http) {
+            http
+                .formLogin()
         }
     }
 
@@ -146,16 +146,15 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration builder) {
-
-                builder
-                    .formLogin()
-                        .usernameParameter("j_username")
-                        .passwordParameter("j_password")
-                        .loginPage("/authentication/login")
-                        .failureUrl("/authentication/login?failed")
-                        .loginProcessingUrl("/authentication/login/process")
-                        .defaultSuccessUrl("/default")
+        protected void configure(HttpConfiguration http) {
+            http
+                .formLogin()
+                    .usernameParameter("j_username")
+                    .passwordParameter("j_password")
+                    .loginPage("/authentication/login")
+                    .failureUrl("/authentication/login?failed")
+                    .loginProcessingUrl("/authentication/login/process")
+                    .defaultSuccessUrl("/default")
         }
     }
 
@@ -184,16 +183,14 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomRefsConfig extends BaseWebConfig {
-
         @Override
-        protected void configure(
-                HttpConfiguration springSecurityFilterChain) {
-                springSecurityFilterChain
-                    .formLogin()
-                        .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure"))
-                        .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" ))
-                        .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
-                        .and();
+        protected void configure(HttpConfiguration http) {
+            http
+                .formLogin()
+                    .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure"))
+                    .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" ))
+                    .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
+                    .and();
         }
     }
 

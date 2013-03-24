@@ -38,8 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
     }
 
     protected void configure(
-            HttpConfiguration builder) throws Exception {
-        builder
+            HttpConfiguration http) throws Exception {
+        http
             .addFilterAfter(oauth2ClientFilter, ExceptionTranslationFilter.class)
             .logout()
                 .logoutSuccessUrl("/login.jsp")

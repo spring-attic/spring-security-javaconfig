@@ -57,7 +57,7 @@ public class WebSecurityConfiguration {
     @Bean
     public SpringSecurityFilterChainBuilder springSecurityFilterChainBuilder() throws Exception {
         SpringSecurityFilterChainBuilder springSecurityFilterChain = new SpringSecurityFilterChainBuilder()
-            .securityFilterChains(filterChainBuilders());
+            .securityFilterChains(httpBuilders());
         for(WebSecurityConfigurerAdapater adapater : webSecurityConfiguredAdapters()) {
             adapater.performConfigure(springSecurityFilterChain);
         }
@@ -92,10 +92,10 @@ public class WebSecurityConfiguration {
         return securityInterceptor == null ? null : new DefaultWebInvocationPrivilegeEvaluator(securityInterceptor);
     }
 
-    private HttpConfiguration[] filterChainBuilders() throws Exception {
+    private HttpConfiguration[] httpBuilders() throws Exception {
         HttpConfiguration[] result = new HttpConfiguration[webSecurityConfiguredAdapters().length];
         for(int i=0;i<webSecurityConfigurerAdapaters.length;i++) {
-            result[i] = webSecurityConfigurerAdapaters[i].defaultSecurityFilterChainBuilder();
+            result[i] = webSecurityConfigurerAdapaters[i].httpBuilder();
         }
         Arrays.sort(result,OrderComparator.INSTANCE);
         return result;

@@ -84,16 +84,14 @@ public class LogoutConfigurator extends AbstractSecurityConfigurator<DefaultSecu
         return logoutUrl;
     }
 
-    protected void doInit(HttpConfiguration builder)
-            throws Exception {
+    protected void doInit(HttpConfiguration http) throws Exception {
         if(permitAll) {
-            PermitAllSupport.permitAll(builder, this.logoutUrl, this.logoutSuccessUrl);
+            PermitAllSupport.permitAll(http, this.logoutUrl, this.logoutSuccessUrl);
         }
     }
 
-    protected void doConfigure(HttpConfiguration builder)
-            throws Exception {
+    protected void doConfigure(HttpConfiguration http) throws Exception {
         LogoutFilter logoutFilter = createLogoutFilter();
-        builder.addFilter(logoutFilter);
+        http.addFilter(logoutFilter);
     }
 }

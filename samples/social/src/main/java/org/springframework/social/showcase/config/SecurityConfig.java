@@ -72,10 +72,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
             .antMatchers("/**").authenticated();
     }
 
-    protected void configure(
-            HttpConfiguration builder)
-            throws Exception {
-        builder
+    protected void configure(HttpConfiguration http) throws Exception {
+        http
             .addFilterBefore(lazySocialAuthenticationFilter(), AbstractPreAuthenticatedProcessingFilter.class)
             .logout()
                 .deleteCookies("JSESSIONID")

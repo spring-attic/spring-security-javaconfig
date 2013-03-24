@@ -61,30 +61,30 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
         passwordParameter("password");
     }
 
-    protected void doInit(HttpConfiguration builder) throws Exception {
+    protected void doInit(HttpConfiguration http) throws Exception {
         if(permitAll) {
-            PermitAllSupport.permitAll(builder, loginPage, loginProcessingUrl, failureUrl);
+            PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
-        builder.authenticationEntryPoint(authenticationEntryPoint);
+        http.authenticationEntryPoint(authenticationEntryPoint);
     }
 
-    protected void doConfigure(HttpConfiguration builder) throws Exception {
-        usernamePasswordFilter.setAuthenticationManager(builder.authenticationManager());
+    protected void doConfigure(HttpConfiguration http) throws Exception {
+        usernamePasswordFilter.setAuthenticationManager(http.authenticationManager());
         usernamePasswordFilter.setAuthenticationSuccessHandler(successHandler);
         usernamePasswordFilter.setAuthenticationFailureHandler(failureHandler);
         if(authenticationDetailsSource != null) {
             usernamePasswordFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
         }
-        SessionAuthenticationStrategy sessionAuthenticationStrategy = builder.getSharedObject(SessionAuthenticationStrategy.class);
+        SessionAuthenticationStrategy sessionAuthenticationStrategy = http.getSharedObject(SessionAuthenticationStrategy.class);
         if(sessionAuthenticationStrategy != null) {
             usernamePasswordFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
         }
-        RememberMeServices rememberMeServices = builder.getSharedObject(RememberMeServices.class);
+        RememberMeServices rememberMeServices = http.getSharedObject(RememberMeServices.class);
         if(rememberMeServices != null) {
             usernamePasswordFilter.setRememberMeServices(rememberMeServices);
         }
         usernamePasswordFilter.afterPropertiesSet();
-        builder.addFilter(usernamePasswordFilter);
+        http.addFilter(usernamePasswordFilter);
     }
 
     public FormLoginSecurityFilterConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {

@@ -42,8 +42,7 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
     private InsecureChannelProcessor insecureChannelProcessor = new InsecureChannelProcessor();
     private SecureChannelProcessor secureChannelProcessor = new SecureChannelProcessor();
 
-    protected void doConfigure(HttpConfiguration builder)
-            throws Exception {
+    protected void doConfigure(HttpConfiguration http) throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(Arrays.<ChannelProcessor>asList(insecureChannelProcessor,secureChannelProcessor));
         channelFilter.setChannelDecisionManager(channelDecisionManager);
@@ -51,7 +50,7 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
         DefaultFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
         channelFilter.setSecurityMetadataSource(filterInvocationSecurityMetadataSource);
 
-        builder.addFilter(channelFilter);
+        http.addFilter(channelFilter);
     }
 
 
