@@ -60,7 +60,7 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
 
 
     public HttpConfiguration(AuthenticationManager authenticationManager) {
-        initDefaults(authenticationManager);
+        initSharedObjects(authenticationManager);
     }
 
     public HttpConfiguration(AuthenticationProvider provider) {
@@ -70,7 +70,7 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
     public HttpConfiguration(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        initDefaults(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
+        initSharedObjects(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
     public HttpConfiguration applyDefaultConfigurators() throws Exception {
@@ -217,7 +217,7 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return this;
     }
 
-    private void initDefaults(AuthenticationManager parent) {
+    private void initSharedObjects(AuthenticationManager parent) {
         HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
         securityContextRepository.setDisableUrlRewriting(true);
         setSharedObject(SecurityContextRepository.class, securityContextRepository);
