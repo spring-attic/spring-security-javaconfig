@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.servlet.Filter;
 
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -39,7 +40,9 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
+import org.springframework.security.web.util.RegexRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
@@ -196,6 +199,14 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
     public HttpConfiguration requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
         return this;
+    }
+
+    public HttpConfiguration antMatcher(String pattern) {
+        return requestMatcher(new AntPathRequestMatcher(pattern));
+    }
+
+    public HttpConfiguration regexMatcher(String pattern) {
+        return requestMatcher(new RegexRequestMatcher(pattern, null));
     }
 
     public HttpConfiguration order(int order) {

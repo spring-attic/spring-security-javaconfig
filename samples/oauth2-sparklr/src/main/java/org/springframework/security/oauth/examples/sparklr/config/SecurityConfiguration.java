@@ -86,7 +86,7 @@ public class SecurityConfiguration {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .order(1)
-                .requestMatcher(new AntPathRequestMatcher("/oauth/token"))
+                .antMatcher("/oauth/token")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                     .applyDefaultConfigurators()
                     .exceptionHandling()
@@ -128,7 +128,7 @@ public class SecurityConfiguration {
                 throws Exception {
             http
                 .order(2)
-                .requestMatcher(new RegexRequestMatcher("/oauth/(users|clients)/.*",null))
+                .regexMatcher("/oauth/(users|clients)/.*")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                 .applyDefaultConfigurators()
                 .exceptionHandling()
@@ -162,7 +162,7 @@ public class SecurityConfiguration {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .order(3)
-                .requestMatcher(new AntPathRequestMatcher("/photos/**"))
+                .antMatcher("/photos/**")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                 .applyDefaultConfigurators()
                 .exceptionHandling()

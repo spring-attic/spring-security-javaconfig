@@ -257,7 +257,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
             protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .order(1)
-                    .requestMatcher(new AntPathRequestMatcher("/api/**"))
+                    .antMatcher("/api/**")
                     .httpBasic();
             }
 

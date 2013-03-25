@@ -223,7 +223,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
         protected void configure(HttpConfiguration http) {
             http
-                .requestMatcher(new AntPathRequestMatcher("/api/**"))
+                .antMatcher("/api/**")
         }
     }
 

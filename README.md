@@ -140,7 +140,7 @@ The following configuration
             protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .order(1)
-                    .requestMatcher(new AntPathRequestMatcher("/api/**"))
+                    .antMatcher("/api/**")
                     .httpBasic();
             }
 
