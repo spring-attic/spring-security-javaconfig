@@ -66,7 +66,7 @@ The following configuration
                     .permitAll();
         }
 
-        protected AuthenticationManager createAuthenticationManager(AuthenticationBuilder builder) {
+        protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
             return builder
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
