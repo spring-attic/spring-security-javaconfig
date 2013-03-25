@@ -1,12 +1,9 @@
 package org.springframework.security.samples.config;
 
 
-import java.util.Date;
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
@@ -27,20 +24,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
             .antMatchers("/resources/**");
     }
 
-    protected AuthenticationManager authenticationManager(
-            AuthenticationBuilder authenticationRegistry) throws Exception {
-        return authenticationRegistry
+    protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) throws Exception {
+        return builder
             .jdbcUserDetailsManager(dataSource)
                 .withUser("user").password("password").roles("USER").and()
                 .withUser("admin").password("password").roles("USER", "ADMIN").and()
                 .withDefaultSchema()
                 .and()
             .build();
-    }
-
-    @Bean public Object now() {
-        System.out.println(dataSource);
-        return new Date();
     }
 
     protected void authorizeUrls(
