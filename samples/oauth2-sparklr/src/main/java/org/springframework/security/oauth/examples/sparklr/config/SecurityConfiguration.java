@@ -20,8 +20,6 @@ import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEn
 import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.util.AntPathRequestMatcher;
-import org.springframework.security.web.util.RegexRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
