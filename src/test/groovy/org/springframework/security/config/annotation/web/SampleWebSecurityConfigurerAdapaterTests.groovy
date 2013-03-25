@@ -275,6 +275,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
                 ignoredRequests
                     .antMatchers("/resources/**");
             }
+
             protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
                 interceptUrls
                     .antMatchers("/signup","/about").permitAll()

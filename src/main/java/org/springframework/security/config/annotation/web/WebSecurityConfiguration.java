@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
 @Configuration
 public class WebSecurityConfiguration {
     @Autowired(required = false)
-    private WebSecurityConfigurerAdapater[] webSecurityConfigurerAdapaters;
+    private WebSecurityConfigurer[] webSecurityConfigurerAdapaters;
 
     @Bean
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {
@@ -58,15 +58,15 @@ public class WebSecurityConfiguration {
     public SpringSecurityFilterChainBuilder springSecurityFilterChainBuilder() throws Exception {
         SpringSecurityFilterChainBuilder springSecurityFilterChain = new SpringSecurityFilterChainBuilder()
             .securityFilterChains(httpBuilders());
-        for(WebSecurityConfigurerAdapater adapater : webSecurityConfiguredAdapters()) {
-            adapater.performConfigure(springSecurityFilterChain);
+        for(WebSecurityConfigurer adapater : webSecurityConfiguredAdapters()) {
+            adapater.configure(springSecurityFilterChain);
         }
         return springSecurityFilterChain;
     }
 
     @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManager() throws Exception {
-        for(WebSecurityConfigurerAdapater adapter : webSecurityConfiguredAdapters()) {
+        for(WebSecurityConfigurer adapter : webSecurityConfiguredAdapters()) {
             AuthenticationManager authenticationManager = adapter.authenticationManager();
             if(authenticationManager != null) {
                 return authenticationManager;
@@ -77,7 +77,7 @@ public class WebSecurityConfiguration {
 
     @Bean(name=BeanIds.USER_DETAILS_SERVICE)
     public UserDetailsService userDetailsService() throws Exception {
-        for(WebSecurityConfigurerAdapater adapter : webSecurityConfiguredAdapters()) {
+        for(WebSecurityConfigurer adapter : webSecurityConfiguredAdapters()) {
             UserDetailsService userDetailsService = adapter.userDetailsService();
             if(userDetailsService != null) {
                 return userDetailsService;
@@ -101,8 +101,8 @@ public class WebSecurityConfiguration {
         return result;
     }
 
-    private WebSecurityConfigurerAdapater[] webSecurityConfiguredAdapters() {
-        Assert.state(webSecurityConfigurerAdapaters != null, "At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity");
+    private WebSecurityConfigurer[] webSecurityConfiguredAdapters() {
+        Assert.state(webSecurityConfigurerAdapaters != null, "At least one non-null instance of WebSecurityConfigurer must be exposed as a @Bean when using @EnableWebSecurity");
         return webSecurityConfigurerAdapaters;
     }
 }

@@ -127,7 +127,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
 
     @Configuration
     static class RememberMeConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .formLogin()
                         .and()

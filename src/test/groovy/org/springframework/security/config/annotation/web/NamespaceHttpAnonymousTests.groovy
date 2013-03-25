@@ -55,7 +55,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousDisabledConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+      protected void configure(HttpConfiguration http) {
                 http.anonymous().disable()
         }
     }

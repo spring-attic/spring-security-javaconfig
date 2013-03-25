@@ -67,7 +67,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
         context = new AnnotationConfigApplicationContext(FilterChainProxyBuilderMissingConfig)
         then:
         BeanCreationException e = thrown()
-        e.message.contains "At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity"
+        e.message.contains "At least one non-null instance of WebSecurityConfigurer must be exposed as a @Bean when using @EnableWebSecurity"
     }
 
     @Configuration
@@ -79,7 +79,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
         context = new AnnotationConfigApplicationContext(FilterChainProxyBuilderNoSecurityFilterBuildersConfig)
         then:
         BeanCreationException e = thrown()
-        e.message.contains "At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity"
+        e.message.contains "At least one non-null instance of WebSecurityConfigurer must be exposed as a @Bean when using @EnableWebSecurity"
     }
 
     @Configuration

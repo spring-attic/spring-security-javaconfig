@@ -88,7 +88,6 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
                 .antMatchers("/resources/**");
         }
 
-        @Override
         protected void configure(HttpConfiguration http) {
             http.formLogin()
         }
@@ -119,7 +118,6 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
                 .antMatchers("/resources/**");
         }
 
-        @Override
         protected void configure(HttpConfiguration http) {
             http.formLogin().permitAll()
         }

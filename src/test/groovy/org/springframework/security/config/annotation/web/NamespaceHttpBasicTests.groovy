@@ -92,8 +92,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpBasicConfig extends BaseWebConfig {
-        protected void configure(
-                HttpConfiguration http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .httpBasic().realmName("Custom Realm");
         }
@@ -109,8 +108,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class AuthenticationDetailsSourceHttpBasicConfig extends BaseWebConfig {
-        protected void configure(
-            HttpConfiguration http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .httpBasic()
                     .authenticationDetailsSource(new CustomAuthenticationDetailsSource())

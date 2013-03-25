@@ -146,7 +146,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .formLogin()
                     .usernameParameter("j_username")
@@ -183,8 +183,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomRefsConfig extends BaseWebConfig {
-        @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .formLogin()
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure"))

@@ -97,9 +97,7 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpLogoutConfig extends BaseWebConfig {
-
-        protected void configure(
-                HttpConfiguration http) {
+        protected void configure(HttpConfiguration http) throws Exception {
         }
     }
 
@@ -122,7 +120,7 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpLogoutConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .logout()
                     .deleteCookies("remove")
@@ -149,7 +147,7 @@ public class NamespaceLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class SuccessHandlerRefHttpLogoutConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfiguration http) throws Exception {
             SimpleUrlLogoutSuccessHandler logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler(defaultTargetUrl:"/SuccessHandlerRefHttpLogoutConfig")
             http
                 .logout()

@@ -158,6 +158,7 @@ The following configuration
                 ignoredRequests
                     .antMatchers("/resources/**");
             }
+
             protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
                 interceptUrls
                     .antMatchers("/signup","/about").permitAll()
