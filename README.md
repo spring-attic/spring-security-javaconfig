@@ -108,6 +108,111 @@ is similar to the following XML configuration:
 Notice that Spring Security uses different defaults that will make your HTTP requests appear more RESTful. For example, the URL /login POST is used to
 authenticate users. The URL /login GET is used to request the user for credentials (i.e. present a login form).
 
+Sample Multi HTTP Web Configuration
+----------------------
+
+The following configuration
+
+    @Configuration
+    @EnableWebSecurity
+    public class SampleMultiHttpWebSecurityConfigurerAdapater {
+        @Bean
+        public AuthenticationManager authenticationManager() {
+            return new AuthenticationBuilder()
+                    .inMemoryAuthentication()
+                        .withUser("user").password("password").roles("USER").and()
+                        .withUser("admin").password("password").roles("USER", "ADMIN").and()
+                        .and()
+                    .build();
+        }
+
+        @Configuration
+        public static class ApiWebSecurityConfigurationAdapater extends WebSecurityConfigurerAdapater {
+            @Autowired
+            private SampleMultiHttpWebSecurityConfigurerAdapater securityConfig;
+
+            protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
+                interceptUrls
+                    .antMatchers("/api/admin/**").hasRole("ADMIN")
+                    .antMatchers("/api/**").hasRole("USER");
+            }
+
+            protected void configure(HttpConfiguration http) throws Exception {
+                http
+                    // we need to specify order so that we can determine which HttpConfiguration to apply first
+                    .order(1)
+                    .requestMatcher(new AntPathRequestMatcher("/api/**"))
+                    .httpBasic();
+            }
+
+            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
+                // reuse the same AuthenticationManager
+                return securityConfig.authenticationManager();
+            }
+        }
+
+        @Configuration
+        public static class FormLoginWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
+            private SampleMultiHttpWebSecurityConfigurerAdapater securityConfig;
+
+            protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
+                ignoredRequests
+                    .antMatchers("/resources/**");
+            }
+            protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
+                interceptUrls
+                    .antMatchers("/signup","/about").permitAll()
+                    .antMatchers("/**").hasRole("USER");
+            }
+
+            protected void configure(HttpConfiguration http) throws Exception {
+                http
+                    // order is defaulted to last so no need to specify
+                    .formLogin()
+                        .permitAll();
+            }
+
+            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
+                // reuse the same AuthenticationManager
+                return securityConfig.authenticationManager();
+            }
+        }
+    }
+
+is similar to the following XML configuration:
+
+    <http security="none" pattern="/resources/**"/>
+    <http use-expressions="true" pattern="/api/**">
+          <intercept-url pattern="/api/admin/**" access="hasRole('ROLE_ADMIN')"/>
+          <intercept-url pattern="/api/**" access="hasRole('ROLE_USER')"/>
+          <http-basic />
+    </http>
+    <http use-expressions="true">
+      <intercept-url pattern="/logout" access="permitAll"/>
+      <intercept-url pattern="/login" access="permitAll"/>
+      <intercept-url pattern="/signup" access="permitAll"/>
+      <intercept-url pattern="/about" access="permitAll"/>
+      <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+      <logout
+          logout-success-url="/login?logout"
+          logout-url="/logout"
+      <form-login
+          authentication-failure-url="/login?error"
+          login-page="/login"
+          login-processing-url="/login" <!-- but only POST -->
+          password-parameter="password"
+          username-parameter="username"
+      />
+    </http>
+    <authentication-manager>
+      <authentication-provider>
+        <user-service>
+          <user username="user" password="password" authorities="ROLE_USER"/>
+          <user username="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+        </user-service>
+      </authentication-provider>
+    </authentication-manager>
+
 Sample Global Security Configuration
 -------------
 
