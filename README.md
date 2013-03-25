@@ -115,7 +115,7 @@ The following configuration
 
     @Configuration
     @EnableWebSecurity
-    public class SampleMultiHttpWebSecurityConfigurerAdapater {
+    public class SampleMultiHttpSecurityConfig {
         @Bean
         public AuthenticationManager authenticationManager() {
             return new AuthenticationBuilder()
@@ -129,7 +129,7 @@ The following configuration
         @Configuration
         public static class ApiWebSecurityConfigurationAdapater extends WebSecurityConfigurerAdapater {
             @Autowired
-            private SampleMultiHttpWebSecurityConfigurerAdapater securityConfig;
+            private SampleMultiHttpSecurityConfig securityConfig;
 
             protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
                 interceptUrls
@@ -139,21 +139,20 @@ The following configuration
 
             protected void configure(HttpConfiguration http) throws Exception {
                 http
-                    // we need to specify order so that we can determine which HttpConfiguration to apply first
                     .order(1)
                     .requestMatcher(new AntPathRequestMatcher("/api/**"))
                     .httpBasic();
             }
 
             protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
-                // reuse the same AuthenticationManager
                 return securityConfig.authenticationManager();
             }
         }
 
         @Configuration
         public static class FormLoginWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
-            private SampleMultiHttpWebSecurityConfigurerAdapater securityConfig;
+            @Autowired
+            private SampleMultiHttpSecurityConfig securityConfig;
 
             protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
                 ignoredRequests
@@ -167,13 +166,11 @@ The following configuration
 
             protected void configure(HttpConfiguration http) throws Exception {
                 http
-                    // order is defaulted to last so no need to specify
                     .formLogin()
                         .permitAll();
             }
 
             protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
-                // reuse the same AuthenticationManager
                 return securityConfig.authenticationManager();
             }
         }

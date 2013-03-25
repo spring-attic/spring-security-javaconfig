@@ -147,7 +147,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
 
     def "README Multi http Sample works"() {
         setup:
-        loadConfig(SampleMultiHttpWebSecurityConfigurerAdapater)
+        loadConfig(SampleMultiHttpSecurityConfig)
         when:
         springSecurityFilterChain.doFilter(request,response,chain)
         then:
@@ -232,7 +232,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
      */
     @Configuration
     @EnableWebSecurity
-    public static class SampleMultiHttpWebSecurityConfigurerAdapater {
+    public static class SampleMultiHttpSecurityConfig {
         @Bean
         public AuthenticationManager authenticationManager() {
             return new AuthenticationBuilder()
@@ -246,7 +246,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
         @Configuration
         public static class ApiWebSecurityConfigurationAdapater extends WebSecurityConfigurerAdapater {
             @Autowired
-            private SampleMultiHttpWebSecurityConfigurerAdapater securityConfig;
+            private SampleMultiHttpSecurityConfig securityConfig;
 
             protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
                 interceptUrls
@@ -268,7 +268,8 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
 
         @Configuration
         public static class FormLoginWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
-            private SampleMultiHttpWebSecurityConfigurerAdapater securityConfig;
+            @Autowired
+            private SampleMultiHttpSecurityConfig securityConfig;
 
             protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
                 ignoredRequests
