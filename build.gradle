@@ -121,6 +121,11 @@ configure(rootProject) {
                  "org.springframework.security:spring-security-ldap:$springSecurityVersion"
 
         optional "org.slf4j:slf4j-api:$slf4jVersion"
+
+        testCompile "org.springframework.data:spring-data-jpa:1.2.0.RELEASE"
+        testCompile "org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.0.Final"
+        testCompile "org.hibernate:hibernate-entitymanager:3.6.10.Final"
+        testCompile "org.hsqldb:hsqldb:2.2.8"
     }
 
 }
