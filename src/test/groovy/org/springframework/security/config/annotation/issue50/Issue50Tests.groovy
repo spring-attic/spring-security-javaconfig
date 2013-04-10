@@ -15,28 +15,28 @@
  */
 package org.springframework.security.config.annotation.issue50;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.issue50.domain.User;
-import org.springframework.security.config.annotation.issue50.repo.UserRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.TestingAuthenticationToken
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.config.annotation.issue50.domain.User
+import org.springframework.security.config.annotation.issue50.repo.UserRepository
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.web.FilterChainProxy
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.transaction.annotation.Transactional
 
-import spock.lang.Specification;
+import spock.lang.Specification
 
 /**
  * @author Rob Winch
  *
  */
-@ContextConfiguration(classes=[ApplicationConfig.class,SecurityConfig.class])
+@ContextConfiguration(classes=[ApplicationConfig,SecurityConfig])
 @Transactional
 class Issue50Tests extends Specification {
     @Autowired
@@ -46,10 +46,19 @@ class Issue50Tests extends Specification {
     @Autowired
     private UserRepository userRepo
 
-    public void configurationLoadsWithNoErrors() {
+    def setup() {
+        SecurityContextHolder.context.authentication = new TestingAuthenticationToken("test",null,"ROLE_ADMIN")
+    }
+
+    def tearDown() {
+        SecurityContextHolder.clearContext()
+    }
+
+    // https://github.com/SpringSource/spring-security-javaconfig/issues/50
+    def "#50 - GlobalMethodSecurityConfiguration should load AuthenticationManager lazily"() {
         when:
-        "Configuration loads"
-        then:
+        "Configuration Loads"
+        then: "GlobalMethodSecurityConfiguration loads AuthenticationManager lazily"
         noExceptionThrown()
     }
 
@@ -76,5 +85,16 @@ class Issue50Tests extends Specification {
         Authentication result = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.username , user.password))
         then:
         result.principal == user.username
+    }
+
+    public void authenticationDenyUserRepositoryFindByUser() {
+        setup:
+        SecurityContextHolder.context.authentication = new TestingAuthenticationToken("test",null,"ROLE_USER")
+        when:
+        User user = new User(username:"denied",password:"password")
+        userRepo.save(user)
+        Authentication result = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.username , user.password))
+        then:
+        thrown(AccessDeniedException)
     }
 }

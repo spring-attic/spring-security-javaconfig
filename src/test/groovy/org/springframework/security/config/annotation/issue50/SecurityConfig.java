@@ -26,6 +26,7 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.issue50.domain.User;
 import org.springframework.security.config.annotation.issue50.repo.UserRepository;
+import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
@@ -39,6 +40,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  *
  */
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapater {
     @Autowired
@@ -71,7 +73,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapater {
             public Authentication authenticate(Authentication authentication)
                     throws AuthenticationException {
                 Object principal = authentication.getPrincipal();
-                User user = myUserRepository.findByUsername(String.valueOf(principal));
+                String username = String.valueOf(principal);
+                User user = myUserRepository.findByUsername(username);
                 if(user == null) {
                     throw new UsernameNotFoundException("No user for principal "+principal);
                 }

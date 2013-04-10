@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.target.LazyInitTargetSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
@@ -67,8 +69,8 @@ import org.springframework.util.Assert;
  */
 @Configuration
 public class GlobalMethodSecurityConfiguration implements ImportAware {
-    @Autowired(required = false)
-    private AuthenticationManager[] authenticationManagers;
+    @Autowired
+    private ApplicationContext context;
     private AnnotationAttributes enableMethodSecurity;
     private MethodSecurityExpressionHandler expressionHandler;
 
@@ -177,15 +179,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
      * @return
      */
     protected AuthenticationManager authenticationManager() throws Exception {
-        if (authenticationManagers == null) {
-            throw new NoSuchBeanDefinitionException(AuthenticationManager.class);
-        }
-        if (authenticationManagers.length != 1) {
-            throw new NoSuchBeanDefinitionException(
-                    AuthenticationManager.class,
-                    "Found multiple instances of AuthenticationManager");
-        }
-        return authenticationManagers[0];
+        return lazyBean(AuthenticationManager.class);
     }
 
     /**
@@ -266,6 +260,17 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
                         .getName());
         enableMethodSecurity = AnnotationAttributes
                 .fromMap(annotationAttributes);
+    }
+
+    private <T> T lazyBean(Class<T> interfaceName) {
+        LazyInitTargetSource lazyTargetSource = new LazyInitTargetSource();
+        String[] beanNamesForType = context.getBeanNamesForType(AuthenticationManager.class);
+        lazyTargetSource.setTargetBeanName(beanNamesForType[0]);
+        lazyTargetSource.setBeanFactory(context);
+        ProxyFactoryBean proxyFactory = new ProxyFactoryBean();
+        proxyFactory.setTargetSource(lazyTargetSource);
+        proxyFactory.setInterfaces(new Class[] { interfaceName });
+        return (T) proxyFactory.getObject();
     }
 
     private boolean prePostEnabled() {
