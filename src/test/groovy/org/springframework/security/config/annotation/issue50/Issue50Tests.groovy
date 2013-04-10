@@ -50,7 +50,7 @@ class Issue50Tests extends Specification {
         SecurityContextHolder.context.authentication = new TestingAuthenticationToken("test",null,"ROLE_ADMIN")
     }
 
-    def tearDown() {
+    def cleanup() {
         SecurityContextHolder.clearContext()
     }
 
@@ -62,14 +62,14 @@ class Issue50Tests extends Specification {
         noExceptionThrown()
     }
 
-    public void authenticationUserNotFound() {
+    def "AuthenticationManager will not authenticate missing user"() {
         when:
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("test", "password"))
         then:
         thrown(UsernameNotFoundException)
     }
 
-    public void authenticationBadCredentials() {
+    def "AuthenticationManager will not authenticate with invalid password"() {
         when:
         User user = new User(username:"test",password:"password")
         userRepo.save(user)
@@ -78,7 +78,7 @@ class Issue50Tests extends Specification {
         thrown(BadCredentialsException)
     }
 
-    public void authenticationSuccess() {
+    def "AuthenticationManager can be used to authenticate a user"() {
         when:
         User user = new User(username:"test",password:"password")
         userRepo.save(user)
@@ -87,7 +87,7 @@ class Issue50Tests extends Specification {
         result.principal == user.username
     }
 
-    public void authenticationDenyUserRepositoryFindByUser() {
+    def "Global Method Security is enabled and works"() {
         setup:
         SecurityContextHolder.context.authentication = new TestingAuthenticationToken("test",null,"ROLE_USER")
         when:

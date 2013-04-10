@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation.method;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -264,7 +265,8 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
 
     private <T> T lazyBean(Class<T> interfaceName) {
         LazyInitTargetSource lazyTargetSource = new LazyInitTargetSource();
-        String[] beanNamesForType = context.getBeanNamesForType(AuthenticationManager.class);
+        String[] beanNamesForType = context.getBeanNamesForType(interfaceName);
+        Assert.isTrue(beanNamesForType.length == 1 , "Expecting to only find a single bean for type " + interfaceName + ", but found " + Arrays.asList(beanNamesForType));
         lazyTargetSource.setTargetBeanName(beanNamesForType[0]);
         lazyTargetSource.setBeanFactory(context);
         ProxyFactoryBean proxyFactory = new ProxyFactoryBean();
