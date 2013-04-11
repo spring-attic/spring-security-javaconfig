@@ -36,6 +36,8 @@ import org.springframework.security.access.AccessDecisionManager
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.authentication.AnonymousAuthenticationToken
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -49,10 +51,12 @@ import org.springframework.security.web.access.ExceptionTranslationFilter
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpRequestResponseHolder
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -132,6 +136,30 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
                     .formLogin()
                         .and()
                     .rememberMe()
+        }
+    }
+
+    def "http/remember-me@services-ref"() {
+        setup:
+            RememberMeServicesRefConfig.REMEMBER_ME_SERVICES = Mock(RememberMeServices)
+        when: "use custom remember-me services"
+            loadConfig(RememberMeServicesRefConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            def authManager = context.getBean(AuthenticationManager)
+        then: "custom remember-me services used"
+            findFilter(RememberMeAuthenticationFilter).rememberMeServices == RememberMeServicesRefConfig.REMEMBER_ME_SERVICES
+            findFilter(UsernamePasswordAuthenticationFilter).rememberMeServices == RememberMeServicesRefConfig.REMEMBER_ME_SERVICES
+    }
+
+    @Configuration
+    static class RememberMeServicesRefConfig extends BaseWebConfig {
+        static RememberMeServices REMEMBER_ME_SERVICES
+        protected void configure(HttpConfiguration http) throws Exception {
+                http
+                    .formLogin()
+                        .and()
+                    .rememberMe()
+                        .rememberMeServices(REMEMBER_ME_SERVICES)
         }
     }
 

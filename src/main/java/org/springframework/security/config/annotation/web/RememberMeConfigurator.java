@@ -53,22 +53,37 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
         return this;
     }
 
+    public RememberMeConfigurator rememberMeServices(RememberMeServices rememberMeServices) {
+        this.rememberMeServices = rememberMeServices;
+        return this;
+    }
+
     @Override
     protected void doInit(HttpConfiguration http) throws Exception {
         String key = getKey();
-        UserDetailsService userDetailsService = getUserDetailsService(http);
-        TokenBasedRememberMeServices tokenRememberMeServices = new TokenBasedRememberMeServices(key, userDetailsService);
-        tokenRememberMeServices.setParameter(rememberMeParameter);
-        tokenRememberMeServices.setCookieName(rememberMeCookieName);
-        rememberMeServices = tokenRememberMeServices;
-        logoutHandler = tokenRememberMeServices;
-
+        RememberMeServices rememberMeServices = createRememberMeServices(http,key);
         http.setSharedObject(RememberMeServices.class, rememberMeServices);
         LogoutConfigurator logoutConfigurator = http.getConfigurator(LogoutConfigurator.class);
         logoutConfigurator.addLogoutHandler(logoutHandler);
 
         RememberMeAuthenticationProvider authenticationProvider = new RememberMeAuthenticationProvider(key);
         http.authenticationProvider(authenticationProvider);
+    }
+
+    private RememberMeServices createRememberMeServices(HttpConfiguration http, String key) {
+        if(rememberMeServices != null) {
+            if(rememberMeServices instanceof LogoutHandler && logoutHandler == null) {
+                this.logoutHandler = (LogoutHandler) rememberMeServices;
+            }
+            return rememberMeServices;
+        }
+        UserDetailsService userDetailsService = getUserDetailsService(http);
+        TokenBasedRememberMeServices tokenRememberMeServices = new TokenBasedRememberMeServices(key, userDetailsService);
+        tokenRememberMeServices.setParameter(rememberMeParameter);
+        tokenRememberMeServices.setCookieName(rememberMeCookieName);
+        logoutHandler = tokenRememberMeServices;
+        rememberMeServices = tokenRememberMeServices;
+        return tokenRememberMeServices;
     }
 
     @Override
