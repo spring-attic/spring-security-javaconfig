@@ -50,7 +50,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain>, Ordered {
+public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain> {
 
     private AuthenticationManager authenticationManager;
 
@@ -59,8 +59,6 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
     private FilterComparator comparitor = new FilterComparator();
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
-    private int order = LOWEST_PRECEDENCE;
-
 
     public HttpConfiguration(AuthenticationManager authenticationManager) {
         initSharedObjects(authenticationManager);
@@ -209,11 +207,6 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return requestMatcher(new RegexRequestMatcher(pattern, null));
     }
 
-    public HttpConfiguration order(int order) {
-        this.order = order;
-        return this;
-    }
-
     // FIXME shared object or explicit?
     public AuthenticationManager authenticationManager() {
         return authenticationManager;
@@ -238,7 +231,4 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         setSharedObject(AuthenticationBuilder.class, authenticationRegistry);
     }
 
-    public int getOrder() {
-        return order;
-    }
 }

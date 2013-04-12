@@ -3,6 +3,7 @@ package org.springframework.security.oauth.examples.sparklr.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
@@ -61,6 +62,7 @@ public class SecurityConfiguration {
     }
 
     @Configuration
+    @Order(1)
     public static class OAuthTokenSecurityConfig extends WebSecurityConfigurerAdapater {
         @Autowired
         private SecurityConfiguration securityConfig;
@@ -83,7 +85,6 @@ public class SecurityConfiguration {
 
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .order(1)
                 .antMatcher("/oauth/token")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                     .applyDefaultConfigurators()
@@ -100,6 +101,7 @@ public class SecurityConfiguration {
     }
 
     @Configuration
+    @Order(2)
     public static class OAuthClientUserClientSecurityConfig extends WebSecurityConfigurerAdapater {
         @Autowired
         private SecurityConfiguration securityConfig;
@@ -125,7 +127,6 @@ public class SecurityConfiguration {
                 HttpConfiguration http)
                 throws Exception {
             http
-                .order(2)
                 .regexMatcher("/oauth/(users|clients)/.*")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                 .applyDefaultConfigurators()
@@ -139,6 +140,7 @@ public class SecurityConfiguration {
     }
 
     @Configuration
+    @Order(3)
     public static class OAuthPhotosSecurityConfig extends WebSecurityConfigurerAdapater {
         @Autowired
         private SecurityConfiguration securityConfig;
@@ -159,7 +161,6 @@ public class SecurityConfiguration {
 
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .order(3)
                 .antMatcher("/photos/**")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                 .applyDefaultConfigurators()

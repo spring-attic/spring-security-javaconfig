@@ -127,6 +127,7 @@ The following configuration
         }
 
         @Configuration
+        @Order(1)
         public static class ApiWebSecurityConfigurationAdapater extends WebSecurityConfigurerAdapater {
             @Autowired
             private SampleMultiHttpSecurityConfig securityConfig;
@@ -139,7 +140,6 @@ The following configuration
 
             protected void configure(HttpConfiguration http) throws Exception {
                 http
-                    .order(1)
                     .antMatcher("/api/**")
                     .httpBasic();
             }

@@ -61,13 +61,14 @@ import spock.lang.Specification
  * @author Rob Winch
  */
 class DefaultFiltersTests extends BaseSpringSpec {
+    def missingConfigMessage = "At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity"
 
     def "DefaultSecurityFilterChainBuilder cannot be null"() {
         when:
         context = new AnnotationConfigApplicationContext(FilterChainProxyBuilderMissingConfig)
         then:
         BeanCreationException e = thrown()
-        e.message.contains "At least one non-null instance of WebSecurityConfigurer must be exposed as a @Bean when using @EnableWebSecurity"
+        e.message.contains missingConfigMessage
     }
 
     @Configuration
@@ -79,7 +80,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
         context = new AnnotationConfigApplicationContext(FilterChainProxyBuilderNoSecurityFilterBuildersConfig)
         then:
         BeanCreationException e = thrown()
-        e.message.contains "At least one non-null instance of WebSecurityConfigurer must be exposed as a @Bean when using @EnableWebSecurity"
+        e.message.contains missingConfigMessage
     }
 
     @Configuration

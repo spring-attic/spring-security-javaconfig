@@ -17,17 +17,21 @@ package org.springframework.security.config.annotation.web;
 
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.FilterChainProxy;
 
 /**
  * @author Rob Winch
  *
  */
-public abstract class WebSecurityConfigurerAdapater implements WebSecurityConfigurer {
+public abstract class WebSecurityConfigurerAdapater implements SecurityConfigurator<FilterChainProxy, WebSecurityConfiguration> {
+
     private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
     private AuthenticationManager authenticationManager;
+    private HttpConfiguration springSecurityFilterChain;
 
     protected abstract AuthenticationManager authenticationManager(AuthenticationBuilder authentication) throws Exception;
 
@@ -38,31 +42,33 @@ public abstract class WebSecurityConfigurerAdapater implements WebSecurityConfig
 
     protected abstract void authorizeUrls(ExpressionUrlAuthorizations interceptUrls);
 
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.WebSecurityConfigurer#httpConfiguration()
-     */
+    private HttpConfiguration springSecurityFilterChain() throws Exception {
+        if(springSecurityFilterChain == null) {
+            springSecurityFilterChain = new HttpConfiguration(authenticationManager());
+        }
+        return springSecurityFilterChain;
+    }
+
+    public void setBuilder(WebSecurityConfiguration builder) {
+        // TODO we shouldn't need to declare this
+    }
+
     public HttpConfiguration httpConfiguration() throws Exception {
-        HttpConfiguration springSecurityFilterChain = new HttpConfiguration(authenticationManager());
+        HttpConfiguration springSecurityFilterChain = springSecurityFilterChain();
         springSecurityFilterChain.setSharedObject(UserDetailsService.class, userDetailsService());
         applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
         return springSecurityFilterChain;
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.WebSecurityConfigurer#authenticationManager()
-     */
-    public final AuthenticationManager authenticationManager() throws Exception {
+    private AuthenticationManager authenticationManager() throws Exception {
         if(authenticationManager == null) {
             authenticationManager = authenticationManager(authenticationRegistry);
         }
         return authenticationManager;
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.WebSecurityConfigurer#userDetailsService()
-     */
-    public final UserDetailsService userDetailsService() throws Exception {
+    private UserDetailsService userDetailsService() throws Exception {
         return userDetailsService(authenticationRegistry);
     }
 
@@ -70,17 +76,21 @@ public abstract class WebSecurityConfigurerAdapater implements WebSecurityConfig
         return authenticationRegistry.userDetailsService();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.WebSecurityConfigurer#configure(org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder)
-     */
-    public final void configure(SpringSecurityFilterChainBuilder securityFilterChains){
-        ignoredRequests(securityFilterChains.ignoring());
-        performConfigure(securityFilterChains);
-    }
-
     protected void performConfigure(SpringSecurityFilterChainBuilder securityFilterChains){
 
+    }
+
+    public void init(WebSecurityConfiguration builder) throws Exception {
+        SpringSecurityFilterChainBuilder securityFilterChains = builder.springSecurityFilterChainBuilder();
+        ignoredRequests(securityFilterChains.ignoring());
+        performConfigure(securityFilterChains);
+        securityFilterChains
+            .securityFilterChains(httpConfiguration());
+    }
+
+    public void configure(WebSecurityConfiguration builder) throws Exception {
+        builder.setAuthenticationManager(authenticationManager());
+        builder.setUserDetailsService(userDetailsService());
     }
 
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {

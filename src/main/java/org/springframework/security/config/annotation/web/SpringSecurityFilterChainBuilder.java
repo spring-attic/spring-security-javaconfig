@@ -42,7 +42,7 @@ public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<Fi
 
     // TODO change this to SecurityBuilder<SecurityFilterChain> when we eliminate the need for creating a global WebInvocationPrivilegeEvaluator
     public SpringSecurityFilterChainBuilder securityFilterChains(HttpConfiguration... httpBuilders) {
-        this.httpBuilders = Arrays.asList(httpBuilders);
+        this.httpBuilders.addAll(Arrays.asList(httpBuilders));
         return this;
     }
 

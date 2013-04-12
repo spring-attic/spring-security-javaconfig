@@ -21,6 +21,7 @@ import static org.springframework.security.config.annotation.web.util.RequestMat
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order;
 import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -244,6 +245,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
         }
 
         @Configuration
+        @Order(1)
         public static class ApiWebSecurityConfigurationAdapater extends WebSecurityConfigurerAdapater {
             @Autowired
             private SampleMultiHttpSecurityConfig securityConfig;
@@ -256,7 +258,6 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
 
             protected void configure(HttpConfiguration http) throws Exception {
                 http
-                    .order(1)
                     .antMatcher("/api/**")
                     .httpBasic();
             }
