@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
 @Configuration
 public class WebSecurityConfiguration {
     @Autowired(required = false)
-    private WebSecurityConfigurer[] webSecurityConfigurerAdapaters;
+    private WebSecurityConfigurer[] webSecurityConfigurers;
 
     @Bean
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {
@@ -58,7 +58,7 @@ public class WebSecurityConfiguration {
     public SpringSecurityFilterChainBuilder springSecurityFilterChainBuilder() throws Exception {
         SpringSecurityFilterChainBuilder springSecurityFilterChain = new SpringSecurityFilterChainBuilder()
             .securityFilterChains(httpBuilders());
-        for(WebSecurityConfigurer adapater : webSecurityConfiguredAdapters()) {
+        for(WebSecurityConfigurer adapater : webSecurityConfigurers()) {
             adapater.configure(springSecurityFilterChain);
         }
         return springSecurityFilterChain;
@@ -66,7 +66,7 @@ public class WebSecurityConfiguration {
 
     @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManager() throws Exception {
-        for(WebSecurityConfigurer adapter : webSecurityConfiguredAdapters()) {
+        for(WebSecurityConfigurer adapter : webSecurityConfigurers()) {
             AuthenticationManager authenticationManager = adapter.authenticationManager();
             if(authenticationManager != null) {
                 return authenticationManager;
@@ -77,7 +77,7 @@ public class WebSecurityConfiguration {
 
     @Bean(name=BeanIds.USER_DETAILS_SERVICE)
     public UserDetailsService userDetailsService() throws Exception {
-        for(WebSecurityConfigurer adapter : webSecurityConfiguredAdapters()) {
+        for(WebSecurityConfigurer adapter : webSecurityConfigurers()) {
             UserDetailsService userDetailsService = adapter.userDetailsService();
             if(userDetailsService != null) {
                 return userDetailsService;
@@ -93,16 +93,16 @@ public class WebSecurityConfiguration {
     }
 
     private HttpConfiguration[] httpBuilders() throws Exception {
-        HttpConfiguration[] result = new HttpConfiguration[webSecurityConfiguredAdapters().length];
-        for(int i=0;i<webSecurityConfigurerAdapaters.length;i++) {
-            result[i] = webSecurityConfigurerAdapaters[i].httpConfiguration();
+        HttpConfiguration[] result = new HttpConfiguration[webSecurityConfigurers().length];
+        for(int i=0;i<webSecurityConfigurers.length;i++) {
+            result[i] = webSecurityConfigurers[i].httpConfiguration();
         }
         Arrays.sort(result,OrderComparator.INSTANCE);
         return result;
     }
 
-    private WebSecurityConfigurer[] webSecurityConfiguredAdapters() {
-        Assert.state(webSecurityConfigurerAdapaters != null, "At least one non-null instance of WebSecurityConfigurer must be exposed as a @Bean when using @EnableWebSecurity");
-        return webSecurityConfigurerAdapaters;
+    private WebSecurityConfigurer[] webSecurityConfigurers() {
+        Assert.state(webSecurityConfigurers != null, "At least one non-null instance of WebSecurityConfigurer must be exposed as a @Bean when using @EnableWebSecurity");
+        return webSecurityConfigurers;
     }
 }
