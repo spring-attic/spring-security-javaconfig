@@ -36,7 +36,7 @@ public class SocialSecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider socialAuthenticationProvider(UserDetailsService userDetailsService) {
+    public SocialAuthenticationProvider socialAuthenticationProvider(UserDetailsService userDetailsService) {
         return new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService(userDetailsService));
     }
 

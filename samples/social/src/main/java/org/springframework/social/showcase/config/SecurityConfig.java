@@ -15,17 +15,13 @@
  */
 package org.springframework.social.showcase.config;
 
-import javax.servlet.Filter;
 import javax.sql.DataSource;
 
-import org.springframework.aop.framework.ProxyFactoryBean;
-import org.springframework.aop.target.LazyInitTargetSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
@@ -37,6 +33,8 @@ import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.social.security.SocialAuthenticationFilter;
+import org.springframework.social.security.SocialAuthenticationProvider;
 
 /**
  * Security Configuration.
@@ -47,6 +45,12 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private ConfigurableApplicationContext context;
+
+    @Autowired
+    private SocialAuthenticationProvider socialAuthenticationProvider;
+
+    @Autowired
+    private SocialAuthenticationFilter socialAuthenticationFilter;
 
     @Autowired
     private DataSource dataSource;
@@ -75,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configure(HttpConfiguration http) throws Exception {
         http
-            .addFilterBefore(lazySocialAuthenticationFilter(), AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterBefore(socialAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .logout()
                 .deleteCookies("JSESSIONID")
                 .logoutUrl("/signout")
@@ -95,27 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .usersByUsernameQuery("select username, password, true from Account where username = ?")
                 .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?")
                 .and()
-           .add(lazySocialAuthenticationProvider())
+           .add(socialAuthenticationProvider)
            .build();
-    }
-
-    @Bean
-    public Filter lazySocialAuthenticationFilter() {
-        return lazyBean("socialAuthenticationFilter",Filter.class);
-    }
-
-    @Bean
-    public AuthenticationProvider lazySocialAuthenticationProvider() {
-        return lazyBean("socialAuthenticationProvider", AuthenticationProvider.class);
-    }
-
-    private <T> T lazyBean(String targetBeanName, Class<T> interfaceName) {
-        LazyInitTargetSource lazyTargetSource = new LazyInitTargetSource();
-        lazyTargetSource.setTargetBeanName(targetBeanName);
-        lazyTargetSource.setBeanFactory(context);
-        ProxyFactoryBean proxyFactory = new ProxyFactoryBean();
-        proxyFactory.setTargetSource(lazyTargetSource);
-        proxyFactory.setInterfaces(new Class[] { interfaceName });
-        return (T) proxyFactory.getObject();
     }
 }
