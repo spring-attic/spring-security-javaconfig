@@ -13,6 +13,4 @@ public interface SecurityConfigurator<O,B extends SecurityBuilder<O>> {
     void init(B builder) throws Exception;
 
     void configure(B builder) throws Exception;
-
-    void setBuilder(B builder);
 }
