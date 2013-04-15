@@ -60,10 +60,10 @@ import org.springframework.security.web.util.RequestMatcher
  * @author Rob Winch
  *
  */
-public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySpec {
+public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpec {
     def "README Sample works"() {
         setup:
-        loadConfig(SampleWebSecurityConfigurerAdapater)
+        loadConfig(SampleWebSecurityConfigurerAdapter)
         when:
         springSecurityFilterChain.doFilter(request,response,chain)
         then:
@@ -119,7 +119,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
      */
     @Configuration
     @EnableWebSecurity
-    public static class SampleWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
+    public static class SampleWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
             ignoredRequests
                 .antMatchers("/resources/**");
@@ -246,7 +246,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
 
         @Configuration
         @Order(1)
-        public static class ApiWebSecurityConfigurationAdapater extends WebSecurityConfigurerAdapater {
+        public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
             @Autowired
             private SampleMultiHttpSecurityConfig securityConfig;
 
@@ -268,7 +268,7 @@ public class SampleWebSecurityConfigurerAdapaterTests extends BaseWebSpecuritySp
         }
 
         @Configuration
-        public static class FormLoginWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
+        public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
             @Autowired
             private SampleMultiHttpSecurityConfig securityConfig;
 

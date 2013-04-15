@@ -12,7 +12,7 @@ import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
@@ -63,7 +63,7 @@ public class SecurityConfiguration {
 
     @Configuration
     @Order(1)
-    public static class OAuthTokenSecurityConfig extends WebSecurityConfigurerAdapater {
+    public static class OAuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
         @Autowired
         private SecurityConfiguration securityConfig;
 
@@ -102,7 +102,7 @@ public class SecurityConfiguration {
 
     @Configuration
     @Order(2)
-    public static class OAuthClientUserClientSecurityConfig extends WebSecurityConfigurerAdapater {
+    public static class OAuthClientUserClientSecurityConfig extends WebSecurityConfigurerAdapter {
         @Autowired
         private SecurityConfiguration securityConfig;
 
@@ -141,7 +141,7 @@ public class SecurityConfiguration {
 
     @Configuration
     @Order(3)
-    public static class OAuthPhotosSecurityConfig extends WebSecurityConfigurerAdapater {
+    public static class OAuthPhotosSecurityConfig extends WebSecurityConfigurerAdapter {
         @Autowired
         private SecurityConfiguration securityConfig;
 
@@ -174,7 +174,7 @@ public class SecurityConfiguration {
     }
 
     @Configuration
-    public static class FormLoginSecurityConfig extends WebSecurityConfigurerAdapater {
+    public static class FormLoginSecurityConfig extends WebSecurityConfigurerAdapter {
         @Autowired
         private SecurityConfiguration securityConfig;
 

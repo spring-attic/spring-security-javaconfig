@@ -47,7 +47,7 @@ The following configuration
 
     @Configuration
     @EnableWebSecurity
-    public class SampleWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
+    public class SampleWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
             ignoredRequests
                 .antMatchers("/resources/**");
@@ -128,7 +128,7 @@ The following configuration
 
         @Configuration
         @Order(1)
-        public static class ApiWebSecurityConfigurationAdapater extends WebSecurityConfigurerAdapater {
+        public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
             @Autowired
             private SampleMultiHttpSecurityConfig securityConfig;
 
@@ -150,7 +150,7 @@ The following configuration
         }
 
         @Configuration
-        public static class FormLoginWebSecurityConfigurerAdapater extends WebSecurityConfigurerAdapater {
+        public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
             @Autowired
             private SampleMultiHttpSecurityConfig securityConfig;
 

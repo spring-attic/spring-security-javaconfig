@@ -31,7 +31,7 @@ import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -44,7 +44,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapater {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private ConfigurableApplicationContext context;
 

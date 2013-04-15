@@ -8,13 +8,13 @@ import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapater {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private OAuth2ClientContextFilter oauth2ClientFilter;
 

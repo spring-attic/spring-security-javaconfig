@@ -189,7 +189,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
 
     @Configuration
     @EnableWebSecurity
-    static class HttpInterceptUrlConfig extends WebSecurityConfigurerAdapater {
+    static class HttpInterceptUrlConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void authorizeUrls(
                 ExpressionUrlAuthorizations interceptUrls) {

@@ -27,7 +27,7 @@ import org.springframework.security.web.FilterChainProxy;
  * @author Rob Winch
  *
  */
-public abstract class WebSecurityConfigurerAdapater implements SecurityConfigurator<FilterChainProxy, WebSecurityConfiguration> {
+public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurator<FilterChainProxy, WebSecurityConfiguration> {
 
     private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
     private AuthenticationManager authenticationManager;

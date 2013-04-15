@@ -30,7 +30,7 @@ import org.springframework.security.config.annotation.method.EnableGlobalMethodS
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapater;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -42,7 +42,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapater {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserRepository myUserRepository;
 
