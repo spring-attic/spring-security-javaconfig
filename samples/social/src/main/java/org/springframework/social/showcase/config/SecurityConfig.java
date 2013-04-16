@@ -43,17 +43,18 @@ import org.springframework.social.security.SocialAuthenticationProvider;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
     @Autowired
     private ConfigurableApplicationContext context;
+
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     private SocialAuthenticationProvider socialAuthenticationProvider;
 
     @Autowired
     private SocialAuthenticationFilter socialAuthenticationFilter;
-
-    @Autowired
-    private DataSource dataSource;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

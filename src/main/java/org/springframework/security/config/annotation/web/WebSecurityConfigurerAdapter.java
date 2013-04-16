@@ -27,7 +27,7 @@ import org.springframework.security.web.FilterChainProxy;
  * @author Rob Winch
  *
  */
-public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurator<FilterChainProxy, WebSecurityConfiguration> {
+public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigurer {
 
     private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
     private AuthenticationManager authenticationManager;
@@ -44,31 +44,27 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurat
 
     private HttpConfiguration springSecurityFilterChain() throws Exception {
         if(springSecurityFilterChain == null) {
-            springSecurityFilterChain = new HttpConfiguration(authenticationManager());
+            springSecurityFilterChain = new HttpConfiguration(getAuthenticationManager());
         }
         return springSecurityFilterChain;
     }
 
-    public void setBuilder(WebSecurityConfiguration builder) {
-        // TODO we shouldn't need to declare this
-    }
-
     public HttpConfiguration httpConfiguration() throws Exception {
         HttpConfiguration springSecurityFilterChain = springSecurityFilterChain();
-        springSecurityFilterChain.setSharedObject(UserDetailsService.class, userDetailsService());
+        springSecurityFilterChain.setSharedObject(UserDetailsService.class, getUserDetailsService());
         applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
         return springSecurityFilterChain;
     }
 
-    private AuthenticationManager authenticationManager() throws Exception {
+    public AuthenticationManager getAuthenticationManager() throws Exception {
         if(authenticationManager == null) {
             authenticationManager = authenticationManager(authenticationRegistry);
         }
         return authenticationManager;
     }
 
-    private UserDetailsService userDetailsService() throws Exception {
+    public UserDetailsService getUserDetailsService() throws Exception {
         return userDetailsService(authenticationRegistry);
     }
 
@@ -89,8 +85,6 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurat
     }
 
     public void configure(WebSecurityConfiguration builder) throws Exception {
-        builder.setAuthenticationManager(authenticationManager());
-        builder.setUserDetailsService(userDetailsService());
     }
 
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
