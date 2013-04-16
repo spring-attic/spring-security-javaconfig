@@ -222,10 +222,6 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
     }
 
     private void initSharedObjects(AuthenticationManager parent) {
-        HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
-        securityContextRepository.setDisableUrlRewriting(true);
-        setSharedObject(SecurityContextRepository.class, securityContextRepository);
-
         AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder()
                 .parentAuthenticationManager(parent);
         setSharedObject(AuthenticationBuilder.class, authenticationRegistry);

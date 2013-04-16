@@ -23,6 +23,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
@@ -62,6 +63,12 @@ public class SessionManagementConfigurator extends AbstractSecurityConfigurator<
 
     protected void doInit(HttpConfiguration builder)
             throws Exception {
+        SecurityContextRepository securityContextRepository = builder.getSharedObject(SecurityContextRepository.class);
+        if(securityContextRepository == null) {
+            HttpSessionSecurityContextRepository httpSecurityRepository = new HttpSessionSecurityContextRepository();
+            httpSecurityRepository.setDisableUrlRewriting(true);
+            builder.setSharedObject(SecurityContextRepository.class, httpSecurityRepository);
+        }
         builder.setSharedObject(SessionAuthenticationStrategy.class, getSessionAuthenticationStrategy());
     }
 
