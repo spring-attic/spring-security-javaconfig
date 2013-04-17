@@ -58,7 +58,7 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
 
     @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManager() throws Exception {
-        verifyhConfigurators();
+        verifyConfigurators();
         for(WebSecurityConfigurer webSecurityConfigurer : webSecurityConfigurers) {
             AuthenticationManager authenticationManager = webSecurityConfigurer.getAuthenticationManager();
             if(authenticationManager != null) {
@@ -70,7 +70,7 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
 
     @Bean(name=BeanIds.USER_DETAILS_SERVICE)
     public UserDetailsService userDetailsService() throws Exception {
-        verifyhConfigurators();
+        verifyConfigurators();
         for(WebSecurityConfigurer webSecurityConfigurer : webSecurityConfigurers) {
             UserDetailsService userDetailsService = webSecurityConfigurer.getUserDetailsService();
             if(userDetailsService != null) {
@@ -106,13 +106,13 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
      */
     @Override
     protected FilterChainProxy doBuild() throws Exception {
-        verifyhConfigurators();
+        verifyConfigurators();
         init();
         configure();
         return springSecurityFilterChain.build();
     }
 
-    private void verifyhConfigurators() {
+    private void verifyConfigurators() {
         boolean hasConfigurators = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
         if(!hasConfigurators) {
             throw new IllegalStateException("At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity");
