@@ -27,7 +27,13 @@ import org.springframework.security.web.context.SecurityContextRepository;
 public class SecurityContextConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
 
     protected void doConfigure(HttpConfiguration http) throws Exception {
+
         SecurityContextPersistenceFilter securityContextFilter = new SecurityContextPersistenceFilter(http.getSharedObject(SecurityContextRepository.class));
+        SessionManagementConfigurator sessionManagement = http.getConfigurator(SessionManagementConfigurator.class);
+        SessionCreationPolicy sessionCreationPolicy = sessionManagement.sessionCreationPolicy();
+        if(SessionCreationPolicy.always == sessionCreationPolicy) {
+            securityContextFilter.setForceEagerSessionCreation(true);
+        }
         securityContextFilter.afterPropertiesSet();
         http.addFilter(securityContextFilter);
     }

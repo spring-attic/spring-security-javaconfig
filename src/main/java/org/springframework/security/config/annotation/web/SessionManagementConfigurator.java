@@ -16,7 +16,6 @@
 package org.springframework.security.config.annotation.web;
 
 import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
-import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -24,6 +23,7 @@ import org.springframework.security.web.authentication.session.ConcurrentSession
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
@@ -39,6 +39,22 @@ public class SessionManagementConfigurator extends AbstractSecurityConfigurator<
     private Integer maximumSessions;
     private String expiredUrl;
     private boolean exceptionIfMaximumExceeded;
+    private SessionCreationPolicy sessionPolicy = SessionCreationPolicy.ifRequired;
+    private boolean enableUrlRewriting;
+
+    public SessionManagementConfigurator enableUrlRewriting(boolean enableUrlRewriting) {
+        this.enableUrlRewriting = enableUrlRewriting;
+        return this;
+    }
+
+    SessionCreationPolicy sessionCreationPolicy() {
+        return sessionPolicy;
+    }
+
+    public SessionManagementConfigurator sessionCreationPolicy(SessionCreationPolicy sessionCreationPolicy) {
+        this.sessionPolicy = sessionCreationPolicy;
+        return this;
+    }
 
     public SessionManagementConfigurator sessionAuthenticationStrategy(SessionAuthenticationStrategy sessionAuthenticationStrategy) {
         this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
@@ -63,18 +79,34 @@ public class SessionManagementConfigurator extends AbstractSecurityConfigurator<
 
     protected void doInit(HttpConfiguration builder)
             throws Exception {
+        builder.setSharedObject(SessionManagementConfigurator.class, this);
+
         SecurityContextRepository securityContextRepository = builder.getSharedObject(SecurityContextRepository.class);
         if(securityContextRepository == null) {
-            HttpSessionSecurityContextRepository httpSecurityRepository = new HttpSessionSecurityContextRepository();
-            httpSecurityRepository.setDisableUrlRewriting(true);
-            builder.setSharedObject(SecurityContextRepository.class, httpSecurityRepository);
+            if(isStateless()) {
+                builder.setSharedObject(SecurityContextRepository.class, new NullSecurityContextRepository());
+            } else {
+                HttpSessionSecurityContextRepository httpSecurityRepository = new HttpSessionSecurityContextRepository();
+                httpSecurityRepository.setDisableUrlRewriting(!enableUrlRewriting);
+                httpSecurityRepository.setAllowSessionCreation(allowSessionCreation());
+                builder.setSharedObject(SecurityContextRepository.class, httpSecurityRepository);
+            }
         }
         builder.setSharedObject(SessionAuthenticationStrategy.class, getSessionAuthenticationStrategy());
+    }
+
+    private boolean allowSessionCreation() {
+        return SessionCreationPolicy.always == sessionPolicy || SessionCreationPolicy.ifRequired == sessionPolicy;
+    }
+
+    private boolean isStateless() {
+        return SessionCreationPolicy.stateless == sessionPolicy;
     }
 
     protected void doConfigure(HttpConfiguration builder)
             throws Exception {
         sessionManagementFilter = new SessionManagementFilter(builder.getSharedObject(SecurityContextRepository.class), getSessionAuthenticationStrategy());
+
         builder.addFilter(sessionManagementFilter);
         if(isConcurrentSessionControlEnabled()) {
             ConcurrentSessionFilter concurrentSessionFilter = new ConcurrentSessionFilter(sessionRegistry, expiredUrl);

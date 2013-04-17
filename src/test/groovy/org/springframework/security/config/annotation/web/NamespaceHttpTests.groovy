@@ -27,8 +27,13 @@ import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.web.NamespaceHttpTests.AuthenticationManagerRefConfig.CustomAuthenticationManager;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterInvocation
 import org.springframework.security.web.access.ExceptionTranslationFilter
@@ -42,6 +47,7 @@ import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.security.web.util.AntPathRequestMatcher
 import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher
@@ -92,27 +98,119 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         }
     }
 
-    // Note that authentication-manager-ref is never implied with java config (it is required)
     def "http@authentication-manager-ref"() {
         when: "Specify AuthenticationManager"
         loadConfig(AuthenticationManagerRefConfig)
         then: "Populates the AuthenticationManager"
-        findFilter(FilterSecurityInterceptor).authenticationManager
+        findFilter(FilterSecurityInterceptor).authenticationManager.parent.class == CustomAuthenticationManager
     }
 
     @Configuration
     static class AuthenticationManagerRefConfig extends BaseWebConfig {
-        protected AuthenticationManager authenticationMgr() throws Exception {
-            // point this to any AuthenticationManager
-            return super.authenticationMgr();
+        // demo authentication-manager-ref (could be any value)
+        protected AuthenticationManager authenticationManager(
+                AuthenticationBuilder authenticationRegistry) throws Exception {
+            return new CustomAuthenticationManager();
         }
         protected void configure(HttpConfiguration http) throws Exception {
+        }
+
+        static class CustomAuthenticationManager implements AuthenticationManager {
+            public Authentication authenticate(Authentication authentication)
+                    throws AuthenticationException {
+                throw new BadCredentialsException("This always fails");
+            }
         }
     }
 
     // Note: There is no http@auto-config equivalent in Java Config
 
-    // FIXME: Support http@create-session (need to make SessionCreationPolicy public)
+    def "http@create-session=always"() {
+        when:
+        loadConfig(IfRequiredConfig)
+        then:
+        findFilter(SecurityContextPersistenceFilter).forceEagerSessionCreation == false
+        findFilter(SecurityContextPersistenceFilter).repo.allowSessionCreation == true
+        findFilter(SessionManagementFilter).securityContextRepository.allowSessionCreation == true
+    }
+
+    @Configuration
+    static class CreateSessionAlwaysConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.always);
+        }
+    }
+
+    def "http@create-session=stateless"() {
+        when:
+        loadConfig(CreateSessionStatelessConfig)
+        then:
+        findFilter(SecurityContextPersistenceFilter).forceEagerSessionCreation == false
+        findFilter(SecurityContextPersistenceFilter).repo.class == NullSecurityContextRepository
+        findFilter(SessionManagementFilter).securityContextRepository.class == NullSecurityContextRepository
+    }
+
+    @Configuration
+    static class CreateSessionStatelessConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.stateless);
+        }
+    }
+
+    def "http@create-session=ifRequired"() {
+        when:
+        loadConfig(IfRequiredConfig)
+        then:
+        findFilter(SecurityContextPersistenceFilter).forceEagerSessionCreation == false
+        findFilter(SecurityContextPersistenceFilter).repo.allowSessionCreation == true
+        findFilter(SessionManagementFilter).securityContextRepository.allowSessionCreation == true
+    }
+
+    @Configuration
+    static class IfRequiredConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.ifRequired);
+        }
+    }
+
+    def "http@create-session defaults to ifRequired"() {
+        when:
+        loadConfig(IfRequiredConfig)
+        then:
+        findFilter(SecurityContextPersistenceFilter).forceEagerSessionCreation == false
+        findFilter(SecurityContextPersistenceFilter).repo.allowSessionCreation == true
+        findFilter(SessionManagementFilter).securityContextRepository.allowSessionCreation == true
+    }
+
+    def "http@create-session=never"() {
+        when:
+        loadConfig(CreateSessionNeverConfig)
+        then:
+        findFilter(SecurityContextPersistenceFilter).forceEagerSessionCreation == false
+        findFilter(SecurityContextPersistenceFilter).repo.allowSessionCreation == false
+        findFilter(SessionManagementFilter).securityContextRepository.allowSessionCreation == false
+    }
+
+    @Configuration
+    static class CreateSessionNeverConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.never);
+        }
+    }
+
+    @Configuration
+    static class DefaultCreateSessionConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+        }
+    }
 
     def "http@disable-url-rewriting = true (default for Java Config)"() {
         when:
