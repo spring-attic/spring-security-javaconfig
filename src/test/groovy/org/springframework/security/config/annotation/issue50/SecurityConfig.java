@@ -19,7 +19,6 @@ import org.spockframework.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -46,11 +45,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserRepository myUserRepository;
 
-    protected AuthenticationManager authenticationManager(
+    protected void registerAuthentication(
             AuthenticationBuilder builder) throws Exception {
-        return builder
-                .add(authenticationProvider())
-                .build();
+        builder
+                .add(authenticationProvider());
     }
 
     protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {

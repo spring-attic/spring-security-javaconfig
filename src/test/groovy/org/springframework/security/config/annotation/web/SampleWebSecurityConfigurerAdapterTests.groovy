@@ -136,13 +136,12 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                     .permitAll();
         }
 
-        protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
-            return builder
+        @Override
+        protected void registerAuthentication(AuthenticationBuilder builder) {
+            builder
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
-                    .withUser("admin").password("password").roles("USER", "ADMIN").and()
-                    .and()
-                .build();
+                    .withUser("admin").password("password").roles("USER", "ADMIN");
         }
     }
 
@@ -247,9 +246,6 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
         @Configuration
         @Order(1)
         public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-            @Autowired
-            private SampleMultiHttpSecurityConfig securityConfig;
-
             protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
                 interceptUrls
                     .antMatchers("/api/admin/**").hasRole("ADMIN")
@@ -262,9 +258,6 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                     .httpBasic();
             }
 
-            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
-                return securityConfig.authenticationManager();
-            }
         }
 
         @Configuration
@@ -287,10 +280,6 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                 http
                     .formLogin()
                         .permitAll();
-            }
-
-            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
-                return securityConfig.authenticationManager();
             }
         }
     }

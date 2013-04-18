@@ -52,7 +52,6 @@ The following configuration
             ignoredRequests
                 .antMatchers("/resources/**");
         }
-
         protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
             interceptUrls
                 .antMatchers("/signup","/about").permitAll()
@@ -62,17 +61,15 @@ The following configuration
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .formLogin()
-                    // permitAll for any URL used with formLogin
                     .permitAll();
         }
 
-        protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
-            return builder
+        @Override
+        protected void registerAuthentication(AuthenticationBuilder builder) {
+            builder
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
-                    .withUser("admin").password("password").roles("USER", "ADMIN").and()
-                    .and()
-                .build();
+                    .withUser("admin").password("password").roles("USER", "ADMIN");
         }
     }
 
@@ -115,7 +112,7 @@ The following configuration
 
     @Configuration
     @EnableWebSecurity
-    public class SampleMultiHttpSecurityConfig {
+    public static class SampleMultiHttpSecurityConfig {
         @Bean
         public AuthenticationManager authenticationManager() {
             return new AuthenticationBuilder()
@@ -129,9 +126,6 @@ The following configuration
         @Configuration
         @Order(1)
         public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-            @Autowired
-            private SampleMultiHttpSecurityConfig securityConfig;
-
             protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
                 interceptUrls
                     .antMatchers("/api/admin/**").hasRole("ADMIN")
@@ -144,9 +138,6 @@ The following configuration
                     .httpBasic();
             }
 
-            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
-                return securityConfig.authenticationManager();
-            }
         }
 
         @Configuration
@@ -169,10 +160,6 @@ The following configuration
                 http
                     .formLogin()
                         .permitAll();
-            }
-
-            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) {
-                return securityConfig.authenticationManager();
             }
         }
     }

@@ -36,10 +36,13 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private ApplicationContext context;
 
     private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
+    private boolean disableAuthenticationRegistry;
     private AuthenticationManager authenticationManager;
     private HttpConfiguration springSecurityFilterChain;
 
-    protected abstract AuthenticationManager authenticationManager(AuthenticationBuilder authentication) throws Exception;
+    protected void registerAuthentication(AuthenticationBuilder builder) throws Exception {
+        this.disableAuthenticationRegistry = true;
+    }
 
     protected void applyDefaults(HttpConfiguration http) throws Exception {
         http.applyDefaultConfigurators();
@@ -50,27 +53,30 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     private HttpConfiguration springSecurityFilterChain() throws Exception {
         if(springSecurityFilterChain == null) {
-            springSecurityFilterChain = new HttpConfiguration(getAuthenticationManager());
+            springSecurityFilterChain = new HttpConfiguration(authenticationManager());
         }
         return springSecurityFilterChain;
     }
 
     public HttpConfiguration httpConfiguration() throws Exception {
         HttpConfiguration springSecurityFilterChain = springSecurityFilterChain();
-        springSecurityFilterChain.setSharedObject(UserDetailsService.class, getUserDetailsService());
+        springSecurityFilterChain.setSharedObject(UserDetailsService.class, userDetailsService());
         applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
         return springSecurityFilterChain;
     }
 
     @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
-    public AuthenticationManager authenticationManager() throws Exception {
-        return getAuthenticationManager();
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return authenticationManager();
     }
 
-    private AuthenticationManager getAuthenticationManager() throws Exception {
+    protected AuthenticationManager authenticationManager() throws Exception {
         if(authenticationManager == null) {
-            authenticationManager = authenticationManager(authenticationRegistry);
+            registerAuthentication(authenticationRegistry);
+            if(!disableAuthenticationRegistry) {
+                authenticationManager = authenticationRegistry.build();
+            }
             if(authenticationManager == null) {
                 authenticationManager = getBeanExcluding(AuthenticationManager.class, BeanIds.AUTHENTICATION_MANAGER);
             }
@@ -79,11 +85,11 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     }
 
     @Bean(name=BeanIds.USER_DETAILS_SERVICE)
-    public UserDetailsService userDetailsService() throws Exception {
-        return getUserDetailsService();
+    public UserDetailsService userDetailsServiceBean() throws Exception {
+        return userDetailsService();
     }
 
-    private UserDetailsService getUserDetailsService() throws Exception {
+    private UserDetailsService userDetailsService() throws Exception {
         return userDetailsService(authenticationRegistry);
     }
 

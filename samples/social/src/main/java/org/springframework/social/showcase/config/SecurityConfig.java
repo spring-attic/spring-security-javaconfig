@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
@@ -93,14 +92,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
     }
 
-    protected AuthenticationManager authenticationManager(
-            AuthenticationBuilder registry) throws Exception {
-        return registry
+    @Override
+    protected void registerAuthentication(
+            AuthenticationBuilder builder) throws Exception {
+        builder
             .jdbcUserDetailsManager(dataSource)
                 .usersByUsernameQuery("select username, password, true from Account where username = ?")
-                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?")
-                .and()
-           .add(socialAuthenticationProvider)
-           .build();
+                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?");
     }
 }

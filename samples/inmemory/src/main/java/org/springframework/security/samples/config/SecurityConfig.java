@@ -1,7 +1,6 @@
 package org.springframework.security.samples.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
@@ -20,14 +19,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/resources/**");
     }
 
-    protected AuthenticationManager authenticationManager(
-            AuthenticationBuilder authenticationRegistry) throws Exception {
-        return authenticationRegistry
+    protected void registerAuthentication(
+            AuthenticationBuilder builder) throws Exception {
+        builder
             .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER").and()
-                .withUser("admin").password("password").roles("USER", "ADMIN").and()
-                .and()
-            .build();
+                .withUser("admin").password("password").roles("USER", "ADMIN");
     }
 
     protected void authorizeUrls(

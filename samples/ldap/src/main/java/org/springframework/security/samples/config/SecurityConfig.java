@@ -3,7 +3,6 @@ package org.springframework.security.samples.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
@@ -25,14 +24,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/resources/**");
     }
 
-    protected AuthenticationManager authenticationManager(
-            AuthenticationBuilder authenticationRegistry) throws Exception {
-        return authenticationRegistry
+    protected void registerAuthentication(
+            AuthenticationBuilder builder) throws Exception {
+        builder
             .ldapAuthenticationProvider(contextSource())
                 .userDnPatterns("uid={0},ou=people")
-                .groupSearchFilter("(member={0})")
-                .and()
-            .build();
+                .groupSearchFilter("(member={0})");
     }
 
     protected void authorizeUrls(

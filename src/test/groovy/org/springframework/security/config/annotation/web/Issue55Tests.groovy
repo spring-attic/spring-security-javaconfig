@@ -60,12 +60,6 @@ class Issue55Tests extends BaseSpringSpec {
             @Override
             protected void configure(HttpConfiguration http) throws Exception {
             }
-
-            @Override
-            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) throws Exception {
-                return null;
-            }
-
         }
         @Configuration
         public static class AuthenticationManagerConfiguration {
@@ -101,11 +95,6 @@ class Issue55Tests extends BaseSpringSpec {
                 http.antMatcher("/api/**");
             }
 
-            @Override
-            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) throws Exception {
-                return null;
-            }
-
         }
         @Component
         public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
@@ -117,12 +106,6 @@ class Issue55Tests extends BaseSpringSpec {
             @Override
             protected void configure(HttpConfiguration http) throws Exception {
             }
-
-            @Override
-            protected AuthenticationManager authenticationManager(AuthenticationBuilder builder) throws Exception {
-                return null;
-            }
-
         }
         @Configuration
         public static class AuthenticationManagerConfiguration {

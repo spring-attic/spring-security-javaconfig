@@ -108,8 +108,8 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class AuthenticationManagerRefConfig extends BaseWebConfig {
         // demo authentication-manager-ref (could be any value)
-        protected AuthenticationManager authenticationManager(
-                AuthenticationBuilder authenticationRegistry) throws Exception {
+
+        protected AuthenticationManager authenticationManager() throws Exception {
             return new CustomAuthenticationManager();
         }
         protected void configure(HttpConfiguration http) throws Exception {
