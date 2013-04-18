@@ -26,7 +26,4 @@ import org.springframework.security.web.FilterChainProxy;
  */
 public interface WebSecurityConfigurer extends SecurityConfigurator<FilterChainProxy, WebSecurityConfiguration> {
 
-    AuthenticationManager getAuthenticationManager() throws Exception;
-
-    UserDetailsService getUserDetailsService() throws Exception;
 }

@@ -23,11 +23,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator;
@@ -55,31 +52,6 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
     public FilterChainProxy springSecurityFilterChain() throws Exception {
         return build();
     }
-
-    @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
-    public AuthenticationManager authenticationManager() throws Exception {
-        verifyConfigurators();
-        for(WebSecurityConfigurer webSecurityConfigurer : webSecurityConfigurers) {
-            AuthenticationManager authenticationManager = webSecurityConfigurer.getAuthenticationManager();
-            if(authenticationManager != null) {
-                return authenticationManager;
-            }
-        }
-        return null;
-    }
-
-    @Bean(name=BeanIds.USER_DETAILS_SERVICE)
-    public UserDetailsService userDetailsService() throws Exception {
-        verifyConfigurators();
-        for(WebSecurityConfigurer webSecurityConfigurer : webSecurityConfigurers) {
-            UserDetailsService userDetailsService = webSecurityConfigurer.getUserDetailsService();
-            if(userDetailsService != null) {
-                return userDetailsService;
-            }
-        }
-        return null;
-    }
-
 
     @Bean
     public WebInvocationPrivilegeEvaluator privilegeEvaluator() throws Exception {

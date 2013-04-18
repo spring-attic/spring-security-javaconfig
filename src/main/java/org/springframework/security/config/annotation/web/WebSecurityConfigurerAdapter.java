@@ -16,7 +16,9 @@
 package org.springframework.security.config.annotation.web;
 
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -55,14 +57,24 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return springSecurityFilterChain;
     }
 
-    public AuthenticationManager getAuthenticationManager() throws Exception {
+    @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
+    public AuthenticationManager authenticationManager() throws Exception {
+        return getAuthenticationManager();
+    }
+
+    private AuthenticationManager getAuthenticationManager() throws Exception {
         if(authenticationManager == null) {
             authenticationManager = authenticationManager(authenticationRegistry);
         }
         return authenticationManager;
     }
 
-    public UserDetailsService getUserDetailsService() throws Exception {
+    @Bean(name=BeanIds.USER_DETAILS_SERVICE)
+    public UserDetailsService userDetailsService() throws Exception {
+        return getUserDetailsService();
+    }
+
+    private UserDetailsService getUserDetailsService() throws Exception {
         return userDetailsService(authenticationRegistry);
     }
 
