@@ -16,6 +16,10 @@
 package org.springframework.security.config.annotation.web;
 
 
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
@@ -28,6 +32,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  *
  */
 public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigurer {
+    @Autowired
+    private ApplicationContext context;
 
     private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
     private AuthenticationManager authenticationManager;
@@ -65,6 +71,9 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private AuthenticationManager getAuthenticationManager() throws Exception {
         if(authenticationManager == null) {
             authenticationManager = authenticationManager(authenticationRegistry);
+            if(authenticationManager == null) {
+                authenticationManager = getBeanExcluding(AuthenticationManager.class, BeanIds.AUTHENTICATION_MANAGER);
+            }
         }
         return authenticationManager;
     }
@@ -99,6 +108,24 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
 
+    }
+
+    private <T> T getBeanExcluding(Class<T> clazz, String beanNameToExclude) {
+        String[] beanNames = context.getBeanNamesForType(clazz);
+        if(beanNames.length == 1) {
+            return context.getBean(beanNames[0],clazz);
+        }
+        if(beanNames.length == 2) {
+            if(beanNameToExclude.equals(beanNames[0])) {
+                return context.getBean(beanNames[1],clazz);
+            }
+            if(beanNameToExclude.equals(beanNames[1])) {
+                return context.getBean(beanNames[0],clazz);
+            }
+        }
+        throw new IllegalStateException("Failed to find bean of type " + clazz
+                + " excluding " + beanNameToExclude + ". Got "
+                + Arrays.asList(beanNames));
     }
 
     protected abstract void configure(HttpConfiguration http) throws Exception;
