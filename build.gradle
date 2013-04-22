@@ -40,8 +40,8 @@ configure(allprojects) { p->
 
     test.systemProperty("java.awt.headless", "true")
 
-    sourceCompatibility=1.6
-    targetCompatibility=1.6
+    sourceCompatibility=1.5
+    targetCompatibility=1.
 
     repositories {
         maven { url "http://repo.springsource.org/libs-snapshot" }
