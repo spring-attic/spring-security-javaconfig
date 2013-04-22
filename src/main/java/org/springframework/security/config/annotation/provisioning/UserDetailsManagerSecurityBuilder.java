@@ -52,7 +52,7 @@ public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerRegis
         return userBuilder;
     }
 
-    public static class UserDetailsBuilder<T> {
+    public static class UserDetailsBuilder<T extends UserDetailsManagerRegistry<T>> {
         private String username;
         private String password;
         private List<GrantedAuthority> authorities;
