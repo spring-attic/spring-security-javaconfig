@@ -27,7 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void registerAuthentication(
             AuthenticationRegistry builder) throws Exception {
         builder
-            .ldapAuthenticationProvider(contextSource())
+            .ldapAuthenticationProvider()
+                .contextSource(contextSource())
                 .userDnPatterns("uid={0},ou=people")
                 .groupSearchFilter("(member={0})");
     }

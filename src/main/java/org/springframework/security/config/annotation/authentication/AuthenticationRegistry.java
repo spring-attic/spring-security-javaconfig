@@ -15,9 +15,6 @@
  */
 package org.springframework.security.config.annotation.authentication;
 
-import javax.sql.DataSource;
-
-import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationRegistry;
@@ -37,11 +34,9 @@ public interface AuthenticationRegistry {
     UserDetailsManagerRegistry<? extends UserDetailsManagerRegistry<?>> inMemoryAuthentication()
             throws Exception;
 
-    LdapAuthenticationRegistry ldapAuthenticationProvider(
-            BaseLdapPathContextSource contextSource) throws Exception;
+    LdapAuthenticationRegistry ldapAuthenticationProvider() throws Exception;
 
-    JdbcUserDetailsManagerRegistry<? extends JdbcUserDetailsManagerRegistry<?>> jdbcUserDetailsManager(
-            DataSource dataSource) throws Exception;
+    JdbcUserDetailsManagerRegistry<? extends JdbcUserDetailsManagerRegistry<?>> jdbcUserDetailsManager() throws Exception;
 
     DaoAuthenticationConfigurator userDetails(
             UserDetailsService userDetailsService) throws Exception;

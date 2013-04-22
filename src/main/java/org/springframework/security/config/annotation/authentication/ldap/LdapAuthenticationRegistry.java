@@ -1,28 +1,31 @@
 package org.springframework.security.config.annotation.authentication.ldap;
 
+import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 
 public interface LdapAuthenticationRegistry {
 
-	LdapAuthenticationRegistry userDnPatterns(
-			String... userDnPatterns);
+    LdapAuthenticationRegistry userDnPatterns(
+            String... userDnPatterns);
 
-	LdapAuthenticationRegistry userDetailsContextMapper(
-			UserDetailsContextMapper userDetailsContextMapper);
+    LdapAuthenticationRegistry userDetailsContextMapper(
+            UserDetailsContextMapper userDetailsContextMapper);
 
-	LdapAuthenticationRegistry groupRoleAttribute(
-			String groupRoleAttribute);
+    LdapAuthenticationRegistry groupRoleAttribute(
+            String groupRoleAttribute);
 
-	LdapAuthenticationRegistry groupSearchBase(
-			String groupSearchBase);
+    LdapAuthenticationRegistry groupSearchBase(
+            String groupSearchBase);
 
-	LdapAuthenticationRegistry groupSearchFilter(
-			String groupSearchFilter);
+    LdapAuthenticationRegistry groupSearchFilter(
+            String groupSearchFilter);
 
-	LdapAuthenticationRegistry rolePrefix(
-			String rolePrefix);
+    LdapAuthenticationRegistry rolePrefix(
+            String rolePrefix);
 
-	LdapAuthenticationRegistry userSearchFilter(
-			String userSearchFilter);
+    LdapAuthenticationRegistry userSearchFilter(
+            String userSearchFilter);
+
+    LdapAuthenticationProviderBuilderSecurityBuilder contextSource(BaseLdapPathContextSource contextSource);
 
 }

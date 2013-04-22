@@ -96,7 +96,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void registerAuthentication(
             AuthenticationRegistry builder) throws Exception {
         builder
-            .jdbcUserDetailsManager(dataSource)
+            .jdbcUserDetailsManager()
+                .dataSource(dataSource)
                 .usersByUsernameQuery("select username, password, true from Account where username = ?")
                 .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?");
     }

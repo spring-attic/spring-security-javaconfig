@@ -55,7 +55,9 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     static class DefaultLdapConfig extends BaseLdapProviderConfig {
         protected void registerAuthentication(
                 AuthenticationRegistry registry) throws Exception {
-            registry.ldapAuthenticationProvider(contextSource())
+            registry
+                .ldapAuthenticationProvider()
+                    .contextSource(contextSource())
         }
     }
 
@@ -69,9 +71,11 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
 
     @Configuration
     static class GroupRolesConfig extends BaseLdapProviderConfig {
-        protected void registerAuthentication(
-            AuthenticationRegistry registry) throws Exception {
-            registry.ldapAuthenticationProvider(contextSource()).groupRoleAttribute("group")
+        protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
+            registry
+                .ldapAuthenticationProvider()
+                    .contextSource(contextSource())
+                    .groupRoleAttribute("group")
         }
     }
 
@@ -87,7 +91,10 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     static class GroupSearchConfig extends BaseLdapProviderConfig {
         protected void registerAuthentication(
             AuthenticationRegistry registry) throws Exception {
-            registry.ldapAuthenticationProvider(contextSource()).groupSearchFilter("ou=groupName");
+            registry
+                .ldapAuthenticationProvider()
+                    .contextSource(contextSource())
+                    .groupSearchFilter("ou=groupName");
         }
     }
 
@@ -103,7 +110,10 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     static class RolePrefixConfig extends BaseLdapProviderConfig {
         protected void registerAuthentication(
             AuthenticationRegistry registry) throws Exception {
-            registry.ldapAuthenticationProvider(contextSource()).rolePrefix("role_")
+            registry
+                .ldapAuthenticationProvider()
+                    .contextSource(contextSource())
+                    .rolePrefix("role_")
         }
     }
 
@@ -120,7 +130,11 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     static class BindAuthenticationConfig extends BaseLdapServerConfig {
         protected void registerAuthentication(
             AuthenticationRegistry registry) throws Exception {
-            registry.ldapAuthenticationProvider(contextSource()).userDnPatterns("uid={0},ou=people").groupSearchFilter("(member={0})");
+            registry
+                .ldapAuthenticationProvider()
+                    .contextSource(contextSource())
+                    .userDnPatterns("uid={0},ou=people")
+                    .groupSearchFilter("(member={0})");
         }
     }
 

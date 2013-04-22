@@ -18,9 +18,6 @@ package org.springframework.security.config.annotation.authentication;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -29,7 +26,6 @@ import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderBuilderSecurityBuilder;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
-import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerSecurityBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -62,25 +58,20 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
         return apply(new InMemoryUserDetailsManagerSecurityBuilder());
     }
 
-    // FIXME what if ldap not on classpath?
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#ldapAuthenticationProvider(org.springframework.ldap.core.support.BaseLdapPathContextSource)
      */
     @Override
-    public LdapAuthenticationProviderBuilderSecurityBuilder ldapAuthenticationProvider(
-            BaseLdapPathContextSource contextSource) throws Exception {
-        return apply(new LdapAuthenticationProviderBuilderSecurityBuilder(
-                contextSource));
+    public LdapAuthenticationProviderBuilderSecurityBuilder ldapAuthenticationProvider() throws Exception {
+        return apply(new LdapAuthenticationProviderBuilderSecurityBuilder());
     }
 
-    // FIXME what if DataSource not on classpath?
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#jdbcUserDetailsManager(javax.sql.DataSource)
      */
     @Override
-    public JdbcUserDetailsManagerSecurityBuilder jdbcUserDetailsManager(
-            DataSource dataSource) throws Exception {
-        return apply(new JdbcUserDetailsManagerSecurityBuilder(dataSource));
+    public JdbcUserDetailsManagerSecurityBuilder jdbcUserDetailsManager() throws Exception {
+        return apply(new JdbcUserDetailsManagerSecurityBuilder());
     }
 
     /* (non-Javadoc)
