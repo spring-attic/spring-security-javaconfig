@@ -35,7 +35,7 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
  * @since 3.2
  */
 public class JdbcUserDetailsManagerSecurityBuilder extends
-        UserDetailsManagerSecurityBuilder<JdbcUserDetailsManagerSecurityBuilder> {
+        UserDetailsManagerSecurityBuilder<JdbcUserDetailsManagerSecurityBuilder> implements JdbcUserDetailsManagerRegistry<JdbcUserDetailsManagerSecurityBuilder> {
 
     private final DataSource dataSource;
 
@@ -48,12 +48,20 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
         this.dataSource = dataSource;
     }
 
-    public JdbcUserDetailsManagerSecurityBuilder usersByUsernameQuery(String query) throws Exception {
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#usersByUsernameQuery(java.lang.String)
+     */
+	public JdbcUserDetailsManagerSecurityBuilder usersByUsernameQuery(String query) throws Exception {
         userDetailsService().setUsersByUsernameQuery(query);
         return this;
     }
 
-    public JdbcUserDetailsManagerSecurityBuilder authoritiesByUsernameQuery(String query) throws Exception {
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#authoritiesByUsernameQuery(java.lang.String)
+     */
+	public JdbcUserDetailsManagerSecurityBuilder authoritiesByUsernameQuery(String query) throws Exception {
         userDetailsService().setAuthoritiesByUsernameQuery(query);
         return this;
     }
@@ -66,7 +74,12 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
         return (JdbcUserDetailsManager) super.userDetailsService();
     }
 
-    public JdbcUserDetailsManagerSecurityBuilder withDefaultSchema() {
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#withDefaultSchema()
+     */
+    @Override
+	public JdbcUserDetailsManagerSecurityBuilder withDefaultSchema() {
         this.initScripts.add(new ClassPathResource("org/springframework/security/core/userdetails/jdbc/users.ddl"));
         return this;
     }

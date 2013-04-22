@@ -18,7 +18,6 @@ package org.springframework.security.config.annotation.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.UserDetailsServiceSecurityBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -32,28 +31,28 @@ import org.springframework.security.provisioning.UserDetailsManager;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerSecurityBuilder<T>> extends UserDetailsServiceSecurityBuilder<UserDetailsManager> {
-    private List<SecurityBuilder<UserDetails>> userBuilders = new ArrayList<SecurityBuilder<UserDetails>>();
+public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerRegistry<T>> extends UserDetailsServiceSecurityBuilder<UserDetailsManager> implements UserDetailsManagerRegistry<T> {
+    private List<UserDetailsBuilder<T>> userBuilders = new ArrayList<UserDetailsBuilder<T>>();
 
     public UserDetailsManagerSecurityBuilder(UserDetailsManager userDetailsManager) {
         super(userDetailsManager);
     }
 
     public UserDetailsManager userDetailsService() throws Exception {
-        for(SecurityBuilder<UserDetails> userBuilder : userBuilders) {
+        for(UserDetailsBuilder<T> userBuilder : userBuilders) {
             userDetailsService.createUser(userBuilder.build());
         }
         return (UserDetailsManager) super.userDetailsService();
     }
 
-    public final UserSecurityBuilder<T> withUser(String username) {
-        UserSecurityBuilder<T> userBuilder = new UserSecurityBuilder<T>((T)this);
+    public final UserDetailsBuilder<T> withUser(String username) {
+        UserDetailsBuilder<T> userBuilder = new UserDetailsBuilder<T>((T)this);
         userBuilder.username(username);
         this.userBuilders.add(userBuilder);
         return userBuilder;
     }
 
-    public static class UserSecurityBuilder<T> implements SecurityBuilder<UserDetails> {
+    public static class UserDetailsBuilder<T> {
         private String username;
         private String password;
         private List<GrantedAuthority> authorities;
@@ -63,7 +62,7 @@ public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerSecur
         private boolean enabled = true;
         private final T builder;
 
-        private UserSecurityBuilder(T builder) {
+        private UserDetailsBuilder(T builder) {
             this.builder = builder;
         }
 
@@ -71,17 +70,17 @@ public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerSecur
             return builder;
         }
 
-        public UserSecurityBuilder<T> username(String username) {
+        public UserDetailsBuilder<T> username(String username) {
             this.username = username;
             return this;
         }
 
-        public UserSecurityBuilder<T> password(String password) {
+        public UserDetailsBuilder<T> password(String password) {
             this.password = password;
             return this;
         }
 
-        public UserSecurityBuilder<T> roles(String... roles) {
+        public UserDetailsBuilder<T> roles(String... roles) {
             List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(roles.length);
             for(String role : roles) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_"+role));
@@ -90,12 +89,12 @@ public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerSecur
             return this;
         }
 
-        public UserSecurityBuilder<T> authorities(String... authorities) {
+        public UserDetailsBuilder<T> authorities(String... authorities) {
             this.authorities = AuthorityUtils.createAuthorityList(authorities);
             return this;
         }
 
-        public UserDetails build() {
+        private UserDetails build() {
             return new User(username, password, enabled, accountNonExpired,
                     credentialsNonExpired, accountNonLocked, authorities);
         }

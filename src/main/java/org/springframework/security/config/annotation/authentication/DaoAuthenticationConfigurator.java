@@ -18,6 +18,7 @@ public class DaoAuthenticationConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
+    @Override
     protected void doConfigure(AuthenticationBuilder builder) throws Exception {
         builder.add(provider);
     }

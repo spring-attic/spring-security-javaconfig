@@ -61,12 +61,13 @@ The following configuration
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .formLogin()
+                    // set permitAll for all URLs associated with Form Login
                     .permitAll();
         }
 
         @Override
-        protected void registerAuthentication(AuthenticationBuilder builder) {
-            builder
+        protected void registerAuthentication(AuthenticationRegistry registry) {
+            registry
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN");

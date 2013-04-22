@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
 
 /**
@@ -38,7 +38,7 @@ abstract class BaseWebConfig extends WebSecurityConfigurerAdapter {
     }
 
     protected void registerAuthentication(
-                AuthenticationBuilder authenticationRegistry) throws Exception {
+                AuthenticationRegistry authenticationRegistry) throws Exception {
         authenticationRegistry
             .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER").and()

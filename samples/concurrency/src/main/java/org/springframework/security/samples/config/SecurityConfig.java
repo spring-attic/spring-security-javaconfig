@@ -1,7 +1,7 @@
 package org.springframework.security.samples.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
@@ -19,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     protected void registerAuthentication(
-            AuthenticationBuilder builder) throws Exception {
+            AuthenticationRegistry builder) throws Exception {
         builder
             .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER").and()

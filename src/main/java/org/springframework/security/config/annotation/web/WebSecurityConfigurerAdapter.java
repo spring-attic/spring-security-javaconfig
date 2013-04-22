@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -40,7 +41,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private AuthenticationManager authenticationManager;
     private HttpConfiguration springSecurityFilterChain;
 
-    protected void registerAuthentication(AuthenticationBuilder builder) throws Exception {
+    protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
         this.disableAuthenticationRegistry = true;
     }
 
@@ -93,7 +94,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return userDetailsService(authenticationRegistry);
     }
 
-    protected UserDetailsService userDetailsService(AuthenticationBuilder authenticationRegistry) {
+    protected UserDetailsService userDetailsService(AuthenticationRegistry authenticationRegistry) {
         return authenticationRegistry.userDetailsService();
     }
 

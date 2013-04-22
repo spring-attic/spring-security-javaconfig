@@ -33,7 +33,8 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -133,12 +134,13 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .formLogin()
+                    // set permitAll for all URLs associated with Form Login
                     .permitAll();
         }
 
         @Override
-        protected void registerAuthentication(AuthenticationBuilder builder) {
-            builder
+        protected void registerAuthentication(AuthenticationRegistry registry) {
+            registry
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN");

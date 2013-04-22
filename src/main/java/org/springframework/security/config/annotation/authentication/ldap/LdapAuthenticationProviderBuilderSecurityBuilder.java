@@ -33,7 +33,7 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
  * @since 3.2
  */
 public class LdapAuthenticationProviderBuilderSecurityBuilder extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationBuilder> implements
-        SecurityBuilder<LdapAuthenticationProvider> {
+        SecurityBuilder<LdapAuthenticationProvider>, LdapAuthenticationRegistry {
     private String groupRoleAttribute = "cn";
     private String groupSearchBase = "ou=groups";
     private String groupSearchFilter = "(uniqueMember={0})";
@@ -78,37 +78,37 @@ public class LdapAuthenticationProviderBuilderSecurityBuilder extends AbstractSe
         return ldapAuthenticationProvider;
     }
 
-    public LdapAuthenticationProviderBuilderSecurityBuilder userDnPatterns(String...userDnPatterns) {
+	public LdapAuthenticationProviderBuilderSecurityBuilder userDnPatterns(String...userDnPatterns) {
         this.userDnPatterns = userDnPatterns;
         return this;
     }
 
-    public LdapAuthenticationProviderBuilderSecurityBuilder userDetailsContextMapper(UserDetailsContextMapper userDetailsContextMapper) {
+	public LdapAuthenticationProviderBuilderSecurityBuilder userDetailsContextMapper(UserDetailsContextMapper userDetailsContextMapper) {
         this.userDetailsContextMapper = userDetailsContextMapper;
         return this;
     }
 
-    public LdapAuthenticationProviderBuilderSecurityBuilder groupRoleAttribute(String groupRoleAttribute) {
+	public LdapAuthenticationProviderBuilderSecurityBuilder groupRoleAttribute(String groupRoleAttribute) {
         this.groupRoleAttribute = groupRoleAttribute;
         return this;
     }
 
-    public LdapAuthenticationProviderBuilderSecurityBuilder groupSearchBase(String groupSearchBase) {
+	public LdapAuthenticationProviderBuilderSecurityBuilder groupSearchBase(String groupSearchBase) {
         this.groupSearchBase = groupSearchBase;
         return this;
     }
 
-    public LdapAuthenticationProviderBuilderSecurityBuilder groupSearchFilter(String groupSearchFilter) {
+	public LdapAuthenticationProviderBuilderSecurityBuilder groupSearchFilter(String groupSearchFilter) {
         this.groupSearchFilter = groupSearchFilter;
         return this;
     }
 
-    public LdapAuthenticationProviderBuilderSecurityBuilder rolePrefix(String rolePrefix) {
+	public LdapAuthenticationProviderBuilderSecurityBuilder rolePrefix(String rolePrefix) {
         this.rolePrefix = rolePrefix;
         return this;
     }
 
-    public LdapAuthenticationProviderBuilderSecurityBuilder userSearchFilter(String userSearchFilter) {
+	public LdapAuthenticationProviderBuilderSecurityBuilder userSearchFilter(String userSearchFilter) {
         this.userSearchFilter = userSearchFilter;
         return this;
     }

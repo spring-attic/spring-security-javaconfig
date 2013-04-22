@@ -39,7 +39,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -219,7 +219,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                     .antMatchers("/**").requiresInsecure()
         }
         protected void registerAuthentication(
-                AuthenticationBuilder authenticationRegistry) throws Exception {
+                AuthenticationRegistry authenticationRegistry) throws Exception {
             authenticationRegistry
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
