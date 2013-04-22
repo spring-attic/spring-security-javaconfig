@@ -255,12 +255,12 @@ override the `GlobalMethodSecurityConfiguration` class. For example, following J
         }
 
         @Override
-        protected AuthenticationManager authenticationManager() throws Exception {
-            return new AuthenticationBuilder()
+        protected void registerAuthentication(AuthenticationRegistry registry)
+            throws Exception {
+            registry
                 .inMemoryAuthentication()
-                    .withUser("user").password("password").roles("USER").and()
-                    .withUser("admin").password("password").roles("USER", "ADMIN").and()
-                .build();
+                .withUser("user").password("password").roles("USER").and()
+                .withUser("admin").password("password").roles("USER", "ADMIN");
         }
     }
 

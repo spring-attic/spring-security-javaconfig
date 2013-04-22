@@ -57,6 +57,9 @@ import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.util.Assert;
 
 /**
@@ -72,6 +75,9 @@ import org.springframework.util.Assert;
 public class GlobalMethodSecurityConfiguration implements ImportAware {
     @Autowired
     private ApplicationContext context;
+    private AuthenticationManager authenticationManager;
+    private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
+    private boolean disableAuthenticationRegistry;
     private AnnotationAttributes enableMethodSecurity;
     private MethodSecurityExpressionHandler expressionHandler;
 
@@ -180,10 +186,23 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
      * @return
      */
     protected AuthenticationManager authenticationManager() throws Exception {
-        return lazyBean(AuthenticationManager.class);
+        if(authenticationManager == null) {
+            registerAuthentication(authenticationRegistry);
+            if(!disableAuthenticationRegistry) {
+                authenticationManager = authenticationRegistry.build();
+            }
+            if(authenticationManager == null) {
+                authenticationManager = lazyBean(AuthenticationManager.class);
+            }
+        }
+        return authenticationManager;
     }
 
-    /**
+    protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
+        this.disableAuthenticationRegistry = true;
+    }
+
+	/**
      * Provides the default {@link MethodSecurityMetadataSource} that will be
      * used. It creates a {@link DelegatingMethodSecurityMetadataSource} based
      * upon {@link #customMethodSecurityMetadataSource()} and the attributes on
