@@ -288,6 +288,26 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {}
     }
 
+    def "http@once-per-request=false"() {
+        when:
+        loadConfig(OncePerRequestFalseConfig)
+        then:
+        !findFilter(FilterSecurityInterceptor).observeOncePerRequest
+    }
+
+    @Configuration
+    static class OncePerRequestFalseConfig extends BaseWebConfig {
+        protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
+            interceptUrls
+                .filterSecurityInterceptorOncePerRequest(false)
+                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                .antMatchers("/signup").permitAll()
+                .antMatchers("/**").hasRole("USER");
+        }
+        protected void configure(HttpConfiguration http) throws Exception {
+        }
+    }
+
     // http@path-type is not available (instead request matcher instances are used)
 
     // http@pattern is not available (instead request matcher instances are used)
