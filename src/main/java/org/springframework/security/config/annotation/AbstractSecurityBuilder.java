@@ -29,10 +29,10 @@ public abstract class AbstractSecurityBuilder<T> implements SecurityBuilder<T> {
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.SecurityBuilder#build()
      */
-    @Override
     public final T build() throws Exception {
         if(built.compareAndSet(false, true)) {
-            return doBuild();
+            object = doBuild();
+            return object;
         }
         throw new IllegalStateException("This object has already been built");
     }

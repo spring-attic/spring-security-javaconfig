@@ -24,12 +24,9 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 
-import org.springframework.core.Ordered;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
@@ -38,7 +35,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
@@ -60,18 +56,20 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
+    public HttpConfiguration(AuthenticationBuilder authenticationBuilder) {
+        initSharedObjects(authenticationBuilder);
+    }
+
     public HttpConfiguration(AuthenticationManager authenticationManager) {
-        initSharedObjects(authenticationManager);
+        this(new AuthenticationBuilder().parentAuthenticationManager(authenticationManager));
     }
 
     public HttpConfiguration(AuthenticationProvider provider) {
         this(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    public HttpConfiguration(UserDetailsService userDetailsService) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        initSharedObjects(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
+    public HttpConfiguration(UserDetailsService userDetailsService) throws Exception {
+        this(new AuthenticationBuilder().userDetails(userDetailsService).and().build());
     }
 
     public HttpConfiguration applyDefaultConfigurators() throws Exception {
@@ -225,10 +223,8 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return this;
     }
 
-    private void initSharedObjects(AuthenticationManager parent) {
-        AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder()
-                .parentAuthenticationManager(parent);
-        setSharedObject(AuthenticationBuilder.class, authenticationRegistry);
+    private void initSharedObjects(AuthenticationBuilder authenticationBuilder) {
+        setSharedObject(AuthenticationBuilder.class, authenticationBuilder);
     }
 
 }

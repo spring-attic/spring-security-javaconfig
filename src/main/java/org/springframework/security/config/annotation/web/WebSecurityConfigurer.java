@@ -15,9 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurator;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
 
 /**

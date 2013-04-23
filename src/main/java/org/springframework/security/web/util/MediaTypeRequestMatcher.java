@@ -38,7 +38,6 @@ public class MediaTypeRequestMatcher implements RequestMatcher {
         this.matchingMediaType = mediaType;
     }
 
-    @Override
     public boolean matches(HttpServletRequest request) {
         List<MediaType> mediaTypes;
         try {

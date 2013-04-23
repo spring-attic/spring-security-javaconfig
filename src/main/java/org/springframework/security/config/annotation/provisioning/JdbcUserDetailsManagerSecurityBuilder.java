@@ -88,7 +88,6 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
      * (non-Javadoc)
      * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#withDefaultSchema()
      */
-    @Override
     public JdbcUserDetailsManagerSecurityBuilder withDefaultSchema() {
         this.initScripts.add(new ClassPathResource("org/springframework/security/core/userdetails/jdbc/users.ddl"));
         return this;

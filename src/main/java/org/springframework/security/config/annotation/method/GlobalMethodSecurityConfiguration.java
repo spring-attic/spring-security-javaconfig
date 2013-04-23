@@ -202,7 +202,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
         this.disableAuthenticationRegistry = true;
     }
 
-	/**
+    /**
      * Provides the default {@link MethodSecurityMetadataSource} that will be
      * used. It creates a {@link DelegatingMethodSecurityMetadataSource} based
      * upon {@link #customMethodSecurityMetadataSource()} and the attributes on
@@ -273,7 +273,6 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     /**
      * Obtains the attributes from {@link EnableGlobalMethodSecurity} if this class was imported using the {@link EnableGlobalMethodSecurity} annotation.
      */
-    @Override
     public final void setImportMetadata(AnnotationMetadata importMetadata) {
         Map<String, Object> annotationAttributes = importMetadata
                 .getAnnotationAttributes(EnableGlobalMethodSecurity.class

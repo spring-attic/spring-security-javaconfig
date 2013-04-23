@@ -18,15 +18,27 @@ package org.springframework.security.config.annotation.web;
 
 import java.util.Arrays;
 
+import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.target.LazyInitTargetSource;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
+import org.springframework.security.config.authentication.AuthenticationManagerFactoryBean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Rob Winch
@@ -36,7 +48,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     @Autowired
     private ApplicationContext context;
 
-    private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
+    private final AuthenticationBuilder authenticationBuilder = new AuthenticationBuilder();
+    private AuthenticationBuilder parentAuthenticationRegistry = new AuthenticationBuilder();
     private boolean disableAuthenticationRegistry;
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;
@@ -55,7 +68,9 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     private HttpConfiguration springSecurityFilterChain() throws Exception {
         if(springSecurityFilterChain == null) {
-            springSecurityFilterChain = new HttpConfiguration(authenticationManager());
+            AuthenticationManager authenticationManager = authenticationManager();
+            authenticationBuilder.parentAuthenticationManager(authenticationManager);
+            springSecurityFilterChain = new HttpConfiguration(authenticationBuilder);
         }
         return springSecurityFilterChain;
     }
@@ -68,19 +83,20 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return springSecurityFilterChain;
     }
 
+
     @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        return authenticationManager();
+        return new AuthenticationManagerDelegator(authenticationBuilder);
     }
 
     protected AuthenticationManager authenticationManager() throws Exception {
         if(!authenticationManagerInitialized) {
-            registerAuthentication(authenticationRegistry);
+            registerAuthentication(parentAuthenticationRegistry);
             if(disableAuthenticationRegistry) {
                 authenticationManager = getBeanExcluding(AuthenticationManager.class, BeanIds.AUTHENTICATION_MANAGER);
             } else {
                 authenticationManagerInitialized = true;
-                authenticationManager = authenticationRegistry.build();
+                authenticationManager = parentAuthenticationRegistry.build();
             }
             authenticationManagerInitialized = true;
         }
@@ -93,7 +109,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     }
 
     private UserDetailsService userDetailsService() throws Exception {
-        return userDetailsService(authenticationRegistry);
+        return userDetailsService(parentAuthenticationRegistry);
     }
 
     protected UserDetailsService userDetailsService(AuthenticationRegistry authenticationRegistry) {
@@ -136,4 +152,29 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     }
 
     protected abstract void configure(HttpConfiguration http) throws Exception;
+
+    static final class AuthenticationManagerDelegator implements AuthenticationManager {
+        private AuthenticationBuilder delegateBuilder;
+        private AuthenticationManager delegate;
+        private final Object delegateMonitor = new Object();
+
+        AuthenticationManagerDelegator(AuthenticationBuilder authentication) {
+            this.delegateBuilder = authentication;
+        }
+
+        public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+            if(delegate != null) {
+                return delegate.authenticate(authentication);
+            }
+
+            synchronized(delegateMonitor) {
+                if (delegate == null) {
+                    delegate = this.delegateBuilder.getObject();
+                    this.delegateBuilder = null;
+                }
+            }
+
+            return delegate.authenticate(authentication);
+        }
+    }
 }
