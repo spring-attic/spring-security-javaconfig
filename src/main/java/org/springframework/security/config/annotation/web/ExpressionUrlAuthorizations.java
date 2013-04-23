@@ -38,8 +38,11 @@ import org.springframework.util.Assert;
  */
 public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<ExpressionUrlAuthorizations.AuthorizedUrl> {
     public static final String permitAll = "permitAll";
+    public static final String denyAll = "denyAll";
+    public static final String anonymous = "anonymous";
     public static final String authenticated = "authenticated";
     public static final String fullyAuthenticated = "fullyAuthenticated";
+    public static final String rememberMe = "rememberMe";
 
     private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
@@ -89,6 +92,10 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
         return "hasAnyAuthority('" + anyAuthorities + "')";
     }
 
+    public static String hasIpAddress(String ipAddressExpression) {
+        return "hasIpAddress('" + ipAddressExpression + "')";
+    }
+
     public class AuthorizedUrl {
         private List<RequestMatcher> requestMatchers;
 
@@ -108,8 +115,24 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
             return access(ExpressionUrlAuthorizations.hasAnyAuthority(authorities));
         }
 
+        public ExpressionUrlAuthorizations hasIpAddress(String ipaddressExpression) {
+            return access(ExpressionUrlAuthorizations.hasIpAddress(ipaddressExpression));
+        }
+
         public ExpressionUrlAuthorizations permitAll() {
             return access(permitAll);
+        }
+
+        public ExpressionUrlAuthorizations anonymous() {
+            return access(anonymous);
+        }
+
+        public ExpressionUrlAuthorizations rememberMe() {
+            return access(rememberMe);
+        }
+
+        public ExpressionUrlAuthorizations denyAll() {
+            return access(denyAll);
         }
 
         public ExpressionUrlAuthorizations authenticated() {

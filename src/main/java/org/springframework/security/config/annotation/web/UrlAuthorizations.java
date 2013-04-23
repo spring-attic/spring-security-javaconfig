@@ -86,13 +86,17 @@ public class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthoriza
             return access(UrlAuthorizations.hasAnyAuthority(authorities));
         }
 
+        public UrlAuthorizations anonymous() {
+            return hasRole("ROLE_ANONYMOUS");
+        }
+
         public UrlAuthorizations access(String... attributes) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attributes));
             return UrlAuthorizations.this;
         }
     }
 
-    AuthorizedUrl chainRequestMatchers(List requestMatchers) {
+    AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }
 
