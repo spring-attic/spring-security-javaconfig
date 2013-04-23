@@ -53,7 +53,6 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
     private String loginProcessingUrl;
     private String failureUrl;
 
-
     public FormLoginSecurityFilterConfigurator() {
         loginUrl("/login");
         failureUrl("/login?error");

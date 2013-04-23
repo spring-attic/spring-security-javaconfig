@@ -147,14 +147,15 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
     @Configuration
     static class FormLoginCustomConfig extends BaseWebConfig {
         protected void configure(HttpConfiguration http) throws Exception {
+            boolean alwaysUseDefaultSuccess = true;
             http
                 .formLogin()
-                    .usernameParameter("j_username")
-                    .passwordParameter("j_password")
-                    .loginPage("/authentication/login")
-                    .failureUrl("/authentication/login?failed")
-                    .loginProcessingUrl("/authentication/login/process")
-                    .defaultSuccessUrl("/default")
+                    .usernameParameter("j_username") // form-login@username-parameter
+                    .passwordParameter("j_password") // form-login@password-parameter
+                    .loginPage("/authentication/login") // form-login@login-page
+                    .failureUrl("/authentication/login?failed") // form-login@authentication-failure-url
+                    .loginProcessingUrl("/authentication/login/process") // form-login@login-processing-url
+                    .defaultSuccessUrl("/default", alwaysUseDefaultSuccess) // form-login@default-target-url / form-login@always-use-default-target
         }
     }
 
@@ -186,9 +187,9 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .formLogin()
-                    .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure"))
-                    .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" ))
-                    .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource())
+                    .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure")) // form-login@authentication-failure-handler-ref
+                    .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" )) // form-login@authentication-success-handler-ref
+                    .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource()) // form-login@authentication-details-source-ref
                     .and();
         }
     }
