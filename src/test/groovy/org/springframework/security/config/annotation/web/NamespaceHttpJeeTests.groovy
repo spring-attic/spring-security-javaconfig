@@ -105,14 +105,6 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN");
         }
-
-        // FIXME remove registerAuthentication See http://github.com/SpringSource/spring-security-javaconfig/issues/issue/63
-        @Override
-        protected void registerAuthentication(AuthenticationRegistry registry)
-                throws Exception {
-            registry
-                .inMemoryAuthentication();
-        }
     }
 
     def "http/jee@user-service-ref"() {
@@ -142,14 +134,6 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN")
                     .userDetailsService(new CustomUserService());
-        }
-
-        // FIXME remove registerAuthentication See http://github.com/SpringSource/spring-security-javaconfig/issues/issue/63
-        @Override
-        protected void registerAuthentication(AuthenticationRegistry registry)
-                throws Exception {
-            registry
-                .inMemoryAuthentication();
         }
     }
 

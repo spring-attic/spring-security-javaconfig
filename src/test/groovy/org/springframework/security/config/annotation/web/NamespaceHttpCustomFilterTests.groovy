@@ -27,7 +27,10 @@ import org.springframework.security.access.AccessDecisionManager
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.authentication.AnonymousAuthenticationToken
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterInvocation
@@ -121,5 +124,44 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     }
 
+    def "http/custom-filter no AuthenticationManager in HttpConfiguration"() {
+        when:
+        loadConfig(NoAuthenticationManagerInHtppConfigurationConfig)
+        then:
+        filterChain().filters[0].class == CustomFilter
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    static class NoAuthenticationManagerInHtppConfigurationConfig extends WebSecurityConfigurerAdapter {
+        protected AuthenticationManager authenticationManager()
+                throws Exception {
+            return new CustomAuthenticationManager();
+        }
+
+        @Override
+        protected void applyDefaults(HttpConfiguration http) throws Exception {
+            // do not add the default filters to make testing easier
+        }
+
+        protected void configure(HttpConfiguration http) {
+            http
+                .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
+        }
+
+        @Override
+        protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
+            interceptUrls
+                .antMatchers("/**").hasRole("ADMIN")
+        }
+    }
+
     static class CustomFilter extends UsernamePasswordAuthenticationFilter {}
+
+    static class CustomAuthenticationManager implements AuthenticationManager {
+        public Authentication authenticate(Authentication authentication)
+                throws AuthenticationException {
+            return null;
+        }
+    }
 }
