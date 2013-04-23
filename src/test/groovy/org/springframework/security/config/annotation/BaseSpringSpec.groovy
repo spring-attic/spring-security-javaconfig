@@ -16,9 +16,10 @@
 package org.springframework.security.config.annotation;
 
 import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.FilterChainProxy
 
 import spock.lang.AutoCleanup
 import spock.lang.Specification
@@ -46,5 +47,9 @@ abstract class BaseSpringSpec extends Specification {
 
     def filterChain(int index=0) {
         context.getBean(FilterChainProxy).filterChains[index]
+    }
+
+    AuthenticationManager authenticationManager() {
+        context.getBean(AuthenticationManager)
     }
 }

@@ -94,6 +94,10 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return apply(new SessionManagementConfigurator());
     }
 
+    public JeeConfigurator jee() throws Exception {
+        return apply(new JeeConfigurator());
+    }
+
     public RememberMeConfigurator rememberMe() throws Exception {
         return apply(new RememberMeConfigurator());
     }
