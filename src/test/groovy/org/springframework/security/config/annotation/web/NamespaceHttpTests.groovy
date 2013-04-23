@@ -19,6 +19,9 @@ package org.springframework.security.config.annotation.web;
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
 import java.util.List;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,6 +34,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.NamespaceHttpTests.AuthenticationManagerRefConfig.CustomAuthenticationManager;
+import org.springframework.security.config.annotation.web.NamespaceHttpTests.RequestMatcherRefConfig.MyRequestMatcher;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -50,6 +54,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.security.web.util.AntPathRequestMatcher
 import org.springframework.security.web.util.AnyRequestMatcher;
+import org.springframework.security.web.util.RegexRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher
 
 /**
@@ -329,18 +334,56 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     // http@request-matcher is not available (instead request matcher instances are used)
 
+    def "http@request-matcher-ref ant"() {
+        when:
+        loadConfig(RequestMatcherAntConfig)
+        then:
+        filterChain(0).requestMatcher.pattern == "/api/**"
+    }
+
+    @Configuration
+    static class RequestMatcherAntConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .antMatcher("/api/**")
+        }
+    }
+
+    def "http@request-matcher-ref regex"() {
+        when:
+        loadConfig(RequestMatcherRegexConfig)
+        then:
+        filterChain(0).requestMatcher.class == RegexRequestMatcher
+        filterChain(0).requestMatcher.pattern.matcher("/regex/a")
+        filterChain(0).requestMatcher.pattern.matcher("/regex/b")
+        !filterChain(0).requestMatcher.pattern.matcher("/regex1/b")
+    }
+
+    @Configuration
+    static class RequestMatcherRegexConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .regexMatcher("/regex/.*")
+        }
+    }
+
     def "http@request-matcher-ref"() {
         when:
         loadConfig(RequestMatcherRefConfig)
         then:
-        filterChain(0).requestMatcher.pattern == "/api/**"
+        filterChain(0).requestMatcher.class == MyRequestMatcher
     }
 
     @Configuration
     static class RequestMatcherRefConfig extends BaseWebConfig {
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .antMatcher("/api/**")
+                .requestMatcher(new MyRequestMatcher());
+        }
+        static class MyRequestMatcher implements RequestMatcher {
+            public boolean matches(HttpServletRequest request) {
+                return true;
+            }
         }
     }
 
