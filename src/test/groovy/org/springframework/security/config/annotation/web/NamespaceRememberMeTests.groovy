@@ -42,6 +42,7 @@ import org.springframework.security.authentication.RememberMeAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.FilterInvocation
@@ -50,12 +51,17 @@ import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.access.ExceptionTranslationFilter
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpRequestResponseHolder
@@ -67,6 +73,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.security.web.util.AntPathRequestMatcher
 import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests to verify that all the functionality of <anonymous> attributes is present
@@ -132,10 +139,10 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
     @Configuration
     static class RememberMeConfig extends BaseWebConfig {
         protected void configure(HttpConfiguration http) throws Exception {
-                http
-                    .formLogin()
-                        .and()
-                    .rememberMe()
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
         }
     }
 
@@ -144,8 +151,6 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
             RememberMeServicesRefConfig.REMEMBER_ME_SERVICES = Mock(RememberMeServices)
         when: "use custom remember-me services"
             loadConfig(RememberMeServicesRefConfig)
-            springSecurityFilterChain = context.getBean(FilterChainProxy)
-            def authManager = context.getBean(AuthenticationManager)
         then: "custom remember-me services used"
             findFilter(RememberMeAuthenticationFilter).rememberMeServices == RememberMeServicesRefConfig.REMEMBER_ME_SERVICES
             findFilter(UsernamePasswordAuthenticationFilter).rememberMeServices == RememberMeServicesRefConfig.REMEMBER_ME_SERVICES
@@ -155,13 +160,174 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
     static class RememberMeServicesRefConfig extends BaseWebConfig {
         static RememberMeServices REMEMBER_ME_SERVICES
         protected void configure(HttpConfiguration http) throws Exception {
-                http
-                    .formLogin()
-                        .and()
-                    .rememberMe()
-                        .rememberMeServices(REMEMBER_ME_SERVICES)
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+                    .rememberMeServices(REMEMBER_ME_SERVICES)
         }
     }
+
+    def "http/remember-me@authentication-success-handler-ref"() {
+        setup:
+            AuthSuccessConfig.SUCCESS_HANDLER = Mock(AuthenticationSuccessHandler)
+        when: "use custom success handler"
+            loadConfig(AuthSuccessConfig)
+        then: "custom remember-me success handler is used"
+            findFilter(RememberMeAuthenticationFilter).successHandler == AuthSuccessConfig.SUCCESS_HANDLER
+    }
+
+    @Configuration
+    static class AuthSuccessConfig extends BaseWebConfig {
+        static AuthenticationSuccessHandler SUCCESS_HANDLER
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+                    .authenticationSuccessHandler(SUCCESS_HANDLER)
+        }
+    }
+
+    // http/remember-me@data-source-ref is not supported directly. Instead use http/remember-me@token-repository-ref example
+
+    def "http/remember-me@key"() {
+        when: "use custom key"
+            loadConfig(KeyConfig)
+            AuthenticationManager authManager = context.getBean(AuthenticationManager)
+        then: "custom key services used"
+            findFilter(RememberMeAuthenticationFilter).rememberMeServices.key == "KeyConfig"
+            authManager.authenticate(new RememberMeAuthenticationToken("KeyConfig", "user", AuthorityUtils.createAuthorityList("ROLE_USER")))
+    }
+
+    @Configuration
+    static class KeyConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+                    .key("KeyConfig")
+        }
+    }
+
+    // http/remember-me@services-alias is not supported use standard aliasing instead
+
+    def "http/remember-me@token-repository-ref"() {
+        setup:
+            TokenRepositoryRefConfig.TOKEN_REPOSITORY = Mock(PersistentTokenRepository)
+        when: "use custom token services"
+            loadConfig(TokenRepositoryRefConfig)
+        then: "custom token services used with PersistentTokenBasedRememberMeServices"
+            PersistentTokenBasedRememberMeServices rememberMeServices = findFilter(RememberMeAuthenticationFilter).rememberMeServices
+            findFilter(RememberMeAuthenticationFilter).rememberMeServices.tokenRepository == TokenRepositoryRefConfig.TOKEN_REPOSITORY
+    }
+
+    @Configuration
+    static class TokenRepositoryRefConfig extends BaseWebConfig {
+        static PersistentTokenRepository TOKEN_REPOSITORY
+        protected void configure(HttpConfiguration http) throws Exception {
+            // JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl()
+            // tokenRepository.setDataSource(dataSource);
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+                    .tokenRepository(TOKEN_REPOSITORY)
+        }
+    }
+
+    def "http/remember-me@token-validity-seconds"() {
+        when: "use token validity"
+            loadConfig(TokenValiditySecondsConfig)
+        then: "custom token validity used"
+            findFilter(RememberMeAuthenticationFilter).rememberMeServices.tokenValiditySeconds == 1
+    }
+
+    @Configuration
+    static class TokenValiditySecondsConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+                    .tokenValiditySeconds(1)
+        }
+    }
+
+    def "http/remember-me@token-validity-seconds default"() {
+        when: "use token validity"
+            loadConfig(DefaultTokenValiditySecondsConfig)
+        then: "custom token validity used"
+            findFilter(RememberMeAuthenticationFilter).rememberMeServices.tokenValiditySeconds == AbstractRememberMeServices.TWO_WEEKS_S
+    }
+
+    @Configuration
+    static class DefaultTokenValiditySecondsConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+        }
+    }
+
+    def "http/remember-me@use-secure-cookie"() {
+        when: "use secure cookies = true"
+            loadConfig(UseSecureCookieConfig)
+        then: "secure cookies will be used"
+            ReflectionTestUtils.getField(findFilter(RememberMeAuthenticationFilter).rememberMeServices, "useSecureCookie") == true
+    }
+
+    @Configuration
+    static class UseSecureCookieConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+                    .useSecureCookie(true)
+        }
+    }
+
+    def "http/remember-me@use-secure-cookie defaults"() {
+        when: "use secure cookies not specified"
+            loadConfig(DefaultUseSecureCookieConfig)
+        then: "secure cookies will be null (use secure if the request is secure)"
+            ReflectionTestUtils.getField(findFilter(RememberMeAuthenticationFilter).rememberMeServices, "useSecureCookie") == null
+    }
+
+    @Configuration
+    static class DefaultUseSecureCookieConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+        }
+    }
+
+    def "http/remember-me@user-service-ref"() {
+        setup:
+            UserServiceRefConfig.USERDETAILS_SERVICE = Mock(UserDetailsService)
+        when: "use custom UserDetailsService"
+            loadConfig(UserServiceRefConfig)
+        then: "custom UserDetailsService is used"
+            ReflectionTestUtils.getField(findFilter(RememberMeAuthenticationFilter).rememberMeServices, "userDetailsService") == UserServiceRefConfig.USERDETAILS_SERVICE
+    }
+
+    @Configuration
+    static class UserServiceRefConfig extends BaseWebConfig {
+        static UserDetailsService USERDETAILS_SERVICE
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+                    .userDetailsService(USERDETAILS_SERVICE)
+        }
+    }
+
 
     Cookie getRememberMeCookie(String cookieName="remember-me") {
         response.getCookie(cookieName)
