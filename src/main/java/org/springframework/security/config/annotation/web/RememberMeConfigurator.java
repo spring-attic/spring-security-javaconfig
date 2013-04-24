@@ -17,8 +17,6 @@ package org.springframework.security.config.annotation.web;
 
 import java.util.UUID;
 
-import javax.sql.DataSource;
-
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,6 +24,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
@@ -35,21 +34,19 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
  */
 public class RememberMeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
-    private DataSource dataSource;
     private String key;
     private RememberMeServices rememberMeServices;
     private LogoutHandler logoutHandler;
     private String rememberMeParameter = "remember-me";
     private String rememberMeCookieName = "remember-me";
 
-    public RememberMeConfigurator authenticationSuccessHandler(AuthenticationSuccessHandler authenticationSuccessHandler) {
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
+    public RememberMeConfigurator key(String key) {
+        this.key = key;
         return this;
     }
 
-    // FIXME what if DataSource is not on the classpath
-    public RememberMeConfigurator dataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public RememberMeConfigurator authenticationSuccessHandler(AuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
         return this;
     }
 
@@ -61,7 +58,7 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
     @Override
     protected void doInit(HttpConfiguration http) throws Exception {
         String key = getKey();
-        RememberMeServices rememberMeServices = createRememberMeServices(http,key);
+        RememberMeServices rememberMeServices = getRememberMeServices(http,key);
         http.setSharedObject(RememberMeServices.class, rememberMeServices);
         LogoutConfigurator logoutConfigurator = http.getConfigurator(LogoutConfigurator.class);
         logoutConfigurator.addLogoutHandler(logoutHandler);
@@ -70,20 +67,25 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
         http.authenticationProvider(authenticationProvider);
     }
 
-    private RememberMeServices createRememberMeServices(HttpConfiguration http, String key) {
+    private RememberMeServices getRememberMeServices(HttpConfiguration http, String key) {
         if(rememberMeServices != null) {
             if(rememberMeServices instanceof LogoutHandler && logoutHandler == null) {
                 this.logoutHandler = (LogoutHandler) rememberMeServices;
             }
             return rememberMeServices;
         }
-        UserDetailsService userDetailsService = getUserDetailsService(http);
-        TokenBasedRememberMeServices tokenRememberMeServices = new TokenBasedRememberMeServices(key, userDetailsService);
+        AbstractRememberMeServices tokenRememberMeServices = createRememberMeServices(http,key);
         tokenRememberMeServices.setParameter(rememberMeParameter);
         tokenRememberMeServices.setCookieName(rememberMeCookieName);
         logoutHandler = tokenRememberMeServices;
         rememberMeServices = tokenRememberMeServices;
         return tokenRememberMeServices;
+    }
+
+    protected AbstractRememberMeServices createRememberMeServices(HttpConfiguration http,
+            String key) {
+        UserDetailsService userDetailsService = getUserDetailsService(http);
+        return new TokenBasedRememberMeServices(key, userDetailsService);
     }
 
     @Override
@@ -93,7 +95,7 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
         http.addFilter(rememberMeFilter);
     }
 
-    private UserDetailsService getUserDetailsService(HttpConfiguration http) {
+    protected UserDetailsService getUserDetailsService(HttpConfiguration http) {
         return http.getSharedObject(UserDetailsService.class);
     }
 
