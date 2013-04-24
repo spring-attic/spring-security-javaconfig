@@ -68,7 +68,7 @@ import org.springframework.security.web.util.RequestMatcher
  * @author Rob Winch
  *
  */
-public class NamespaceLogoutTests extends BaseSpringSpec {
+public class NamespaceHttpLogoutTests extends BaseSpringSpec {
     FilterChainProxy springSecurityFilterChain
     MockHttpServletRequest request
     MockHttpServletResponse response
