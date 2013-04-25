@@ -10,7 +10,7 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
-import org.springframework.security.config.annotation.web.HttpConfiguration;
+import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
@@ -82,7 +82,7 @@ public class SecurityConfiguration {
                 .antMatchers("/oauth/token").fullyAuthenticated();
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .antMatcher("/oauth/token")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
@@ -122,7 +122,7 @@ public class SecurityConfiguration {
         }
 
         protected void configure(
-                HttpConfiguration http)
+                HttpConfigurator http)
                 throws Exception {
             http
                 .regexMatcher("/oauth/(users|clients)/.*")
@@ -156,7 +156,7 @@ public class SecurityConfiguration {
                 .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .antMatcher("/photos/**")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
@@ -186,7 +186,7 @@ public class SecurityConfiguration {
                 .antMatchers("/**").permitAll();
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                 .applyDefaultConfigurators()

@@ -28,7 +28,7 @@ import org.springframework.security.config.annotation.issue50.repo.UserRepositor
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
-import org.springframework.security.config.annotation.web.HttpConfiguration;
+import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/**").permitAll();
     }
 
-    protected void configure(HttpConfiguration http) throws Exception {
+    protected void configure(HttpConfigurator http) throws Exception {
         http
             .applyDefaultConfigurators();
     }

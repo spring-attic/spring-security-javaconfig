@@ -131,7 +131,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .formLogin()
                     // set permitAll for all URLs associated with Form Login
@@ -254,7 +254,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                     .antMatchers("/api/**").hasRole("USER");
             }
 
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpConfigurator http) throws Exception {
                 http
                     .antMatcher("/api/**")
                     .httpBasic();
@@ -278,7 +278,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                     .antMatchers("/**").hasRole("USER");
             }
 
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpConfigurator http) throws Exception {
                 http
                     .formLogin()
                         .permitAll();

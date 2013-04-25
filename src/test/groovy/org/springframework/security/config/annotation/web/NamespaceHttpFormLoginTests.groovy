@@ -112,7 +112,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
             ignoredRequests
                 .antMatchers("/resources/**")
         }
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
             http
                 .formLogin()
         }
@@ -146,7 +146,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             boolean alwaysUseDefaultSuccess = true;
             http
                 .formLogin()
@@ -184,7 +184,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomRefsConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .formLogin()
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure")) // form-login@authentication-failure-handler-ref

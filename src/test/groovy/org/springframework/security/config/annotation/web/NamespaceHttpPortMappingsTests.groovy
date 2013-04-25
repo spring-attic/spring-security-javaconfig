@@ -132,7 +132,7 @@ public class NamespaceHttpPortMappingsTests extends BaseSpringSpec {
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .portMapper()
                     .http(9080).mapsTo(9443)

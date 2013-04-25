@@ -11,14 +11,14 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
-public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+public class AnonymousConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private String key;
     private AuthenticationProvider authenticationProvider;
     private AnonymousAuthenticationFilter authenticationFilter;
     private Object principal = "anonymousUser";
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
-    protected void doInit(HttpConfiguration http)
+    protected void doInit(HttpConfigurator http)
             throws Exception {
         if(authenticationProvider == null) {
             authenticationProvider = new AnonymousAuthenticationProvider(getKey());
@@ -29,36 +29,36 @@ public class AnonymousSecurityFilterConfigurator extends AbstractSecurityConfigu
         http.authenticationProvider(authenticationProvider);
     }
 
-    protected void doConfigure(HttpConfiguration http) throws Exception {
+    protected void doConfigure(HttpConfigurator http) throws Exception {
         authenticationFilter.afterPropertiesSet();
         http.addFilter(authenticationFilter);
     }
 
-    public AnonymousSecurityFilterConfigurator key(String key) {
+    public AnonymousConfigurator key(String key) {
         this.key = key;
         return this;
     }
 
-    public AnonymousSecurityFilterConfigurator principal(Object principal) {
+    public AnonymousConfigurator principal(Object principal) {
         this.principal = principal;
         return this;
     }
 
-    public AnonymousSecurityFilterConfigurator authorities(List<GrantedAuthority> authorities) {
+    public AnonymousConfigurator authorities(List<GrantedAuthority> authorities) {
         this.authorities = authorities;
         return this;
     }
 
-    public AnonymousSecurityFilterConfigurator authorities(String... authorities) {
+    public AnonymousConfigurator authorities(String... authorities) {
         return authorities(AuthorityUtils.createAuthorityList(authorities));
     }
 
-    public AnonymousSecurityFilterConfigurator authenticationProvider(AuthenticationProvider authenticationProvider) {
+    public AnonymousConfigurator authenticationProvider(AuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
         return this;
     }
 
-    public AnonymousSecurityFilterConfigurator authenticationFilter(AnonymousAuthenticationFilter authenticationFilter) {
+    public AnonymousConfigurator authenticationFilter(AnonymousAuthenticationFilter authenticationFilter) {
         this.authenticationFilter = authenticationFilter;
         return this;
     }

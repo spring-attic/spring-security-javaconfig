@@ -32,7 +32,7 @@ import org.springframework.security.web.session.SessionManagementFilter;
  * @author Rob Winch
  *
  */
-public class SessionManagementConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+public class SessionManagementConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private SessionManagementFilter sessionManagementFilter;
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
@@ -77,7 +77,7 @@ public class SessionManagementConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
-    protected void doInit(HttpConfiguration builder)
+    protected void doInit(HttpConfigurator builder)
             throws Exception {
         builder.setSharedObject(SessionManagementConfigurator.class, this);
 
@@ -103,7 +103,7 @@ public class SessionManagementConfigurator extends AbstractSecurityConfigurator<
         return SessionCreationPolicy.stateless == sessionPolicy;
     }
 
-    protected void doConfigure(HttpConfiguration builder)
+    protected void doConfigure(HttpConfigurator builder)
             throws Exception {
         sessionManagementFilter = new SessionManagementFilter(builder.getSharedObject(SecurityContextRepository.class), getSessionAuthenticationStrategy());
 

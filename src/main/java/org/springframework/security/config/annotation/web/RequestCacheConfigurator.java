@@ -23,9 +23,9 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
  * @author Rob Winch
  *
  */
-public class RequestCacheConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+public class RequestCacheConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
 
-    protected void doConfigure(HttpConfiguration http) throws Exception {
+    protected void doConfigure(HttpConfigurator http) throws Exception {
         RequestCacheAwareFilter requestCacheFilter = new RequestCacheAwareFilter();
         http.addFilter(requestCacheFilter);
     }

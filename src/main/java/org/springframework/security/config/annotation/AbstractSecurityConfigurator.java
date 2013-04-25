@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation;
 
-import org.springframework.security.config.annotation.web.HttpConfiguration;
+import org.springframework.security.config.annotation.web.HttpConfigurator;
 
 
 /**
@@ -57,7 +57,7 @@ public abstract class AbstractSecurityConfigurator<O,B extends SecurityBuilder<O
 
     public B and() throws Exception {
         if(securityBuilder == null) {
-            throw new IllegalStateException(HttpConfiguration.class.getSimpleName() + " cannot be null");
+            throw new IllegalStateException(HttpConfigurator.class.getSimpleName() + " cannot be null");
         }
         return (B) securityBuilder;
     }

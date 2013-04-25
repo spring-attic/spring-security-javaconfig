@@ -35,7 +35,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  * @author Rob Winch
  * @since 3.2
  */
-public class JeeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain, HttpConfiguration> {
+public class JeeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator> {
     private J2eePreAuthenticatedProcessingFilter j2eePreAuthenticatedProcessingFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> userDetailsService;
     private Set<String> mappableRoles = new HashSet<String>();
@@ -65,7 +65,7 @@ public class JeeConfigurator extends AbstractSecurityConfigurator<DefaultSecurit
     }
 
     @Override
-    protected void doInit(HttpConfiguration http) throws Exception {
+    protected void doInit(HttpConfigurator http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getUserDetailsService(http));
 
@@ -75,7 +75,7 @@ public class JeeConfigurator extends AbstractSecurityConfigurator<DefaultSecurit
     }
 
     @Override
-    protected void doConfigure(HttpConfiguration http) throws Exception {
+    protected void doConfigure(HttpConfigurator http) throws Exception {
         J2eePreAuthenticatedProcessingFilter filter = getFilter(http
                 .authenticationManager());
         http.addFilter(filter);
@@ -95,7 +95,7 @@ public class JeeConfigurator extends AbstractSecurityConfigurator<DefaultSecurit
     }
 
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> getUserDetailsService(
-            HttpConfiguration http) {
+            HttpConfigurator http) {
         return userDetailsService == null ? new PreAuthenticatedGrantedAuthoritiesUserDetailsService()
                 : userDetailsService;
     }

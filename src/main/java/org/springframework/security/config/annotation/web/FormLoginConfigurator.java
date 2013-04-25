@@ -36,7 +36,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+public class FormLoginConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private UsernamePasswordAuthenticationFilter usernamePasswordFilter = new UsernamePasswordAuthenticationFilter() {
         @Override
         protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -53,21 +53,21 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
     private String loginProcessingUrl;
     private String failureUrl;
 
-    public FormLoginSecurityFilterConfigurator() {
+    public FormLoginConfigurator() {
         loginUrl("/login");
         failureUrl("/login?error");
         usernameParameter("username");
         passwordParameter("password");
     }
 
-    protected void doInit(HttpConfiguration http) throws Exception {
+    protected void doInit(HttpConfigurator http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
         http.authenticationEntryPoint(authenticationEntryPoint);
     }
 
-    protected void doConfigure(HttpConfiguration http) throws Exception {
+    protected void doConfigure(HttpConfigurator http) throws Exception {
         usernamePasswordFilter.setAuthenticationManager(http.authenticationManager());
         usernamePasswordFilter.setAuthenticationSuccessHandler(successHandler);
         usernamePasswordFilter.setAuthenticationFailureHandler(failureHandler);
@@ -86,23 +86,23 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
         http.addFilter(usernamePasswordFilter);
     }
 
-    public FormLoginSecurityFilterConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
+    public FormLoginConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
         return this;
     }
 
-    public FormLoginSecurityFilterConfigurator defaultSuccessUrl(String defaultSuccessUrl) {
+    public FormLoginConfigurator defaultSuccessUrl(String defaultSuccessUrl) {
         return defaultSuccessUrl(defaultSuccessUrl, false);
     }
 
-    public FormLoginSecurityFilterConfigurator defaultSuccessUrl(String defaultSuccessUrl, boolean alwaysUse) {
+    public FormLoginConfigurator defaultSuccessUrl(String defaultSuccessUrl, boolean alwaysUse) {
         SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
         handler.setDefaultTargetUrl(defaultSuccessUrl);
         handler.setAlwaysUseDefaultTargetUrl(alwaysUse);
         return successHandler(handler);
     }
 
-    public FormLoginSecurityFilterConfigurator successHandler(AuthenticationSuccessHandler successHandler) {
+    public FormLoginConfigurator successHandler(AuthenticationSuccessHandler successHandler) {
         this.successHandler = successHandler;
         return this;
     }
@@ -115,29 +115,29 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
      * @param loginUrl
      * @return
      */
-    public FormLoginSecurityFilterConfigurator loginUrl(String loginUrl) {
+    public FormLoginConfigurator loginUrl(String loginUrl) {
         loginProcessingUrl(loginUrl);
         return loginPage(loginUrl);
     }
 
-    public FormLoginSecurityFilterConfigurator loginProcessingUrl(String loginProcessingUrl) {
+    public FormLoginConfigurator loginProcessingUrl(String loginProcessingUrl) {
         this.loginProcessingUrl = loginProcessingUrl;
         usernamePasswordFilter.setFilterProcessesUrl(loginProcessingUrl);
         return this;
     }
 
-    public FormLoginSecurityFilterConfigurator loginPage(String loginPage) {
+    public FormLoginConfigurator loginPage(String loginPage) {
         this.loginPage = loginPage;
         this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
         return this;
     }
 
-    public FormLoginSecurityFilterConfigurator usernameParameter(String usernameParameter) {
+    public FormLoginConfigurator usernameParameter(String usernameParameter) {
         usernamePasswordFilter.setUsernameParameter(usernameParameter);
         return this;
     }
 
-    public FormLoginSecurityFilterConfigurator passwordParameter(String passwordParameter) {
+    public FormLoginConfigurator passwordParameter(String passwordParameter) {
         usernamePasswordFilter.setPasswordParameter(passwordParameter);
         return this;
     }
@@ -146,7 +146,7 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
      * Equivalent of invoking permitAll(true)
      * @return
      */
-    public FormLoginSecurityFilterConfigurator permitAll() {
+    public FormLoginConfigurator permitAll() {
         return permitAll(true);
     }
 
@@ -157,17 +157,17 @@ public class FormLoginSecurityFilterConfigurator extends AbstractSecurityConfigu
      * @param permitAll
      * @return
      */
-    public FormLoginSecurityFilterConfigurator permitAll(boolean permitAll) {
+    public FormLoginConfigurator permitAll(boolean permitAll) {
         this.permitAll = permitAll;
         return this;
     }
 
-    public FormLoginSecurityFilterConfigurator failureUrl(String failureUrl) {
+    public FormLoginConfigurator failureUrl(String failureUrl) {
         this.failureUrl = failureUrl;
         return failureHandler(new SimpleUrlAuthenticationFailureHandler(failureUrl));
     }
 
-    public FormLoginSecurityFilterConfigurator failureHandler(AuthenticationFailureHandler failureHandler) {
+    public FormLoginConfigurator failureHandler(AuthenticationFailureHandler failureHandler) {
         this.failureHandler = failureHandler;
         return this;
     }

@@ -79,7 +79,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class AccessDecisionManagerRefConfig extends BaseWebConfig {
         static AccessDecisionManager ACCESS_DECISION_MGR
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").permitAll()
@@ -96,7 +96,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .exceptionHandling()
                     .accessDeniedPage("/AccessDeniedPageConfig")
@@ -117,7 +117,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         protected AuthenticationManager authenticationManager() throws Exception {
             return new CustomAuthenticationManager();
         }
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
         }
 
         static class CustomAuthenticationManager implements AuthenticationManager {
@@ -141,7 +141,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class CreateSessionAlwaysConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.always);
@@ -159,7 +159,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class CreateSessionStatelessConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.stateless);
@@ -177,7 +177,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class IfRequiredConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.ifRequired);
@@ -204,7 +204,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class CreateSessionNeverConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.never);
@@ -213,7 +213,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class DefaultCreateSessionConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
         }
     }
 
@@ -226,7 +226,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class DefaultUrlRewritingConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
         }
     }
 
@@ -241,7 +241,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class EnableUrlRewritingConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository()
             repository.disableUrlRewriting = false // explicitly configured (not necessary due to default values)
 
@@ -258,7 +258,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class EntryPointRefConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/EntryPointRefConfig"))
         }
@@ -273,7 +273,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class JaasApiProvisionConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .addFilter(new JaasApiIntegrationFilter())
         }
@@ -290,7 +290,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class OncePerRequestConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {}
+        protected void configure(HttpConfigurator http) throws Exception {}
     }
 
     def "http@once-per-request=false"() {
@@ -309,7 +309,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
                 .antMatchers("/signup").permitAll()
                 .antMatchers("/**").hasRole("USER");
         }
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
         }
     }
 
@@ -326,7 +326,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class RealmConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .httpBasic().realmName("RealmConfig")
         }
@@ -343,7 +343,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class RequestMatcherAntConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .antMatcher("/api/**")
         }
@@ -361,7 +361,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class RequestMatcherRegexConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .regexMatcher("/regex/.*")
         }
@@ -376,7 +376,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class RequestMatcherRefConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .requestMatcher(new MyRequestMatcher());
         }
@@ -403,7 +403,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
             ignoredRequests
                 .antMatchers("/resources/**","/public/**");
         }
-        protected void configure(HttpConfiguration http) throws Exception {}
+        protected void configure(HttpConfigurator http) throws Exception {}
     }
 
     def "http@security-context-repository-ref"() {
@@ -415,7 +415,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class SecurityContextRepoConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .securityContextRepsitory(new NullSecurityContextRepository()) // security-context-repository-ref
         }
@@ -430,7 +430,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class ServletApiProvisionConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http.servletApi().disable()
         }
     }
@@ -444,7 +444,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class ServletApiProvisionDefaultsConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
         }
     }
 
@@ -464,7 +464,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
                 ExpressionUrlAuthorizations interceptUrls) {
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .apply(new UrlAuthorizations())
                     .antMatchers("/users**","/sessions/**").hasRole("USER")

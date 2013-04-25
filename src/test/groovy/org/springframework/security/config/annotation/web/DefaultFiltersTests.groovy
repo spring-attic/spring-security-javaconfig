@@ -34,8 +34,8 @@ import org.springframework.security.config.annotation.web.ExceptionHandlingConfi
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
 import org.springframework.security.config.annotation.web.UrlAuthorizations;
-import org.springframework.security.config.annotation.web.FormLoginSecurityFilterConfigurator;
-import org.springframework.security.config.annotation.web.HttpConfiguration;
+import org.springframework.security.config.annotation.web.FormLoginConfigurator;
+import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -107,12 +107,12 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class NullWebInvocationPrivilegeEvaluatorConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
             http.formLogin()
         }
 
         @Override
-        protected void applyDefaults(HttpConfiguration http) {
+        protected void applyDefaults(HttpConfigurator http) {
         }
     }
 
@@ -138,7 +138,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
             ignoredRequests
                 .antMatchers("/resources/**");
         }
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
         }
     }
 
@@ -164,7 +164,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
             ignoredRequests
                 .antMatchers("/resources/**");
         }
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
         }
     }
 }

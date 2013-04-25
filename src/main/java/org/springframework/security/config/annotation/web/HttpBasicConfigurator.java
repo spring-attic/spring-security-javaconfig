@@ -30,16 +30,16 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+public class HttpBasicConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private BasicAuthenticationFilter basicAuthenticationFilter;
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
 
-    public HttpBasicSecurityFilterConfigurator() throws Exception {
+    public HttpBasicConfigurator() throws Exception {
         realmName("Spring Security Application");
     }
 
-    protected void doConfigure(HttpConfiguration http) throws Exception {
+    protected void doConfigure(HttpConfigurator http) throws Exception {
         AuthenticationManager authenticationManager = http.authenticationManager();
         basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {
@@ -49,19 +49,19 @@ public class HttpBasicSecurityFilterConfigurator extends AbstractSecurityConfigu
         http.addFilter(basicAuthenticationFilter);
     }
 
-    public HttpBasicSecurityFilterConfigurator realmName(String realmName) throws Exception {
+    public HttpBasicConfigurator realmName(String realmName) throws Exception {
         BasicAuthenticationEntryPoint basicAuthEntryPoint = new BasicAuthenticationEntryPoint();
         basicAuthEntryPoint.setRealmName(realmName);
         basicAuthEntryPoint.afterPropertiesSet();
         return authenticationEntryPoint(basicAuthEntryPoint);
     }
 
-    public HttpBasicSecurityFilterConfigurator authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+    public HttpBasicConfigurator authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         return this;
     }
 
-    public HttpBasicSecurityFilterConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
+    public HttpBasicConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
         return this;
     }

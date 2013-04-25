@@ -88,7 +88,7 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
                 .antMatchers("/resources/**");
         }
 
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
             http.formLogin()
         }
     }
@@ -118,7 +118,7 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
                 .antMatchers("/resources/**");
         }
 
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
             http.formLogin().permitAll()
         }
     }

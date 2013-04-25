@@ -53,30 +53,30 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private boolean disableAuthenticationRegistry;
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;
-    private HttpConfiguration springSecurityFilterChain;
+    private HttpConfigurator springSecurityFilterChain;
 
     protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
         this.disableAuthenticationRegistry = true;
     }
 
-    protected void applyDefaults(HttpConfiguration http) throws Exception {
+    protected void applyDefaults(HttpConfigurator http) throws Exception {
         http.applyDefaultConfigurators();
         authorizeUrls(http.authorizeUrls());
     }
 
     protected abstract void authorizeUrls(ExpressionUrlAuthorizations interceptUrls);
 
-    private HttpConfiguration springSecurityFilterChain() throws Exception {
+    private HttpConfigurator springSecurityFilterChain() throws Exception {
         if(springSecurityFilterChain == null) {
             AuthenticationManager authenticationManager = authenticationManager();
             authenticationBuilder.parentAuthenticationManager(authenticationManager);
-            springSecurityFilterChain = new HttpConfiguration(authenticationBuilder);
+            springSecurityFilterChain = new HttpConfigurator(authenticationBuilder);
         }
         return springSecurityFilterChain;
     }
 
-    public HttpConfiguration httpConfiguration() throws Exception {
-        HttpConfiguration springSecurityFilterChain = springSecurityFilterChain();
+    public HttpConfigurator httpConfiguration() throws Exception {
+        HttpConfigurator springSecurityFilterChain = springSecurityFilterChain();
         springSecurityFilterChain.setSharedObject(UserDetailsService.class, userDetailsService());
         applyDefaults(springSecurityFilterChain);
         configure(springSecurityFilterChain);
@@ -151,7 +151,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return null;
     }
 
-    protected abstract void configure(HttpConfiguration http) throws Exception;
+    protected abstract void configure(HttpConfigurator http) throws Exception;
 
     static final class AuthenticationManagerDelegator implements AuthenticationManager {
         private AuthenticationBuilder delegateBuilder;

@@ -93,7 +93,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpFirewallConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
         }
     }
 
@@ -110,7 +110,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpFirewallConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
         }
         protected void performConfigure(
                 SpringSecurityFilterChainBuilder springSecurityFilterChain) {

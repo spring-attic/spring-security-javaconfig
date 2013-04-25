@@ -100,7 +100,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN");
@@ -129,7 +129,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN")

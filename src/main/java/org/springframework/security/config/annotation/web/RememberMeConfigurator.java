@@ -34,7 +34,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
  * @author Rob Winch
  *
  */
-public class RememberMeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+public class RememberMeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private String key;
     private RememberMeServices rememberMeServices;
@@ -82,7 +82,7 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
     }
 
     @Override
-    protected void doInit(HttpConfiguration http) throws Exception {
+    protected void doInit(HttpConfigurator http) throws Exception {
         String key = getKey();
         RememberMeServices rememberMeServices = getRememberMeServices(http,key);
         http.setSharedObject(RememberMeServices.class, rememberMeServices);
@@ -93,7 +93,7 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
         http.authenticationProvider(authenticationProvider);
     }
 
-    private RememberMeServices getRememberMeServices(HttpConfiguration http, String key) {
+    private RememberMeServices getRememberMeServices(HttpConfigurator http, String key) {
         if(rememberMeServices != null) {
             if(rememberMeServices instanceof LogoutHandler && logoutHandler == null) {
                 this.logoutHandler = (LogoutHandler) rememberMeServices;
@@ -114,25 +114,25 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
         return tokenRememberMeServices;
     }
 
-    private AbstractRememberMeServices createRememberMeServices(HttpConfiguration http,
+    private AbstractRememberMeServices createRememberMeServices(HttpConfigurator http,
             String key) {
         return tokenRepository == null ? createTokenBasedRememberMeServices(http, key) : createPersistentRememberMeServices(http, key);
     }
 
-    private AbstractRememberMeServices createTokenBasedRememberMeServices(HttpConfiguration http,
+    private AbstractRememberMeServices createTokenBasedRememberMeServices(HttpConfigurator http,
             String key) {
         UserDetailsService userDetailsService = getUserDetailsService(http);
         return new TokenBasedRememberMeServices(key, userDetailsService);
     }
 
     private AbstractRememberMeServices createPersistentRememberMeServices(
-            HttpConfiguration http, String key) {
+            HttpConfigurator http, String key) {
         UserDetailsService userDetailsService = getUserDetailsService(http);
         return new PersistentTokenBasedRememberMeServices(key, userDetailsService, tokenRepository);
     }
 
     @Override
-    protected void doConfigure(HttpConfiguration http)
+    protected void doConfigure(HttpConfigurator http)
             throws Exception {
         RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(http.authenticationManager(), rememberMeServices);
         if(authenticationSuccessHandler != null) {
@@ -141,7 +141,7 @@ public class RememberMeConfigurator extends AbstractSecurityConfigurator<Default
         http.addFilter(rememberMeFilter);
     }
 
-    private UserDetailsService getUserDetailsService(HttpConfiguration http) {
+    private UserDetailsService getUserDetailsService(HttpConfigurator http) {
         return userDetailsService == null ? http.getSharedObject(UserDetailsService.class) : userDetailsService;
     }
 

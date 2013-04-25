@@ -49,7 +49,7 @@ public class NamespaceHttpRequestCacheTests extends BaseSpringSpec {
     @Configuration
     static class RequestCacheRefConfig extends BaseWebConfig {
         static RequestCache REQUEST_CACHE
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
             http.
                 exceptionHandling()
                     .requestCache(REQUEST_CACHE)
@@ -65,7 +65,7 @@ public class NamespaceHttpRequestCacheTests extends BaseSpringSpec {
 
     @Configuration
     static class DefaultRequestCacheRefConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
         }
     }
 }

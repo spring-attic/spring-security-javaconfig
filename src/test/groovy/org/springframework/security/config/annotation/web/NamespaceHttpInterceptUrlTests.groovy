@@ -204,7 +204,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                 .antMatchers("/**").hasRole("USER");
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .requiresChannel()
                     // NOTE: channel security is configured separately of authorization (i.e. intercept-url@access

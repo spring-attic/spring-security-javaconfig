@@ -41,7 +41,7 @@ class EnableWebSecurityTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpConfigurator http) throws Exception {
             http
                 .formLogin();
         }

@@ -46,7 +46,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain> {
+public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,HttpConfigurator> implements SecurityBuilder<DefaultSecurityFilterChain> {
 
     private AuthenticationManager authenticationManager;
 
@@ -56,23 +56,23 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
-    public HttpConfiguration(AuthenticationBuilder authenticationBuilder) {
+    public HttpConfigurator(AuthenticationBuilder authenticationBuilder) {
         initSharedObjects(authenticationBuilder);
     }
 
-    public HttpConfiguration(AuthenticationManager authenticationManager) {
+    public HttpConfigurator(AuthenticationManager authenticationManager) {
         this(new AuthenticationBuilder().parentAuthenticationManager(authenticationManager));
     }
 
-    public HttpConfiguration(AuthenticationProvider provider) {
+    public HttpConfigurator(AuthenticationProvider provider) {
         this(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    public HttpConfiguration(UserDetailsService userDetailsService) throws Exception {
+    public HttpConfigurator(UserDetailsService userDetailsService) throws Exception {
         this(new AuthenticationBuilder().userDetails(userDetailsService).and().build());
     }
 
-    public HttpConfiguration applyDefaultConfigurators() throws Exception {
+    public HttpConfigurator applyDefaultConfigurators() throws Exception {
         exceptionHandling();
         sessionManagement();
         securityContext();
@@ -83,7 +83,7 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return this;
     }
 
-    protected <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurator(
+    protected <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator>> C getConfigurator(
             Class<C> clazz) {
         return super.getConfigurator(clazz);
     }
@@ -128,20 +128,20 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return apply(new LogoutConfigurator());
     }
 
-    public AnonymousSecurityFilterConfigurator anonymous() throws Exception {
-        return apply(new AnonymousSecurityFilterConfigurator());
+    public AnonymousConfigurator anonymous() throws Exception {
+        return apply(new AnonymousConfigurator());
     }
 
-    public FormLoginSecurityFilterConfigurator formLogin() throws Exception {
-        return apply(new FormLoginSecurityFilterConfigurator());
+    public FormLoginConfigurator formLogin() throws Exception {
+        return apply(new FormLoginConfigurator());
     }
 
     public ChannelSecurityFilterConfigurator requiresChannel() throws Exception {
         return apply(new ChannelSecurityFilterConfigurator());
     }
 
-    public HttpBasicSecurityFilterConfigurator httpBasic() throws Exception {
-        return apply(new HttpBasicSecurityFilterConfigurator());
+    public HttpBasicConfigurator httpBasic() throws Exception {
+        return apply(new HttpBasicConfigurator());
     }
 
     public void defaultSharedObject(Class<Object> sharedType, Object object) {
@@ -171,7 +171,7 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }
 
-    public HttpConfiguration authenticationProvider(AuthenticationProvider authenticationProvider) {
+    public HttpConfigurator authenticationProvider(AuthenticationProvider authenticationProvider) {
         getAuthenticationRegistry().add(authenticationProvider);
         return this;
     }
@@ -180,36 +180,36 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return getSharedObject(AuthenticationBuilder.class);
     }
 
-    public HttpConfiguration securityContextRepsitory(SecurityContextRepository securityContextRepository) {
+    public HttpConfigurator securityContextRepsitory(SecurityContextRepository securityContextRepository) {
         this.setSharedObject(SecurityContextRepository.class, securityContextRepository);
         return this;
     }
 
-    public HttpConfiguration addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
+    public HttpConfigurator addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerAfter(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public HttpConfiguration addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
+    public HttpConfigurator addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerBefore(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public HttpConfiguration addFilter(Filter filter) {
+    public HttpConfigurator addFilter(Filter filter) {
         this.filters.add(filter);
         return this;
     }
 
-    public HttpConfiguration requestMatcher(RequestMatcher requestMatcher) {
+    public HttpConfigurator requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
         return this;
     }
 
-    public HttpConfiguration antMatcher(String pattern) {
+    public HttpConfigurator antMatcher(String pattern) {
         return requestMatcher(new AntPathRequestMatcher(pattern));
     }
 
-    public HttpConfiguration regexMatcher(String pattern) {
+    public HttpConfigurator regexMatcher(String pattern) {
         return requestMatcher(new RegexRequestMatcher(pattern, null));
     }
 
@@ -222,7 +222,7 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return authenticationEntryPoint;
     }
 
-    public HttpConfiguration authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+    public HttpConfigurator authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         return this;
     }

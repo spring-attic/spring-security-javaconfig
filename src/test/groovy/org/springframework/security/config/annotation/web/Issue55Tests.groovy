@@ -58,7 +58,7 @@ class Issue55Tests extends BaseSpringSpec {
             }
 
             @Override
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpConfigurator http) throws Exception {
             }
         }
         @Configuration
@@ -91,7 +91,7 @@ class Issue55Tests extends BaseSpringSpec {
             }
 
             @Override
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpConfigurator http) throws Exception {
                 http.antMatcher("/api/**");
             }
 
@@ -104,7 +104,7 @@ class Issue55Tests extends BaseSpringSpec {
             }
 
             @Override
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpConfigurator http) throws Exception {
             }
         }
         @Configuration

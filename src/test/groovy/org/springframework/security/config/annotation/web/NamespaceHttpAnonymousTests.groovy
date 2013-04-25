@@ -42,7 +42,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
         }
     }
 
@@ -55,7 +55,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousDisabledConfig extends BaseWebConfig {
-      protected void configure(HttpConfiguration http) {
+      protected void configure(HttpConfigurator http) {
                 http.anonymous().disable()
         }
     }
@@ -69,7 +69,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousGrantedAuthorityConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
             http
                 .anonymous()
                     .authorities("ROLE_ANON")
@@ -90,7 +90,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousKeyConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
             http
                 .anonymous().key("AnonymousKeyConfig")
         }
@@ -109,7 +109,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousUsernameConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpConfigurator http) {
             http
                 .anonymous().principal("AnonymousUsernameConfig")
         }

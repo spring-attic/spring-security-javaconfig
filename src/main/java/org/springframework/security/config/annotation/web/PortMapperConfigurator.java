@@ -28,7 +28,7 @@ import org.springframework.security.web.PortMapperImpl;
  * @author Rob Winch
  * @since 3.2
  */
-public class PortMapperConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+public class PortMapperConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private PortMapper portMapper;
     private Map<String, String> httpsPortMappings = new HashMap<String,String>();
 
@@ -41,7 +41,7 @@ public class PortMapperConfigurator extends AbstractSecurityConfigurator<Default
         return new HttpsPortMapping(httpPort);
     }
 
-    protected void doInit(HttpConfiguration http) throws Exception {
+    protected void doInit(HttpConfigurator http) throws Exception {
         http.setSharedObject(PortMapper.class, getPortMapper());
     }
 

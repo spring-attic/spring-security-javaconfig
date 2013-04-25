@@ -31,8 +31,8 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  *
  */
 abstract class BaseInterceptUrlConfigurator<T> extends
-        BaseRequestMatcherRegistry<T,DefaultSecurityFilterChain,HttpConfiguration> implements
-        SecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
+        BaseRequestMatcherRegistry<T,DefaultSecurityFilterChain,HttpConfigurator> implements
+        SecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private Boolean filterSecurityInterceptorOncePerRequest;
 
     private AccessDecisionManager accessDecisionManager;
@@ -60,7 +60,7 @@ abstract class BaseInterceptUrlConfigurator<T> extends
         return new ConsensusBased(decisionVoters());
     }
 
-    protected void doConfigure(HttpConfiguration http) throws Exception {
+    protected void doConfigure(HttpConfigurator http) throws Exception {
         FilterInvocationSecurityMetadataSource metadataSource = createMetadataSource();
         if(metadataSource == null) {
             return;

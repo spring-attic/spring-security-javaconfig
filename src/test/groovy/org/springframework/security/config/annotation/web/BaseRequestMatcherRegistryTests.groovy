@@ -62,7 +62,7 @@ class BaseRequestMatcherRegistryTests extends Specification {
         matchers.collect {it.class } == [AntPathRequestMatcher]
     }
 
-    static class BaseRequestMatcherRegistryStub extends BaseRequestMatcherRegistry<List<RequestMatcher>,DefaultSecurityFilterChain,HttpConfiguration> {
+    static class BaseRequestMatcherRegistryStub extends BaseRequestMatcherRegistry<List<RequestMatcher>,DefaultSecurityFilterChain,HttpConfigurator> {
         List<AccessDecisionVoter> decisionVoters() {
             return null;
         }
