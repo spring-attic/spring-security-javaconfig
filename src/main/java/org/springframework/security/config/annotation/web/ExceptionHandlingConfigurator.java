@@ -20,6 +20,8 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 
 /**
  *
@@ -29,6 +31,7 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfiguration> {
 
     private AccessDeniedHandler accessDeniedHandler;
+    private RequestCache requestCache = new HttpSessionRequestCache();
 
     public ExceptionHandlingConfigurator accessDeniedPage(String accessDeniedUrl) {
         AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
@@ -41,8 +44,13 @@ public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
+    public ExceptionHandlingConfigurator requestCache(RequestCache requestCache) {
+        this.requestCache = requestCache;
+        return this;
+    }
+
     protected void doConfigure(HttpConfiguration http) throws Exception {
-        ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(http.authenticationEntryPoint());
+        ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(http.authenticationEntryPoint(), requestCache);
         if(accessDeniedHandler != null) {
             exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);
         }
