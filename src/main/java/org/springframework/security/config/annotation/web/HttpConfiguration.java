@@ -92,6 +92,10 @@ public class HttpConfiguration extends AbstractConfiguredBuilder<DefaultSecurity
         return apply(new SessionManagementConfigurator());
     }
 
+    public PortMapperConfigurator portMapper() throws Exception {
+        return apply(new PortMapperConfigurator());
+    }
+
     public JeeConfigurator jee() throws Exception {
         return apply(new JeeConfigurator());
     }

@@ -23,10 +23,13 @@ import java.util.List;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.access.channel.ChannelProcessor;
 import org.springframework.security.web.access.channel.InsecureChannelProcessor;
+import org.springframework.security.web.access.channel.RetryWithHttpEntryPoint;
+import org.springframework.security.web.access.channel.RetryWithHttpsEntryPoint;
 import org.springframework.security.web.access.channel.SecureChannelProcessor;
 import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
@@ -39,18 +42,39 @@ import org.springframework.security.web.util.RequestMatcher;
 public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
-    private InsecureChannelProcessor insecureChannelProcessor = new InsecureChannelProcessor();
-    private SecureChannelProcessor secureChannelProcessor = new SecureChannelProcessor();
+    private List<ChannelProcessor> channelProcessors;
 
     protected void doConfigure(HttpConfiguration http) throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
-        channelDecisionManager.setChannelProcessors(Arrays.<ChannelProcessor>asList(insecureChannelProcessor,secureChannelProcessor));
+        channelDecisionManager.setChannelProcessors(getChannelProcessors(http));
         channelFilter.setChannelDecisionManager(channelDecisionManager);
 
         DefaultFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
         channelFilter.setSecurityMetadataSource(filterInvocationSecurityMetadataSource);
 
         http.addFilter(channelFilter);
+    }
+
+
+    private List<ChannelProcessor> getChannelProcessors(HttpConfiguration http) {
+        if(channelProcessors != null) {
+            return channelProcessors;
+        }
+
+        InsecureChannelProcessor insecureChannelProcessor = new InsecureChannelProcessor();
+        SecureChannelProcessor secureChannelProcessor = new SecureChannelProcessor();
+
+        PortMapper portMapper = http.getSharedObject(PortMapper.class);
+        if(portMapper != null) {
+            RetryWithHttpEntryPoint httpEntryPoint = new RetryWithHttpEntryPoint();
+            httpEntryPoint.setPortMapper(portMapper);
+            insecureChannelProcessor.setEntryPoint(httpEntryPoint);
+
+            RetryWithHttpsEntryPoint httpsEntryPoint = new RetryWithHttpsEntryPoint();
+            httpsEntryPoint.setPortMapper(portMapper);
+            secureChannelProcessor.setEntryPoint(httpsEntryPoint);
+        }
+        return Arrays.<ChannelProcessor>asList(insecureChannelProcessor, secureChannelProcessor);
     }
 
 
@@ -74,11 +98,15 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
         }
 
         public ChannelSecurityFilterConfigurator requiresSecure() {
-            return addAttribute(secureChannelProcessor.getSecureKeyword(), requestMatchers);
+            return requires("REQUIRES_SECURE_CHANNEL");
         }
 
         public ChannelSecurityFilterConfigurator requiresInsecure() {
-            return addAttribute(insecureChannelProcessor.getInsecureKeyword(), requestMatchers);
+            return requires("REQUIRES_INSECURE_CHANNEL");
+        }
+
+        public ChannelSecurityFilterConfigurator requires(String attribute) {
+            return addAttribute(attribute, requestMatchers);
         }
     }
 }

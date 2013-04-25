@@ -73,12 +73,12 @@ import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher
 
 /**
- * Tests to verify that all the functionality of <intercept-url> attributes is present
+ * Tests to verify that all the functionality of <port-mappings> attributes is present
  *
  * @author Rob Winch
  *
  */
-public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
+public class NamespaceHttpPortMappingsTests extends BaseSpringSpec {
     FilterChainProxy springSecurityFilterChain
     MockHttpServletRequest request
     MockHttpServletResponse response
@@ -91,131 +91,57 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
         chain = new MockFilterChain()
     }
 
-    def "http/intercept-url denied when not logged in"() {
+    def "http/port-mapper works with http/intercept-url@requires-channel"() {
         setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        request.servletPath == "/users"
+            loadConfig(HttpInterceptUrlWithPortMapperConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            request.setServletPath("/login")
+            request.setRequestURI("/login")
+            request.setServerPort(9080);
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_FORBIDDEN
-    }
-
-    def "http/intercept-url denied when logged in"() {
-        setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        login()
-        request.setServletPath("/users")
+            response.redirectedUrl == "https://localhost:9443/login"
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            request.setServletPath("/secured/a")
+            request.setRequestURI("/secured/a")
+            request.setServerPort(9080);
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_FORBIDDEN
-    }
-
-    def "http/intercept-url allowed when logged in"() {
-        setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        login("admin","ROLE_ADMIN")
-        request.setServletPath("/users")
+            response.redirectedUrl == "https://localhost:9443/secured/a"
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            request.setSecure(true)
+            request.setScheme("https")
+            request.setServerPort(9443);
+            request.setServletPath("/user")
+            request.setRequestURI("/user")
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_OK
-        !response.isCommitted()
-    }
-
-    def "http/intercept-url@method=POST"() {
-        setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        when:
-        login()
-        request.setServletPath("/admin/post")
-        springSecurityFilterChain.doFilter(request,response,chain)
-        then:
-        response.status == HttpServletResponse.SC_OK
-        !response.isCommitted()
-        when:
-        setup()
-        login()
-        request.setServletPath("/admin/post")
-        request.setMethod("POST")
-        springSecurityFilterChain.doFilter(request,response,chain)
-        then:
-        response.status == HttpServletResponse.SC_FORBIDDEN
-        when:
-        setup()
-        login("admin","ROLE_ADMIN")
-        request.setServletPath("/admin/post")
-        request.setMethod("POST")
-        springSecurityFilterChain.doFilter(request,response,chain)
-        then:
-        response.status == HttpServletResponse.SC_OK
-        !response.committed
-    }
-
-    def "http/intercept-url@requires-channel"() {
-        setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        when:
-        request.setServletPath("/login")
-        request.setRequestURI("/login")
-        springSecurityFilterChain.doFilter(request,response,chain)
-        then:
-        response.redirectedUrl == "https://localhost/login"
-        when:
-        setup()
-        request.setServletPath("/secured/a")
-        request.setRequestURI("/secured/a")
-        springSecurityFilterChain.doFilter(request,response,chain)
-        then:
-        response.redirectedUrl == "https://localhost/secured/a"
-        when:
-        setup()
-        request.setSecure(true)
-        request.setScheme("https")
-        request.setServletPath("/user")
-        request.setRequestURI("/user")
-        springSecurityFilterChain.doFilter(request,response,chain)
-        then:
-        response.redirectedUrl == "http://localhost/user"
+            response.redirectedUrl == "http://localhost:9080/user"
     }
 
     @Configuration
     @EnableWebSecurity
-    static class HttpInterceptUrlConfig extends WebSecurityConfigurerAdapter {
+    static class HttpInterceptUrlWithPortMapperConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void authorizeUrls(
                 ExpressionUrlAuthorizations interceptUrls) {
              interceptUrls
-                // the line below is similar to intercept-url@pattern:
-                //    <intercept-url pattern="/users**" access="hasRole('ROLE_ADMIN')"/>
-                //    <intercept-url pattern="/sessions/**" access="hasRole('ROLE_ADMIN')"/>
-                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                // the line below is similar to intercept-url@method:
-                //    <intercept-url pattern="/admin/post" access="hasRole('ROLE_ADMIN')" method="POST"/>
-                //    <intercept-url pattern="/admin/another-post/**" access="hasRole('ROLE_ADMIN')" method="POST"/>
-                .antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**").hasRole("ADMIN")
-                .antMatchers("/signup").permitAll()
                 .antMatchers("/**").hasRole("USER");
         }
 
         protected void configure(HttpConfiguration http) throws Exception {
             http
+                .portMapper()
+                    .http(9080).mapsTo(9443)
+                    .and()
                 .requiresChannel()
-                    // NOTE: channel security is configured separately of authorization (i.e. intercept-url@access
-                    // the line below is similar to intercept-url@requires-channel="https":
-                    //    <intercept-url pattern="/login" requires-channel="https"/>
-                    //    <intercept-url pattern="/secured/**" requires-channel="https"/>
                     .antMatchers("/login","/secured/**").requiresSecure()
-                    // the line below is similar to intercept-url@requires-channel="http":
-                    //    <intercept-url pattern="/**" requires-channel="http"/>
                     .antMatchers("/**").requiresInsecure()
         }
+
         protected void registerAuthentication(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
             authenticationRegistry
