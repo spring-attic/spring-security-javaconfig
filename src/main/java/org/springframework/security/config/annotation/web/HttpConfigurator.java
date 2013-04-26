@@ -100,6 +100,10 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return apply(new JeeConfigurator());
     }
 
+    public X509Configurator x509() throws Exception {
+        return apply(new X509Configurator());
+    }
+
     public RememberMeConfigurator rememberMe() throws Exception {
         return apply(new RememberMeConfigurator());
     }
