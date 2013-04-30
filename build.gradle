@@ -70,8 +70,7 @@ configure(allprojects) { p->
                 "org.springframework:spring-core:$springVersion",
                 "org.springframework:spring-web:$springVersion"
 
-        optional "javax.annotation:jsr250-api:1.0",
-                 "org.springframework.security:spring-security-ldap:$springSecurityVersion"
+        optional "javax.annotation:jsr250-api:1.0"
 
         provided 'javax.servlet:javax.servlet-api:3.0.1'
 
@@ -118,7 +117,8 @@ configure(rootProject) {
         compile "org.springframework.security:spring-security-config:$springSecurityVersion"
         optional "org.aspectj:aspectjrt:${aspectjVersion}",
                  apacheDsDependencies,
-                 "org.springframework.security:spring-security-ldap:$springSecurityVersion"
+                 "org.springframework.security:spring-security-ldap:$springSecurityVersion",
+                 "org.springframework.security:spring-security-openid:$springSecurityVersion"
 
         optional "org.slf4j:slf4j-api:$slf4jVersion"
 

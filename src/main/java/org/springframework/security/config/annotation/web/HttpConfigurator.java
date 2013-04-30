@@ -88,6 +88,10 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return super.getConfigurator(clazz);
     }
 
+    public OpenIDLoginConfigurator openidLogin() throws Exception {
+        return apply(new OpenIDLoginConfigurator());
+    }
+
     public SessionManagementConfigurator sessionManagement() throws Exception {
         return apply(new SessionManagementConfigurator());
     }
