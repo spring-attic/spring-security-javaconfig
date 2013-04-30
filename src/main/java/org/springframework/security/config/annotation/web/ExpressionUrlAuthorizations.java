@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -31,6 +30,7 @@ import org.springframework.security.web.access.expression.ExpressionBasedFilterI
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Rob Winch
@@ -88,7 +88,7 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
     }
 
     public static String hasAnyAuthority(String... authorities) {
-        String anyAuthorities = StringUtils.join(authorities, "','");
+        String anyAuthorities = StringUtils.arrayToDelimitedString(authorities, "','");
         return "hasAnyAuthority('" + anyAuthorities + "')";
     }
 
