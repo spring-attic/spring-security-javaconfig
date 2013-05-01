@@ -110,6 +110,78 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
         }
     }
 
+    def "http/openid-login/attribute-exchange"() {
+        when:
+            loadConfig(OpenIDLoginAttributeExchangeConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            OpenID4JavaConsumer consumer = findFilter(OpenIDAuthenticationFilter).consumer
+        then:
+            consumer.class == OpenID4JavaConsumer
+
+            def googleAttrs = consumer.attributesToFetchFactory.createAttributeList("https://www.google.com/1")
+            googleAttrs[0].name == "email"
+            googleAttrs[0].type == "http://axschema.org/contact/email"
+            googleAttrs[0].required
+            googleAttrs[1].name == "firstname"
+            googleAttrs[1].type == "http://axschema.org/namePerson/first"
+            googleAttrs[1].required
+            googleAttrs[2].name == "lastname"
+            googleAttrs[2].type == "http://axschema.org/namePerson/last"
+            googleAttrs[2].required
+
+            def yahooAttrs = consumer.attributesToFetchFactory.createAttributeList("https://rwinch.yahoo.com/rwinch/id")
+            yahooAttrs[0].name == "email"
+            yahooAttrs[0].type == "http://schema.openid.net/contact/email"
+            yahooAttrs[0].required
+            yahooAttrs[1].name == "fullname"
+            yahooAttrs[1].type == "http://axschema.org/namePerson"
+            yahooAttrs[1].required
+        when:
+            springSecurityFilterChain.doFilter(request,response,chain)
+        then:
+            response.getRedirectedUrl() == "http://localhost/login"
+        when: "fail to log in"
+            setup()
+            request.requestURI = "/login/openid"
+            request.method = "POST"
+            springSecurityFilterChain.doFilter(request,response,chain)
+        then: "sent to login error page"
+            response.getRedirectedUrl() == "/login?error"
+    }
+
+    @Configuration
+    static class OpenIDLoginAttributeExchangeConfig extends BaseWebConfig {
+        protected void configure(HttpConfigurator http) {
+            http
+                .openidLogin()
+                    .attributeExchange("https://www.google.com/.*")
+                        .attribute("email")
+                            .type("http://axschema.org/contact/email")
+                            .required(true)
+                            .and()
+                        .attribute("firstname")
+                            .type("http://axschema.org/namePerson/first")
+                            .required(true)
+                            .and()
+                        .attribute("lastname")
+                            .type("http://axschema.org/namePerson/last")
+                            .required(true)
+                            .and()
+                        .and()
+                    .attributeExchange(".*yahoo.com.*")
+                        .attribute("email")
+                            .type("http://schema.openid.net/contact/email")
+                            .required(true)
+                            .and()
+                        .attribute("fullname")
+                            .type("http://axschema.org/namePerson")
+                            .required(true)
+                            .and()
+                        .and()
+                    .permitAll();
+        }
+    }
+
     def "http/openid-login custom"() {
         setup:
             loadConfig(OpenIDLoginCustomConfig)
