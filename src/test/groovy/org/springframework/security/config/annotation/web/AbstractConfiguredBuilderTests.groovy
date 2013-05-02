@@ -29,7 +29,7 @@ import spock.lang.Specification
  */
 class AbstractConfiguredBuilderTests extends Specification {
 
-    ConcreateAbstractConfiguredBuilder builder = new ConcreateAbstractConfiguredBuilder()
+    ConcreteAbstractConfiguredBuilder builder = new ConcreteAbstractConfiguredBuilder()
 
     def "Duplicate configurator is removed"() {
         when:
@@ -39,11 +39,11 @@ class AbstractConfiguredBuilderTests extends Specification {
         ReflectionTestUtils.getField(builder,"configurators").size() == 1
     }
 
-    private static class ConcreateAbstractConfiguredBuilder extends AbstractConfiguredBuilder<Object, ConcreateAbstractConfiguredBuilder> {
+    private static class ConcreteAbstractConfiguredBuilder extends AbstractConfiguredBuilder<Object, ConcreteAbstractConfiguredBuilder> {
         public Object doBuild() throws Exception {
             return "success";
         }
     }
 
-    private static class ConcreteConfigurator extends AbstractSecurityConfigurator<Object, ConcreateAbstractConfiguredBuilder> { }
+    private static class ConcreteConfigurator extends AbstractSecurityConfigurator<Object, ConcreteAbstractConfiguredBuilder> { }
 }
