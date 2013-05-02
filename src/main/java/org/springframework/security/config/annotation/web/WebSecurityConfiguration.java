@@ -90,7 +90,7 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
     private void verifyConfigurators() {
         boolean hasConfigurators = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
         if(!hasConfigurators) {
-            throw new IllegalStateException("At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity");
+            throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
         }
     }
 }

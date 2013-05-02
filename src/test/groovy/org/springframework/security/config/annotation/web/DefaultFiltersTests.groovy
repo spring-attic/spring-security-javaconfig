@@ -61,7 +61,7 @@ import spock.lang.Specification
  * @author Rob Winch
  */
 class DefaultFiltersTests extends BaseSpringSpec {
-    def missingConfigMessage = "At least one non-null instance of WebSecurityConfigurerAdapater must be exposed as a @Bean when using @EnableWebSecurity"
+    def missingConfigMessage = "At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName()
 
     def "DefaultSecurityFilterChainBuilder cannot be null"() {
         when:
