@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth.examples.sparklr.PhotoInfo;
 import org.springframework.security.oauth.examples.sparklr.PhotoService;
@@ -16,10 +15,7 @@ import org.springframework.security.oauth.examples.sparklr.mvc.AdminController;
 import org.springframework.security.oauth.examples.sparklr.mvc.PhotoController;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.InMemoryTokenStore;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
@@ -32,7 +28,6 @@ import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
 
 @Configuration
 @EnableWebMvc
-@ImportResource("/WEB-INF/spring-servlet.xml")
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     @Bean
@@ -92,24 +87,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         return photoServices;
     }
 
-    @Bean
-    public ClientDetailsUserDetailsService clientDetailsUserService(ClientDetailsService clientDetails) {
-        return new ClientDetailsUserDetailsService(clientDetails);
-    }
-
-    @Bean
-    public InMemoryTokenStore tokenStore() {
-        return new InMemoryTokenStore();
-    }
-
-    @Bean
-    public DefaultTokenServices tokenServices(ClientDetailsService clientDetails) {
-        DefaultTokenServices tokenServices = new DefaultTokenServices();
-        tokenServices.setTokenStore(tokenStore());
-        tokenServices.setSupportRefreshToken(true);
-        tokenServices.setClientDetailsService(clientDetails);
-        return tokenServices;
-    }
 
     private PhotoInfo createPhoto(String id, String userId) {
         PhotoInfo photo = new PhotoInfo();
