@@ -15,17 +15,18 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.OrderComparator;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.web.FilterChainProxy;
@@ -92,5 +93,57 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
         if(!hasConfigurators) {
             throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
         }
+    }
+
+    private static class AnnotationAwareOrderComparator extends OrderComparator {
+
+        /**
+         * Shared default instance of AnnotationAwareOrderComparator.
+         */
+        public static final AnnotationAwareOrderComparator INSTANCE = new AnnotationAwareOrderComparator();
+
+
+        @Override
+        protected int getOrder(Object obj) {
+            if (obj instanceof Ordered) {
+                return ((Ordered) obj).getOrder();
+            }
+            if (obj != null) {
+                Class<?> clazz = (obj instanceof Class ? (Class) obj : obj.getClass());
+                Order order = AnnotationUtils.findAnnotation(clazz,Order.class);
+                if (order != null) {
+                    return order.value();
+                }
+            }
+            return Ordered.LOWEST_PRECEDENCE;
+        }
+
+
+        /**
+         * Sort the given List with a default AnnotationAwareOrderComparator.
+         * <p>Optimized to skip sorting for lists with size 0 or 1,
+         * in order to avoid unnecessary array extraction.
+         * @param list the List to sort
+         * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
+         */
+        public static void sort(List<?> list) {
+            if (list.size() > 1) {
+                Collections.sort(list, INSTANCE);
+            }
+        }
+
+        /**
+         * Sort the given array with a default AnnotationAwareOrderComparator.
+         * <p>Optimized to skip sorting for lists with size 0 or 1,
+         * in order to avoid unnecessary array extraction.
+         * @param array the array to sort
+         * @see java.util.Arrays#sort(Object[], java.util.Comparator)
+         */
+        public static void sort(Object[] array) {
+            if (array.length > 1) {
+                Arrays.sort(array, INSTANCE);
+            }
+        }
+
     }
 }
