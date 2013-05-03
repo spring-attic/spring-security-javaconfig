@@ -17,7 +17,9 @@ package org.springframework.security.config.annotation.web;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -66,7 +68,16 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
     @Autowired(required = false)
     public void setFilterChainProxySecurityConfigurator(
             List<WebSecurityConfigurer> webSecurityConfigurers) throws Exception {
-        Collections.sort(webSecurityConfigurers,AnnotationAwareOrderComparator.INSTANCE);
+        Collections.sort(webSecurityConfigurers, new AnnotationAwareOrderComparator());
+
+        Integer previousOrder = null;
+        for(WebSecurityConfigurer config : webSecurityConfigurers) {
+            Integer order = AnnotationAwareOrderComparator.lookupOrder(config);
+            if(previousOrder != null && previousOrder.equals(order)) {
+                throw new IllegalStateException("@Order on WebSecurityConfigurators must be unique. Order of " + order + " was already used, so it cannot be used on " + config + " too.");
+            }
+            previousOrder = order;
+        }
         for(SecurityConfigurator<FilterChainProxy, WebSecurityConfiguration> webSecurityConfigurer : webSecurityConfigurers) {
             apply(webSecurityConfigurer);
         }
@@ -82,13 +93,13 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
      */
     @Override
     protected FilterChainProxy doBuild() throws Exception {
-        verifyConfigurators();
+        verifyConfiguratorsAreSet();
         init();
         configure();
         return springSecurityFilterChain.build();
     }
 
-    private void verifyConfigurators() {
+    private void verifyConfiguratorsAreSet() {
         boolean hasConfigurators = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
         if(!hasConfigurators) {
             throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
@@ -97,16 +108,15 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
 
     private static class AnnotationAwareOrderComparator extends OrderComparator {
 
-        /**
-         * Shared default instance of AnnotationAwareOrderComparator.
-         */
-        public static final AnnotationAwareOrderComparator INSTANCE = new AnnotationAwareOrderComparator();
-
-
         @Override
         protected int getOrder(Object obj) {
+            return lookupOrder(obj);
+        }
+
+        private static int lookupOrder(Object obj) {
             if (obj instanceof Ordered) {
-                return ((Ordered) obj).getOrder();
+                int order = ((Ordered) obj).getOrder();
+                return order;
             }
             if (obj != null) {
                 Class<?> clazz = (obj instanceof Class ? (Class) obj : obj.getClass());
@@ -117,7 +127,6 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
             }
             return Ordered.LOWEST_PRECEDENCE;
         }
-
 
         /**
          * Sort the given List with a default AnnotationAwareOrderComparator.

@@ -17,18 +17,16 @@ package org.springframework.security.config.annotation.web;
 
 import static org.junit.Assert.*
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.BeanCreationException
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.AnyRequestMatcher;
+import org.springframework.security.web.FilterChainProxy
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.util.AnyRequestMatcher
 
 /**
  * @author Rob Winch
@@ -129,4 +127,56 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
             }
         }
     }
+
+    def "WebSecurityConfigurators fails with duplicate order"() {
+        when:
+            loadConfig(DuplicateOrderConfig);
+        then:
+            BeanCreationException e = thrown()
+            e.message.contains "@Order on WebSecurityConfigurators must be unique"
+    }
+
+
+    @Configuration
+    @EnableWebSecurity
+    static class DuplicateOrderConfig {
+        public AuthenticationManager authenticationManager() throws Exception {
+            return new AuthenticationBuilder()
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER").and()
+                    .and()
+                .build();
+        }
+
+        @Configuration
+        public static class WebConfigurer1 extends WebSecurityConfigurerAdapter {
+            protected void authorizeUrls(
+                    ExpressionUrlAuthorizations interceptUrls) {
+                interceptUrls
+                    .antMatchers("/**").hasRole("1");
+            }
+
+            protected void configure(HttpConfigurator http) throws Exception {
+                http
+                    .antMatcher("/role1/**");
+            }
+        }
+
+        @Configuration
+        public static class WebConfigurer2 extends WebSecurityConfigurerAdapter {
+            protected void authorizeUrls(
+                    ExpressionUrlAuthorizations interceptUrls) {
+                interceptUrls
+                    .antMatchers("/**").hasRole("2");
+            }
+
+            protected void configure(
+                    HttpConfigurator http)
+                    throws Exception {
+                http
+                    .antMatcher("/role2/**");
+            }
+        }
+    }
+
 }
