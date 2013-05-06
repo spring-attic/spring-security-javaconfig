@@ -16,29 +16,17 @@
 package org.springframework.security.config.annotation.web;
 
 
-import java.util.Arrays;
-
-import org.springframework.aop.framework.ProxyFactoryBean;
-import org.springframework.aop.target.LazyInitTargetSource;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.config.authentication.AuthenticationManagerFactoryBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * @author Rob Winch
@@ -53,7 +41,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private boolean disableAuthenticationRegistry;
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;
-    private HttpConfigurator springSecurityFilterChain;
+    private HttpConfigurator http;
 
     protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
         this.disableAuthenticationRegistry = true;
@@ -66,21 +54,17 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     protected abstract void authorizeUrls(ExpressionUrlAuthorizations interceptUrls);
 
-    private HttpConfigurator springSecurityFilterChain() throws Exception {
-        if(springSecurityFilterChain == null) {
-            AuthenticationManager authenticationManager = authenticationManager();
-            authenticationBuilder.parentAuthenticationManager(authenticationManager);
-            springSecurityFilterChain = new HttpConfigurator(authenticationBuilder);
+    private HttpConfigurator http() throws Exception {
+        if(http != null) {
+            return http;
         }
-        return springSecurityFilterChain;
-    }
-
-    public HttpConfigurator httpConfiguration() throws Exception {
-        HttpConfigurator springSecurityFilterChain = springSecurityFilterChain();
-        springSecurityFilterChain.setSharedObject(UserDetailsService.class, userDetailsService());
-        applyDefaults(springSecurityFilterChain);
-        configure(springSecurityFilterChain);
-        return springSecurityFilterChain;
+        AuthenticationManager authenticationManager = authenticationManager();
+        authenticationBuilder.parentAuthenticationManager(authenticationManager);
+        http = new HttpConfigurator(authenticationBuilder);
+        http.setSharedObject(UserDetailsService.class, userDetailsService());
+        applyDefaults(http);
+        configure(http);
+        return http;
     }
 
 
@@ -125,7 +109,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         ignoredRequests(securityFilterChains.ignoring());
         performConfigure(securityFilterChains);
         securityFilterChains
-            .securityFilterChains(httpConfiguration());
+            .securityFilterChains(http());
     }
 
     public void configure(WebSecurityConfiguration builder) throws Exception {
