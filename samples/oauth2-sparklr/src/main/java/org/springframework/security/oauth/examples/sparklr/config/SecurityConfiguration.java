@@ -79,12 +79,25 @@ public class SecurityConfiguration {
         protected void authorizeUrls(
                 ExpressionUrlAuthorizations interceptUrls) {
             interceptUrls
-                .antMatchers("/oauth/token").fullyAuthenticated();
+                .expressionHandler(securityConfig.oauthWebExpressionHandler)
+                .antMatchers("/oauth/token").fullyAuthenticated()
+
+                .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
+                .regexMatchers(HttpMethod.GET, "/oauth/users/.*")
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
+                .regexMatchers(HttpMethod.GET, "/oauth/clients/.*")
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
+
+                .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+                .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
+                .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+                .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
         }
 
         protected void configure(HttpConfigurator http) throws Exception {
             http
-                .antMatcher("/oauth/token")
+                .regexMatcher("(photos/.*|/oauth/(token|clients/.*|users/.*))")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                     .applyDefaultConfigurators()
                     .exceptionHandling()
@@ -95,78 +108,8 @@ public class SecurityConfiguration {
                     .httpBasic()
                         .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                         .and()
+                    .addFilterBefore(securityConfig.resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
                     .addFilterBefore(securityConfig.clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class);
-        }
-    }
-
-    @Configuration
-    @Order(2)
-    public static class OAuthClientUserClientSecurityConfig extends WebSecurityConfigurerAdapter {
-        @Autowired
-        private SecurityConfiguration securityConfig;
-
-        protected AuthenticationManager authenticationManager() throws Exception {
-            return securityConfig.clientAuthenticationManager();
-        }
-
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .expressionHandler(securityConfig.oauthWebExpressionHandler)
-                .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")
-                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
-                .regexMatchers(HttpMethod.GET, "/oauth/users/.*")
-                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
-                .regexMatchers(HttpMethod.GET, "/oauth/clients/.*")
-                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')");
-        }
-
-        protected void configure(
-                HttpConfigurator http)
-                throws Exception {
-            http
-                .regexMatcher("/oauth/(users|clients)/.*")
-                .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
-                .applyDefaultConfigurators()
-                .exceptionHandling()
-                    .accessDeniedHandler(securityConfig.oauthAccessDeniedHandler)
-                    .and()
-                .logout()
-                    .and()
-                .addFilterBefore(securityConfig.resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class);
-        }
-    }
-
-    @Configuration
-    @Order(3)
-    public static class OAuthPhotosSecurityConfig extends WebSecurityConfigurerAdapter {
-        @Autowired
-        private SecurityConfiguration securityConfig;
-
-        protected AuthenticationManager authenticationManager() throws Exception {
-            return securityConfig.clientAuthenticationManager();
-        }
-
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
-                .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
-                .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
-                .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
-        }
-
-        protected void configure(HttpConfigurator http) throws Exception {
-            http
-                .antMatcher("/photos/**")
-                .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
-                .applyDefaultConfigurators()
-                .exceptionHandling()
-                    .accessDeniedHandler(securityConfig.oauthAccessDeniedHandler)
-                    .and()
-                .logout()
-                    .and()
-                .addFilterBefore(securityConfig.resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class);
         }
     }
 
