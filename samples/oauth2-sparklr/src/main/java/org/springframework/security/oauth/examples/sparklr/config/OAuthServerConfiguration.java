@@ -29,8 +29,6 @@ import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
 import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -64,16 +62,9 @@ import org.springframework.security.oauth2.provider.vote.ScopeVoter;
  */
 @Configuration
 @Order(-500)
-public class OAuthServerConfigurator implements WebSecurityConfigurer {
+public class OAuthServerConfiguration {
     @Autowired
     private SecurityConfiguration securityConfig;
-
-    public void init(WebSecurityConfiguration builder) throws Exception {
-
-    }
-
-    public void configure(WebSecurityConfiguration builder) throws Exception {
-    }
 
     @Bean
     public OAuth2AuthenticationEntryPoint oauthEntryPoint() {
