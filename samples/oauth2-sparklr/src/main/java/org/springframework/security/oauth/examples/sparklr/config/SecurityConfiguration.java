@@ -97,7 +97,8 @@ public class SecurityConfiguration {
 
         protected void configure(HttpConfigurator http) throws Exception {
             http
-                .regexMatcher("(photos/.*|/oauth/(token|clients/.*|users/.*))")
+                .requestMatchers()
+                    .antMatchers("/photos/**","/oauth/token","/oauth/clients/**","/oauth/users/**")
                 .authenticationEntryPoint(securityConfig.oauthAuthenticationEntryPoint)
                     .applyDefaultConfigurators()
                     .exceptionHandling()
