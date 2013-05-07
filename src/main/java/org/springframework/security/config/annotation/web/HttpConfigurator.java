@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -207,6 +208,10 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return this;
     }
 
+    public RequestMatcherRegistry requestMatchers() {
+        return new RequestMatcherRegistry();
+    }
+
     public HttpConfigurator requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
         return this;
@@ -234,8 +239,34 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return this;
     }
 
+    public final class RequestMatcherRegistry extends BaseRequestMatcherRegistry<HttpConfigurator,DefaultSecurityFilterChain,HttpConfigurator> {
+
+        HttpConfigurator chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+            requestMatcher(new OrRequestMatcher(requestMatchers));
+            return HttpConfigurator.this;
+        }
+
+        private RequestMatcherRegistry(){}
+    }
+
     private void initSharedObjects(AuthenticationBuilder authenticationBuilder) {
         setSharedObject(AuthenticationBuilder.class, authenticationBuilder);
     }
 
+    private static class OrRequestMatcher implements RequestMatcher {
+        private final List<RequestMatcher> requestMatchers;
+
+        private OrRequestMatcher(List<RequestMatcher> requestMatchers) {
+            this.requestMatchers = requestMatchers;
+        }
+
+        public boolean matches(HttpServletRequest request) {
+            for(RequestMatcher matcher : requestMatchers) {
+                if(matcher.matches(request)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }
