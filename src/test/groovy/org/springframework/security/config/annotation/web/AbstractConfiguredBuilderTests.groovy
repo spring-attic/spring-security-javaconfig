@@ -40,7 +40,7 @@ class AbstractConfiguredBuilderTests extends Specification {
     }
 
     private static class ConcreteAbstractConfiguredBuilder extends AbstractConfiguredBuilder<Object, ConcreteAbstractConfiguredBuilder> {
-        public Object doBuild() throws Exception {
+        public Object performBuild() throws Exception {
             return "success";
         }
     }

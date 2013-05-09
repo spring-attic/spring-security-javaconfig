@@ -57,7 +57,7 @@ public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>>
         return (C) configurators.get(clazz);
     }
 
-    protected void init() throws Exception {
+    private void init() throws Exception {
         Collection<SecurityConfigurator<T,B>> configurators = getConfigurators();
 
         for(SecurityConfigurator<T,B> configurer : configurators ) {
@@ -65,7 +65,33 @@ public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>>
         }
     }
 
-    protected void configure() throws Exception {
+    protected final T doBuild() throws Exception {
+        beforeInit();
+
+        init();
+
+        beforeConfigure();
+
+        configure();
+
+        return performBuild();
+    }
+
+    /**
+     *
+     */
+    protected void beforeInit() throws Exception {
+    }
+
+    protected void beforeConfigure() throws Exception {
+    }
+
+    /**
+     * @return
+     */
+    protected abstract T performBuild() throws Exception;
+
+    private void configure() throws Exception {
         Collection<SecurityConfigurator<T,B>> configurators = getConfigurators();
 
         for(SecurityConfigurator<T,B> configurer : configurators ) {

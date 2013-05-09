@@ -99,9 +99,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
         return add(provider);
     }
 
-    protected AuthenticationManager doBuild() throws Exception {
-        init();
-        configure();
+    protected AuthenticationManager performBuild() throws Exception {
         return new ProviderManager(authenticationProviders,
                 parentAuthenticationManager);
     }

@@ -168,13 +168,12 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return (C) this.sharedObjects.get(sharedType);
     }
 
-    protected DefaultSecurityFilterChain doBuild() throws Exception {
-        init();
-
+    @Override
+    protected void beforeConfigure() throws Exception {
         this.authenticationManager = getAuthenticationRegistry().build();
+    }
 
-        configure();
-
+    protected DefaultSecurityFilterChain performBuild() throws Exception {
         Collections.sort(filters,comparitor);
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }

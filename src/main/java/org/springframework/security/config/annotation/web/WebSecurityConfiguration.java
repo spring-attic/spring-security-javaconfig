@@ -17,9 +17,7 @@ package org.springframework.security.config.annotation.web;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -88,18 +86,17 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
         return springSecurityFilterChain;
     }
 
+
+
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.AbstractSecurityBuilder#doBuild()
      */
     @Override
-    protected FilterChainProxy doBuild() throws Exception {
-        verifyConfiguratorsAreSet();
-        init();
-        configure();
+    protected FilterChainProxy performBuild() throws Exception {
         return springSecurityFilterChain.build();
     }
 
-    private void verifyConfiguratorsAreSet() {
+    protected void beforeInit() {
         boolean hasConfigurators = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
         if(!hasConfigurators) {
             throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
