@@ -84,7 +84,7 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return this;
     }
 
-    protected <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator>> C getConfigurator(
+    public <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator>> C getConfigurator(
             Class<C> clazz) {
         return super.getConfigurator(clazz);
     }
@@ -181,6 +181,11 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
 
     public HttpConfigurator authenticationProvider(AuthenticationProvider authenticationProvider) {
         getAuthenticationRegistry().add(authenticationProvider);
+        return this;
+    }
+
+    public HttpConfigurator userDetailsService(UserDetailsService userDetailsService) throws Exception {
+        getAuthenticationRegistry().userDetails(userDetailsService);
         return this;
     }
 

@@ -54,7 +54,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     protected abstract void authorizeUrls(ExpressionUrlAuthorizations interceptUrls);
 
-    private HttpConfigurator http() throws Exception {
+    HttpConfigurator http() throws Exception {
         if(http != null) {
             return http;
         }
