@@ -1,0 +1,5 @@
+dependencies {
+    compile rootProject,
+            "org.springframework.security:spring-security-taglibs:$springSecurityVersion",
+            "org.springframework.security.oauth:spring-security-oauth2:$springOauthVersion"
+}

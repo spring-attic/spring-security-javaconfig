@@ -1,5 +1,7 @@
 rootProject.name = 'spring-security-javaconfig'
 
+include "spring-security-oauth2-javaconfig"
+
 def samplesDirName = "samples"
 File samplesDir = new File(rootDir, samplesDirName)
 samplesDir.eachDir { sampleDir ->

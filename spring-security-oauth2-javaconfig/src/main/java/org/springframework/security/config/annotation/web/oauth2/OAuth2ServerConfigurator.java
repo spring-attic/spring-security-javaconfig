@@ -13,13 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.springframework.security.config.annotation.web;
+package org.springframework.security.config.annotation.web.oauth2;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.web.ExceptionHandlingConfigurator;
+import org.springframework.security.config.annotation.web.HttpBasicConfigurator;
+import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.CompositeTokenGranter;
@@ -123,7 +126,7 @@ public class OAuth2ServerConfigurator
 
     @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
-        httpBasicConfigurator.doConfigure(http);
+        httpBasicConfigurator.configure(http);
         http
             .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .addFilterBefore(clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class);
