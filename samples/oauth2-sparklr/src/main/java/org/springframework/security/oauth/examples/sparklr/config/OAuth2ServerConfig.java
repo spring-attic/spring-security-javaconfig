@@ -35,11 +35,13 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 @Configuration
 @Order(1)
 public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
+    private static final String SPARKLR_RESOURCE_ID = "sparklr";
+
     @Bean
     public ClientDetailsService clientDetails() {
         return new ClientDetailsServiceBuilder()
             .withClient("tonr")
-                .resourceIds("sparklr")
+                .resourceIds(SPARKLR_RESOURCE_ID)
                 .authorizedGrantTypes("authorization_code","implicit")
                 .authorities("ROLE_CLIENT")
                 .scopes("read","write")
@@ -85,6 +87,7 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
             .requestMatchers()
                 .antMatchers("/photos/**","/oauth/token","/oauth/clients/**","/oauth/users/**")
             .apply(new OAuth2ServerConfigurator())
-                .clientDetails(clientDetails());
+                .clientDetails(clientDetails())
+                .resourceId(SPARKLR_RESOURCE_ID);
     }
 }

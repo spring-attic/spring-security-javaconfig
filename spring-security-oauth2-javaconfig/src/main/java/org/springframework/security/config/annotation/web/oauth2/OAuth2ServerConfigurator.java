@@ -73,6 +73,7 @@ public class OAuth2ServerConfigurator
     private TokenGranter tokenGranter;
     private ConsumerTokenServices consumerTokenServices;
     private HttpBasicConfigurator httpBasicConfigurator;
+    private String resourceId = "oauth2-resource";
 
     public OAuth2ServerConfigurator clientDetails(ClientDetailsService clientDetails) {
         this.clientDetails = clientDetails;
@@ -124,6 +125,11 @@ public class OAuth2ServerConfigurator
         httpBasicConfigurator.init(http);
     }
 
+    public OAuth2ServerConfigurator resourceId(String resourceId) {
+        this.resourceId = resourceId;
+        return this;
+    }
+
     @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
         httpBasicConfigurator.configure(http);
@@ -136,7 +142,7 @@ public class OAuth2ServerConfigurator
     private AuthenticationManager oauthAuthenticationManager(
             HttpConfigurator http) {
         OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
-        oauthAuthenticationManager.setResourceId("sparklr");
+        oauthAuthenticationManager.setResourceId(resourceId);
         oauthAuthenticationManager
                 .setTokenServices(resourceTokenServices(http));
         return oauthAuthenticationManager;
