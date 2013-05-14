@@ -15,8 +15,6 @@
  */
 package org.springframework.security.oauth.examples.sparklr.config;
 
-import java.util.Collections;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -40,48 +38,6 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
     @Bean
     public ClientDetailsService clientDetails() {
         return new ClientDetailsServiceBuilder()
-            .withClient("my-trusted-client")
-                .authorizedGrantTypes("password","authorization_code","refresh_token","implicit")
-                .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-                .scopes("read","write","trust")
-                .accessTokenValiditySeconds(60)
-                .and()
-            .withClient("my-trusted-client-with-secret")
-                .authorizedGrantTypes("password","authorization_code","refresh_token","implicit")
-                .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-                .scopes("read","write","trust")
-                .secret("somesecret")
-                .and()
-            .withClient("my-client-with-secret")
-                .authorizedGrantTypes("client_credentials")
-                .authorities("ROLE_CLIENT")
-                .scopes("read")
-                .secret("secret")
-                .and()
-            .withClient("my-less-trusted-client")
-                .authorizedGrantTypes("authorization_code","implicit")
-                .authorities("ROLE_CLIENT")
-                .scopes("read")
-                .secret("secret")
-                .and()
-            .withClient("my-less-trusted-autoapprove-client")
-                .authorizedGrantTypes("implicit")
-                .authorities("ROLE_CLIENT")
-                .scopes("read")
-                .secret("secret")
-                .and()
-            .withClient("my-client-with-registered-redirect")
-                .authorizedGrantTypes("authorization_code","client_credentials")
-                .authorities("ROLE_CLIENT")
-                .scopes("read","trust")
-                .redirectUris("http://anywhere?key=value")
-                .and()
-            .withClient("my-untrusted-client-with-registered-redirect")
-                .authorizedGrantTypes("authorization_code")
-                .authorities("ROLE_CLIENT")
-                .scopes("read")
-                .redirectUris("http://anywhere")
-                .and()
             .withClient("tonr")
                 .resourceIds("sparklr")
                 .authorizedGrantTypes("authorization_code","implicit")
@@ -97,7 +53,6 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
     public SparklrUserApprovalHandler userApprovalHandler() throws Exception {
         SparklrUserApprovalHandler handler = new SparklrUserApprovalHandler();
         handler.setTokenServices(tokenServices());
-        handler.setAutoApproveClients(Collections.singleton("my-less-trusted-autoapprove-client"));
         return handler;
     }
 
