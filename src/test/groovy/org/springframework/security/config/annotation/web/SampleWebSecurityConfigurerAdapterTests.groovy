@@ -121,10 +121,12 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
     @Configuration
     @EnableWebSecurity
     public static class SampleWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
         @Override
-        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-            ignoredRequests
-                .antMatchers("/resources/**");
+        public void configure(WebSecurityConfiguration builder) throws Exception {
+            builder
+                .ignoring()
+                    .antMatchers("/resources/**");
         }
 
         @Override
@@ -263,9 +265,10 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
         @Configuration
         public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-                ignoredRequests
-                    .antMatchers("/resources/**");
+            public void configure(WebSecurityConfiguration builder) throws Exception {
+                builder
+                    .ignoring()
+                        .antMatchers("/resources/**");
             }
 
             @Override

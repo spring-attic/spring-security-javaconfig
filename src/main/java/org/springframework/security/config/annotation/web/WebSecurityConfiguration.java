@@ -29,12 +29,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.firewall.HttpFirewall;
 
 /**
  *
@@ -80,6 +82,15 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
             apply(webSecurityConfigurer);
         }
         this.webSecurityConfigurers = webSecurityConfigurers;
+    }
+
+    public IgnoredRequestRegistry ignoring() {
+        return springSecurityFilterChain.ignoring();
+    }
+
+    public WebSecurityConfiguration httpFirewall(HttpFirewall httpFirewall) {
+        springSecurityFilterChain.httpFirewall(httpFirewall);
+        return this;
     }
 
     SpringSecurityFilterChainBuilder springSecurityFilterChainBuilder() throws Exception {

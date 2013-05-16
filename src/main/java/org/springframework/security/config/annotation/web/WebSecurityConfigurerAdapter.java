@@ -96,25 +96,15 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return authenticationRegistry.userDetailsService();
     }
 
-    protected void performConfigure(SpringSecurityFilterChainBuilder securityFilterChains){
-
-    }
-
     @Override
     public void init(WebSecurityConfiguration builder) throws Exception {
         SpringSecurityFilterChainBuilder securityFilterChains = builder.springSecurityFilterChainBuilder();
-        ignoredRequests(securityFilterChains.ignoring());
-        performConfigure(securityFilterChains);
         securityFilterChains
             .securityFilterChains(http());
     }
 
     @Override
     public void configure(WebSecurityConfiguration builder) throws Exception {
-    }
-
-    protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-
     }
 
     private <T> T getBeanExcluding(Class<T> clazz, String beanNameToExclude) {

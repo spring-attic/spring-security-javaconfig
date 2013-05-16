@@ -21,7 +21,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
+import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
 import org.springframework.security.oauth2.config.annotation.authentication.InMemoryClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurator;
@@ -58,9 +58,11 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
         return handler;
     }
 
-    protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-        ignoredRequests
-            .antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals");
+    @Override
+    public void configure(WebSecurityConfiguration builder) throws Exception {
+        builder
+            .ignoring()
+                .antMatchers("/resources/**");
     }
 
     @Override

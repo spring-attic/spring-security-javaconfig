@@ -84,9 +84,10 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class FormLoginConfig extends BaseWebConfig {
         @Override
-        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-            ignoredRequests
-                .antMatchers("/resources/**");
+        public void configure(WebSecurityConfiguration builder)	throws Exception {
+            builder
+                .ignoring()
+                    .antMatchers("/resources/**");
         }
 
         @Override
@@ -119,11 +120,8 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class FormLoginConfigPermitAll extends BaseWebConfig {
-        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-            ignoredRequests
-                .antMatchers("/resources/**");
-        }
 
+        @Override
         protected void configure(HttpConfigurator http) {
             http
                 .authorizeUrls()

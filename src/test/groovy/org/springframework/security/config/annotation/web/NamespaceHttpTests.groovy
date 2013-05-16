@@ -410,11 +410,18 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class SecurityNoneConfig extends BaseWebConfig {
-        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-            ignoredRequests
-                .antMatchers("/resources/**","/public/**");
+
+        @Override
+        public void configure(WebSecurityConfiguration builder)
+                throws Exception {
+            builder
+                .ignoring()
+                    .antMatchers("/resources/**","/public/**")
         }
+
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {}
+
     }
 
     def "http@security-context-repository-ref"() {

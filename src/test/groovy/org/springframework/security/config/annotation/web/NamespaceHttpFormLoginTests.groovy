@@ -108,10 +108,15 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginConfig extends BaseWebConfig {
-        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-            ignoredRequests
-                .antMatchers("/resources/**")
+
+        @Override
+        public void configure(WebSecurityConfiguration builder) throws Exception {
+            builder
+                .ignoring()
+                    .antMatchers("/resources/**");
         }
+
+        @Override
         protected void configure(HttpConfigurator http) {
             http
                 .authorizeUrls()

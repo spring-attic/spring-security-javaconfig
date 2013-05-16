@@ -3,7 +3,7 @@ package org.springframework.security.samples.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
+import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.samples.security.CustomUserDetailsService;
 
@@ -12,9 +12,10 @@ import org.springframework.security.samples.security.CustomUserDetailsService;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
-    protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-        ignoredRequests
-            .antMatchers("/resources/**");
+    public void configure(WebSecurityConfiguration builder) throws Exception {
+        builder
+            .ignoring()
+                .antMatchers("/resources/**");
     }
 
     @Override

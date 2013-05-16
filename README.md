@@ -142,9 +142,10 @@ The following configuration
         @Configuration
         public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-                ignoredRequests
-                    .antMatchers("/resources/**");
+            public void configure(WebSecurityConfiguration builder) throws Exception {
+                builder
+                    .ignoring()
+                        .antMatchers("/resources/**");
             }
 
             @Override
