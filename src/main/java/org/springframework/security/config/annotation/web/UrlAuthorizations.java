@@ -52,6 +52,7 @@ public class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthoriza
         return this;
     }
 
+    @Override
     final List<AccessDecisionVoter> decisionVoters() {
         List<AccessDecisionVoter> decisionVoters = new ArrayList<AccessDecisionVoter>();
         decisionVoters.add(new RoleVoter());
@@ -59,6 +60,7 @@ public class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthoriza
         return decisionVoters;
     }
 
+    @Override
     FilterInvocationSecurityMetadataSource createMetadataSource() {
         return new DefaultFilterInvocationSecurityMetadataSource(createRequestMap());
     }
@@ -96,6 +98,7 @@ public class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthoriza
         }
     }
 
+    @Override
     AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }

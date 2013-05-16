@@ -38,13 +38,15 @@ public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerRegis
         super(userDetailsManager);
     }
 
+    @Override
     public UserDetailsManager userDetailsService() throws Exception {
         for(UserDetailsBuilder<T> userBuilder : userBuilders) {
             userDetailsService.createUser(userBuilder.build());
         }
-        return (UserDetailsManager) super.userDetailsService();
+        return super.userDetailsService();
     }
 
+    @Override
     public final UserDetailsBuilder<T> withUser(String username) {
         UserDetailsBuilder<T> userBuilder = new UserDetailsBuilder<T>((T)this);
         userBuilder.username(username);

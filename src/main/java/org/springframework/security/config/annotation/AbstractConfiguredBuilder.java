@@ -65,6 +65,7 @@ public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>>
         }
     }
 
+    @Override
     protected final T doBuild() throws Exception {
         beforeInit();
 

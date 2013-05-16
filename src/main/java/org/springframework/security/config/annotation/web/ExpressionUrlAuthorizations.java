@@ -51,6 +51,7 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
         return this;
     }
 
+    @Override
     AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }
@@ -62,6 +63,7 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
         return this;
     }
 
+    @Override
     final List<AccessDecisionVoter> decisionVoters() {
         List<AccessDecisionVoter> decisionVoters = new ArrayList<AccessDecisionVoter>();
         WebExpressionVoter expressionVoter = new WebExpressionVoter();
@@ -70,6 +72,7 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
         return decisionVoters;
     }
 
+    @Override
     ExpressionBasedFilterInvocationSecurityMetadataSource createMetadataSource() {
         LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = createRequestMap();
         return requestMap.isEmpty() ? null : new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, expressionHandler);

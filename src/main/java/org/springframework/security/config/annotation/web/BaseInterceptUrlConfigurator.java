@@ -60,6 +60,7 @@ abstract class BaseInterceptUrlConfigurator<T> extends
         return new ConsensusBased(decisionVoters());
     }
 
+    @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
         FilterInvocationSecurityMetadataSource metadataSource = createMetadataSource();
         if(metadataSource == null) {

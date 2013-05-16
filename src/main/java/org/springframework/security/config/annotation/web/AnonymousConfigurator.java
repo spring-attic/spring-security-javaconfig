@@ -18,6 +18,7 @@ public class AnonymousConfigurator extends AbstractSecurityConfigurator<DefaultS
     private Object principal = "anonymousUser";
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
+    @Override
     protected void doInit(HttpConfigurator http)
             throws Exception {
         if(authenticationProvider == null) {
@@ -29,6 +30,7 @@ public class AnonymousConfigurator extends AbstractSecurityConfigurator<DefaultS
         http.authenticationProvider(authenticationProvider);
     }
 
+    @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
         authenticationFilter.afterPropertiesSet();
         http.addFilter(authenticationFilter);

@@ -96,6 +96,7 @@ public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterCh
         return springSecurityFilterChain.build();
     }
 
+    @Override
     protected void beforeInit() {
         boolean hasConfigurators = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
         if(!hasConfigurators) {

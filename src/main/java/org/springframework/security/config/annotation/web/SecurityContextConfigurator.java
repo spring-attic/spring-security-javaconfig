@@ -26,6 +26,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
  */
 public class SecurityContextConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
 
+    @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
 
         SecurityContextPersistenceFilter securityContextFilter = new SecurityContextPersistenceFilter(http.getSharedObject(SecurityContextRepository.class));

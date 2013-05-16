@@ -84,6 +84,7 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return this;
     }
 
+    @Override
     public <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator>> C getConfigurator(
             Class<C> clazz) {
         return super.getConfigurator(clazz);
@@ -174,6 +175,7 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         this.authenticationManager = getAuthenticationRegistry().build();
     }
 
+    @Override
     protected DefaultSecurityFilterChain performBuild() throws Exception {
         Collections.sort(filters,comparitor);
         return new DefaultSecurityFilterChain(requestMatcher, filters);
@@ -246,6 +248,7 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
 
     public final class RequestMatcherRegistry extends BaseRequestMatcherRegistry<HttpConfigurator,DefaultSecurityFilterChain,HttpConfigurator> {
 
+        @Override
         HttpConfigurator chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             requestMatcher(new OrRequestMatcher(requestMatchers));
             return HttpConfigurator.this;
@@ -265,6 +268,7 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
             this.requestMatchers = requestMatchers;
         }
 
+        @Override
         public boolean matches(HttpServletRequest request) {
             for(RequestMatcher matcher : requestMatchers) {
                 if(matcher.matches(request)) {

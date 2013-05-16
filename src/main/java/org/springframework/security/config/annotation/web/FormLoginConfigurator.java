@@ -60,6 +60,7 @@ public class FormLoginConfigurator extends AbstractSecurityConfigurator<DefaultS
         passwordParameter("password");
     }
 
+    @Override
     protected void doInit(HttpConfigurator http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
@@ -67,6 +68,7 @@ public class FormLoginConfigurator extends AbstractSecurityConfigurator<DefaultS
         http.authenticationEntryPoint(authenticationEntryPoint);
     }
 
+    @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
         usernamePasswordFilter.setAuthenticationManager(http.authenticationManager());
         usernamePasswordFilter.setAuthenticationSuccessHandler(successHandler);

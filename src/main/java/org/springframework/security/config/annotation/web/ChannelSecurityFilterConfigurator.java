@@ -44,6 +44,7 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private List<ChannelProcessor> channelProcessors;
 
+    @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(getChannelProcessors(http));
@@ -86,6 +87,7 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
         return this;
     }
 
+    @Override
     AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface MessageRepository extends CrudRepository<Message, Long> {
 
+    @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     <S extends Message> S save(S entity);

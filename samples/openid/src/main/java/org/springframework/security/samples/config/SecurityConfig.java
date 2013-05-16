@@ -11,6 +11,7 @@ import org.springframework.security.samples.security.CustomUserDetailsService;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Override
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
         ignoredRequests
             .antMatchers("/resources/**");

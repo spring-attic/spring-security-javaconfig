@@ -100,6 +100,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     }
 
+    @Override
     public void init(WebSecurityConfiguration builder) throws Exception {
         SpringSecurityFilterChainBuilder securityFilterChains = builder.springSecurityFilterChainBuilder();
         ignoredRequests(securityFilterChains.ignoring());
@@ -108,6 +109,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
             .securityFilterChains(http());
     }
 
+    @Override
     public void configure(WebSecurityConfiguration builder) throws Exception {
     }
 
@@ -142,6 +144,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
             this.delegateBuilder = authentication;
         }
 
+        @Override
         public Authentication authenticate(Authentication authentication) throws AuthenticationException {
             if(delegate != null) {
                 return delegate.authenticate(authentication);

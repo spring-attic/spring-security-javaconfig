@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserRepository myUserRepository;
 
+    @Override
     protected void registerAuthentication(
             AuthenticationRegistry builder) throws Exception {
         builder
@@ -61,9 +62,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationProvider authenticationProvider() {
         Assert.notNull(myUserRepository);
         return new AuthenticationProvider() {
+            @Override
             public boolean supports(Class<?> authentication) {
                 return true;
             }
+            @Override
             public Authentication authenticate(Authentication authentication)
                     throws AuthenticationException {
                 Object principal = authentication.getPrincipal();

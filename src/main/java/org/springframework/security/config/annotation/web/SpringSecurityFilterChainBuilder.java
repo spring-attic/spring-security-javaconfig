@@ -46,6 +46,7 @@ public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<Fi
         return this;
     }
 
+    @Override
     protected FilterChainProxy doBuild() throws Exception {
         Assert.state(!httpBuilders.isEmpty(), "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains");
         int chainSize = ignoredRequests.size() + httpBuilders.size();
@@ -75,11 +76,13 @@ public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<Fi
 
     public final class IgnoredRequestRegistry extends BaseRequestMatcherRegistry<IgnoredRequestRegistry,FilterChainProxy,SpringSecurityFilterChainBuilder> {
 
+        @Override
         IgnoredRequestRegistry chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             ignoredRequests.addAll(requestMatchers);
             return this;
         }
 
+        @Override
         public SpringSecurityFilterChainBuilder and() {
             return SpringSecurityFilterChainBuilder.this;
         }

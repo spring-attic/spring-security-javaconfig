@@ -75,6 +75,7 @@ public class OpenIDLoginConfigurator extends AbstractSecurityConfigurator<Defaul
         loginProcessingUrl("/login/openid");
     }
 
+    @Override
     protected void doInit(HttpConfigurator http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
@@ -174,6 +175,7 @@ public class OpenIDLoginConfigurator extends AbstractSecurityConfigurator<Defaul
         return new UserDetailsByNameServiceWrapper<OpenIDAuthenticationToken>(http.getSharedObject(UserDetailsService.class));
     }
 
+    @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
         openIDAuthenticationFilter.setAuthenticationManager(http.authenticationManager());
         openIDAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);

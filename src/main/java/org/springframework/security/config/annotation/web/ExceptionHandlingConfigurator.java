@@ -49,6 +49,7 @@ public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
+    @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
         ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(http.authenticationEntryPoint(), requestCache);
         if(accessDeniedHandler != null) {

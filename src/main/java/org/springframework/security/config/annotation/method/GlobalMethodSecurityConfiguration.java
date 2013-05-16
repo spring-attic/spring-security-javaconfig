@@ -57,7 +57,6 @@ import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.util.Assert;
@@ -273,6 +272,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     /**
      * Obtains the attributes from {@link EnableGlobalMethodSecurity} if this class was imported using the {@link EnableGlobalMethodSecurity} annotation.
      */
+    @Override
     public final void setImportMetadata(AnnotationMetadata importMetadata) {
         Map<String, Object> annotationAttributes = importMetadata
                 .getAnnotationAttributes(EnableGlobalMethodSecurity.class

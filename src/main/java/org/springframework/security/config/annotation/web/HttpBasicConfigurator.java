@@ -39,6 +39,7 @@ public class HttpBasicConfigurator extends AbstractSecurityConfigurator<DefaultS
         realmName("Spring Security Application");
     }
 
+    @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {
         AuthenticationManager authenticationManager = http.authenticationManager();
         basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);

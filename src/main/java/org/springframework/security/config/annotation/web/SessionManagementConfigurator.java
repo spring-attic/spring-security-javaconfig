@@ -77,6 +77,7 @@ public class SessionManagementConfigurator extends AbstractSecurityConfigurator<
         return this;
     }
 
+    @Override
     protected void doInit(HttpConfigurator builder)
             throws Exception {
         builder.setSharedObject(SessionManagementConfigurator.class, this);
@@ -103,6 +104,7 @@ public class SessionManagementConfigurator extends AbstractSecurityConfigurator<
         return SessionCreationPolicy.stateless == sessionPolicy;
     }
 
+    @Override
     protected void doConfigure(HttpConfigurator builder)
             throws Exception {
         sessionManagementFilter = new SessionManagementFilter(builder.getSharedObject(SecurityContextRepository.class), getSessionAuthenticationStrategy());

@@ -41,6 +41,7 @@ public class PortMapperConfigurator extends AbstractSecurityConfigurator<Default
         return new HttpsPortMapping(httpPort);
     }
 
+    @Override
     protected void doInit(HttpConfigurator http) throws Exception {
         http.setSharedObject(PortMapper.class, getPortMapper());
     }
@@ -71,6 +72,7 @@ public class PortMapperConfigurator extends AbstractSecurityConfigurator<Default
             this.httpPort = httpPort;
         }
 
+        @Override
         PortMapperConfigurator mapsTo(int httpsPort) {
             httpsPortMappings.put(String.valueOf(httpPort), String.valueOf(httpsPort));
             return PortMapperConfigurator.this;

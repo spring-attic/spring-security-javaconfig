@@ -42,6 +42,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#parentAuthenticationManager(org.springframework.security.authentication.AuthenticationManager)
      */
+    @Override
     public AuthenticationBuilder parentAuthenticationManager(
             AuthenticationManager authenticationManager) {
         this.parentAuthenticationManager = authenticationManager;
@@ -51,6 +52,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#inMemoryAuthentication()
      */
+    @Override
     public InMemoryUserDetailsManagerSecurityBuilder inMemoryAuthentication()
             throws Exception {
         return apply(new InMemoryUserDetailsManagerSecurityBuilder());
@@ -59,6 +61,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#ldapAuthenticationProvider(org.springframework.ldap.core.support.BaseLdapPathContextSource)
      */
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder ldapAuthenticationProvider() throws Exception {
         return apply(new LdapAuthenticationProviderBuilderSecurityBuilder());
     }
@@ -66,6 +69,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#jdbcUserDetailsManager(javax.sql.DataSource)
      */
+    @Override
     public JdbcUserDetailsManagerSecurityBuilder jdbcUserDetailsManager() throws Exception {
         return apply(new JdbcUserDetailsManagerSecurityBuilder());
     }
@@ -73,6 +77,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#userDetails(org.springframework.security.core.userdetails.UserDetailsService)
      */
+    @Override
     public DaoAuthenticationConfigurator userDetails(
             UserDetailsService userDetailsService) throws Exception {
         this.userDetailsService = userDetailsService;
@@ -82,6 +87,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#add(org.springframework.security.authentication.AuthenticationProvider)
      */
+    @Override
     public AuthenticationRegistry add(
             AuthenticationProvider authenticationProvider) {
         this.authenticationProviders.add(authenticationProvider);
@@ -91,6 +97,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#add(org.springframework.security.core.userdetails.UserDetailsService)
      */
+    @Override
     public AuthenticationRegistry add(
             UserDetailsService userDetailsService) throws Exception {
         this.userDetailsService = userDetailsService;
@@ -99,6 +106,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
         return add(provider);
     }
 
+    @Override
     protected AuthenticationManager performBuild() throws Exception {
         return new ProviderManager(authenticationProviders,
                 parentAuthenticationManager);
@@ -107,6 +115,7 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#userDetailsService()
      */
+    @Override
     public UserDetailsService userDetailsService() {
         return this.userDetailsService;
     }

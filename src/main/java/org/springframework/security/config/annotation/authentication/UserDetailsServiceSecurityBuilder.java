@@ -37,6 +37,7 @@ public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> ext
         return userDetailsService;
     }
 
+    @Override
     protected void doConfigure(AuthenticationBuilder builder) throws Exception {
         builder.add(userDetailsService());
     }

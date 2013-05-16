@@ -35,6 +35,7 @@ public abstract class AbstractSecurityConfigurator<O,B extends SecurityBuilder<O
         return securityBuilder;
     }
 
+    @Override
     public final void init(B builder)
             throws Exception {
         if(disabled) {
@@ -45,6 +46,7 @@ public abstract class AbstractSecurityConfigurator<O,B extends SecurityBuilder<O
 
     protected void doInit(B builder) throws Exception {}
 
+    @Override
     public final void configure(B builder)
             throws Exception {
         if(disabled) {
@@ -59,7 +61,7 @@ public abstract class AbstractSecurityConfigurator<O,B extends SecurityBuilder<O
         if(securityBuilder == null) {
             throw new IllegalStateException(HttpConfigurator.class.getSimpleName() + " cannot be null");
         }
-        return (B) securityBuilder;
+        return securityBuilder;
     }
 
     public void setBuilder(

@@ -44,6 +44,7 @@ public class LdapAuthenticationProviderBuilderSecurityBuilder extends AbstractSe
     private BaseLdapPathContextSource contextSource;
     private UserDetailsContextMapper userDetailsContextMapper;
 
+    @Override
     public LdapAuthenticationProvider build() throws Exception {
         BaseLdapPathContextSource contextSource = getContextSource();
         BindAuthenticator ldapAuthenticator = new BindAuthenticator(
@@ -78,46 +79,55 @@ public class LdapAuthenticationProviderBuilderSecurityBuilder extends AbstractSe
      * (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationRegistry#contextSource(org.springframework.ldap.core.support.BaseLdapPathContextSource)
      */
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder contextSource(BaseLdapPathContextSource contextSource) {
         this.contextSource = contextSource;
         return this;
     }
 
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder userDnPatterns(String...userDnPatterns) {
         this.userDnPatterns = userDnPatterns;
         return this;
     }
 
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder userDetailsContextMapper(UserDetailsContextMapper userDetailsContextMapper) {
         this.userDetailsContextMapper = userDetailsContextMapper;
         return this;
     }
 
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder groupRoleAttribute(String groupRoleAttribute) {
         this.groupRoleAttribute = groupRoleAttribute;
         return this;
     }
 
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder groupSearchBase(String groupSearchBase) {
         this.groupSearchBase = groupSearchBase;
         return this;
     }
 
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder groupSearchFilter(String groupSearchFilter) {
         this.groupSearchFilter = groupSearchFilter;
         return this;
     }
 
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder rolePrefix(String rolePrefix) {
         this.rolePrefix = rolePrefix;
         return this;
     }
 
+    @Override
     public LdapAuthenticationProviderBuilderSecurityBuilder userSearchFilter(String userSearchFilter) {
         this.userSearchFilter = userSearchFilter;
         return this;
     }
 
+    @Override
     protected void doConfigure(AuthenticationBuilder builder) throws Exception {
         builder.add(build());
     }

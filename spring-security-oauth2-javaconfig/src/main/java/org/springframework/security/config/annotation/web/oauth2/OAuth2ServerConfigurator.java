@@ -105,6 +105,7 @@ public class OAuth2ServerConfigurator
         return clientDetails;
     }
 
+    @Override
     protected void doInit(HttpConfigurator http) throws Exception {
         httpBasicConfigurator = new HttpBasicConfigurator();
         httpBasicConfigurator.setBuilder(http);

@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurerA
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
         ignoredRequests
             .antMatchers("/resources/**");
@@ -26,6 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("admin").password("password").roles("USER", "ADMIN");
     }
 
+    @Override
     protected void configure(HttpConfigurator http) throws Exception {
         http
             .authorizeUrls()

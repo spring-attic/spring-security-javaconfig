@@ -12,11 +12,13 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurerA
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
         ignoredRequests
             .antMatchers("/resources/**");
     }
 
+    @Override
     protected void registerAuthentication(
             AuthenticationRegistry builder) throws Exception {
         builder

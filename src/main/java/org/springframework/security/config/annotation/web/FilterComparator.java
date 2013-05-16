@@ -99,6 +99,7 @@ class FilterComparator implements Comparator<Filter>{
         filterToOrder.put(SwitchUserFilter.class, order);
     }
 
+    @Override
     public int compare(Filter lhs, Filter rhs) {
         Integer left = getOrder(lhs.getClass());
         Integer right = getOrder(rhs.getClass());
