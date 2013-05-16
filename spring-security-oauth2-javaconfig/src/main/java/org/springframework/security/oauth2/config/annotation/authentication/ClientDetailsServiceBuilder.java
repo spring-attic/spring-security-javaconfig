@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.oauth.examples.sparklr.config;
+package org.springframework.security.oauth2.config.annotation.authentication;
 
 import java.util.ArrayList;
 import java.util.Collection;
