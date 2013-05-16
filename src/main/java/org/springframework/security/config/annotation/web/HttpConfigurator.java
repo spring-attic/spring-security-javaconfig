@@ -70,7 +70,7 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
     }
 
     public HttpConfigurator(UserDetailsService userDetailsService) throws Exception {
-        this(new AuthenticationBuilder().userDetails(userDetailsService).and().build());
+        this(new AuthenticationBuilder().userDetailsService(userDetailsService).and().build());
     }
 
     public HttpConfigurator applyDefaultConfigurators() throws Exception {
@@ -187,7 +187,7 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
     }
 
     public HttpConfigurator userDetailsService(UserDetailsService userDetailsService) throws Exception {
-        getAuthenticationRegistry().userDetails(userDetailsService);
+        getAuthenticationRegistry().userDetailsService(userDetailsService);
         return this;
     }
 

@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -24,7 +24,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
  * @author Rob Winch
  *
  */
-public class SecurityContextConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class SecurityContextConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
 
     @Override
     protected void doConfigure(HttpConfigurator http) throws Exception {

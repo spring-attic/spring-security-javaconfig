@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.config.annotation.web.ExceptionHandlingConfigurator;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpBasicConfigurator;
@@ -63,7 +63,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  */
 public class OAuth2ServerConfigurator
         extends
-        AbstractSecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator> {
+        AbstractConfigurator<DefaultSecurityFilterChain, HttpConfigurator> {
     private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
     private AccessDeniedHandler accessDeniedHandler = new OAuth2AccessDeniedHandler();
 

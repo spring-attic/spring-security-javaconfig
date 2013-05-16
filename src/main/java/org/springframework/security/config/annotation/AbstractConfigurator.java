@@ -25,7 +25,7 @@ import org.springframework.security.config.annotation.web.HttpConfigurator;
  * @param <O> The Object being built by B
  * @param <B> The Builder that is building O
  */
-public abstract class AbstractSecurityConfigurator<O,B extends SecurityBuilder<O>> implements SecurityConfigurator<O,B> {
+public abstract class AbstractConfigurator<O,B extends SecurityBuilder<O>> implements SecurityConfigurator<O,B> {
     private B securityBuilder;
 
     private boolean disabled;

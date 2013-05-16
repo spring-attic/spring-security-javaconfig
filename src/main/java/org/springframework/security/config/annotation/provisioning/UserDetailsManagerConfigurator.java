@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.config.annotation.authentication.UserDetailsServiceSecurityBuilder;
+import org.springframework.security.config.annotation.authentication.UserDetailsServiceConfigurator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,10 +31,10 @@ import org.springframework.security.provisioning.UserDetailsManager;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsManagerSecurityBuilder<T extends UserDetailsManagerRegistry<T>> extends UserDetailsServiceSecurityBuilder<UserDetailsManager> implements UserDetailsManagerRegistry<T> {
+public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry<T>> extends UserDetailsServiceConfigurator<UserDetailsManager> implements UserDetailsManagerRegistry<T> {
     private List<UserDetailsBuilder<T>> userBuilders = new ArrayList<UserDetailsBuilder<T>>();
 
-    public UserDetailsManagerSecurityBuilder(UserDetailsManager userDetailsManager) {
+    public UserDetailsManagerConfigurator(UserDetailsManager userDetailsManager) {
         super(userDetailsManager);
     }
 

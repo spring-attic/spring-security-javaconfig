@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web;
 import java.util.UUID;
 
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -34,7 +34,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
  * @author Rob Winch
  *
  */
-public class RememberMeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class RememberMeConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private String key;
     private RememberMeServices rememberMeServices;

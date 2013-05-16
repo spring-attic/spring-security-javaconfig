@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.core.authority.mapping.SimpleMappableAttributesRetriever;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -35,7 +35,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  * @author Rob Winch
  * @since 3.2
  */
-public class JeeConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator> {
+public class JeeConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain, HttpConfigurator> {
     private J2eePreAuthenticatedProcessingFilter j2eePreAuthenticatedProcessingFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> userDetailsService;
     private Set<String> mappableRoles = new HashSet<String>();

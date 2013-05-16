@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import org.springframework.security.authentication.AnonymousAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
-public class AnonymousConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class AnonymousConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private String key;
     private AuthenticationProvider authenticationProvider;
     private AnonymousAuthenticationFilter authenticationFilter;

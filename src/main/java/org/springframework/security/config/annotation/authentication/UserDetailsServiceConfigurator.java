@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.authentication;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.Assert;
 
@@ -25,10 +25,10 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsServiceSecurityBuilder<T extends UserDetailsService> extends AbstractSecurityConfigurator<AuthenticationManager,AuthenticationBuilder> {
+public class UserDetailsServiceConfigurator<T extends UserDetailsService> extends AbstractConfigurator<AuthenticationManager,AuthenticationBuilder> {
     protected final T userDetailsService;
 
-    public UserDetailsServiceSecurityBuilder(T userDetailsService) {
+    public UserDetailsServiceConfigurator(T userDetailsService) {
         Assert.notNull(userDetailsService);
         this.userDetailsService = userDetailsService;
     }

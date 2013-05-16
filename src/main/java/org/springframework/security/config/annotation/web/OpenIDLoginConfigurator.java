@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -53,7 +53,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public class OpenIDLoginConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class OpenIDLoginConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private OpenIDAuthenticationFilter openIDAuthenticationFilter = new OpenIDAuthenticationFilter();
     private OpenIDConsumer openIDConsumer;
     private ConsumerManager consumerManager;

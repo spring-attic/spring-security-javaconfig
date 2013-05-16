@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
@@ -28,7 +28,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExceptionHandlingConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class ExceptionHandlingConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
 
     private AccessDeniedHandler accessDeniedHandler;
     private RequestCache requestCache = new HttpSessionRequestCache();

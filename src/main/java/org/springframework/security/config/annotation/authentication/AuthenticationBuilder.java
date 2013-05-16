@@ -24,9 +24,9 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderBuilderSecurityBuilder;
+import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurator;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
-import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerSecurityBuilder;
+import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurator;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
@@ -62,23 +62,24 @@ public class AuthenticationBuilder extends AbstractConfiguredBuilder<Authenticat
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#ldapAuthenticationProvider(org.springframework.ldap.core.support.BaseLdapPathContextSource)
      */
     @Override
-    public LdapAuthenticationProviderBuilderSecurityBuilder ldapAuthenticationProvider() throws Exception {
-        return apply(new LdapAuthenticationProviderBuilderSecurityBuilder());
+    public LdapAuthenticationProviderConfigurator ldapAuthenticationProvider() throws Exception {
+        return apply(new LdapAuthenticationProviderConfigurator());
     }
 
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#jdbcUserDetailsManager(javax.sql.DataSource)
      */
     @Override
-    public JdbcUserDetailsManagerSecurityBuilder jdbcUserDetailsManager() throws Exception {
-        return apply(new JdbcUserDetailsManagerSecurityBuilder());
+    public JdbcUserDetailsManagerConfigurator jdbcUserDetailsManager() throws Exception {
+        return apply(new JdbcUserDetailsManagerConfigurator());
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#userDetails(org.springframework.security.core.userdetails.UserDetailsService)
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#userDetailsService(org.springframework.security.core.userdetails.UserDetailsService)
      */
     @Override
-    public DaoAuthenticationConfigurator userDetails(
+    public DaoAuthenticationConfigurator userDetailsService(
             UserDetailsService userDetailsService) throws Exception {
         this.userDetailsService = userDetailsService;
         return apply(new DaoAuthenticationConfigurator(userDetailsService));

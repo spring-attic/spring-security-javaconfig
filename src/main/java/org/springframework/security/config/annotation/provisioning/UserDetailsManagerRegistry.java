@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.provisioning;
 
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.provisioning.UserDetailsManagerSecurityBuilder.UserDetailsBuilder;
+import org.springframework.security.config.annotation.provisioning.UserDetailsManagerConfigurator.UserDetailsBuilder;
 import org.springframework.security.provisioning.UserDetailsManager;
 
 /**

@@ -30,7 +30,7 @@ public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>>
     private final LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>> configurators = new LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>>();
 
     @SuppressWarnings("unchecked")
-    public <C extends AbstractSecurityConfigurator<T, B>> C apply(C configurer)
+    public <C extends AbstractConfigurator<T, B>> C apply(C configurer)
             throws Exception {
         if(isBuilt()) {
             throw new IllegalStateException("Cannot apply "+configurer+" to already built object");

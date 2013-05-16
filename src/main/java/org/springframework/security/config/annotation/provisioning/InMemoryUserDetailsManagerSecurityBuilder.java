@@ -27,7 +27,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
  */
 
 public class InMemoryUserDetailsManagerSecurityBuilder extends
-        UserDetailsManagerSecurityBuilder<InMemoryUserDetailsManagerSecurityBuilder> {
+        UserDetailsManagerConfigurator<InMemoryUserDetailsManagerSecurityBuilder> {
 
     public InMemoryUserDetailsManagerSecurityBuilder() {
         super(new InMemoryUserDetailsManager(new ArrayList<UserDetails>()));

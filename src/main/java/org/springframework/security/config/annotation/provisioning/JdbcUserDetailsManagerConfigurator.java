@@ -34,8 +34,8 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
  * @author Rob Winch
  * @since 3.2
  */
-public class JdbcUserDetailsManagerSecurityBuilder extends
-        UserDetailsManagerSecurityBuilder<JdbcUserDetailsManagerSecurityBuilder> implements JdbcUserDetailsManagerRegistry<JdbcUserDetailsManagerSecurityBuilder> {
+public class JdbcUserDetailsManagerConfigurator extends
+        UserDetailsManagerConfigurator<JdbcUserDetailsManagerConfigurator> implements JdbcUserDetailsManagerRegistry<JdbcUserDetailsManagerConfigurator> {
 
     private DataSource dataSource;
 
@@ -43,7 +43,7 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
 
     private ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
-    public JdbcUserDetailsManagerSecurityBuilder() {
+    public JdbcUserDetailsManagerConfigurator() {
         super(new JdbcUserDetailsManager());
     }
 
@@ -53,7 +53,7 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
      * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#dataSource(javax.sql.DataSource)
      */
     @Override
-    public JdbcUserDetailsManagerSecurityBuilder dataSource(DataSource dataSource) throws Exception {
+    public JdbcUserDetailsManagerConfigurator dataSource(DataSource dataSource) throws Exception {
         this.dataSource = dataSource;
         userDetailsService().setDataSource(dataSource);
         return this;
@@ -64,7 +64,7 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
      * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#usersByUsernameQuery(java.lang.String)
      */
     @Override
-    public JdbcUserDetailsManagerSecurityBuilder usersByUsernameQuery(String query) throws Exception {
+    public JdbcUserDetailsManagerConfigurator usersByUsernameQuery(String query) throws Exception {
         userDetailsService().setUsersByUsernameQuery(query);
         return this;
     }
@@ -74,7 +74,7 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
      * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#authoritiesByUsernameQuery(java.lang.String)
      */
     @Override
-    public JdbcUserDetailsManagerSecurityBuilder authoritiesByUsernameQuery(String query) throws Exception {
+    public JdbcUserDetailsManagerConfigurator authoritiesByUsernameQuery(String query) throws Exception {
         userDetailsService().setAuthoritiesByUsernameQuery(query);
         return this;
     }
@@ -92,7 +92,7 @@ public class JdbcUserDetailsManagerSecurityBuilder extends
      * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#withDefaultSchema()
      */
     @Override
-    public JdbcUserDetailsManagerSecurityBuilder withDefaultSchema() {
+    public JdbcUserDetailsManagerConfigurator withDefaultSchema() {
         this.initScripts.add(new ClassPathResource("org/springframework/security/core/userdetails/jdbc/users.ddl"));
         return this;
     }

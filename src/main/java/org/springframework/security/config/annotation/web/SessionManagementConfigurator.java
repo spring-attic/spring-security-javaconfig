@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -32,7 +32,7 @@ import org.springframework.security.web.session.SessionManagementFilter;
  * @author Rob Winch
  *
  */
-public class SessionManagementConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class SessionManagementConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private SessionManagementFilter sessionManagementFilter;
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();

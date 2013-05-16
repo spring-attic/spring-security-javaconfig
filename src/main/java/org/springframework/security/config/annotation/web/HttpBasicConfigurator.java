@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
+import org.springframework.security.config.annotation.AbstractConfigurator;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpBasicConfigurator extends AbstractSecurityConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class HttpBasicConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
     private BasicAuthenticationFilter basicAuthenticationFilter;
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;

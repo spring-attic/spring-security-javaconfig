@@ -26,6 +26,6 @@ public interface LdapAuthenticationRegistry {
     LdapAuthenticationRegistry userSearchFilter(
             String userSearchFilter);
 
-    LdapAuthenticationProviderBuilderSecurityBuilder contextSource(BaseLdapPathContextSource contextSource);
+    LdapAuthenticationProviderConfigurator contextSource(BaseLdapPathContextSource contextSource);
 
 }

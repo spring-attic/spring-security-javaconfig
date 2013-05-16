@@ -38,7 +38,7 @@ public interface AuthenticationRegistry {
 
     JdbcUserDetailsManagerRegistry<? extends JdbcUserDetailsManagerRegistry<?>> jdbcUserDetailsManager() throws Exception;
 
-    DaoAuthenticationConfigurator userDetails(
+    DaoAuthenticationConfigurator userDetailsService(
             UserDetailsService userDetailsService) throws Exception;
 
     AuthenticationRegistry add(
