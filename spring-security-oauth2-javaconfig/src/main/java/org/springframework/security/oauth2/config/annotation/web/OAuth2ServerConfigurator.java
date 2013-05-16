@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.springframework.security.config.annotation.web.oauth2;
+package org.springframework.security.oauth2.config.annotation.web;
 
 import java.util.ArrayList;
 import java.util.List;

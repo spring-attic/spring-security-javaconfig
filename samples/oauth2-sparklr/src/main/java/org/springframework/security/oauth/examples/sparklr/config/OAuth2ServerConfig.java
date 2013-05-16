@@ -22,9 +22,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.config.annotation.web.oauth2.OAuth2ServerConfigurator;
-import org.springframework.security.config.annotation.web.oauth2.OAuth2ServerConfigurerAdapter;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
+import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurator;
+import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurerAdapter;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 /**
