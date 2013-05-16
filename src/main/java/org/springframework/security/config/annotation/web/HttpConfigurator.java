@@ -73,17 +73,6 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         this(new AuthenticationBuilder().userDetailsService(userDetailsService).and().build());
     }
 
-    public HttpConfigurator applyDefaultConfigurators() throws Exception {
-        exceptionHandling();
-        sessionManagement();
-        securityContext();
-        requestCache();
-        anonymous();
-        servletApi();
-        logout();
-        return this;
-    }
-
     @Override
     public <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator>> C getConfigurator(
             Class<C> clazz) {

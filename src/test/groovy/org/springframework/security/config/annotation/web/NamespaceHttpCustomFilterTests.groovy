@@ -70,9 +70,9 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterBeforeConfig extends BaseWebConfig {
-        protected void applyDefaults(HttpConfigurator http)
-                throws Exception {
+        CustomFilterBeforeConfig() {
             // do not add the default filters to make testing easier
+            super(true)
         }
 
         protected void configure(HttpConfigurator http) {
@@ -91,10 +91,11 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterAfterConfig extends BaseWebConfig {
-        protected void applyDefaults(HttpConfigurator http)
-                throws Exception {
+        CustomFilterAfterConfig() {
             // do not add the default filters to make testing easier
+            super(true)
         }
+
         protected void configure(HttpConfigurator http) {
             http
                 .addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -113,9 +114,11 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomFilterPositionConfig extends BaseWebConfig {
-        protected ExceptionHandlingConfigurator defaultFilterConfigurator() {
-            return null; // do not add the default filters to make testing easier
+        CustomFilterPositionConfig() {
+            // do not add the default filters to make testing easier
+            super(true)
         }
+
         protected void configure(HttpConfigurator http) {
             http
                 .addFilter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -134,14 +137,13 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class NoAuthenticationManagerInHtppConfigurationConfig extends WebSecurityConfigurerAdapter {
+        NoAuthenticationManagerInHtppConfigurationConfig() {
+            super(true)
+        }
+
         protected AuthenticationManager authenticationManager()
                 throws Exception {
             return new CustomAuthenticationManager();
-        }
-
-        @Override
-        protected void applyDefaults(HttpConfigurator http) throws Exception {
-            // do not add the default filters to make testing easier
         }
 
         @Override

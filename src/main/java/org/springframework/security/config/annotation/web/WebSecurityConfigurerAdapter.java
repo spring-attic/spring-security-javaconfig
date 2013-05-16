@@ -23,7 +23,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,13 +41,18 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;
     private HttpConfigurator http;
+    private boolean disableDefaults;
+
+    protected WebSecurityConfigurerAdapter() {
+        this(false);
+    }
+
+    protected WebSecurityConfigurerAdapter(boolean disableDefaults) {
+        this.disableDefaults = disableDefaults;
+    }
 
     protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
         this.disableAuthenticationRegistry = true;
-    }
-
-    protected void applyDefaults(HttpConfigurator http) throws Exception {
-        http.applyDefaultConfigurators();
     }
 
     protected HttpConfigurator http() throws Exception {
@@ -59,7 +63,16 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
         http = new HttpConfigurator(authenticationBuilder);
         http.setSharedObject(UserDetailsService.class, userDetailsService());
-        applyDefaults(http);
+        if(!disableDefaults) {
+            http
+                .exceptionHandling().and()
+                .sessionManagement().and()
+                .securityContext().and()
+                .requestCache().and()
+                .anonymous().and()
+                .servletApi().and()
+                .logout();
+        }
         configure(http);
         return http;
     }

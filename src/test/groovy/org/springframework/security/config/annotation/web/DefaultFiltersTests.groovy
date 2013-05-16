@@ -107,12 +107,12 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class NullWebInvocationPrivilegeEvaluatorConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
-            http.formLogin()
+        NullWebInvocationPrivilegeEvaluatorConfig() {
+            super(true)
         }
 
-        @Override
-        protected void applyDefaults(HttpConfigurator http) {
+        protected void configure(HttpConfigurator http) {
+            http.formLogin()
         }
     }
 

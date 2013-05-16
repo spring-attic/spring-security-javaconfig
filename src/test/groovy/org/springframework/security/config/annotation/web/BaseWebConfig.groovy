@@ -29,6 +29,13 @@ import org.springframework.security.config.annotation.provisioning.InMemoryUserD
 @Configuration
 @EnableWebSecurity
 abstract class BaseWebConfig extends WebSecurityConfigurerAdapter {
+    BaseWebConfig(boolean disableDefaults) {
+        super(disableDefaults)
+    }
+
+    BaseWebConfig() {
+    }
+
     protected void registerAuthentication(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
         authenticationRegistry
