@@ -49,9 +49,10 @@ The following configuration
     @EnableWebSecurity
     public class SampleWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         @Override
-        protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-            ignoredRequests
-                .antMatchers("/resources/**");
+        public void configure(WebSecurityConfiguration builder) throws Exception {
+            builder
+                .ignoring()
+                    .antMatchers("/resources/**");
         }
 
         @Override
