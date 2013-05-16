@@ -34,7 +34,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/oauth/**").hasRole("USER")
                 .antMatchers("/**").permitAll()
                 .and()
-            .applyDefaultConfigurators()
             .exceptionHandling()
                 .accessDeniedPage("/login.jsp?authorization_error=true")
                 .and()
