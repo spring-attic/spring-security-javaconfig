@@ -18,9 +18,11 @@ package org.springframework.security.config.annotation.web.oauth2;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.AbstractSecurityConfigurator;
 import org.springframework.security.config.annotation.web.ExceptionHandlingConfigurator;
+import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpBasicConfigurator;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,6 +39,7 @@ import org.springframework.security.oauth2.provider.code.AuthorizationCodeTokenG
 import org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
+import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.oauth2.provider.implicit.ImplicitTokenGranter;
 import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter;
 import org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter;
@@ -48,6 +51,7 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -74,6 +78,7 @@ public class OAuth2ServerConfigurator
     private ConsumerTokenServices consumerTokenServices;
     private HttpBasicConfigurator httpBasicConfigurator;
     private String resourceId = "oauth2-resource";
+    private SecurityExpressionHandler<FilterInvocation> expressionHandler = new OAuth2WebSecurityExpressionHandler();
 
     public OAuth2ServerConfigurator clientDetails(ClientDetailsService clientDetails) {
         this.clientDetails = clientDetails;
@@ -103,6 +108,8 @@ public class OAuth2ServerConfigurator
     protected void doInit(HttpConfigurator http) throws Exception {
         httpBasicConfigurator = new HttpBasicConfigurator();
         httpBasicConfigurator.setBuilder(http);
+
+        http.getConfigurator(ExpressionUrlAuthorizations.class).expressionHandler(expressionHandler);
 
         http.userDetailsService(getUserDetailsService());
 

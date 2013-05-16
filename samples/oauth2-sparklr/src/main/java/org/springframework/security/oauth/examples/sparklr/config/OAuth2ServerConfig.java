@@ -66,7 +66,6 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
     protected void authorizeUrls(
             ExpressionUrlAuthorizations interceptUrls) {
         interceptUrls
-            .expressionHandler(oauthWebExpressionHandler()) // FIXME ideally this would be populated by the OAuth2Configurator
             .antMatchers("/oauth/token").fullyAuthenticated()
 
             .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")

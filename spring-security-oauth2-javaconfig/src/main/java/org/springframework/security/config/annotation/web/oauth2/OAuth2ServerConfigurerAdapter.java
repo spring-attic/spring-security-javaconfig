@@ -26,7 +26,6 @@ import org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoi
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.WhitelabelApprovalEndpoint;
-import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 
@@ -36,11 +35,6 @@ import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
  */
 @Configuration
 public abstract class OAuth2ServerConfigurerAdapter extends WebSecurityConfigurerAdapter {
-    @Bean
-    public OAuth2WebSecurityExpressionHandler oauthWebExpressionHandler() {
-        return new OAuth2WebSecurityExpressionHandler();
-    }
-
     @Bean
     public AuthorizationEndpoint authorizationEndpoint() throws Exception {
         AuthorizationEndpoint authorizationEndpoint = new AuthorizationEndpoint();
