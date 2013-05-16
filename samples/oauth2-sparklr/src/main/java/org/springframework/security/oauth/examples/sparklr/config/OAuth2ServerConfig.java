@@ -23,7 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
-import org.springframework.security.oauth2.config.annotation.authentication.ClientDetailsServiceBuilder;
+import org.springframework.security.oauth2.config.annotation.authentication.InMemoryClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurator;
 import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurerAdapter;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -39,7 +39,7 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
 
     @Bean
     public ClientDetailsService clientDetails() {
-        return new ClientDetailsServiceBuilder()
+        return new InMemoryClientDetailsServiceBuilder()
             .withClient("tonr")
                 .resourceIds(SPARKLR_RESOURCE_ID)
                 .authorizedGrantTypes("authorization_code","implicit")

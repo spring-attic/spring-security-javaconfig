@@ -32,7 +32,7 @@ import org.springframework.security.oauth2.provider.InMemoryClientDetailsService
  * @author Rob Winch
  *
  */
-public class ClientDetailsServiceBuilder {
+public class InMemoryClientDetailsServiceBuilder {
     private List<ClientBuilder> clientBuilders = new ArrayList<ClientBuilder>();
 
     public ClientBuilder withClient(String clientId) {
@@ -123,8 +123,8 @@ public class ClientDetailsServiceBuilder {
             return this;
         }
 
-        public ClientDetailsServiceBuilder and() {
-            return ClientDetailsServiceBuilder.this;
+        public InMemoryClientDetailsServiceBuilder and() {
+            return InMemoryClientDetailsServiceBuilder.this;
         }
 
 
