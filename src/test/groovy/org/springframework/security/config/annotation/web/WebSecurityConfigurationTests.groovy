@@ -66,64 +66,53 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         @Configuration
         @Order(1)
         public static class WebConfigurer1 extends WebSecurityConfigurerAdapter {
+            @Override
             protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
                 ignoredRequests
                     .antMatchers("/ignore1","/ignore2");
             }
 
-            protected void authorizeUrls(
-                    ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls
-                    .antMatchers("/**").hasRole("1");
-            }
-
+            @Override
             protected void configure(HttpConfigurator http) throws Exception {
                 http
-                    .antMatcher("/role1/**");
+                    .antMatcher("/role1/**")
+                    .authorizeUrls()
+                        .antMatchers("/**").hasRole("1");
             }
         }
 
         @Configuration
         @Order(2)
         public static class WebConfigurer2 extends WebSecurityConfigurerAdapter {
-            protected void authorizeUrls(
-                    ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls
-                    .antMatchers("/**").hasRole("2");
-            }
-
-            protected void configure(
-                    HttpConfigurator http)
-                    throws Exception {
+            @Override
+            protected void configure(HttpConfigurator http) throws Exception {
                 http
-                    .antMatcher("/role2/**");
+                    .antMatcher("/role2/**")
+                        .authorizeUrls()
+                            .antMatchers("/**").hasRole("2");
             }
         }
 
         @Configuration
         @Order(3)
         public static class WebConfigurer3 extends WebSecurityConfigurerAdapter {
-            protected void authorizeUrls(
-                    ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls
-                    .antMatchers("/**").hasRole("3");
-            }
-
+            @Override
             protected void configure(HttpConfigurator http) throws Exception {
                 http
-                    .antMatcher("/role3/**");
+                    .antMatcher("/role3/**")
+                    .authorizeUrls()
+                        .antMatchers("/**").hasRole("3");
             }
         }
 
         @Configuration
         public static class WebConfigurer4 extends WebSecurityConfigurerAdapter {
-            protected void authorizeUrls(
-                    ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls
-                    .antMatchers("/**").hasRole("4");
-            }
 
+            @Override
             protected void configure(HttpConfigurator http) throws Exception {
+                http
+                    .authorizeUrls()
+                        .antMatchers("/**").hasRole("4");
             }
         }
     }
@@ -150,31 +139,24 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
 
         @Configuration
         public static class WebConfigurer1 extends WebSecurityConfigurerAdapter {
-            protected void authorizeUrls(
-                    ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls
-                    .antMatchers("/**").hasRole("1");
-            }
 
+            @Override
             protected void configure(HttpConfigurator http) throws Exception {
                 http
-                    .antMatcher("/role1/**");
+                    .antMatcher("/role1/**")
+                    .authorizeUrls()
+                        .antMatchers("/**").hasRole("1");
             }
         }
 
         @Configuration
         public static class WebConfigurer2 extends WebSecurityConfigurerAdapter {
-            protected void authorizeUrls(
-                    ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls
-                    .antMatchers("/**").hasRole("2");
-            }
-
-            protected void configure(
-                    HttpConfigurator http)
-                    throws Exception {
+            @Override
+            protected void configure(HttpConfigurator http) throws Exception {
                 http
-                    .antMatcher("/role2/**");
+                    .antMatcher("/role2/**")
+                    .authorizeUrls()
+                        .antMatchers("/**").hasRole("2");
             }
         }
     }

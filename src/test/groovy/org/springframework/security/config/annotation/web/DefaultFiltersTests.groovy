@@ -139,6 +139,9 @@ class DefaultFiltersTests extends BaseSpringSpec {
                 .antMatchers("/resources/**");
         }
         protected void configure(HttpConfigurator http) {
+            http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER");
         }
     }
 

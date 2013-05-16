@@ -94,14 +94,12 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
     @EnableWebSecurity
     public static class JeeMappableRolesConfig extends WebSecurityConfigurerAdapter {
 
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/**").hasRole("USER");
-        }
-
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN");
         }
@@ -123,14 +121,12 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
     @EnableWebSecurity
     public static class JeeUserServiceRefConfig extends WebSecurityConfigurerAdapter {
 
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/**").hasRole("USER");
-        }
-
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN")
                     .userDetailsService(new CustomUserService());

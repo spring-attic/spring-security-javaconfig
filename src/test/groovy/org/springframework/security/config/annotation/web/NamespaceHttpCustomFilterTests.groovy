@@ -144,15 +144,13 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
             // do not add the default filters to make testing easier
         }
 
+        @Override
         protected void configure(HttpConfigurator http) {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
-        }
-
-        @Override
-        protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/**").hasRole("ADMIN")
         }
     }
 

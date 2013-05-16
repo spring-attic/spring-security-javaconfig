@@ -29,14 +29,6 @@ import org.springframework.security.config.annotation.provisioning.InMemoryUserD
 @Configuration
 @EnableWebSecurity
 abstract class BaseWebConfig extends WebSecurityConfigurerAdapter {
-    protected void authorizeUrls(
-            ExpressionUrlAuthorizations interceptUrls) {
-        interceptUrls
-                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                .antMatchers("/signup").permitAll()
-                .antMatchers("/**").hasRole("USER");
-    }
-
     protected void registerAuthentication(
                 AuthenticationRegistry authenticationRegistry) throws Exception {
         authenticationRegistry

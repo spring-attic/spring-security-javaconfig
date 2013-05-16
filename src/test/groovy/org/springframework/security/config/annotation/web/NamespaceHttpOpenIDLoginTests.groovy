@@ -105,6 +105,9 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
     static class OpenIDLoginConfig extends BaseWebConfig {
         protected void configure(HttpConfigurator http) {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .openidLogin()
                     .permitAll();
         }
@@ -153,6 +156,9 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
     static class OpenIDLoginAttributeExchangeConfig extends BaseWebConfig {
         protected void configure(HttpConfigurator http) {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .openidLogin()
                     .attributeExchange("https://www.google.com/.*")
                         .attribute("email")
@@ -204,6 +210,9 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
         protected void configure(HttpConfigurator http) throws Exception {
             boolean alwaysUseDefaultSuccess = true;
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .openidLogin()
                     .permitAll()
                     .loginPage("/authentication/login") // openid-login@login-page
@@ -231,6 +240,9 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
     static class OpenIDLoginCustomRefsConfig extends BaseWebConfig {
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .openidLogin()
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure")) // openid-login@authentication-failure-handler-ref
                     .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" )) // openid-login@authentication-success-handler-ref

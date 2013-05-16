@@ -79,15 +79,12 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
         static EXPRESSION_HANDLER;
 
         protected void configure(HttpConfigurator http) {
-        }
-
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .expressionHandler(EXPRESSION_HANDLER)
-                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                .antMatchers("/signup").permitAll()
-                .antMatchers("/**").hasRole("USER");
+            http
+                .authorizeUrls()
+                    .expressionHandler(EXPRESSION_HANDLER)
+                    .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                    .antMatchers("/signup").permitAll()
+                    .antMatchers("/**").hasRole("USER")
         }
     }
 }

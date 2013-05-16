@@ -90,20 +90,19 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     public static class X509Config extends WebSecurityConfigurerAdapter {
-
-        protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/**").hasRole("USER");
-        }
-
+        @Override
         protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
             registry.
                 inMemoryAuthentication()
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
 
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .x509();
         }
     }
@@ -126,12 +125,6 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     public static class AuthenticationDetailsSourceRefConfig extends WebSecurityConfigurerAdapter {
         static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
 
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/**").hasRole("USER");
-        }
-
         protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
             registry.
                 inMemoryAuthentication()
@@ -140,6 +133,9 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
 
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .x509()
                     .authenticationDetailsSource(AUTHENTICATION_DETAILS_SOURCE);
         }
@@ -163,20 +159,19 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     public static class SubjectPrincipalRegexConfig extends WebSecurityConfigurerAdapter {
         static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
 
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/**").hasRole("USER");
-        }
-
+        @Override
         protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
             registry.
                 inMemoryAuthentication()
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
 
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .x509()
                     .subjectPrincipalRegex('CN=(.*?)@example.com(?:,|$)');
         }
@@ -200,20 +195,19 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     public static class UserDetailsServiceRefConfig extends WebSecurityConfigurerAdapter {
         static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
 
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/**").hasRole("USER");
-        }
-
+        @Override
         protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
             registry.
                 inMemoryAuthentication()
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
 
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .x509()
                     .userDetailsService(new CustomUserDetailsService());
         }
@@ -237,12 +231,6 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     public static class AuthenticationUserDetailsServiceConfig extends WebSecurityConfigurerAdapter {
         static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
 
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/**").hasRole("USER");
-        }
-
         protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
             registry.
                 inMemoryAuthentication()
@@ -251,6 +239,9 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
 
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .x509()
                     .userDetailsService(new CustomUserDetailsService());
         }

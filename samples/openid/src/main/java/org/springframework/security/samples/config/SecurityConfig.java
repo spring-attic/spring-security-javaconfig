@@ -2,7 +2,6 @@ package org.springframework.security.samples.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
@@ -17,16 +16,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/resources/**");
     }
 
-    protected void authorizeUrls(
-            ExpressionUrlAuthorizations interceptUrls) {
-        interceptUrls
-            .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-            .antMatchers("/resources/**","/signup").permitAll()
-            .antMatchers("/**").hasRole("USER");
-    }
-
+    @Override
     protected void configure(HttpConfigurator http) throws Exception {
         http
+            .authorizeUrls()
+                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                .antMatchers("/resources/**","/signup").permitAll()
+                .antMatchers("/**").hasRole("USER")
+                .and()
             .openidLogin()
                 .permitAll()
                 .authenticationUserDetailsService(new CustomUserDetailsService())

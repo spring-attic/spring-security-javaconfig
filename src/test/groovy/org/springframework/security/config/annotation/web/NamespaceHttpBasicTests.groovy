@@ -74,6 +74,9 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
     static class HttpBasicConfig extends BaseWebConfig {
         protected void configure(HttpConfigurator http) {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .httpBasic();
         }
     }
@@ -94,6 +97,9 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
     static class CustomHttpBasicConfig extends BaseWebConfig {
         protected void configure(HttpConfigurator http) {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .httpBasic().realmName("Custom Realm");
         }
     }
@@ -142,6 +148,9 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
     static class EntryPointRefHttpBasicConfig extends BaseWebConfig {
         protected void configure(HttpConfigurator http) {
             http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .httpBasic()
                     .authenticationEntryPoint(new AuthenticationEntryPoint() {
                         public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {

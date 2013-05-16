@@ -27,7 +27,6 @@ import org.springframework.security.config.annotation.issue50.domain.User;
 import org.springframework.security.config.annotation.issue50.repo.UserRepository;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -51,14 +50,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .add(authenticationProvider());
     }
 
-    protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-        interceptUrls
-            .antMatchers("/**").permitAll();
-    }
-
+    @Override
     protected void configure(HttpConfigurator http) throws Exception {
         http
-            .applyDefaultConfigurators();
+            .authorizeUrls()
+                .antMatchers("/*").permitAll();
     }
 
     @Bean

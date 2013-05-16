@@ -49,10 +49,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     protected void applyDefaults(HttpConfigurator http) throws Exception {
         http.applyDefaultConfigurators();
-        authorizeUrls(http.authorizeUrls());
     }
-
-    protected abstract void authorizeUrls(ExpressionUrlAuthorizations interceptUrls);
 
     protected HttpConfigurator http() throws Exception {
         if(http != null) {
@@ -66,7 +63,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         configure(http);
         return http;
     }
-
 
     @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManagerBean() throws Exception {

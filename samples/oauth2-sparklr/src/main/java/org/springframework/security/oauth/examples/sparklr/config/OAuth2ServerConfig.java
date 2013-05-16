@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.oauth2.OAuth2ServerConfigurator;
@@ -63,26 +62,24 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
             .antMatchers("/oauth/cache_approvals","/oauth/uncache_approvals");
     }
 
-    protected void authorizeUrls(
-            ExpressionUrlAuthorizations interceptUrls) {
-        interceptUrls
-            .antMatchers("/oauth/token").fullyAuthenticated()
-
-            .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")
-                .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
-            .regexMatchers(HttpMethod.GET, "/oauth/users/.*")
-                .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
-            .regexMatchers(HttpMethod.GET, "/oauth/clients/.*")
-                .access("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
-
-            .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
-            .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
-            .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
-            .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ");
-    }
-
+    @Override
     protected void configure(HttpConfigurator http) throws Exception {
         http
+            .authorizeUrls()
+                .antMatchers("/oauth/token").fullyAuthenticated()
+
+                .regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
+                .regexMatchers(HttpMethod.GET, "/oauth/users/.*")
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
+                .regexMatchers(HttpMethod.GET, "/oauth/clients/.*")
+                    .access("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')")
+
+                .antMatchers("/photos").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+                .antMatchers("/photos/trusted/**").hasAnyAuthority("ROLE_CLIENT","SCOPE_TRUST")
+                .antMatchers("/photos/user/**").hasAnyAuthority("ROLE_USER","SCOPE_TRUST")
+                .antMatchers("/photos/**").hasAnyAuthority("ROLE_USER","SCOPE_READ")
+                .and()
             .requestMatchers()
                 .antMatchers("/photos/**","/oauth/token","/oauth/clients/**","/oauth/users/**")
             .apply(new OAuth2ServerConfigurator())

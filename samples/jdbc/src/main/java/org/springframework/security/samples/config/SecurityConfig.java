@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
@@ -18,6 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private DataSource dataSource;
 
+    @Override
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
         ignoredRequests
             .antMatchers("/resources/**");
@@ -33,17 +33,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .withDefaultSchema();
     }
 
-    protected void authorizeUrls(
-            ExpressionUrlAuthorizations interceptUrls) {
-        interceptUrls
-            .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-            .antMatchers("/resources/**","/signup").permitAll()
-            .antMatchers("/**").hasRole("USER");
-    }
-
+    @Override
     protected void configure(HttpConfigurator http) throws Exception {
         http
+            .authorizeUrls()
+                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                .antMatchers("/resources/**","/signup").permitAll()
+                .antMatchers("/**").hasRole("USER")
+                .and()
             .formLogin()
-            .permitAll();
+                .permitAll();
     }
 }

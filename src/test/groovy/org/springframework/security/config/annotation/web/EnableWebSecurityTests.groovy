@@ -35,14 +35,11 @@ class EnableWebSecurityTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/*").hasRole("USER");
-        }
-
-        @Override
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/*").hasRole("USER")
+                    .and()
                 .formLogin();
         }
     }

@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
@@ -65,20 +64,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return Encryptors.noOpText();
     }
 
+    @Override
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
         ignoredRequests
             .antMatchers("/resources/**");
     }
 
-    protected void authorizeUrls(
-            ExpressionUrlAuthorizations interceptUrls) {
-        interceptUrls
-            .antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook").permitAll()
-            .antMatchers("/**").authenticated();
-    }
-
+    @Override
     protected void configure(HttpConfigurator http) throws Exception {
         http
+            .authorizeUrls()
+                .antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook").permitAll()
+                .antMatchers("/**").authenticated()
+                .and()
             .addFilterBefore(socialAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .logout()
                 .deleteCookies("JSESSIONID")

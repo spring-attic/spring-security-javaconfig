@@ -188,24 +188,22 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class HttpInterceptUrlConfig extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-             interceptUrls
-                // the line below is similar to intercept-url@pattern:
-                //    <intercept-url pattern="/users**" access="hasRole('ROLE_ADMIN')"/>
-                //    <intercept-url pattern="/sessions/**" access="hasRole('ROLE_ADMIN')"/>
-                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                // the line below is similar to intercept-url@method:
-                //    <intercept-url pattern="/admin/post" access="hasRole('ROLE_ADMIN')" method="POST"/>
-                //    <intercept-url pattern="/admin/another-post/**" access="hasRole('ROLE_ADMIN')" method="POST"/>
-                .antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**").hasRole("ADMIN")
-                .antMatchers("/signup").permitAll()
-                .antMatchers("/**").hasRole("USER");
-        }
 
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    // the line below is similar to intercept-url@pattern:
+                    //    <intercept-url pattern="/users**" access="hasRole('ROLE_ADMIN')"/>
+                    //    <intercept-url pattern="/sessions/**" access="hasRole('ROLE_ADMIN')"/>
+                    .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                    // the line below is similar to intercept-url@method:
+                    //    <intercept-url pattern="/admin/post" access="hasRole('ROLE_ADMIN')" method="POST"/>
+                    //    <intercept-url pattern="/admin/another-post/**" access="hasRole('ROLE_ADMIN')" method="POST"/>
+                    .antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**").hasRole("ADMIN")
+                    .antMatchers("/signup").permitAll()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .requiresChannel()
                     // NOTE: channel security is configured separately of authorization (i.e. intercept-url@access
                     // the line below is similar to intercept-url@requires-channel="https":

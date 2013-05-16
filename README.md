@@ -48,18 +48,19 @@ The following configuration
     @Configuration
     @EnableWebSecurity
     public class SampleWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+	@Override
         protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
             ignoredRequests
                 .antMatchers("/resources/**");
         }
-        protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .antMatchers("/signup","/about").permitAll()
-                .antMatchers("/**").hasRole("USER");
-        }
 
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
             http
+                .authorizeUrls()
+                    .antMatchers("/signup","/about").permitAll()
+                    .antMatchers("/**").hasRole("USER")
+                    .and()
                 .formLogin()
                     // set permitAll for all URLs associated with Form Login
                     .permitAll();
@@ -113,7 +114,7 @@ The following configuration
 
     @Configuration
     @EnableWebSecurity
-    public static class SampleMultiHttpSecurityConfig {
+    public class SampleMultiHttpSecurityConfig {
         @Bean
         public AuthenticationManager authenticationManager() {
             return new AuthenticationBuilder()
@@ -127,38 +128,32 @@ The following configuration
         @Configuration
         @Order(1)
         public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-            protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls
-                    .antMatchers("/api/admin/**").hasRole("ADMIN")
-                    .antMatchers("/api/**").hasRole("USER");
-            }
-
             protected void configure(HttpConfigurator http) throws Exception {
                 http
                     .antMatcher("/api/**")
+                    .authorizeUrls()
+                        .antMatchers("/api/admin/**").hasRole("ADMIN")
+                        .antMatchers("/api/**").hasRole("USER")
+                        .and()
                     .httpBasic();
             }
-
         }
 
         @Configuration
         public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-            @Autowired
-            private SampleMultiHttpSecurityConfig securityConfig;
-
+            @Override
             protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
                 ignoredRequests
                     .antMatchers("/resources/**");
             }
 
-            protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls
-                    .antMatchers("/signup","/about").permitAll()
-                    .antMatchers("/**").hasRole("USER");
-            }
-
+            @Override
             protected void configure(HttpConfigurator http) throws Exception {
                 http
+                    .authorizeUrls()
+                        .antMatchers("/signup","/about").permitAll()
+                        .antMatchers("/**").hasRole("USER")
+                        .and()
                     .formLogin()
                         .permitAll();
             }

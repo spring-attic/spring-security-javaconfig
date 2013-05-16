@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
@@ -26,21 +25,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("sam").password("kangaroo").roles("USER");
     }
 
-    protected void authorizeUrls(
-            ExpressionUrlAuthorizations interceptUrls) {
-        interceptUrls
-            .antMatchers("/sparklr/**","/facebook/**").hasRole("USER")
-            .antMatchers("/**");
-    }
-
+    @Override
     protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
         ignoredRequests
             .antMatchers("/resources/**");
     }
 
+    @Override
     protected void configure(
             HttpConfigurator http) throws Exception {
         http
+            .authorizeUrls()
+                .antMatchers("/sparklr/**","/facebook/**").hasRole("USER")
+                .antMatchers("/**").permitAll()
+                .and()
             .addFilterAfter(oauth2ClientFilter, ExceptionTranslationFilter.class)
             .logout()
                 .logoutSuccessUrl("/login.jsp")

@@ -6,7 +6,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 
@@ -23,19 +22,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .build();
     }
 
+    @Override
     protected AuthenticationManager authenticationManager() throws Exception {
         return authManager();
     }
 
-    protected void authorizeUrls(
-            ExpressionUrlAuthorizations interceptUrls) {
-        interceptUrls
-            .antMatchers("/oauth/**").hasRole("USER")
-            .antMatchers("/**").permitAll();
-    }
-
+    @Override
     protected void configure(HttpConfigurator http) throws Exception {
         http
+            .authorizeUrls()
+                .antMatchers("/oauth/**").hasRole("USER")
+                .antMatchers("/**").permitAll()
+                .and()
             .applyDefaultConfigurators()
             .exceptionHandling()
                 .accessDeniedPage("/login.jsp?authorization_error=true")

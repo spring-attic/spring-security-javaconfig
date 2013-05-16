@@ -114,10 +114,16 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class AuthenticationManagerRefConfig extends BaseWebConfig {
         // demo authentication-manager-ref (could be any value)
 
+        @Override
         protected AuthenticationManager authenticationManager() throws Exception {
             return new CustomAuthenticationManager();
         }
+
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
+            http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER");
         }
 
         static class CustomAuthenticationManager implements AuthenticationManager {
@@ -290,7 +296,12 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class OncePerRequestConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) throws Exception {}
+        @Override
+        protected void configure(HttpConfigurator http) throws Exception {
+            http
+                .authorizeUrls()
+                    .antMatchers("/**").hasRole("USER");
+        }
     }
 
     def "http@once-per-request=false"() {
@@ -302,14 +313,14 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     @Configuration
     static class OncePerRequestFalseConfig extends BaseWebConfig {
-        protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-            interceptUrls
-                .filterSecurityInterceptorOncePerRequest(false)
-                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                .antMatchers("/signup").permitAll()
-                .antMatchers("/**").hasRole("USER");
-        }
+        @Override
         protected void configure(HttpConfigurator http) throws Exception {
+            http.
+                authorizeUrls()
+                    .filterSecurityInterceptorOncePerRequest(false)
+                    .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
+                    .antMatchers("/signup").permitAll()
+                    .antMatchers("/**").hasRole("USER");
         }
     }
 
@@ -459,11 +470,6 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class DisableUseExpressionsConfig extends BaseWebConfig {
-
-        protected void authorizeUrls(
-                ExpressionUrlAuthorizations interceptUrls) {
-        }
-
         protected void configure(HttpConfigurator http) throws Exception {
             http
                 .apply(new UrlAuthorizations())

@@ -52,13 +52,12 @@ class Issue55Tests extends BaseSpringSpec {
     static class WebSecurityConfigurerAdapterDefaultsAuthManagerConfig {
         @Component
         public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
-            @Override
-            protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls.antMatchers("/**").hasRole("USER");
-            }
 
             @Override
             protected void configure(HttpConfigurator http) throws Exception {
+                http
+                    .authorizeUrls()
+                        .antMatchers("/**").hasRole("USER");
             }
         }
         @Configuration
@@ -86,25 +85,20 @@ class Issue55Tests extends BaseSpringSpec {
         @Order(1)
         public static class ApiWebSecurityAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls.antMatchers("/**").hasRole("USER");
-            }
-
-            @Override
             protected void configure(HttpConfigurator http) throws Exception {
-                http.antMatcher("/api/**");
+                http
+                    .antMatcher("/api/**")
+                    .authorizeUrls()
+                        .antMatchers("/**").hasRole("USER");
             }
-
         }
         @Component
         public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-                interceptUrls.antMatchers("/**").hasRole("USER");
-            }
-
-            @Override
             protected void configure(HttpConfigurator http) throws Exception {
+                http
+                    .authorizeUrls()
+                        .antMatchers("/**").hasRole("USER");
             }
         }
         @Configuration
