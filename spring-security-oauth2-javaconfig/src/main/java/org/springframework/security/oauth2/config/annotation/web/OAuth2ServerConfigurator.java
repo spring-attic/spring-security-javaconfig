@@ -106,7 +106,7 @@ public class OAuth2ServerConfigurator
     }
 
     @Override
-    protected void doInit(HttpConfigurator http) throws Exception {
+    public void init(HttpConfigurator http) throws Exception {
         httpBasicConfigurator = new HttpBasicConfigurator();
         httpBasicConfigurator.setBuilder(http);
 
@@ -139,7 +139,7 @@ public class OAuth2ServerConfigurator
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         httpBasicConfigurator.configure(http);
         http
             .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)

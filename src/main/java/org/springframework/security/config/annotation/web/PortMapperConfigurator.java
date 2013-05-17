@@ -42,7 +42,7 @@ public class PortMapperConfigurator extends AbstractConfigurator<DefaultSecurity
     }
 
     @Override
-    protected void doInit(HttpConfigurator http) throws Exception {
+    public void init(HttpConfigurator http) throws Exception {
         http.setSharedObject(PortMapper.class, getPortMapper());
     }
 

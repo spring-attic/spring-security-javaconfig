@@ -57,6 +57,10 @@ public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>>
         return (C) configurators.get(clazz);
     }
 
+    public <C extends SecurityConfigurator<T,B>> C removeConfigurator(Class<C> clazz) {
+        return (C) configurators.remove(clazz);
+    }
+
     private void init() throws Exception {
         Collection<SecurityConfigurator<T,B>> configurators = getConfigurators();
 

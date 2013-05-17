@@ -28,36 +28,11 @@ import org.springframework.security.config.annotation.web.HttpConfigurator;
 public abstract class AbstractConfigurator<O,B extends SecurityBuilder<O>> implements SecurityConfigurator<O,B> {
     private B securityBuilder;
 
-    private boolean disabled;
+    public void init(B builder) throws Exception {}
 
-    public B disable() {
-        this.disabled = true;
-        return securityBuilder;
-    }
+    public void configure(B builder) throws Exception {}
 
-    @Override
-    public final void init(B builder)
-            throws Exception {
-        if(disabled) {
-            return;
-        }
-        doInit(builder);
-    }
-
-    protected void doInit(B builder) throws Exception {}
-
-    @Override
-    public final void configure(B builder)
-            throws Exception {
-        if(disabled) {
-            return;
-        }
-        doConfigure(builder);
-    }
-
-    protected void doConfigure(B builder) throws Exception {}
-
-    public B and() throws Exception {
+    public B and() {
         if(securityBuilder == null) {
             throw new IllegalStateException(HttpConfigurator.class.getSimpleName() + " cannot be null");
         }

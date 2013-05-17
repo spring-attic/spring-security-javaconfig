@@ -76,7 +76,7 @@ public class OpenIDLoginConfigurator extends AbstractConfigurator<DefaultSecurit
     }
 
     @Override
-    protected void doInit(HttpConfigurator http) throws Exception {
+    public void init(HttpConfigurator http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
@@ -176,7 +176,7 @@ public class OpenIDLoginConfigurator extends AbstractConfigurator<DefaultSecurit
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         openIDAuthenticationFilter.setAuthenticationManager(http.authenticationManager());
         openIDAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
         openIDAuthenticationFilter.setAuthenticationFailureHandler(failureHandler);

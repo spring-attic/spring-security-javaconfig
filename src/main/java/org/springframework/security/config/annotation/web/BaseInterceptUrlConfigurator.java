@@ -61,7 +61,7 @@ abstract class BaseInterceptUrlConfigurator<T> extends
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         FilterInvocationSecurityMetadataSource metadataSource = createMetadataSource();
         if(metadataSource == null) {
             return;

@@ -85,14 +85,14 @@ public class LogoutConfigurator extends AbstractConfigurator<DefaultSecurityFilt
     }
 
     @Override
-    protected void doInit(HttpConfigurator http) throws Exception {
+    public void init(HttpConfigurator http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, this.logoutUrl, this.logoutSuccessUrl);
         }
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         LogoutFilter logoutFilter = createLogoutFilter();
         http.addFilter(logoutFilter);
     }

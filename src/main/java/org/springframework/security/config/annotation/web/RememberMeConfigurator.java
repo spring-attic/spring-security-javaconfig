@@ -82,7 +82,7 @@ public class RememberMeConfigurator extends AbstractConfigurator<DefaultSecurity
     }
 
     @Override
-    protected void doInit(HttpConfigurator http) throws Exception {
+    public void init(HttpConfigurator http) throws Exception {
         String key = getKey();
         RememberMeServices rememberMeServices = getRememberMeServices(http,key);
         http.setSharedObject(RememberMeServices.class, rememberMeServices);
@@ -132,7 +132,7 @@ public class RememberMeConfigurator extends AbstractConfigurator<DefaultSecurity
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http)
+    public void configure(HttpConfigurator http)
             throws Exception {
         RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(http.authenticationManager(), rememberMeServices);
         if(authenticationSuccessHandler != null) {

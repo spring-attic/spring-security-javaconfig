@@ -65,7 +65,7 @@ public class JeeConfigurator extends AbstractConfigurator<DefaultSecurityFilterC
     }
 
     @Override
-    protected void doInit(HttpConfigurator http) throws Exception {
+    public void init(HttpConfigurator http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getUserDetailsService(http));
 
@@ -75,7 +75,7 @@ public class JeeConfigurator extends AbstractConfigurator<DefaultSecurityFilterC
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         J2eePreAuthenticatedProcessingFilter filter = getFilter(http
                 .authenticationManager());
         http.addFilter(filter);

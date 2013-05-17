@@ -72,7 +72,7 @@ public class X509Configurator extends AbstractConfigurator<DefaultSecurityFilter
     }
 
     @Override
-    protected void doInit(HttpConfigurator http) throws Exception {
+    public void init(HttpConfigurator http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getAuthenticationUserDetailsService(http));
 
@@ -82,7 +82,7 @@ public class X509Configurator extends AbstractConfigurator<DefaultSecurityFilter
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         X509AuthenticationFilter filter = getFilter(http.authenticationManager());
         http.addFilter(filter);
     }

@@ -31,8 +31,12 @@ public class ServletApiConfigurator extends AbstractConfigurator<DefaultSecurity
         return this;
     }
 
+    public HttpConfigurator disable() {
+        return and().removeConfigurator(getClass()).and();
+    }
+
     @Override
-    protected void doConfigure(HttpConfigurator builder)
+    public void configure(HttpConfigurator builder)
             throws Exception {
         securityContextRequestFilter.afterPropertiesSet();
         builder.addFilter(securityContextRequestFilter);

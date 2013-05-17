@@ -45,7 +45,7 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
     private List<ChannelProcessor> channelProcessors;
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(getChannelProcessors(http));
         channelFilter.setChannelDecisionManager(channelDecisionManager);

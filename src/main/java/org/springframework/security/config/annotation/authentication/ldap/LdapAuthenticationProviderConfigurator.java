@@ -128,7 +128,7 @@ public class LdapAuthenticationProviderConfigurator extends AbstractConfigurator
     }
 
     @Override
-    protected void doConfigure(AuthenticationBuilder builder) throws Exception {
+    public void configure(AuthenticationBuilder builder) throws Exception {
         builder.add(build());
     }
 

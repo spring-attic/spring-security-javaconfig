@@ -50,7 +50,7 @@ public class ExceptionHandlingConfigurator extends AbstractConfigurator<DefaultS
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(http.authenticationEntryPoint(), getRequestCache(http));
         if(accessDeniedHandler != null) {
             exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);

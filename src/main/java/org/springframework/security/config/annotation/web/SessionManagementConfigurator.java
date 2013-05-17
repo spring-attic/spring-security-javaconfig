@@ -80,7 +80,7 @@ public class SessionManagementConfigurator extends AbstractConfigurator<DefaultS
     }
 
     @Override
-    protected void doInit(HttpConfigurator builder)
+    public void init(HttpConfigurator builder)
             throws Exception {
         builder.setSharedObject(SessionManagementConfigurator.class, this);
 
@@ -108,7 +108,7 @@ public class SessionManagementConfigurator extends AbstractConfigurator<DefaultS
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator builder)
+    public void configure(HttpConfigurator builder)
             throws Exception {
         sessionManagementFilter = new SessionManagementFilter(builder.getSharedObject(SecurityContextRepository.class), getSessionAuthenticationStrategy());
 

@@ -40,7 +40,7 @@ public class HttpBasicConfigurator extends AbstractConfigurator<DefaultSecurityF
     }
 
     @Override
-    protected void doConfigure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfigurator http) throws Exception {
         AuthenticationManager authenticationManager = http.authenticationManager();
         basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {

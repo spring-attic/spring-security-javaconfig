@@ -38,7 +38,7 @@ public class UserDetailsServiceConfigurator<T extends UserDetailsService> extend
     }
 
     @Override
-    protected void doConfigure(AuthenticationBuilder builder) throws Exception {
+    public void configure(AuthenticationBuilder builder) throws Exception {
         builder.add(userDetailsService());
     }
 }
