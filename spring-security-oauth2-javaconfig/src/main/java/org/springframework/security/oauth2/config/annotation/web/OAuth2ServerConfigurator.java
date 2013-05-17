@@ -107,8 +107,10 @@ public class OAuth2ServerConfigurator
 
     @Override
     public void init(HttpConfigurator http) throws Exception {
-        httpBasicConfigurator = new HttpBasicConfigurator();
-        httpBasicConfigurator.setBuilder(http);
+        if(http.getConfigurator(HttpBasicConfigurator.class) == null) {
+            httpBasicConfigurator = new HttpBasicConfigurator();
+            httpBasicConfigurator.setBuilder(http);
+        }
 
         http.getConfigurator(ExpressionUrlAuthorizations.class).expressionHandler(expressionHandler);
 
@@ -130,7 +132,9 @@ public class OAuth2ServerConfigurator
             getConfigurator(ExceptionHandlingConfigurator.class)
                 .accessDeniedHandler(accessDeniedHandler);
 
-        httpBasicConfigurator.init(http);
+        if(httpBasicConfigurator != null) {
+            httpBasicConfigurator.init(http);
+        }
     }
 
     public OAuth2ServerConfigurator resourceId(String resourceId) {
@@ -140,7 +144,9 @@ public class OAuth2ServerConfigurator
 
     @Override
     public void configure(HttpConfigurator http) throws Exception {
-        httpBasicConfigurator.configure(http);
+        if(httpBasicConfigurator != null) {
+            httpBasicConfigurator.configure(http);
+        }
         http
             .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .addFilterBefore(clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class);
