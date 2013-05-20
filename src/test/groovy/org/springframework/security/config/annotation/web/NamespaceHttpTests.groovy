@@ -16,45 +16,37 @@
 package org.springframework.security.config.annotation.web;
 
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-
-import java.util.List;
-import java.util.regex.Pattern;
+import static org.springframework.security.config.annotation.web.util.RequestMatchers.*
 
 import javax.servlet.http.HttpServletRequest
 
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.AccessDecisionManager
 import org.springframework.security.access.ConfigAttribute
-import org.springframework.security.access.vote.AuthenticatedVoter;
-import org.springframework.security.access.vote.RoleVoter;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.access.vote.AuthenticatedVoter
+import org.springframework.security.access.vote.RoleVoter
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
-import org.springframework.security.config.annotation.web.NamespaceHttpTests.AuthenticationManagerRefConfig.CustomAuthenticationManager;
-import org.springframework.security.config.annotation.web.NamespaceHttpTests.RequestMatcherRefConfig.MyRequestMatcher;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.config.annotation.web.NamespaceHttpTests.AuthenticationManagerRefConfig.CustomAuthenticationManager
+import org.springframework.security.config.annotation.web.NamespaceHttpTests.RequestMatcherRefConfig.MyRequestMatcher
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.FilterInvocation
 import org.springframework.security.web.access.ExceptionTranslationFilter
-import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
-import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.NullSecurityContextRepository;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository
+import org.springframework.security.web.context.NullSecurityContextRepository
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
-import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
-import org.springframework.security.web.session.SessionManagementFilter;
-import org.springframework.security.web.util.AntPathRequestMatcher
-import org.springframework.security.web.util.AnyRequestMatcher;
-import org.springframework.security.web.util.RegexRequestMatcher;
+import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.NullRequestCache
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
+import org.springframework.security.web.session.SessionManagementFilter
+import org.springframework.security.web.util.RegexRequestMatcher
 import org.springframework.security.web.util.RequestMatcher
 
 /**
@@ -143,6 +135,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         findFilter(SecurityContextPersistenceFilter).forceEagerSessionCreation == false
         findFilter(SecurityContextPersistenceFilter).repo.allowSessionCreation == true
         findFilter(SessionManagementFilter).securityContextRepository.allowSessionCreation == true
+        findFilter(ExceptionTranslationFilter).requestCache.class == HttpSessionRequestCache
     }
 
     @Configuration
@@ -161,6 +154,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         findFilter(SecurityContextPersistenceFilter).forceEagerSessionCreation == false
         findFilter(SecurityContextPersistenceFilter).repo.class == NullSecurityContextRepository
         findFilter(SessionManagementFilter).securityContextRepository.class == NullSecurityContextRepository
+        findFilter(ExceptionTranslationFilter).requestCache.class == NullRequestCache
     }
 
     @Configuration

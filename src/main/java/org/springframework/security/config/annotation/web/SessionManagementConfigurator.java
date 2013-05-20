@@ -25,6 +25,8 @@ import org.springframework.security.web.authentication.session.SessionFixationPr
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.savedrequest.NullRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 
@@ -86,6 +88,7 @@ public class SessionManagementConfigurator extends AbstractConfigurator<DefaultS
         if(securityContextRepository == null) {
             if(isStateless()) {
                 builder.setSharedObject(SecurityContextRepository.class, new NullSecurityContextRepository());
+                builder.setSharedObject(RequestCache.class, new NullRequestCache());
             } else {
                 HttpSessionSecurityContextRepository httpSecurityRepository = new HttpSessionSecurityContextRepository();
                 httpSecurityRepository.setDisableUrlRewriting(!enableUrlRewriting);
