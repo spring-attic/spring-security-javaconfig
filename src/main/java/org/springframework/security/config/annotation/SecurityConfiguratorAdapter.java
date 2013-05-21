@@ -28,7 +28,7 @@ package org.springframework.security.config.annotation;
  * @param <O>
  *            The Object being built by B
  * @param <B>
- *            The Builder that is building O
+ *            The Builder that is building O and is configured by {@link SecurityConfiguratorAdapter}
  */
 public abstract class SecurityConfiguratorAdapter<O,B extends SecurityBuilder<O>> implements SecurityConfigurator<O,B> {
     private B securityBuilder;
