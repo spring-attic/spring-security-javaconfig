@@ -22,16 +22,16 @@ import org.springframework.security.config.annotation.web.SpringSecurityFilterCh
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 /**
- * A base {@link SecurityBuilder} that allows {@link SecurityConfigurator} to be
+ * <p>A base {@link SecurityBuilder} that allows {@link SecurityConfigurator} to be
  * applied to it. This makes modifying the {@link SecurityBuilder} a strategy
  * that can be customized and broken up into a number of
  * {@link SecurityConfigurator} objects that have more specific goals than that
- * of the {@link SecurityBuilder}.
+ * of the {@link SecurityBuilder}.</p>
  *
- * For example, a {@link SecurityBuilder} may build an
+ * <p>For example, a {@link SecurityBuilder} may build an
  * {@link DelegatingFilterProxy}, but a {@link SecurityConfigurator} might
  * populate the {@link SecurityBuilder} with the filters necessary for session
- * management, form based login, authorization, etc.
+ * management, form based login, authorization, etc.</p>
  *
  * @author Rob Winch
  *
@@ -46,10 +46,13 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  */
 public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBuilder<T>> extends AbstractSecurityBuilder<T> {
 
-    private final LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>> configurators = new LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>>();
+    private final LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>> configurators =
+            new LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>>();
 
     /**
-     * Applies a {@link SecurityConfigurator} to this {@link SecurityBuilder}.
+     * Applies a {@link SecurityConfiguratorAdapter} to this
+     * {@link SecurityBuilder} and invokes
+     * {@link SecurityConfiguratorAdapter#setBuilder(SecurityBuilder)}.
      *
      * @param configurer
      * @return
@@ -65,6 +68,15 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
         return (C) apply((SecurityConfigurator<T, B>)configurer);
     }
 
+    /**
+     * Applies a {@link SecurityConfigurator} to this {@link SecurityBuilder}
+     * overriding any {@link SecurityConfigurator} of the exact same class. Note
+     * that object hierarchies are not considered.
+     *
+     * @param configurer
+     * @return
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
     public <C extends SecurityConfigurator<T, B>> C apply(C configurer)
             throws Exception {
@@ -77,24 +89,43 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
         return configurer;
     }
 
+    /**
+     * Gets the {@link SecurityConfigurator} by its class name or
+     * <code>null</code> if not found. Note that object hierarchies are not
+     * considered.
+     *
+     * @param clazz
+     * @return
+     */
     @SuppressWarnings("unchecked")
     protected <C extends SecurityConfigurator<T, B>> C getConfigurator(
             Class<C> clazz) {
         return (C) configurators.get(clazz);
     }
 
+    /**
+     * Removes and returns the {@link SecurityConfigurator} by its class name or
+     * <code>null</code> if not found. Note that object hierarchies are not
+     * considered.
+     *
+     * @param clazz
+     * @return
+     */
+    @SuppressWarnings("unchecked")
     public <C extends SecurityConfigurator<T,B>> C removeConfigurator(Class<C> clazz) {
         return (C) configurators.remove(clazz);
     }
 
-    private void init() throws Exception {
-        Collection<SecurityConfigurator<T,B>> configurators = getConfigurators();
-
-        for(SecurityConfigurator<T,B> configurer : configurators ) {
-            configurer.init((B) this);
-        }
-    }
-
+    /**
+     * Executes the build using the {@link SecurityConfigurator}'s that have been applied using the following steps:
+     *
+     * <ul>
+     * <li>Invokes {@link #beforeInit()} for any subclass to hook into</li>
+     * <li>Invokes {@link SecurityConfigurator#init(SecurityBuilder)} for any {@link SecurityConfigurator} that was applied to this builder.</li>
+     * <li>Invokes {@link #beforeConfigure()} for any subclass to hook into</li>
+     * <li>Invokes {@link #performBuild()} which actually builds the Object</li>
+     * </ul>
+     */
     @Override
     protected final T doBuild() throws Exception {
         beforeInit();
@@ -109,19 +140,40 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     }
 
     /**
-     *
+     * Invoked prior to invoking each
+     * {@link SecurityConfigurator#init(SecurityBuilder)} method. Subclasses may
+     * override this method to hook into the lifecycle without using a
+     * {@link SecurityConfigurator}.
      */
     protected void beforeInit() throws Exception {
     }
 
+    /**
+     * Invoked prior to invoking each
+     * {@link SecurityConfigurator#configure(SecurityBuilder)} method.
+     * Subclasses may override this method to hook into the lifecycle without
+     * using a {@link SecurityConfigurator}.
+     */
     protected void beforeConfigure() throws Exception {
     }
 
     /**
+     * Subclasses must implement this method to build the object that is being returned.
+     *
      * @return
      */
     protected abstract T performBuild() throws Exception;
 
+    @SuppressWarnings("unchecked")
+    private void init() throws Exception {
+        Collection<SecurityConfigurator<T,B>> configurators = getConfigurators();
+
+        for(SecurityConfigurator<T,B> configurer : configurators ) {
+            configurer.init((B) this);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     private void configure() throws Exception {
         Collection<SecurityConfigurator<T,B>> configurators = getConfigurators();
 
