@@ -49,12 +49,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     private final LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>> configurators = new LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>>();
 
     /**
-     * Applies a {@link SecurityConfigurator} to this {@link SecurityBuilder}. Typical usage might look like:
-     *
-     * <code>
-     * builder
-     *     .apply(new DemoSecurityConfigurator())
-     *         .
+     * Applies a {@link SecurityConfigurator} to this {@link SecurityBuilder}.
      *
      * @param configurer
      * @return
