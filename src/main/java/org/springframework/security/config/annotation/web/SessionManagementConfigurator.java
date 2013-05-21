@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -34,7 +34,7 @@ import org.springframework.security.web.session.SessionManagementFilter;
  * @author Rob Winch
  *
  */
-public class SessionManagementConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class SessionManagementConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private SessionManagementFilter sessionManagementFilter;
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
@@ -80,7 +80,7 @@ public class SessionManagementConfigurator extends AbstractConfigurator<DefaultS
     }
 
     @Override
-    public void init(HttpConfigurator builder)
+    public void init(HttpConfiguration builder)
             throws Exception {
         builder.setSharedObject(SessionManagementConfigurator.class, this);
 
@@ -108,7 +108,7 @@ public class SessionManagementConfigurator extends AbstractConfigurator<DefaultS
     }
 
     @Override
-    public void configure(HttpConfigurator builder)
+    public void configure(HttpConfiguration builder)
             throws Exception {
         sessionManagementFilter = new SessionManagementFilter(builder.getSharedObject(SecurityContextRepository.class), getSessionAuthenticationStrategy());
 

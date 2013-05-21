@@ -20,11 +20,11 @@ import java.util.List;
 
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.config.annotation.web.ExceptionHandlingConfigurator;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpBasicConfigurator;
-import org.springframework.security.config.annotation.web.HttpConfigurator;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.CompositeTokenGranter;
@@ -63,7 +63,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  */
 public class OAuth2ServerConfigurator
         extends
-        AbstractConfigurator<DefaultSecurityFilterChain, HttpConfigurator> {
+        SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
     private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
     private AccessDeniedHandler accessDeniedHandler = new OAuth2AccessDeniedHandler();
 
@@ -106,7 +106,7 @@ public class OAuth2ServerConfigurator
     }
 
     @Override
-    public void init(HttpConfigurator http) throws Exception {
+    public void init(HttpConfiguration http) throws Exception {
         if(http.getConfigurator(HttpBasicConfigurator.class) == null) {
             httpBasicConfigurator = new HttpBasicConfigurator();
             httpBasicConfigurator.setBuilder(http);
@@ -143,7 +143,7 @@ public class OAuth2ServerConfigurator
     }
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         if(httpBasicConfigurator != null) {
             httpBasicConfigurator.configure(http);
         }
@@ -154,7 +154,7 @@ public class OAuth2ServerConfigurator
     }
 
     private AuthenticationManager oauthAuthenticationManager(
-            HttpConfigurator http) {
+            HttpConfiguration http) {
         OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
         oauthAuthenticationManager.setResourceId(resourceId);
         oauthAuthenticationManager
@@ -163,12 +163,12 @@ public class OAuth2ServerConfigurator
     }
 
     private ResourceServerTokenServices resourceTokenServices(
-            HttpConfigurator http) {
+            HttpConfiguration http) {
         tokenServices(http);
         return this.resourceTokenServices;
     }
 
-    private AuthorizationServerTokenServices tokenServices(HttpConfigurator http) {
+    private AuthorizationServerTokenServices tokenServices(HttpConfiguration http) {
         if (tokenServices != null) {
             return tokenServices;
         }
@@ -193,14 +193,14 @@ public class OAuth2ServerConfigurator
     }
 
     private AuthorizationCodeServices authorizationCodeServices(
-            HttpConfigurator http) {
+            HttpConfiguration http) {
         if (authorizationCodeServices == null) {
             authorizationCodeServices = new InMemoryAuthorizationCodeServices();
         }
         return authorizationCodeServices;
     }
 
-    private AuthenticationManager authenticationManager(HttpConfigurator http) {
+    private AuthenticationManager authenticationManager(HttpConfiguration http) {
         return http.authenticationManager();
     }
 
@@ -212,7 +212,7 @@ public class OAuth2ServerConfigurator
         return consumerTokenServices;
     }
 
-    private ConsumerTokenServices consumerTokenServices(HttpConfigurator http) {
+    private ConsumerTokenServices consumerTokenServices(HttpConfiguration http) {
         if(consumerTokenServices == null) {
             DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
             defaultTokenServices.setClientDetailsService(clientDetails());
@@ -222,7 +222,7 @@ public class OAuth2ServerConfigurator
         return consumerTokenServices;
     }
 
-    private TokenGranter tokenGranter(HttpConfigurator http) throws Exception {
+    private TokenGranter tokenGranter(HttpConfiguration http) throws Exception {
         if(tokenGranter == null) {
             ClientDetailsService clientDetails = clientDetails();
             AuthorizationServerTokenServices tokenServices = tokenServices(http);

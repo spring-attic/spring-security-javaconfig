@@ -95,7 +95,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
     public static class JeeMappableRolesConfig extends WebSecurityConfigurerAdapter {
 
         @Override
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -122,7 +122,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
     public static class JeeUserServiceRefConfig extends WebSecurityConfigurerAdapter {
 
         @Override
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")

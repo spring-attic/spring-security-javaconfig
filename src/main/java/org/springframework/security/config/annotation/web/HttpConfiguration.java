@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
+import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
@@ -47,7 +47,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityFilterChain,HttpConfigurator> implements SecurityBuilder<DefaultSecurityFilterChain> {
+public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain> {
 
     private AuthenticationManager authenticationManager;
 
@@ -57,24 +57,24 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
-    public HttpConfigurator(AuthenticationBuilder authenticationBuilder) {
+    public HttpConfiguration(AuthenticationBuilder authenticationBuilder) {
         initSharedObjects(authenticationBuilder);
     }
 
-    public HttpConfigurator(AuthenticationManager authenticationManager) {
+    public HttpConfiguration(AuthenticationManager authenticationManager) {
         this(new AuthenticationBuilder().parentAuthenticationManager(authenticationManager));
     }
 
-    public HttpConfigurator(AuthenticationProvider provider) {
+    public HttpConfiguration(AuthenticationProvider provider) {
         this(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
     }
 
-    public HttpConfigurator(UserDetailsService userDetailsService) throws Exception {
+    public HttpConfiguration(UserDetailsService userDetailsService) throws Exception {
         this(new AuthenticationBuilder().userDetailsService(userDetailsService).and().build());
     }
 
     @Override
-    public <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfigurator>> C getConfigurator(
+    public <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurator(
             Class<C> clazz) {
         return super.getConfigurator(clazz);
     }
@@ -170,12 +170,12 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }
 
-    public HttpConfigurator authenticationProvider(AuthenticationProvider authenticationProvider) {
+    public HttpConfiguration authenticationProvider(AuthenticationProvider authenticationProvider) {
         getAuthenticationRegistry().add(authenticationProvider);
         return this;
     }
 
-    public HttpConfigurator userDetailsService(UserDetailsService userDetailsService) throws Exception {
+    public HttpConfiguration userDetailsService(UserDetailsService userDetailsService) throws Exception {
         getAuthenticationRegistry().userDetailsService(userDetailsService);
         return this;
     }
@@ -184,22 +184,22 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return getSharedObject(AuthenticationBuilder.class);
     }
 
-    public HttpConfigurator securityContextRepsitory(SecurityContextRepository securityContextRepository) {
+    public HttpConfiguration securityContextRepsitory(SecurityContextRepository securityContextRepository) {
         this.setSharedObject(SecurityContextRepository.class, securityContextRepository);
         return this;
     }
 
-    public HttpConfigurator addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
+    public HttpConfiguration addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerAfter(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public HttpConfigurator addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
+    public HttpConfiguration addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerBefore(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public HttpConfigurator addFilter(Filter filter) {
+    public HttpConfiguration addFilter(Filter filter) {
         this.filters.add(filter);
         return this;
     }
@@ -208,16 +208,16 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return new RequestMatcherRegistry();
     }
 
-    public HttpConfigurator requestMatcher(RequestMatcher requestMatcher) {
+    public HttpConfiguration requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
         return this;
     }
 
-    public HttpConfigurator antMatcher(String pattern) {
+    public HttpConfiguration antMatcher(String pattern) {
         return requestMatcher(new AntPathRequestMatcher(pattern));
     }
 
-    public HttpConfigurator regexMatcher(String pattern) {
+    public HttpConfiguration regexMatcher(String pattern) {
         return requestMatcher(new RegexRequestMatcher(pattern, null));
     }
 
@@ -230,17 +230,17 @@ public class HttpConfigurator extends AbstractConfiguredBuilder<DefaultSecurityF
         return authenticationEntryPoint;
     }
 
-    public HttpConfigurator authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+    public HttpConfiguration authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         return this;
     }
 
-    public final class RequestMatcherRegistry extends BaseRequestMatcherRegistry<HttpConfigurator,DefaultSecurityFilterChain,HttpConfigurator> {
+    public final class RequestMatcherRegistry extends BaseRequestMatcherRegistry<HttpConfiguration,DefaultSecurityFilterChain,HttpConfiguration> {
 
         @Override
-        HttpConfigurator chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+        HttpConfiguration chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             requestMatcher(new OrRequestMatcher(requestMatchers));
-            return HttpConfigurator.this;
+            return HttpConfiguration.this;
         }
 
         private RequestMatcherRegistry(){}

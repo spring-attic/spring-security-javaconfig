@@ -72,7 +72,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpBasicConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -95,7 +95,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpBasicConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -114,7 +114,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class AuthenticationDetailsSourceHttpBasicConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .httpBasic()
                     .authenticationDetailsSource(new CustomAuthenticationDetailsSource())
@@ -146,7 +146,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class EntryPointRefHttpBasicConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")

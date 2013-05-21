@@ -15,26 +15,40 @@
  */
 package org.springframework.security.config.annotation;
 
-import org.springframework.security.config.annotation.web.HttpConfigurator;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 
 
 /**
+ * A base class for {@link SecurityConfigurator} that allows subclasses to only
+ * implement the methods they are interested in. It also provides a mechanism
+ * for using the {@link SecurityConfigurator} and when done gaining access to the
+ * {@link SecurityBuilder} that is being configured.
  *
  * @author Rob Winch
  *
- * @param <O> The Object being built by B
- * @param <B> The Builder that is building O
+ * @param <O>
+ *            The Object being built by B
+ * @param <B>
+ *            The Builder that is building O
  */
-public abstract class AbstractConfigurator<O,B extends SecurityBuilder<O>> implements SecurityConfigurator<O,B> {
+public abstract class SecurityConfiguratorAdapter<O,B extends SecurityBuilder<O>> implements SecurityConfigurator<O,B> {
     private B securityBuilder;
 
+    @Override
     public void init(B builder) throws Exception {}
 
+    @Override
     public void configure(B builder) throws Exception {}
 
+    /**
+     * Return the {@link SecurityBuilder} when done using the
+     * {@link SecurityConfigurator}. This is useful for method chaining.
+     *
+     * @return
+     */
     public B and() {
         if(securityBuilder == null) {
-            throw new IllegalStateException(HttpConfigurator.class.getSimpleName() + " cannot be null");
+            throw new IllegalStateException(HttpConfiguration.class.getSimpleName() + " cannot be null");
         }
         return securityBuilder;
     }

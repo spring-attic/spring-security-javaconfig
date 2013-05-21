@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
@@ -28,7 +28,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExceptionHandlingConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class ExceptionHandlingConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
 
     private AccessDeniedHandler accessDeniedHandler;
     private RequestCache requestCache;
@@ -50,7 +50,7 @@ public class ExceptionHandlingConfigurator extends AbstractConfigurator<DefaultS
     }
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(http.authenticationEntryPoint(), getRequestCache(http));
         if(accessDeniedHandler != null) {
             exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);
@@ -58,7 +58,7 @@ public class ExceptionHandlingConfigurator extends AbstractConfigurator<DefaultS
         http.addFilter(exceptionTranslationFilter);
     }
 
-    private RequestCache getRequestCache(HttpConfigurator http) {
+    private RequestCache getRequestCache(HttpConfiguration http) {
         if(this.requestCache != null) {
             return this.requestCache;
         }

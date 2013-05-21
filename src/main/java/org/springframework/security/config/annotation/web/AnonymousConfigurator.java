@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import org.springframework.security.authentication.AnonymousAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
-public class AnonymousConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class AnonymousConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private String key;
     private AuthenticationProvider authenticationProvider;
     private AnonymousAuthenticationFilter authenticationFilter;
@@ -19,7 +19,7 @@ public class AnonymousConfigurator extends AbstractConfigurator<DefaultSecurityF
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
 
     @Override
-    public void init(HttpConfigurator http)
+    public void init(HttpConfiguration http)
             throws Exception {
         if(authenticationProvider == null) {
             authenticationProvider = new AnonymousAuthenticationProvider(getKey());
@@ -31,12 +31,12 @@ public class AnonymousConfigurator extends AbstractConfigurator<DefaultSecurityF
     }
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         authenticationFilter.afterPropertiesSet();
         http.addFilter(authenticationFilter);
     }
 
-    public HttpConfigurator disable() {
+    public HttpConfiguration disable() {
         return and().removeConfigurator(getClass()).and();
     }
 

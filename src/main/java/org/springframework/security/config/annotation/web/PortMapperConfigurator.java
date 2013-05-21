@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.PortMapperImpl;
@@ -28,7 +28,7 @@ import org.springframework.security.web.PortMapperImpl;
  * @author Rob Winch
  * @since 3.2
  */
-public class PortMapperConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class PortMapperConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private PortMapper portMapper;
     private Map<String, String> httpsPortMappings = new HashMap<String,String>();
 
@@ -42,7 +42,7 @@ public class PortMapperConfigurator extends AbstractConfigurator<DefaultSecurity
     }
 
     @Override
-    public void init(HttpConfigurator http) throws Exception {
+    public void init(HttpConfiguration http) throws Exception {
         http.setSharedObject(PortMapper.class, getPortMapper());
     }
 

@@ -18,21 +18,52 @@ package org.springframework.security.config.annotation;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
+import org.springframework.web.filter.DelegatingFilterProxy;
+
 /**
+ * A base {@link SecurityBuilder} that allows {@link SecurityConfigurator} to be
+ * applied to it. This makes modifying the {@link SecurityBuilder} a strategy
+ * that can be customized and broken up into a number of
+ * {@link SecurityConfigurator} objects that have more specific goals than that
+ * of the {@link SecurityBuilder}.
+ *
+ * For example, a {@link SecurityBuilder} may build an
+ * {@link DelegatingFilterProxy}, but a {@link SecurityConfigurator} might
+ * populate the {@link SecurityBuilder} with the filters necessary for session
+ * management, form based login, authorization, etc.
  *
  * @author Rob Winch
  *
- * @param <T> The object that this builder returns
- * @param <B> The type of this builder (that is returned by the base class)
+ * @param <T>
+ *            The object that this builder returns
+ * @param <B>
+ *            The type of this builder (that is returned by the base class)
+ *
+ * @see SpringSecurityFilterChainBuilder
+ *
+ *
  */
-public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>> extends AbstractSecurityBuilder<T> {
+public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBuilder<T>> extends AbstractSecurityBuilder<T> {
 
     private final LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>> configurators = new LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>>();
 
+    /**
+     * Applies a {@link SecurityConfigurator} to this {@link SecurityBuilder}. Typical usage might look like:
+     *
+     * <code>
+     * builder
+     *     .apply(new DemoSecurityConfigurator())
+     *         .
+     *
+     * @param configurer
+     * @return
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
-    public <C extends AbstractConfigurator<T, B>> C apply(C configurer)
+    public <C extends SecurityConfiguratorAdapter<T, B>> C apply(C configurer)
             throws Exception {
-        if(isBuilt()) {
+        if(isBuildingOrBuilt()) {
             throw new IllegalStateException("Cannot apply "+configurer+" to already built object");
         }
         configurer.setBuilder((B) this);
@@ -42,7 +73,7 @@ public abstract class AbstractConfiguredBuilder<T, B extends SecurityBuilder<T>>
     @SuppressWarnings("unchecked")
     public <C extends SecurityConfigurator<T, B>> C apply(C configurer)
             throws Exception {
-        if(isBuilt()) {
+        if(isBuildingOrBuilt()) {
             throw new IllegalStateException("Cannot apply "+configurer+" to already built object");
         }
         Class<? extends SecurityConfigurator<T, B>> clazz = (Class<? extends SecurityConfigurator<T, B>>) configurer

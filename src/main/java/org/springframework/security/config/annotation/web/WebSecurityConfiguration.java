@@ -27,7 +27,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
+import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.web.FilterChainProxy;
@@ -44,7 +44,7 @@ import org.springframework.security.web.firewall.HttpFirewall;
  * @since 3.2
  */
 @Configuration
-public class WebSecurityConfiguration extends AbstractConfiguredBuilder<FilterChainProxy, WebSecurityConfiguration> {
+public class WebSecurityConfiguration extends AbstractConfiguredSecurityBuilder<FilterChainProxy, WebSecurityConfiguration> {
     private final SpringSecurityFilterChainBuilder springSecurityFilterChain = new SpringSecurityFilterChainBuilder();
 
     private List<WebSecurityConfigurer> webSecurityConfigurers;

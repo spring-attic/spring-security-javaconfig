@@ -43,7 +43,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER");
@@ -59,7 +59,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousDisabledConfig extends BaseWebConfig {
-      protected void configure(HttpConfigurator http) {
+      protected void configure(HttpConfiguration http) {
                 http.anonymous().disable()
         }
     }
@@ -73,7 +73,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousGrantedAuthorityConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .anonymous()
                     .authorities("ROLE_ANON")
@@ -94,7 +94,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousKeyConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -116,7 +116,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousUsernameConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")

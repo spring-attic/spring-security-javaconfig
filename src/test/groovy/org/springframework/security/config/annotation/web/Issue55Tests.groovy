@@ -54,7 +54,7 @@ class Issue55Tests extends BaseSpringSpec {
         public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
 
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .authorizeUrls()
                         .antMatchers("/**").hasRole("USER");
@@ -85,7 +85,7 @@ class Issue55Tests extends BaseSpringSpec {
         @Order(1)
         public static class ApiWebSecurityAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .antMatcher("/api/**")
                     .authorizeUrls()
@@ -95,7 +95,7 @@ class Issue55Tests extends BaseSpringSpec {
         @Component
         public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .authorizeUrls()
                         .antMatchers("/**").hasRole("USER");

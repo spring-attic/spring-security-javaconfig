@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web;
 import java.util.UUID;
 
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -34,7 +34,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
  * @author Rob Winch
  *
  */
-public class RememberMeConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class RememberMeConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private String key;
     private RememberMeServices rememberMeServices;
@@ -82,7 +82,7 @@ public class RememberMeConfigurator extends AbstractConfigurator<DefaultSecurity
     }
 
     @Override
-    public void init(HttpConfigurator http) throws Exception {
+    public void init(HttpConfiguration http) throws Exception {
         String key = getKey();
         RememberMeServices rememberMeServices = getRememberMeServices(http,key);
         http.setSharedObject(RememberMeServices.class, rememberMeServices);
@@ -93,7 +93,7 @@ public class RememberMeConfigurator extends AbstractConfigurator<DefaultSecurity
         http.authenticationProvider(authenticationProvider);
     }
 
-    private RememberMeServices getRememberMeServices(HttpConfigurator http, String key) {
+    private RememberMeServices getRememberMeServices(HttpConfiguration http, String key) {
         if(rememberMeServices != null) {
             if(rememberMeServices instanceof LogoutHandler && logoutHandler == null) {
                 this.logoutHandler = (LogoutHandler) rememberMeServices;
@@ -114,25 +114,25 @@ public class RememberMeConfigurator extends AbstractConfigurator<DefaultSecurity
         return tokenRememberMeServices;
     }
 
-    private AbstractRememberMeServices createRememberMeServices(HttpConfigurator http,
+    private AbstractRememberMeServices createRememberMeServices(HttpConfiguration http,
             String key) {
         return tokenRepository == null ? createTokenBasedRememberMeServices(http, key) : createPersistentRememberMeServices(http, key);
     }
 
-    private AbstractRememberMeServices createTokenBasedRememberMeServices(HttpConfigurator http,
+    private AbstractRememberMeServices createTokenBasedRememberMeServices(HttpConfiguration http,
             String key) {
         UserDetailsService userDetailsService = getUserDetailsService(http);
         return new TokenBasedRememberMeServices(key, userDetailsService);
     }
 
     private AbstractRememberMeServices createPersistentRememberMeServices(
-            HttpConfigurator http, String key) {
+            HttpConfiguration http, String key) {
         UserDetailsService userDetailsService = getUserDetailsService(http);
         return new PersistentTokenBasedRememberMeServices(key, userDetailsService, tokenRepository);
     }
 
     @Override
-    public void configure(HttpConfigurator http)
+    public void configure(HttpConfiguration http)
             throws Exception {
         RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(http.authenticationManager(), rememberMeServices);
         if(authenticationSuccessHandler != null) {
@@ -141,7 +141,7 @@ public class RememberMeConfigurator extends AbstractConfigurator<DefaultSecurity
         http.addFilter(rememberMeFilter);
     }
 
-    private UserDetailsService getUserDetailsService(HttpConfigurator http) {
+    private UserDetailsService getUserDetailsService(HttpConfiguration http) {
         return userDetailsService == null ? http.getSharedObject(UserDetailsService.class) : userDetailsService;
     }
 

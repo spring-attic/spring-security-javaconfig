@@ -3,7 +3,7 @@ package org.springframework.security.config.annotation.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
-public class LogoutConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class LogoutConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";
@@ -85,14 +85,14 @@ public class LogoutConfigurator extends AbstractConfigurator<DefaultSecurityFilt
     }
 
     @Override
-    public void init(HttpConfigurator http) throws Exception {
+    public void init(HttpConfiguration http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, this.logoutUrl, this.logoutSuccessUrl);
         }
     }
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         LogoutFilter logoutFilter = createLogoutFilter();
         http.addFilter(logoutFilter);
     }

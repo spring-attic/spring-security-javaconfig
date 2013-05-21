@@ -40,7 +40,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private boolean disableAuthenticationRegistry;
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;
-    private HttpConfigurator http;
+    private HttpConfiguration http;
     private boolean disableDefaults;
 
     protected WebSecurityConfigurerAdapter() {
@@ -55,13 +55,13 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         this.disableAuthenticationRegistry = true;
     }
 
-    protected HttpConfigurator http() throws Exception {
+    protected HttpConfiguration http() throws Exception {
         if(http != null) {
             return http;
         }
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
-        http = new HttpConfigurator(authenticationBuilder);
+        http = new HttpConfiguration(authenticationBuilder);
         http.setSharedObject(UserDetailsService.class, userDetailsService());
         if(!disableDefaults) {
             http
@@ -136,7 +136,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return null;
     }
 
-    protected abstract void configure(HttpConfigurator http) throws Exception;
+    protected abstract void configure(HttpConfiguration http) throws Exception;
 
     static final class AuthenticationManagerDelegator implements AuthenticationManager {
         private AuthenticationBuilder delegateBuilder;

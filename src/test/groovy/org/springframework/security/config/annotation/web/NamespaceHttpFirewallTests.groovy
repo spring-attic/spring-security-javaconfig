@@ -93,7 +93,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpFirewallConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
         }
     }
 
@@ -111,7 +111,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
     @Configuration
     static class CustomHttpFirewallConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfigurator http) { }
+        protected void configure(HttpConfiguration http) { }
 
         @Override
         public void configure(WebSecurityConfiguration builder)	throws Exception {

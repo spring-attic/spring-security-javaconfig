@@ -75,7 +75,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
             super(true)
         }
 
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
@@ -96,7 +96,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
             super(true)
         }
 
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
@@ -119,7 +119,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
             super(true)
         }
 
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .addFilter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
@@ -147,7 +147,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")

@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,7 +36,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
  * @author Rob Winch
  * @since 3.2
  */
-public class X509Configurator extends AbstractConfigurator<DefaultSecurityFilterChain, HttpConfigurator> {
+public class X509Configurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
     private X509AuthenticationFilter x509AuthenticationFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService;
     private String subjectPrincipalRegex;
@@ -72,7 +72,7 @@ public class X509Configurator extends AbstractConfigurator<DefaultSecurityFilter
     }
 
     @Override
-    public void init(HttpConfigurator http) throws Exception {
+    public void init(HttpConfiguration http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getAuthenticationUserDetailsService(http));
 
@@ -82,7 +82,7 @@ public class X509Configurator extends AbstractConfigurator<DefaultSecurityFilter
     }
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         X509AuthenticationFilter filter = getFilter(http.authenticationManager());
         http.addFilter(filter);
     }
@@ -107,7 +107,7 @@ public class X509Configurator extends AbstractConfigurator<DefaultSecurityFilter
     }
 
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> getAuthenticationUserDetailsService(
-            HttpConfigurator http) {
+            HttpConfiguration http) {
         if(authenticationUserDetailsService == null) {
             userDetailsService(http.getSharedObject(UserDetailsService.class));
         }

@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation;
 
 /**
+ * Interface for building an Object
  *
  * @author Rob Winch
  * @since 3.2

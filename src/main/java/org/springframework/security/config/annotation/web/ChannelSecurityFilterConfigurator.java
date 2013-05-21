@@ -39,13 +39,13 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfigurator> {
+public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private List<ChannelProcessor> channelProcessors;
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(getChannelProcessors(http));
         channelFilter.setChannelDecisionManager(channelDecisionManager);
@@ -57,7 +57,7 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
     }
 
 
-    private List<ChannelProcessor> getChannelProcessors(HttpConfigurator http) {
+    private List<ChannelProcessor> getChannelProcessors(HttpConfiguration http) {
         if(channelProcessors != null) {
             return channelProcessors;
         }

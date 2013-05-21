@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.web.util.RequestMatchers;
 import org.springframework.security.web.util.RequestMatcher;
@@ -36,7 +36,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @param <O> The Object being built by Builder B
  * @param <B> The Builder that is building Object O
  */
-abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> extends AbstractConfigurator<O,B> {
+abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> extends SecurityConfiguratorAdapter<O,B> {
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
 
     List<UrlMapping> getUrlMappings() {

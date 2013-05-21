@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -36,7 +36,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public class FormLoginConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private UsernamePasswordAuthenticationFilter usernamePasswordFilter = new UsernamePasswordAuthenticationFilter() {
         @Override
         protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -61,7 +61,7 @@ public class FormLoginConfigurator extends AbstractConfigurator<DefaultSecurityF
     }
 
     @Override
-    public void init(HttpConfigurator http) throws Exception {
+    public void init(HttpConfiguration http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
@@ -69,7 +69,7 @@ public class FormLoginConfigurator extends AbstractConfigurator<DefaultSecurityF
     }
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         usernamePasswordFilter.setAuthenticationManager(http.authenticationManager());
         usernamePasswordFilter.setAuthenticationSuccessHandler(successHandler);
         usernamePasswordFilter.setAuthenticationFailureHandler(failureHandler);

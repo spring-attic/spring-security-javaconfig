@@ -117,7 +117,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -154,7 +154,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             boolean alwaysUseDefaultSuccess = true;
             http
                 .authorizeUrls()
@@ -195,7 +195,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomRefsConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .formLogin()
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure")) // form-login@authentication-failure-handler-ref

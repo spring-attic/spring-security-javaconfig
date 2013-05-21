@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -53,7 +53,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public class OpenIDLoginConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain,HttpConfigurator> {
+public class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private OpenIDAuthenticationFilter openIDAuthenticationFilter = new OpenIDAuthenticationFilter();
     private OpenIDConsumer openIDConsumer;
     private ConsumerManager consumerManager;
@@ -76,7 +76,7 @@ public class OpenIDLoginConfigurator extends AbstractConfigurator<DefaultSecurit
     }
 
     @Override
-    public void init(HttpConfigurator http) throws Exception {
+    public void init(HttpConfiguration http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
@@ -168,7 +168,7 @@ public class OpenIDLoginConfigurator extends AbstractConfigurator<DefaultSecurit
      * @return
      */
     private AuthenticationUserDetailsService<OpenIDAuthenticationToken> authenticationUserDetailsService(
-            HttpConfigurator http) {
+            HttpConfiguration http) {
         if(authenticationUserDetailsService != null) {
             return authenticationUserDetailsService;
         }
@@ -176,7 +176,7 @@ public class OpenIDLoginConfigurator extends AbstractConfigurator<DefaultSecurit
     }
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         openIDAuthenticationFilter.setAuthenticationManager(http.authenticationManager());
         openIDAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
         openIDAuthenticationFilter.setAuthenticationFailureHandler(failureHandler);

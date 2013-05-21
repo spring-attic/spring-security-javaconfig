@@ -28,7 +28,7 @@ import org.springframework.security.web.util.AntPathRequestMatcher;
  */
 final class PermitAllSupport {
 
-    public static void permitAll(HttpConfigurator http, String... urls) {
+    public static void permitAll(HttpConfiguration http, String... urls) {
         ExpressionUrlAuthorizations configurator = http.getConfigurator(ExpressionUrlAuthorizations.class);
         if(configurator != null) {
             for(String url : urls) {

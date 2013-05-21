@@ -2,7 +2,7 @@ package org.springframework.security.samples.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.HttpConfigurator;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 
@@ -18,7 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpConfigurator http) throws Exception {
+    protected void configure(HttpConfiguration http) throws Exception {
         http
             .authorizeUrls()
                 .antMatchers("/login").permitAll()

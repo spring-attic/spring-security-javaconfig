@@ -22,7 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
+import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurator;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
@@ -33,7 +33,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * @author Rob Winch
  *
  */
-public class AuthenticationBuilder extends AbstractConfiguredBuilder<AuthenticationManager, AuthenticationBuilder> implements
+public class AuthenticationBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationBuilder> implements
         SecurityBuilder<AuthenticationManager>, AuthenticationRegistry {
     private AuthenticationManager parentAuthenticationManager;
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();

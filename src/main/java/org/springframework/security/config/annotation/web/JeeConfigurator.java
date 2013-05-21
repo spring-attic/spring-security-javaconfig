@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.authority.mapping.SimpleMappableAttributesRetriever;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -35,7 +35,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  * @author Rob Winch
  * @since 3.2
  */
-public class JeeConfigurator extends AbstractConfigurator<DefaultSecurityFilterChain, HttpConfigurator> {
+public class JeeConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
     private J2eePreAuthenticatedProcessingFilter j2eePreAuthenticatedProcessingFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> userDetailsService;
     private Set<String> mappableRoles = new HashSet<String>();
@@ -65,7 +65,7 @@ public class JeeConfigurator extends AbstractConfigurator<DefaultSecurityFilterC
     }
 
     @Override
-    public void init(HttpConfigurator http) throws Exception {
+    public void init(HttpConfiguration http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getUserDetailsService(http));
 
@@ -75,7 +75,7 @@ public class JeeConfigurator extends AbstractConfigurator<DefaultSecurityFilterC
     }
 
     @Override
-    public void configure(HttpConfigurator http) throws Exception {
+    public void configure(HttpConfiguration http) throws Exception {
         J2eePreAuthenticatedProcessingFilter filter = getFilter(http
                 .authenticationManager());
         http.addFilter(filter);
@@ -95,7 +95,7 @@ public class JeeConfigurator extends AbstractConfigurator<DefaultSecurityFilterC
     }
 
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> getUserDetailsService(
-            HttpConfigurator http) {
+            HttpConfiguration http) {
         return userDetailsService == null ? new PreAuthenticatedGrantedAuthoritiesUserDetailsService()
                 : userDetailsService;
     }

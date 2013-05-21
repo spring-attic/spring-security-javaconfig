@@ -74,7 +74,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
             }
 
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .antMatcher("/role1/**")
                     .authorizeUrls()
@@ -86,7 +86,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         @Order(2)
         public static class WebConfigurer2 extends WebSecurityConfigurerAdapter {
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .antMatcher("/role2/**")
                         .authorizeUrls()
@@ -98,7 +98,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         @Order(3)
         public static class WebConfigurer3 extends WebSecurityConfigurerAdapter {
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .antMatcher("/role3/**")
                     .authorizeUrls()
@@ -110,7 +110,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         public static class WebConfigurer4 extends WebSecurityConfigurerAdapter {
 
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .authorizeUrls()
                         .antMatchers("/**").hasRole("4");
@@ -142,7 +142,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         public static class WebConfigurer1 extends WebSecurityConfigurerAdapter {
 
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .antMatcher("/role1/**")
                     .authorizeUrls()
@@ -153,7 +153,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         @Configuration
         public static class WebConfigurer2 extends WebSecurityConfigurerAdapter {
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .antMatcher("/role2/**")
                     .authorizeUrls()

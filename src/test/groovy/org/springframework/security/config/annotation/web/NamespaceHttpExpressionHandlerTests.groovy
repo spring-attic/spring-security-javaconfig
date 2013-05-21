@@ -78,7 +78,7 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
     static class ExpressionHandlerConfig extends BaseWebConfig {
         static EXPRESSION_HANDLER;
 
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .expressionHandler(EXPRESSION_HANDLER)

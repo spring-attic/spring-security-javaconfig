@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.HttpConfigurator;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
 import org.springframework.security.oauth2.config.annotation.authentication.InMemoryClientDetailsServiceBuilder;
@@ -66,7 +66,7 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpConfigurator http) throws Exception {
+    protected void configure(HttpConfiguration http) throws Exception {
         http
             .authorizeUrls()
                 .antMatchers("/oauth/token").fullyAuthenticated()

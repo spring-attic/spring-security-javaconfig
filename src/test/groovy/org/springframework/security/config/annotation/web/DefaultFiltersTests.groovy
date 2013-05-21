@@ -35,7 +35,7 @@ import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
 import org.springframework.security.config.annotation.web.UrlAuthorizations;
 import org.springframework.security.config.annotation.web.FormLoginConfigurator;
-import org.springframework.security.config.annotation.web.HttpConfigurator;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -111,7 +111,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
             super(true)
         }
 
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http.formLogin()
         }
     }
@@ -140,7 +140,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
                     .ignoring()
                         .antMatchers("/resources/**");
             }
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER");
@@ -165,7 +165,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class DefaultFiltersConfigPermitAll extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
         }
     }
 }

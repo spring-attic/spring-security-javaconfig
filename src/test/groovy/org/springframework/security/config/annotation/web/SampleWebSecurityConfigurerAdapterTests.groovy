@@ -130,7 +130,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
         }
 
         @Override
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/signup","/about").permitAll()
@@ -251,7 +251,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
         @Configuration
         @Order(1)
         public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .antMatcher("/api/**")
                     .authorizeUrls()
@@ -272,7 +272,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
             }
 
             @Override
-            protected void configure(HttpConfigurator http) throws Exception {
+            protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .authorizeUrls()
                         .antMatchers("/signup","/about").permitAll()

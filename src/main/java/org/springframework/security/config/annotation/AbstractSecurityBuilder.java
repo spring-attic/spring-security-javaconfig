@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  */
 public abstract class AbstractSecurityBuilder<T> implements SecurityBuilder<T> {
-    private AtomicBoolean built = new AtomicBoolean();
+    private AtomicBoolean building = new AtomicBoolean();
 
     private T object;
 
@@ -31,7 +31,7 @@ public abstract class AbstractSecurityBuilder<T> implements SecurityBuilder<T> {
      */
     @Override
     public final T build() throws Exception {
-        if(built.compareAndSet(false, true)) {
+        if(building.compareAndSet(false, true)) {
             object = doBuild();
             return object;
         }
@@ -39,14 +39,14 @@ public abstract class AbstractSecurityBuilder<T> implements SecurityBuilder<T> {
     }
 
     public final T getObject() {
-        if(built.equals(false)) {
+        if(building.equals(false)) {
             throw new IllegalStateException("This object has not been built");
         }
         return object;
     }
 
-    protected boolean isBuilt() {
-        return built.get();
+    final boolean isBuildingOrBuilt() {
+        return building.get();
     }
 
     protected abstract T doBuild() throws Exception;

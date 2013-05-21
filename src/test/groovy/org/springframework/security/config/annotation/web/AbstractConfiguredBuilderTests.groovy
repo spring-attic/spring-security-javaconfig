@@ -16,8 +16,8 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractConfiguredBuilder;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -39,11 +39,11 @@ class AbstractConfiguredBuilderTests extends Specification {
         ReflectionTestUtils.getField(builder,"configurators").size() == 1
     }
 
-    private static class ConcreteAbstractConfiguredBuilder extends AbstractConfiguredBuilder<Object, ConcreteAbstractConfiguredBuilder> {
+    private static class ConcreteAbstractConfiguredBuilder extends AbstractConfiguredSecurityBuilder<Object, ConcreteAbstractConfiguredBuilder> {
         public Object performBuild() throws Exception {
             return "success";
         }
     }
 
-    private static class ConcreteConfigurator extends AbstractConfigurator<Object, ConcreteAbstractConfiguredBuilder> { }
+    private static class ConcreteConfigurator extends SecurityConfiguratorAdapter<Object, ConcreteAbstractConfiguredBuilder> { }
 }

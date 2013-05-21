@@ -103,7 +103,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class OpenIDLoginConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -154,7 +154,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class OpenIDLoginAttributeExchangeConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) {
+        protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -207,7 +207,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class OpenIDLoginCustomConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             boolean alwaysUseDefaultSuccess = true;
             http
                 .authorizeUrls()
@@ -238,7 +238,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class OpenIDLoginCustomRefsConfig extends BaseWebConfig {
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")

@@ -127,7 +127,7 @@ public class NamespaceHttpPortMappingsTests extends BaseSpringSpec {
     static class HttpInterceptUrlWithPortMapperConfig extends WebSecurityConfigurerAdapter {
 
         @Override
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")

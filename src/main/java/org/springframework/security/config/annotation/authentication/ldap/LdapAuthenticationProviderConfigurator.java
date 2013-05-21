@@ -17,7 +17,7 @@ package org.springframework.security.config.annotation.authentication.ldap;
 
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractConfigurator;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
@@ -32,7 +32,7 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
  * @author Rob Winch
  * @since 3.2
  */
-public class LdapAuthenticationProviderConfigurator extends AbstractConfigurator<AuthenticationManager,AuthenticationBuilder> implements
+public class LdapAuthenticationProviderConfigurator extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationBuilder> implements
         SecurityBuilder<LdapAuthenticationProvider>, LdapAuthenticationRegistry {
     private String groupRoleAttribute = "cn";
     private String groupSearchBase = "ou=groups";

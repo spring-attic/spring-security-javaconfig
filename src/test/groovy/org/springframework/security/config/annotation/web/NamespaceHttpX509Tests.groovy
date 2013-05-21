@@ -98,7 +98,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -131,7 +131,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
 
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -167,7 +167,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -203,7 +203,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
@@ -237,7 +237,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
 
-        protected void configure(HttpConfigurator http) throws Exception {
+        protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/**").hasRole("USER")
