@@ -13,7 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.springframework.security.config.annotation.web;
+package org.springframework.security.config.annotation.web
+
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 
 import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
 
@@ -307,6 +310,34 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
                 .formLogin()
                     .and()
                 .rememberMe()
+        }
+    }
+
+    def "http/remember-me defaults UserDetailsService with custom UserDetailsService"() {
+        setup:
+            DefaultsUserDetailsServiceWithDaoConfig.USERDETAILS_SERVICE = Mock(UserDetailsService)
+        when: "use secure cookies not specified"
+            loadConfig(DefaultsUserDetailsServiceWithDaoConfig)
+        then: "RememberMeServices defaults to the custom UserDetailsService"
+            ReflectionTestUtils.getField(findFilter(RememberMeAuthenticationFilter).rememberMeServices, "userDetailsService") == DefaultsUserDetailsServiceWithDaoConfig.USERDETAILS_SERVICE
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    static class DefaultsUserDetailsServiceWithDaoConfig extends WebSecurityConfigurerAdapter {
+        static UserDetailsService USERDETAILS_SERVICE
+
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .formLogin()
+                    .and()
+                .rememberMe()
+        }
+
+        protected void registerAuthentication(
+                AuthenticationRegistry authenticationRegistry) throws Exception {
+            authenticationRegistry
+                    .userDetailsService(USERDETAILS_SERVICE);
         }
     }
 
