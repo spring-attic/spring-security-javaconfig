@@ -61,18 +61,6 @@ public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<Default
         initSharedObjects(authenticationBuilder);
     }
 
-    public HttpConfiguration(AuthenticationManager authenticationManager) {
-        this(new AuthenticationManagerBuilder().parentAuthenticationManager(authenticationManager));
-    }
-
-    public HttpConfiguration(AuthenticationProvider provider) {
-        this(new ProviderManager(Arrays.<AuthenticationProvider>asList(provider)));
-    }
-
-    public HttpConfiguration(UserDetailsService userDetailsService) throws Exception {
-        this(new AuthenticationManagerBuilder().userDetailsService(userDetailsService).and().build());
-    }
-
     @Override
     public <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurator(
             Class<C> clazz) {
