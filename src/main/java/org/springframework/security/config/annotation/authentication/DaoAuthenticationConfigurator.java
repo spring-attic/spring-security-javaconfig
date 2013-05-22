@@ -21,15 +21,33 @@ import org.springframework.security.config.annotation.SecurityConfiguratorAdapte
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Allows configuring a {@link DaoAuthenticationProvider}
+ *
+ * @author Rob Winch
+ * @since 3.2
+ */
 public class DaoAuthenticationConfigurator<T extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> {
     private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     private final T userDetailsService;
 
+    /**
+     * Creates a new instance
+     *
+     * @param userDetailsService
+     */
     public DaoAuthenticationConfigurator(T userDetailsService) {
         this.userDetailsService = userDetailsService;
         provider.setUserDetailsService(userDetailsService);
     }
 
+    /**
+     * Allows specifying the {@link PasswordEncoder} to use with the {@link DaoAuthenticationProvider}. The default is
+     * is to use plain text.
+     *
+     * @param passwordEncoder The {@link PasswordEncoder} to use.
+     * @return
+     */
     public DaoAuthenticationConfigurator passwordEncoder(PasswordEncoder passwordEncoder) {
         provider.setPasswordEncoder(passwordEncoder);
         return this;
@@ -40,7 +58,12 @@ public class DaoAuthenticationConfigurator<T extends UserDetailsService> extends
         builder.add(provider);
     }
 
-    protected T getUserDetailsService() throws Exception {
+    /**
+     * Gets the {@link UserDetailsService} that is used with the {@link DaoAuthenticationProvider}
+     *
+     * @return the {@link UserDetailsService} that is used with the {@link DaoAuthenticationProvider}
+     */
+    protected T getUserDetailsService() {
         return userDetailsService;
     }
 }

@@ -88,7 +88,7 @@ public class JdbcUserDetailsManagerConfigurator extends
     }
 
     @Override
-    protected JdbcUserDetailsManager getUserDetailsService() throws Exception {
+    protected JdbcUserDetailsManager getUserDetailsService() {
         return (JdbcUserDetailsManager) super.getUserDetailsService();
     }
 
