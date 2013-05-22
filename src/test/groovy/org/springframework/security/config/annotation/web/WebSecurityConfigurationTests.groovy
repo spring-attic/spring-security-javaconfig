@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.SecurityFilterChain
@@ -55,7 +55,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class SortedWebSecurityConfigurerAdaptersConfig {
         public AuthenticationManager authenticationManager() throws Exception {
-            return new AuthenticationBuilder()
+            return new AuthenticationManagerBuilder()
                 .inMemoryAuthentication()
                     .withUser("marissa").password("koala").roles("USER").and()
                     .withUser("paul").password("emu").roles("USER").and()
@@ -131,7 +131,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class DuplicateOrderConfig {
         public AuthenticationManager authenticationManager() throws Exception {
-            return new AuthenticationBuilder()
+            return new AuthenticationManagerBuilder()
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .and()

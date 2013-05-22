@@ -57,7 +57,7 @@ import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.util.Assert;
 
@@ -75,7 +75,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     @Autowired
     private ApplicationContext context;
     private AuthenticationManager authenticationManager;
-    private AuthenticationBuilder authenticationRegistry = new AuthenticationBuilder();
+    private AuthenticationManagerBuilder authenticationRegistry = new AuthenticationManagerBuilder();
     private boolean disableAuthenticationRegistry;
     private AnnotationAttributes enableMethodSecurity;
     private MethodSecurityExpressionHandler expressionHandler;

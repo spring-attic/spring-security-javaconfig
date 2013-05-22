@@ -37,7 +37,7 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurityTests.BaseMethodConfig;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
@@ -97,7 +97,7 @@ public class SampleEnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
         @Bean
         public AuthenticationManager authenticationManager() throws Exception {
-            return new AuthenticationBuilder()
+            return new AuthenticationManagerBuilder()
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN").and()

@@ -26,7 +26,7 @@ import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
@@ -156,7 +156,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     static abstract class BaseLdapProviderConfig {
         @Bean
         public AuthenticationManager authenticationManager() {
-            AuthenticationBuilder registry = new AuthenticationBuilder();
+            AuthenticationManagerBuilder registry = new AuthenticationManagerBuilder();
             registerAuthentication(registry);
             return registry.build();
         }

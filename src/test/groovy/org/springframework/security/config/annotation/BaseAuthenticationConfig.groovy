@@ -20,7 +20,7 @@ import java.rmi.registry.Registry;
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.authentication.UserDetailsServiceConfigurator;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
@@ -44,7 +44,7 @@ class BaseAuthenticationConfig {
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        AuthenticationBuilder registry = new AuthenticationBuilder();
+        AuthenticationManagerBuilder registry = new AuthenticationManagerBuilder();
         registerAuthentication(registry);
         return registry.build();
     }

@@ -31,7 +31,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -57,12 +57,12 @@ public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<Default
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
-    public HttpConfiguration(AuthenticationBuilder authenticationBuilder) {
+    public HttpConfiguration(AuthenticationManagerBuilder authenticationBuilder) {
         initSharedObjects(authenticationBuilder);
     }
 
     public HttpConfiguration(AuthenticationManager authenticationManager) {
-        this(new AuthenticationBuilder().parentAuthenticationManager(authenticationManager));
+        this(new AuthenticationManagerBuilder().parentAuthenticationManager(authenticationManager));
     }
 
     public HttpConfiguration(AuthenticationProvider provider) {
@@ -70,7 +70,7 @@ public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<Default
     }
 
     public HttpConfiguration(UserDetailsService userDetailsService) throws Exception {
-        this(new AuthenticationBuilder().userDetailsService(userDetailsService).and().build());
+        this(new AuthenticationManagerBuilder().userDetailsService(userDetailsService).and().build());
     }
 
     @Override
@@ -180,8 +180,8 @@ public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<Default
         return this;
     }
 
-    private AuthenticationBuilder getAuthenticationRegistry() {
-        return getSharedObject(AuthenticationBuilder.class);
+    private AuthenticationManagerBuilder getAuthenticationRegistry() {
+        return getSharedObject(AuthenticationManagerBuilder.class);
     }
 
     public HttpConfiguration securityContextRepsitory(SecurityContextRepository securityContextRepository) {
@@ -246,8 +246,8 @@ public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<Default
         private RequestMatcherRegistry(){}
     }
 
-    private void initSharedObjects(AuthenticationBuilder authenticationBuilder) {
-        setSharedObject(AuthenticationBuilder.class, authenticationBuilder);
+    private void initSharedObjects(AuthenticationManagerBuilder authenticationBuilder) {
+        setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
     }
 
     private static class OrRequestMatcher implements RequestMatcher {

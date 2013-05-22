@@ -6,7 +6,7 @@ import org.springframework.security.config.annotation.SecurityConfiguratorAdapte
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class DaoAuthenticationConfigurator extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationBuilder> {
+public class DaoAuthenticationConfigurator extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> {
     private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
     public DaoAuthenticationConfigurator(UserDetailsService userDetailsService) {
@@ -19,7 +19,7 @@ public class DaoAuthenticationConfigurator extends SecurityConfiguratorAdapter<A
     }
 
     @Override
-    public void configure(AuthenticationBuilder builder) throws Exception {
+    public void configure(AuthenticationManagerBuilder builder) throws Exception {
         builder.add(provider);
     }
 }

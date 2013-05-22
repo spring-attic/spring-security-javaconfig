@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurerA
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean(name = {"authManager",BeanIds.AUTHENTICATION_MANAGER})
     public AuthenticationManager authManager() throws Exception {
-        return new AuthenticationBuilder()
+        return new AuthenticationManagerBuilder()
             .inMemoryAuthentication()
                 .withUser("marissa").password("koala").roles("USER").and()
                 .withUser("paul").password("emu").roles("USER").and()

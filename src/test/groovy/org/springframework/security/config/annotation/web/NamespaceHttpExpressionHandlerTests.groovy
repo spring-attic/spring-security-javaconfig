@@ -35,7 +35,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterInvocation

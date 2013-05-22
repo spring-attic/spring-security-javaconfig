@@ -118,7 +118,7 @@ The following configuration
     public class SampleMultiHttpSecurityConfig {
         @Bean
         public AuthenticationManager authenticationManager() {
-            return new AuthenticationBuilder()
+            return new AuthenticationManagerBuilder()
                     .inMemoryAuthentication()
                         .withUser("user").password("password").roles("USER").and()
                         .withUser("admin").password("password").roles("USER", "ADMIN").and()
@@ -211,7 +211,7 @@ Global configuration is quite simple. For example, the following Java Configurat
 
         @Bean
         public AuthenticationManager authenticationManager() throws Exception {
-            return new AuthenticationBuilder()
+            return new AuthenticationManagerBuilder()
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN").and()
@@ -256,8 +256,8 @@ override the `GlobalMethodSecurityConfiguration` class. For example, following J
             throws Exception {
             registry
                 .inMemoryAuthentication()
-                .withUser("user").password("password").roles("USER").and()
-                .withUser("admin").password("password").roles("USER", "ADMIN");
+                    .withUser("user").password("password").roles("USER").and()
+                    .withUser("admin").password("password").roles("USER", "ADMIN");
         }
     }
 

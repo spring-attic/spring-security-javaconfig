@@ -33,7 +33,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
@@ -240,7 +240,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
     public static class SampleMultiHttpSecurityConfig {
         @Bean
         public AuthenticationManager authenticationManager() {
-            return new AuthenticationBuilder()
+            return new AuthenticationManagerBuilder()
                     .inMemoryAuthentication()
                         .withUser("user").password("password").roles("USER").and()
                         .withUser("admin").password("password").roles("USER", "ADMIN").and()

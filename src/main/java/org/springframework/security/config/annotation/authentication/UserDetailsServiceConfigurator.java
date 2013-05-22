@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsServiceConfigurator<T extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationBuilder> {
+public class UserDetailsServiceConfigurator<T extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> {
     protected final T userDetailsService;
 
     public UserDetailsServiceConfigurator(T userDetailsService) {
@@ -38,7 +38,7 @@ public class UserDetailsServiceConfigurator<T extends UserDetailsService> extend
     }
 
     @Override
-    public void configure(AuthenticationBuilder builder) throws Exception {
+    public void configure(AuthenticationManagerBuilder builder) throws Exception {
         builder.add(userDetailsService());
     }
 }

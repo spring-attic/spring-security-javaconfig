@@ -30,10 +30,11 @@ import org.springframework.security.config.annotation.provisioning.JdbcUserDetai
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
- * @author Rob Winch
+ * Used to easily create an {@link AuthenticationManager}
  *
+ * @author Rob Winch
  */
-public class AuthenticationBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationBuilder> implements
+public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder> implements
         SecurityBuilder<AuthenticationManager>, AuthenticationRegistry {
     private AuthenticationManager parentAuthenticationManager;
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
@@ -43,7 +44,7 @@ public class AuthenticationBuilder extends AbstractConfiguredSecurityBuilder<Aut
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#parentAuthenticationManager(org.springframework.security.authentication.AuthenticationManager)
      */
     @Override
-    public AuthenticationBuilder parentAuthenticationManager(
+    public AuthenticationManagerBuilder parentAuthenticationManager(
             AuthenticationManager authenticationManager) {
         this.parentAuthenticationManager = authenticationManager;
         return this;

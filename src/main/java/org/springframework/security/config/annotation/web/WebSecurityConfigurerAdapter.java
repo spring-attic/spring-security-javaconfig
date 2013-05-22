@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -35,8 +35,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     @Autowired
     private ApplicationContext context;
 
-    private final AuthenticationBuilder authenticationBuilder = new AuthenticationBuilder();
-    private AuthenticationBuilder parentAuthenticationRegistry = new AuthenticationBuilder();
+    private final AuthenticationManagerBuilder authenticationBuilder = new AuthenticationManagerBuilder();
+    private AuthenticationManagerBuilder parentAuthenticationRegistry = new AuthenticationManagerBuilder();
     private boolean disableAuthenticationRegistry;
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;
@@ -139,11 +139,11 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     protected abstract void configure(HttpConfiguration http) throws Exception;
 
     static final class AuthenticationManagerDelegator implements AuthenticationManager {
-        private AuthenticationBuilder delegateBuilder;
+        private AuthenticationManagerBuilder delegateBuilder;
         private AuthenticationManager delegate;
         private final Object delegateMonitor = new Object();
 
-        AuthenticationManagerDelegator(AuthenticationBuilder authentication) {
+        AuthenticationManagerDelegator(AuthenticationManagerBuilder authentication) {
             this.delegateBuilder = authentication;
         }
 

@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
