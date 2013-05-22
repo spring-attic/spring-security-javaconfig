@@ -26,8 +26,6 @@ import org.springframework.security.provisioning.UserDetailsManager;
  */
 public interface UserDetailsManagerRegistry<T extends UserDetailsManagerRegistry<T>> {
 
-    UserDetailsManager userDetailsService() throws Exception;
-
     UserDetailsBuilder<T> withUser(String username);
 
     AuthenticationRegistry and() throws Exception;

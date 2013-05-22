@@ -39,11 +39,10 @@ public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry
     }
 
     @Override
-    public UserDetailsManager userDetailsService() throws Exception {
+    protected void initUserDetailsService() throws Exception {
         for(UserDetailsBuilder<T> userBuilder : userBuilders) {
             userDetailsService.createUser(userBuilder.build());
         }
-        return super.userDetailsService();
     }
 
     @Override

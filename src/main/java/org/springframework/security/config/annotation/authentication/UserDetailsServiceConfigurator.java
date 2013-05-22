@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation.authentication;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.Assert;
@@ -33,12 +34,21 @@ public class UserDetailsServiceConfigurator<T extends UserDetailsService> extend
         this.userDetailsService = userDetailsService;
     }
 
-    public T userDetailsService() throws Exception {
+    protected T getUserDetailsService() throws Exception {
         return userDetailsService;
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder builder) throws Exception {
-        builder.add(userDetailsService());
+        initUserDetailsService();
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(getUserDetailsService());
+        builder.add(provider);
     }
+
+    /**
+     * Allows subclasses to initialize the {@link UserDetailsService}
+     */
+    protected void initUserDetailsService() throws Exception {}
 }

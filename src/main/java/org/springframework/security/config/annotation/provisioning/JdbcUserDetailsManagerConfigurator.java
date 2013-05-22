@@ -55,7 +55,7 @@ public class JdbcUserDetailsManagerConfigurator extends
     @Override
     public JdbcUserDetailsManagerConfigurator dataSource(DataSource dataSource) throws Exception {
         this.dataSource = dataSource;
-        userDetailsService().setDataSource(dataSource);
+        getUserDetailsService().setDataSource(dataSource);
         return this;
     }
 
@@ -65,7 +65,7 @@ public class JdbcUserDetailsManagerConfigurator extends
      */
     @Override
     public JdbcUserDetailsManagerConfigurator usersByUsernameQuery(String query) throws Exception {
-        userDetailsService().setUsersByUsernameQuery(query);
+        getUserDetailsService().setUsersByUsernameQuery(query);
         return this;
     }
 
@@ -75,16 +75,21 @@ public class JdbcUserDetailsManagerConfigurator extends
      */
     @Override
     public JdbcUserDetailsManagerConfigurator authoritiesByUsernameQuery(String query) throws Exception {
-        userDetailsService().setAuthoritiesByUsernameQuery(query);
+        getUserDetailsService().setAuthoritiesByUsernameQuery(query);
         return this;
     }
 
     @Override
-    public JdbcUserDetailsManager userDetailsService() throws Exception {
+    protected void initUserDetailsService() throws Exception {
         if(!initScripts.isEmpty()) {
             initDatabase().afterPropertiesSet();
         }
-        return (JdbcUserDetailsManager) super.userDetailsService();
+        super.initUserDetailsService();
+    }
+
+    @Override
+    protected JdbcUserDetailsManager getUserDetailsService() throws Exception {
+        return (JdbcUserDetailsManager) super.getUserDetailsService();
     }
 
     /*

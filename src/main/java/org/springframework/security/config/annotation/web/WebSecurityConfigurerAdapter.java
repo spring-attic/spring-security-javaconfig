@@ -62,7 +62,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
         http = new HttpConfiguration(authenticationBuilder);
-        http.setSharedObject(UserDetailsService.class, userDetailsService());
+        http.setSharedObject(UserDetailsService.class, userDetailsServiceBean());
         if(!disableDefaults) {
             http
                 .exceptionHandling().and()
@@ -101,12 +101,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return userDetailsService();
     }
 
-    private UserDetailsService userDetailsService() throws Exception {
-        return userDetailsService(parentAuthenticationRegistry);
-    }
-
-    protected UserDetailsService userDetailsService(AuthenticationRegistry authenticationRegistry) {
-        return authenticationRegistry.userDetailsService();
+    protected UserDetailsService userDetailsService() {
+        return parentAuthenticationRegistry.getDefaultUserDetailsService();
     }
 
     @Override

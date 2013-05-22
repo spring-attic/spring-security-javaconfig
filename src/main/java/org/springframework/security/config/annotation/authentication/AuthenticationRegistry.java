@@ -34,22 +34,84 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 public interface AuthenticationRegistry {
 
+    /**
+     * Add in memory authentication to the {@link AuthenticationRegistry} and
+     * return a {@link UserDetailsManagerRegistry} to allow customization of the
+     * in memory authentication.
+     *
+     * @return a {@link UserDetailsManagerRegistry} to allow customization of
+     *         the in memory authentication
+     * @throws Exception if an error occurs when adding the in memory authentication
+     */
     UserDetailsManagerRegistry<? extends UserDetailsManagerRegistry<?>> inMemoryAuthentication()
             throws Exception;
 
+    /**
+     * Add LDAP authentication to the {@link AuthenticationRegistry} and
+     * return a {@link LdapAuthenticationRegistry} to allow customization of the
+     * LDAP authentication.
+     *
+     * @return a {@link LdapAuthenticationRegistry} to allow customization of the
+     * LDAP authentication
+     * @throws Exception if an error occurs when adding the LDAP authentication
+     */
     LdapAuthenticationRegistry ldapAuthenticationProvider() throws Exception;
 
+    /**
+     * Add JDBC authentication to the {@link AuthenticationRegistry} and
+     * return a {@link JdbcUserDetailsManagerRegistry} to allow customization of the
+     * JDBC authentication.
+     *
+     * <p>
+     * This method also ensure that a {@link UserDetailsService} is available
+     * for the {@link #getDefaultUserDetailsService()} method. Note that
+     * additional {@link UserDetailsService}'s may override this
+     * {@link UserDetailsService} as the default.
+     * </p>
+     *
+     * @return a {@link JdbcUserDetailsManagerRegistry} to allow customization of the
+     * LDAP authentication
+     * @throws Exception if an error occurs when adding the JDBC authentication
+     */
     JdbcUserDetailsManagerRegistry<? extends JdbcUserDetailsManagerRegistry<?>> jdbcUserDetailsManager() throws Exception;
 
+    /**
+     * Add authentication based upon the custom {@link UserDetailsService} that
+     * is passed in. It then returns a {@link DaoAuthenticationConfigurator} to
+     * allow customization of the authentication.
+     *
+     * <p>
+     * This method also ensure that the {@link UserDetailsService} is available
+     * for the {@link #getDefaultUserDetailsService()} method. Note that
+     * additional {@link UserDetailsService}'s may override this
+     * {@link UserDetailsService} as the default.
+     * </p>
+     *
+     * @return a {@link JdbcUserDetailsManagerRegistry} to allow customization
+     *         of the LDAP authentication
+     * @throws Exception
+     *             if an error occurs when adding the {@link UserDetailsService}
+     *             based authentication
+     */
     DaoAuthenticationConfigurator userDetailsService(
             UserDetailsService userDetailsService) throws Exception;
 
+    /**
+     * Add authentication based upon the custom {@link AuthenticationProvider}
+     * that is passed in. Since the {@link AuthenticationProvider}
+     * implementation is unknown, all customizations must be done externally and
+     * the {@link AuthenticationRegistry} is returned immediately.
+     *
+     * <p>
+     * This method <b>does NOT</b> ensure that the {@link UserDetailsService} is
+     * available for the {@link #getDefaultUserDetailsService()} method.
+     * </p>
+     *
+     * @return a {@link AuthenticationRegistry} to allow further authentication
+     *         to be provided to the {@link AuthenticationRegistry}
+     * @throws Exception
+     *             if an error occurs when adding the {@link AuthenticationProvider}
+     */
     AuthenticationRegistry add(
             AuthenticationProvider authenticationProvider);
-
-    AuthenticationRegistry add(
-            UserDetailsService userDetailsService) throws Exception;
-
-    UserDetailsService userDetailsService();
-
 }
