@@ -17,19 +17,22 @@ package org.springframework.security.config.annotation.authentication;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry;
 import org.springframework.security.config.annotation.provisioning.UserDetailsManagerRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
- * @author Rob Winch
+ * {@link SecurityBuilder} used to create an {@link AuthenticationManager}.
+ * Allows for easily building in memory authentication, LDAP authentication,
+ * JDBC based authentication, adding {@link UserDetailsService}, and adding
+ * {@link AuthenticationProvider}'s.
  *
+ * @author Rob Winch
+ * @since 3.2
  */
 public interface AuthenticationRegistry {
-
-    AuthenticationRegistry parentAuthenticationManager(
-            AuthenticationManager authenticationManager);
 
     UserDetailsManagerRegistry<? extends UserDetailsManagerRegistry<?>> inMemoryAuthentication()
             throws Exception;
