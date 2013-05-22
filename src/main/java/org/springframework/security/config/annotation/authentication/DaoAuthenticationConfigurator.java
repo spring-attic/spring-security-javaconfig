@@ -6,10 +6,12 @@ import org.springframework.security.config.annotation.SecurityConfiguratorAdapte
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class DaoAuthenticationConfigurator extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> {
+public class DaoAuthenticationConfigurator<T extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> {
     private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    private final T userDetailsService;
 
-    public DaoAuthenticationConfigurator(UserDetailsService userDetailsService) {
+    public DaoAuthenticationConfigurator(T userDetailsService) {
+        this.userDetailsService = userDetailsService;
         provider.setUserDetailsService(userDetailsService);
     }
 
@@ -21,5 +23,9 @@ public class DaoAuthenticationConfigurator extends SecurityConfiguratorAdapter<A
     @Override
     public void configure(AuthenticationManagerBuilder builder) throws Exception {
         builder.add(provider);
+    }
+
+    protected T getUserDetailsService() throws Exception {
+        return userDetailsService;
     }
 }

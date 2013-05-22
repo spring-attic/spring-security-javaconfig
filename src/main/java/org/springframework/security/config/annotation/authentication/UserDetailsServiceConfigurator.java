@@ -26,25 +26,17 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsServiceConfigurator<T extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> {
-    protected final T userDetailsService;
+public class UserDetailsServiceConfigurator<T extends UserDetailsService> extends DaoAuthenticationConfigurator<T> {
 
     public UserDetailsServiceConfigurator(T userDetailsService) {
-        Assert.notNull(userDetailsService);
-        this.userDetailsService = userDetailsService;
-    }
-
-    protected T getUserDetailsService() throws Exception {
-        return userDetailsService;
+        super(userDetailsService);
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder builder) throws Exception {
         initUserDetailsService();
 
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(getUserDetailsService());
-        builder.add(provider);
+        super.configure(builder);
     }
 
     /**
