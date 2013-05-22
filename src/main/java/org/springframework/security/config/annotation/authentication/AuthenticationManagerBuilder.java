@@ -85,7 +85,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * available for the {@link #getDefaultUserDetailsService()} method.
      * </p>
      *
-     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#ldapAuthenticationProvider(org.springframework.ldap.core.support.BaseLdapPathContextSource)
+     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#ldapAuthenticationProvider()
      */
     @Override
     public LdapAuthenticationProviderConfigurator ldapAuthenticationProvider()
@@ -101,7 +101,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#jdbcUserDetailsManager(javax.sql.DataSource)
+     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#jdbcUserDetailsManager()
      */
     @Override
     public JdbcUserDetailsManagerConfigurator jdbcUserDetailsManager()
