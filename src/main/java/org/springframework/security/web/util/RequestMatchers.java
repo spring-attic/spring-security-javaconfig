@@ -81,7 +81,7 @@ public class RequestMatchers {
      *
      *  @param regexPatterns the regular expressions to create {@link RegexRequestMatcher} from
      *
-     * @return a {@link List} of {@link AntPathRequestMatcher} instances
+     * @return a {@link List} of {@link RegexRequestMatcher} instances
      */
     public static List<RequestMatcher> regexMatchers(String...regexPatterns) {
         return regexMatchers(null, regexPatterns);
