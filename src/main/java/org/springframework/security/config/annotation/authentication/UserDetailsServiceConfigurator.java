@@ -22,12 +22,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.Assert;
 
 /**
+ * Allows configuring a {@link UserDetailsService} within a {@link AuthenticationManagerBuilder}.
  *
  * @author Rob Winch
  * @since 3.2
+ *
+ * @param <T> the type of UserDetailsService being used to allow for returning the concrete UserDetailsService.
  */
 public class UserDetailsServiceConfigurator<T extends UserDetailsService> extends DaoAuthenticationConfigurator<T> {
 
+    /**
+     * Creates a new instance
+     * @param userDetailsService the {@link UserDetailsService} that should be used
+     */
     public UserDetailsServiceConfigurator(T userDetailsService) {
         super(userDetailsService);
     }
@@ -40,7 +47,8 @@ public class UserDetailsServiceConfigurator<T extends UserDetailsService> extend
     }
 
     /**
-     * Allows subclasses to initialize the {@link UserDetailsService}
+     * Allows subclasses to initialize the {@link UserDetailsService}. For example, it might add users, initialize
+     * schema, etc.
      */
     protected void initUserDetailsService() throws Exception {}
 }

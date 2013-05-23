@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.aopalliance.intercept.MethodInterceptor;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.target.LazyInitTargetSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,8 +81,27 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     private AnnotationAttributes enableMethodSecurity;
     private MethodSecurityExpressionHandler expressionHandler;
 
+    /**
+     * Creates the default MethodInterceptor which is a MethodSecurityInterceptor using the following methods to
+     * construct it.
+     * <ul>
+     *     <li>{@link #accessDecisionManager()}</li>
+     *     <li>{@link #afterInvocationManager()}</li>
+     *     <li>{@link #authenticationManager()}</li>
+     *     <li>{@link #methodSecurityMetadataSource()}</li>
+     *     <li>{@link #runAsManager()}</li>
+     *
+     * </ul>
+     *
+     * <p>
+     *     Subclasses can override this method to provide a different {@link MethodInterceptor}.
+     * </p>
+     *
+     * @return
+     * @throws Exception
+     */
     @Bean
-    public MethodSecurityInterceptor methodSecurityInterceptor() throws Exception {
+    public MethodInterceptor methodSecurityInterceptor() throws Exception {
         MethodSecurityInterceptor methodSecurityInterceptor = new MethodSecurityInterceptor();
         methodSecurityInterceptor
                 .setAccessDecisionManager(accessDecisionManager());
@@ -101,14 +121,18 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     /**
      * Provide a custom {@link AfterInvocationManager} for the default
      * implementation of {@link #methodSecurityInterceptor()}. The default is
-     * null.
+     * null if pre post is not enabled. Otherwise, it returns a {@link AfterInvocationProviderManager}.
+     *
+     * <p>
+     * Subclasses should override this method to provide a custom {@link AfterInvocationManager}
+     * </p>
      *
      * @return
      */
     protected AfterInvocationManager afterInvocationManager() {
         if(prePostEnabled()) {
             AfterInvocationProviderManager invocationProviderManager = new AfterInvocationProviderManager();
-            ExpressionBasedPostInvocationAdvice postAdvice = new ExpressionBasedPostInvocationAdvice(expressionHandler);
+            ExpressionBasedPostInvocationAdvice postAdvice = new ExpressionBasedPostInvocationAdvice(getExpressionHandler());
             PostInvocationAdviceProvider postInvocationAdviceProvider = new PostInvocationAdviceProvider(postAdvice);
             List<AfterInvocationProvider> afterInvocationProviders = new ArrayList<AfterInvocationProvider>();
             afterInvocationProviders.add(postInvocationAdviceProvider);
@@ -129,13 +153,15 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     }
 
     /**
-     * Allows subclasses to provide a custom {@link AccessDecisionManager}. The default is a {@link AffirmativeBased} with the following voters:
+     * Allows subclasses to provide a custom {@link AccessDecisionManager}. The default is a {@link AffirmativeBased}
+     * with the following voters:
      *
      * <ul>
      *     <li>{@link PreInvocationAuthorizationAdviceVoter}</li>
      *     <li>{@link RoleVoter} </li>
      *     <li>{@link AuthenticatedVoter} </li>
      * </ul>
+     *
      * @return
      */
     @SuppressWarnings("rawtypes")
@@ -152,8 +178,11 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     }
 
     /**
-     * Provide a custom {@link MethodSecurityExpressionHandler} that is
-     * registered with the {@link ExpressionBasedPreInvocationAdvice}.
+     * Provide a {@link MethodSecurityExpressionHandler} that is
+     * registered with the {@link ExpressionBasedPreInvocationAdvice}. The default is
+     * {@link DefaultMethodSecurityExpressionHandler}
+     *
+     * <p>Subclasses may override this method to provide a custom {@link MethodSecurityExpressionHandler}</p>
      *
      * @return
      */
@@ -161,6 +190,11 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
         return new DefaultMethodSecurityExpressionHandler();
     }
 
+    /**
+     * Gets the {@link MethodSecurityExpressionHandler} or creates it using {@link #expressionHandler}.
+     *
+     * @return a non {@code null} {@link MethodSecurityExpressionHandler}
+     */
     protected final MethodSecurityExpressionHandler getExpressionHandler() {
         if(expressionHandler == null) {
             expressionHandler = expressionHandler();
@@ -172,7 +206,8 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
      * Provides a custom {@link MethodSecurityMetadataSource} that is registered
      * with the {@link #methodSecurityMetadataSource()}. Default is null.
      *
-     * @return
+     * @return a custom {@link MethodSecurityMetadataSource} that is registered
+     * with the {@link #methodSecurityMetadataSource()}
      */
     protected MethodSecurityMetadataSource customMethodSecurityMetadataSource() {
         return null;
@@ -180,7 +215,9 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
 
     /**
      * Allows providing a custom {@link AuthenticationManager}. The default is
-     * to use an {@link AuthenticationManager} autowired by type.
+     * to use any authentication mechanisms registered by {@link #registerAuthentication(AuthenticationRegistry)}. If
+     * {@link #registerAuthentication(AuthenticationRegistry)} was not overriden, then an {@link AuthenticationManager}
+     * is attempted to be autowired by type.
      *
      * @return
      */
@@ -197,6 +234,14 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
         return authenticationManager;
     }
 
+    /**
+     * Sub classes can override this method to register different types of authentication. If not overriden,
+     * {@link #registerAuthentication(AuthenticationRegistry)} will attempt to autowire by type.
+     *
+     * @param registry the {@link AuthenticationRegistry} used to register different authentication mechanisms for the
+     *                 global method security.
+     * @throws Exception
+     */
     protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
         this.disableAuthenticationRegistry = true;
     }

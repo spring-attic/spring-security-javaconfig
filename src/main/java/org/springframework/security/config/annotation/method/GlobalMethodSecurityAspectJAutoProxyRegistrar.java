@@ -33,6 +33,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * <p>
  * Note: This class is necessary because AspectJAutoProxyRegistrar only supports
  * EnableAspectJAutoProxy.
+ * </p>
  *
  * @author Rob Winch
  * @since 3.2

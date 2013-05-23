@@ -46,20 +46,20 @@ import org.springframework.security.access.annotation.Secured;
 public @interface EnableGlobalMethodSecurity {
 
     /**
-     * Determines if Spring Security's pre post annotations should be enabled.
-     * @return
+     * Determines if Spring Security's pre post annotations should be enabled. Default is false.
+     * @return true if pre post annotations should be enabled false otherwise.
      */
     boolean prePostEnabled() default false;
 
     /**
      * Determines if Spring Security's {@link Secured} annotations should be enabled.
-     * @return
+     * @return true if {@link Secured} annotations should be enabled false otherwise. Default is false.
      */
     boolean securedEnabled() default false;
 
     /**
-     * Determines if JSR-250 annotations should be enabled.
-     * @return
+     * Determines if JSR-250 annotations should be enabled. Default is false.
+     * @return true if JSR-250 should be enabled false otherwise.
      */
     boolean jsr250Enabled() default false;
 
@@ -75,6 +75,8 @@ public @interface EnableGlobalMethodSecurity {
      * {@code @Transactional} annotation will be upgraded to subclass proxying at the same
      * time. This approach has no negative impact in practice unless one is explicitly
      * expecting one type of proxy vs another, e.g. in tests.
+     *
+     * @return true if CGILIB proxies should be created instead of interface based proxies, else false
      */
     boolean proxyTargetClass() default false;
 
@@ -82,6 +84,8 @@ public @interface EnableGlobalMethodSecurity {
      * Indicate how security advice should be applied. The default is
      * {@link AdviceMode#PROXY}.
      * @see AdviceMode
+     *
+     * @return the {@link AdviceMode} to use
      */
     AdviceMode mode() default AdviceMode.PROXY;
 
@@ -89,6 +93,8 @@ public @interface EnableGlobalMethodSecurity {
      * Indicate the ordering of the execution of the security advisor
      * when multiple advices are applied at a specific joinpoint.
      * The default is {@link Ordered#LOWEST_PRECEDENCE}.
+     *
+     * @return the order the security advisor should be applied
      */
     int order() default Ordered.LOWEST_PRECEDENCE;
 }
