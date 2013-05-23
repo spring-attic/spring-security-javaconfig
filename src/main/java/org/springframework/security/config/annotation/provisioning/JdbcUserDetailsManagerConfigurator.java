@@ -30,6 +30,13 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 /**
+ * Configures an {@link org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder} to
+ * have JDBC authentication. It also allows easily adding users to the database used for authentication and setting up
+ * the schema.
+ *
+ * <p>
+ * The only required method is the {@link #dataSource(javax.sql.DataSource)} all other methods have reasonable defaults.
+ * </p>
  *
  * @author Rob Winch
  * @since 3.2

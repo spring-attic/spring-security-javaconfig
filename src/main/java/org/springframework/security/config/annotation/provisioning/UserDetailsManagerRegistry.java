@@ -20,13 +20,29 @@ import org.springframework.security.config.annotation.provisioning.UserDetailsMa
 import org.springframework.security.provisioning.UserDetailsManager;
 
 /**
+ * Allows populating a {@link AuthenticationmanagerBuilder} with a {@link UserDetailsManager} and populating the
+ * {@link UserDetailsManager} with users.
+ *
  * @author Rob Winch
  *
- * @param <T>
+ * @param <T> the type for "this" to allow for returning sub interfaces/classes that allow method chaining.
  */
 public interface UserDetailsManagerRegistry<T extends UserDetailsManagerRegistry<T>> {
 
+    /**
+     * Adds a {@link org.springframework.security.core.userdetails.UserDetails} that can be authenticated with
+     *
+     * @param username the username for this user. Cannot be null.
+     * @return a {@link UserDetailsBuilder} that can be used for further customization of the
+     *         {@link org.springframework.security.core.userdetails.UserDetails}
+     */
     UserDetailsBuilder<T> withUser(String username);
 
+    /**
+     * Allows method chaining by returning the {@link AuthenticationRegistry} for additional customization.
+     *
+     * @return the {@link AuthenticationRegistry} for additional customization.
+     * @throws Exception
+     */
     AuthenticationRegistry and() throws Exception;
 }

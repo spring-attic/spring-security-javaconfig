@@ -15,12 +15,14 @@
  */
 package org.springframework.security.config.annotation.provisioning;
 
-import java.util.ArrayList;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import java.util.ArrayList;
+
 /**
+ * Configures an {@link org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder} to
+ * have in memory authentication. It also allows easily adding users to the in memory authentication.
  *
  * @author Rob Winch
  * @since 3.2
@@ -29,6 +31,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class InMemoryUserDetailsManagerSecurityBuilder extends
         UserDetailsManagerConfigurator<InMemoryUserDetailsManagerSecurityBuilder> {
 
+    /**
+     * Creates a new instance
+     */
     public InMemoryUserDetailsManagerSecurityBuilder() {
         super(new InMemoryUserDetailsManager(new ArrayList<UserDetails>()));
     }

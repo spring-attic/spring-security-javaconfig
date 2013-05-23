@@ -17,16 +17,66 @@ package org.springframework.security.config.annotation.provisioning;
 
 import javax.sql.DataSource;
 
+/**
+ * Configures an {@link org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder} to
+ * have JDBC authentication. It also allows easily adding users to the database used for authentication and setting up
+ * the schema.
+ *
+ * <p>
+ * The only required method is the {@link #dataSource(javax.sql.DataSource)} all other methods have reasonable defaults.
+ * </p>
+ *
+ * @param <T> Allows to parameterize (this) so that the {@link JdbcUserDetailsManagerRegistry} can be returned when
+ *           using method chaining.
+ *
+ * @author Rob Winch
+ * @since 3.2
+ */
+public interface JdbcUserDetailsManagerRegistry<T extends JdbcUserDetailsManagerRegistry<T>> extends
+        UserDetailsManagerRegistry<T> {
 
-public interface JdbcUserDetailsManagerRegistry<T extends JdbcUserDetailsManagerRegistry<T>> extends UserDetailsManagerRegistry<T> {
-
+    /**
+     * Populates the {@link DataSource} to be used. This is the only required attribute.
+     *
+     * @param dataSource the {@link DataSource} to be used. Cannot be null.
+     * @return
+     * @throws Exception
+     */
     JdbcUserDetailsManagerRegistry<T> dataSource(DataSource dataSource) throws Exception;
 
+    /**
+     * Sets the query to be used for finding a user by their username. For example:
+     *
+     * <code>
+     *     select username,password,enabled from users where username = ?
+     * </code>
+     * @param query  The query to use for selecting the username, password, and if the user is enabled by username.
+     *               Must contain a single parameter for the username.
+     * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
+     * @throws Exception
+     */
     JdbcUserDetailsManagerRegistry<T> usersByUsernameQuery(
             String query) throws Exception;
 
+    /**
+     * Sets the query to be used for finding a user's authorities by their username. For example:
+     *
+     * <code>
+     *     select username,authority from authorities where username = ?
+     * </code>
+     *
+     * @param query  The query to use for selecting the username, authority  by username.
+     *               Must contain a single parameter for the username.
+     * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
+     * @throws Exception
+     */
     JdbcUserDetailsManagerRegistry<T> authoritiesByUsernameQuery(
             String query) throws Exception;
 
+    /**
+     * Populates the default schema that allows users and authorities to be stored.
+     *
+     * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
+     */
     JdbcUserDetailsManagerRegistry<T> withDefaultSchema();
 }
