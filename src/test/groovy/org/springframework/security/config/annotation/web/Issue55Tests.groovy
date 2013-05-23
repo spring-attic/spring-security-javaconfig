@@ -15,23 +15,16 @@
  */
 package org.springframework.security.config.annotation.web
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*
-
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 import org.springframework.stereotype.Component
-import org.springframework.util.Assert;
 
 /**
  *

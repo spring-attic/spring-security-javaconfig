@@ -16,66 +16,30 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.mock.web.MockHttpSession
-import org.springframework.security.access.AccessDecisionManager
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.ConfigAttribute
-import org.springframework.security.authentication.AnonymousAuthenticationToken
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.RememberMeAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.FilterChainProxy
-import org.springframework.security.web.FilterInvocation
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-import org.springframework.security.web.access.ExceptionTranslationFilter
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
-import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
-import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.security.web.authentication.RememberMeServices
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter
 import org.springframework.security.web.context.HttpRequestResponseHolder
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.NullSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter
-import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
-import org.springframework.security.web.util.AntPathRequestMatcher
-import org.springframework.security.web.util.AnyRequestMatcher;
-import org.springframework.security.web.util.RequestMatcher
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**

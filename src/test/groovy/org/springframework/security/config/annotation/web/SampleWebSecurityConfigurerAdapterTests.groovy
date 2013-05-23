@@ -13,47 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.config.annotation.web;
+package org.springframework.security.config.annotation.web
 
-
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.annotation.Order;
-import org.springframework.mock.web.MockFilterChain
-import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.access.AccessDecisionManager
-import org.springframework.security.access.ConfigAttribute
-import org.springframework.security.access.vote.AuthenticatedVoter;
-import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.BaseAuthenticationConfig;
-import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.FilterInvocation
-import org.springframework.security.web.access.ExceptionTranslationFilter
-import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
-import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.NullSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter
-import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
-import org.springframework.security.web.util.AntPathRequestMatcher
-import org.springframework.security.web.util.AnyRequestMatcher;
-import org.springframework.security.web.util.RequestMatcher
+import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
 
 /**
  * Demonstrate the samples

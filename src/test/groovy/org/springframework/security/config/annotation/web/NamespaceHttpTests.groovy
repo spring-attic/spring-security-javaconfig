@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.config.annotation.web;
-
-
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*
+package org.springframework.security.config.annotation.web
 
 import javax.servlet.http.HttpServletRequest
 

@@ -15,30 +15,16 @@
  */
 package org.springframework.security.config.annotation.web
 
-import static org.springframework.security.config.annotation.web.util.RequestMatchers.*;
-
-import java.util.List;
+import static org.springframework.security.web.util.RequestMatchers.*
 
 import org.springframework.beans.factory.BeanCreationException
-import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.config.annotation.BaseSpringSpec;
-import org.springframework.security.config.annotation.web.ExceptionHandlingConfigurator;
-import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
-import org.springframework.security.config.annotation.web.UrlAuthorizations;
-import org.springframework.security.config.annotation.web.FormLoginConfigurator;
-import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
-import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.access.ExceptionTranslationFilter
@@ -51,10 +37,6 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.security.web.util.AnyRequestMatcher
-import org.springframework.security.web.util.RequestMatcher;
-
-import spock.lang.AutoCleanup
-import spock.lang.Specification
 
 /**
  *
