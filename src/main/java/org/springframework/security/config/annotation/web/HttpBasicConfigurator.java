@@ -22,21 +22,92 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 /**
+ * Adds HTTP basic based authentication. All attributes have reasonable defaults
+ * making all parameters are optional.
+ *
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ * <li>
+ * {@link BasicAuthenticationFilter}
+ * </li>
+ * </ul>
+ *
+ * <h2>Shared Objects Created</h2>
+ *
+ * No shared objects are populated
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * The following shared objects are used:
+ *
+ * <ul>
+ * <li>{@link HttpConfiguration#authenticationManager()} </li>
+ * </ul>
  *
  * @author Rob Winch
  * @since 3.2
  */
 public class HttpBasicConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+    private static final String DEFAULT_REALM = "Spring Security Application";
+
     private BasicAuthenticationFilter basicAuthenticationFilter;
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
 
     public HttpBasicConfigurator() throws Exception {
-        realmName("Spring Security Application");
+        realmName(DEFAULT_REALM);
+    }
+
+    /**
+     * Shortcut for {@link #authenticationEntryPoint(AuthenticationEntryPoint)}
+     * specifying a {@link BasicAuthenticationEntryPoint} with the specified
+     * realm name.
+     *
+     * @param realmName
+     *            the HTTP Basic realm to use
+     * @return {@link HttpBasicConfigurator} for additional customization
+     * @throws Exception
+     */
+    public HttpBasicConfigurator realmName(String realmName) throws Exception {
+        BasicAuthenticationEntryPoint basicAuthEntryPoint = new BasicAuthenticationEntryPoint();
+        basicAuthEntryPoint.setRealmName(realmName);
+        basicAuthEntryPoint.afterPropertiesSet();
+        return authenticationEntryPoint(basicAuthEntryPoint);
+    }
+
+    /**
+     * The {@link AuthenticationEntryPoint} to be ppulated on
+     * {@link BasicAuthenticationFilter} in the event that authentication fails.
+     * The default to use {@link BasicAuthenticationEntryPoint} with the realm
+     * "Spring Security Application".
+     *
+     * @param authenticationEntryPoint the {@link AuthenticationEntryPoint} to use
+     * @return {@link HttpBasicConfigurator} for additional customization
+     */
+    public HttpBasicConfigurator authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        return this;
+    }
+
+    /**
+     * Specifies a custom {@link AuthenticationDetailsSource} to use for basic
+     * authentication. The default is {@link WebAuthenticationDetailsSource}.
+     *
+     * @param authenticationDetailsSource
+     *            the custom {@link AuthenticationDetailsSource} to use
+     * @return {@link HttpBasicConfigurator} for additional customization
+     */
+    public HttpBasicConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
+        this.authenticationDetailsSource = authenticationDetailsSource;
+        return this;
     }
 
     @Override
@@ -48,22 +119,5 @@ public class HttpBasicConfigurator extends SecurityConfiguratorAdapter<DefaultSe
         }
         basicAuthenticationFilter.afterPropertiesSet();
         http.addFilter(basicAuthenticationFilter);
-    }
-
-    public HttpBasicConfigurator realmName(String realmName) throws Exception {
-        BasicAuthenticationEntryPoint basicAuthEntryPoint = new BasicAuthenticationEntryPoint();
-        basicAuthEntryPoint.setRealmName(realmName);
-        basicAuthEntryPoint.afterPropertiesSet();
-        return authenticationEntryPoint(basicAuthEntryPoint);
-    }
-
-    public HttpBasicConfigurator authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        return this;
-    }
-
-    public HttpBasicConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
-        this.authenticationDetailsSource = authenticationDetailsSource;
-        return this;
     }
 }
