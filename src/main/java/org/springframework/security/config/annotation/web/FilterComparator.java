@@ -41,16 +41,18 @@ import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 
 /**
+ * An internal use only {@link Comparator} that sorts the Security {@link Filter} instances to ensure they are in the
+ * correct order.
  *
  * @author Rob Winch
  * @since 3.2
  */
 
-class FilterComparator implements Comparator<Filter>{
+final class FilterComparator implements Comparator<Filter>{
     private static int STEP = 100;
     private Map<Class<? extends Filter>,Integer> filterToOrder = new HashMap<Class<? extends Filter>,Integer>();
 
-    public FilterComparator() {
+    FilterComparator() {
         int order = 100;
         filterToOrder.put(ChannelProcessingFilter.class, order);
         order += STEP;
@@ -106,28 +108,50 @@ class FilterComparator implements Comparator<Filter>{
         return left - right;
     }
 
-    public boolean registered(Class<? extends Filter> filter) {
+    /**
+     * Determines if a particular {@link Filter} is registered to be sorted
+     *
+     * @param filter
+     * @return
+     */
+    public boolean isRegistered(Class<? extends Filter> filter) {
         return getOrder(filter) != null;
     }
 
+    /**
+     * Registers a {@link Filter} to exist after a particular {@link Filter} that is already registered.
+     * @param filter the {@link Filter} to register
+     * @param afterFilter the {@link Filter} that is already registered and that {@code filter} should be placed after.
+     */
     public void registerAfter(Class<? extends Filter> filter, Class<? extends Filter> afterFilter) {
         Integer position = getOrder(afterFilter);
         if(position == null) {
-            throw new IllegalArgumentException("Cannot register after un registered Filter "+afterFilter);
+            throw new IllegalArgumentException("Cannot register after unregistered Filter "+afterFilter);
         }
 
         filterToOrder.put(filter, position + 1);
     }
 
-    public void registerBefore(Class<? extends Filter> filter, Class<? extends Filter> afterFilter) {
-        Integer position = getOrder(afterFilter);
+    /**
+     * Registers a {@link Filter} to exist before a particular {@link Filter} that is already registered.
+     * @param filter the {@link Filter} to register
+     * @param beforeFilter the {@link Filter} that is already registered and that {@code filter} should be placed before.
+     */
+    public void registerBefore(Class<? extends Filter> filter, Class<? extends Filter> beforeFilter) {
+        Integer position = getOrder(beforeFilter);
         if(position == null) {
-            throw new IllegalArgumentException("Cannot register after un registered Filter "+afterFilter);
+            throw new IllegalArgumentException("Cannot register after unregistered Filter "+beforeFilter);
         }
 
         filterToOrder.put(filter, position - 1);
     }
 
+    /**
+     * Gets the order of a particular {@link Filter} class taking into consideration superclasses.
+     *
+     * @param clazz the {@link Filter} class to determine the sort order
+     * @return the sort order or null if not defined
+     */
     private Integer getOrder(Class<?> clazz) {
         while(clazz != null) {
             Integer result = filterToOrder.get(clazz);
