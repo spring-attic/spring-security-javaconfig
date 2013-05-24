@@ -93,6 +93,10 @@ public class RememberMeConfigurator extends SecurityConfiguratorAdapter<DefaultS
         http.authenticationProvider(authenticationProvider);
     }
 
+    String getRememberMeParameter() {
+        return rememberMeParameter;
+    }
+
     private RememberMeServices getRememberMeServices(HttpConfiguration http, String key) {
         if(rememberMeServices != null) {
             if(rememberMeServices instanceof LogoutHandler && logoutHandler == null) {

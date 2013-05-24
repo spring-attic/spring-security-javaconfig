@@ -32,7 +32,9 @@ final class PermitAllSupport {
         ExpressionUrlAuthorizations configurator = http.getConfigurator(ExpressionUrlAuthorizations.class);
         if(configurator != null) {
             for(String url : urls) {
-                configurator.addMapping(0, new UrlMapping(new AntPathRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizations.permitAll)));
+                if(url != null) {
+                    configurator.addMapping(0, new UrlMapping(new AntPathRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizations.permitAll)));
+                }
             }
         }
     }

@@ -164,6 +164,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .formLogin()
+                    .loginPage("/login")
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure")) // form-login@authentication-failure-handler-ref
                     .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" )) // form-login@authentication-success-handler-ref
                     .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource()) // form-login@authentication-details-source-ref

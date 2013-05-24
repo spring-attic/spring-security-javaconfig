@@ -74,8 +74,8 @@ final class FilterComparator implements Comparator<Filter>{
         order += STEP;
 //        filterToOrder.put(OpenIDFilter.class, order);
 //        order += STEP;
-//        filterToOrder.put(LoginPage.class, order);
-//        order += STEP;
+        filterToOrder.put(DefaultLoginPageGeneratingFilter.class, order);
+        order += STEP;
         filterToOrder.put(ConcurrentSessionFilter.class, order);
         order += STEP;
         filterToOrder.put(DigestAuthenticationFilter.class, order);

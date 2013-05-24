@@ -63,6 +63,7 @@ The following configuration
                     .antMatchers("/**").hasRole("USER")
                     .and()
                 .formLogin()
+                    .loginUrl("/login")
                     // set permitAll for all URLs associated with Form Login
                     .permitAll();
         }
@@ -157,6 +158,7 @@ The following configuration
                         .antMatchers("/**").hasRole("USER")
                         .and()
                     .formLogin()
+                        .loginUrl("/login")
                         .permitAll();
             }
         }

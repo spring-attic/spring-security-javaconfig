@@ -89,6 +89,7 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
                     .antMatchers("/**").hasRole("USER")
                     .and()
                 .formLogin()
+                    .loginUrl("/login")
         }
     }
 

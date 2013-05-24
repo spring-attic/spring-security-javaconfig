@@ -63,6 +63,7 @@ public class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<Default
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationFailureHandler failureHandler;
     private boolean permitAll;
+    private boolean customLoginPage;
     private String loginPage;
     private String loginProcessingUrl;
     private String failureUrl;
@@ -73,6 +74,7 @@ public class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<Default
         loginUrl("/login");
         failureUrl("/login?error");
         loginProcessingUrl("/login/openid");
+        this.customLoginPage = false;
     }
 
     @Override
@@ -278,6 +280,7 @@ public class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<Default
     public OpenIDLoginConfigurator loginPage(String loginPage) {
         this.loginPage = loginPage;
         this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
+        this.customLoginPage = true;
         return this;
     }
 
@@ -309,5 +312,21 @@ public class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<Default
     public OpenIDLoginConfigurator failureHandler(AuthenticationFailureHandler failureHandler) {
         this.failureHandler = failureHandler;
         return this;
+    }
+
+    String getLoginProcessingUrl() {
+        return this.loginProcessingUrl;
+    }
+
+    String getLoginPage() {
+        return this.loginPage;
+    }
+
+    String getFailureUrl() {
+        return this.failureUrl;
+    }
+
+    boolean isCustomLoginPage() {
+        return customLoginPage;
     }
 }

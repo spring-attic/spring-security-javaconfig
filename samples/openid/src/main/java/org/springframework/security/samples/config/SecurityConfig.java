@@ -27,6 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").hasRole("USER")
                 .and()
             .openidLogin()
+                .loginPage("/login")
                 .permitAll()
                 .authenticationUserDetailsService(new CustomUserDetailsService())
                 .attributeExchange("https://www.google.com/.*")

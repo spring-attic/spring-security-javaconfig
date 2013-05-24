@@ -105,6 +105,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                     .antMatchers("/**").hasRole("USER")
                     .and()
                 .formLogin()
+                    .loginUrl("/login")
                     // set permitAll for all URLs associated with Form Login
                     .permitAll();
         }
@@ -247,6 +248,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                         .antMatchers("/**").hasRole("USER")
                         .and()
                     .formLogin()
+                        .loginUrl("/login")
                         .permitAll();
             }
         }

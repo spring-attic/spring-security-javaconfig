@@ -49,6 +49,7 @@ public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSe
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationFailureHandler failureHandler;
     private boolean permitAll;
+    private boolean customLoginPage;
     private String loginPage;
     private String loginProcessingUrl;
     private String failureUrl;
@@ -58,6 +59,7 @@ public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSe
         failureUrl("/login?error");
         usernameParameter("username");
         passwordParameter("password");
+        this.customLoginPage = false;
     }
 
     @Override
@@ -131,6 +133,7 @@ public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSe
     public FormLoginConfigurator loginPage(String loginPage) {
         this.loginPage = loginPage;
         this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
+        this.customLoginPage = true;
         return this;
     }
 
@@ -172,5 +175,29 @@ public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSe
     public FormLoginConfigurator failureHandler(AuthenticationFailureHandler failureHandler) {
         this.failureHandler = failureHandler;
         return this;
+    }
+
+    boolean isCustomLoginPage() {
+        return customLoginPage;
+    }
+
+    String getLoginPage() {
+        return loginPage;
+    }
+
+    String getLoginProcessingUrl() {
+        return loginProcessingUrl;
+    }
+
+    String getFailureUrl() {
+        return failureUrl;
+    }
+
+    String getUsernameParameter() {
+        return usernamePasswordFilter.getUsernameParameter();
+    }
+
+    String getPasswordParameter() {
+        return usernamePasswordFilter.getPasswordParameter();
     }
 }
