@@ -35,11 +35,39 @@ import org.springframework.security.web.access.intercept.DefaultFilterInvocation
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
+ * Adds channel security (i.e. requires HTTPS or HTTP) to an application. In order for
+ * {@link ChannelSecurityFilterConfigurator} to be useful, at least one {@link RequestMatcher} should be mapped to HTTP
+ * or HTTPS.
+ *
+ * <p>
+ * By default an {@link InsecureChannelProcessor} and a {@link SecureChannelProcessor} will be registered.
+ * </p>
+ *
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ *     <li>{@link ChannelProcessingFilter}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Created</h2>
+ *
+ * No shared objects are created.
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * The following shared objects are used:
+ *
+ * <ul>
+ *     <li>{@link PortMapper} is used to create the default {@link ChannelProcessor} instances</li>
+ * </ul>
  *
  * @author Rob Winch
  * @since 3.2
  */
-public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
+public class ChannelSecurityFilterConfigurator extends
+        BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private List<ChannelProcessor> channelProcessors;
@@ -50,7 +78,8 @@ public class ChannelSecurityFilterConfigurator extends BaseRequestMatcherRegistr
         channelDecisionManager.setChannelProcessors(getChannelProcessors(http));
         channelFilter.setChannelDecisionManager(channelDecisionManager);
 
-        DefaultFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource = new DefaultFilterInvocationSecurityMetadataSource(requestMap);
+        DefaultFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource =
+                new DefaultFilterInvocationSecurityMetadataSource(requestMap);
         channelFilter.setSecurityMetadataSource(filterInvocationSecurityMetadataSource);
 
         http.addFilter(channelFilter);

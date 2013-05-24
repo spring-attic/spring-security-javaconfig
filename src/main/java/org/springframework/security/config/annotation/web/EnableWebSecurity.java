@@ -23,6 +23,43 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
+ * Add this annotation to an {@code @Configuration} class to have the Spring Security
+ * configuration defined in any {@link WebSecurityConfigurer} or more likely by extending the
+ * {@link WebSecurityConfigurerAdapter} base class and overriding individual methods:
+ *
+ * <pre class="code">
+ * &#064;Configuration
+ * &#064;EnableWebSecurity
+ * public class MyWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+ *
+ *    &#064;Override
+ *    protected void configure(HttpConfiguration http) throws Exception {
+ *        http
+ *            .authorizeUrls()
+ *                .antMatchers("/public/**").permitAll()
+ *                .antMatchers("/**").hasRole("USER")
+ *                .and()
+ *            // Possibly more configuration ...
+ *            .formLogin() // enable form based log in
+ *                // set permitAll for all URLs associated with Form Login
+ *               .permitAll();
+ *    }
+ *
+ *    &#064;Override
+ *    protected void registerAuthentication(AuthenticationRegistry registry) {
+ *        registry
+ *            // enable in memory based authentication with a user named "user" and "admin"
+ *            .inMemoryAuthentication()
+ *                .withUser("user").password("password").roles("USER").and()
+ *                .withUser("admin").password("password").roles("USER", "ADMIN");
+ *    }
+ *
+ *    // Possibly more overridden methods ...
+ * }
+ * </pre>
+ *
+ * @see WebSecurityConfigurer
+ * @see WebSecurityConfigurerAdapter
  *
  * @author Rob Winch
  * @since 3.2

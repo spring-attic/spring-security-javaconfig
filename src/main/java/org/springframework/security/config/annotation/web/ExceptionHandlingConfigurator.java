@@ -24,6 +24,32 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 
 /**
+ * Adds exception handling for Spring Security related exceptions to an application. All properties have reasonable
+ * defaults, so no additional configuration is required other than applying this
+ * {@link org.springframework.security.config.annotation.SecurityConfigurator}.
+ *
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ *     <li>{@link ExceptionTranslationFilter}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Created</h2>
+ *
+ * No shared objects are created.
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * The following shared objects are used:
+ *
+ * <ul>
+ *     <li>{@link HttpConfiguration#authenticationEntryPoint()} is used to process requests that require
+ *     authentication</li>
+ *     <li>If no explicit {@link RequestCache}, is provided a {@link RequestCache} shared object is used to replay
+ *     the request after authentication is successful</li>
+ * </ul>
  *
  * @author Rob Winch
  * @since 3.2
@@ -33,17 +59,38 @@ public class ExceptionHandlingConfigurator extends SecurityConfiguratorAdapter<D
     private AccessDeniedHandler accessDeniedHandler;
     private RequestCache requestCache;
 
+    /**
+     * Shortcut to specify the {@link AccessDeniedHandler} to be used is a specific error page
+     *
+     * @param accessDeniedUrl the URL to the access denied page (i.e. /errors/401)
+     * @return the {@link ExceptionHandlingConfigurator} for further customization
+     * @see AccessDeniedHandlerImpl
+     * @see {@link #accessDeniedHandler(org.springframework.security.web.access.AccessDeniedHandler)}
+     */
     public ExceptionHandlingConfigurator accessDeniedPage(String accessDeniedUrl) {
         AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
         accessDeniedHandler.setErrorPage(accessDeniedUrl);
         return accessDeniedHandler(accessDeniedHandler);
     }
 
+    /**
+     * Specifies the {@link AccessDeniedHandler} to be used
+     *
+     * @param accessDeniedHandler the {@link AccessDeniedHandler} to be used
+     * @return the {@link ExceptionHandlingConfigurator} for further customization
+     */
     public ExceptionHandlingConfigurator accessDeniedHandler(AccessDeniedHandler accessDeniedHandler) {
         this.accessDeniedHandler = accessDeniedHandler;
         return this;
     }
 
+    /**
+     * Allows explicit configuration of the {@link RequestCache} to be used. Defaults to try finding a
+     * {@link RequestCache} as a shared object. Then falls back to a {@link HttpSessionRequestCache}.
+     *
+     * @param requestCache the explicit {@link RequestCache} to use
+     * @return the {@link ExceptionHandlingConfigurator} for further customization
+     */
     public ExceptionHandlingConfigurator requestCache(RequestCache requestCache) {
         this.requestCache = requestCache;
         return this;
@@ -58,6 +105,15 @@ public class ExceptionHandlingConfigurator extends SecurityConfiguratorAdapter<D
         http.addFilter(exceptionTranslationFilter);
     }
 
+    /**
+     * Gets the {@link RequestCache} to use. If one is defined using
+     * {@link #requestCache(org.springframework.security.web.savedrequest.RequestCache)}, then it is used. Otherwise, an
+     * attempt to find a {@link RequestCache} shared object is made. If that fails, an {@link HttpSessionRequestCache}
+     * is used
+     *
+     * @param http the {@link HttpConfiguration} to attempt to fined the shared object
+     * @return the {@link RequestCache} to use
+     */
     private RequestCache getRequestCache(HttpConfiguration http) {
         if(this.requestCache != null) {
             return this.requestCache;

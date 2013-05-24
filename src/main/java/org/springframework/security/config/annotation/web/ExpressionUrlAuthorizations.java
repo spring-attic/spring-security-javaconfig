@@ -33,34 +33,60 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * Adds URL based authorization based upon SpEL expressions to an application. At least one
+ * {@link org.springframework.web.bind.annotation.RequestMapping} needs to be mapped to {@link ConfigAttribute}'s for
+ * this {@link SecurityContextConfigurator} to have meaning.
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ *     <li>{@link org.springframework.security.web.access.intercept.FilterSecurityInterceptor}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Created</h2>
+ *
+ * The following shared objects are populated to allow other {@link org.springframework.security.config.annotation.SecurityConfigurator}'s to customize:
+ * <ul>
+ *     <li>{@link org.springframework.security.web.access.intercept.FilterSecurityInterceptor}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * The following shared objects are used:
+ *
+ * <ul>
+ *     <li>{@link org.springframework.security.config.annotation.web.HttpConfiguration#authenticationManager()}</li>
+ * </ul>
+ *
  * @author Rob Winch
  * @since 3.2
+ * @see {@link org.springframework.security.config.annotation.web.HttpConfiguration#authorizeUrls()}
  */
 public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<ExpressionUrlAuthorizations.AuthorizedUrl> {
-    public static final String permitAll = "permitAll";
-    public static final String denyAll = "denyAll";
-    public static final String anonymous = "anonymous";
-    public static final String authenticated = "authenticated";
-    public static final String fullyAuthenticated = "fullyAuthenticated";
-    public static final String rememberMe = "rememberMe";
+    static final String permitAll = "permitAll";
+    private static final String denyAll = "denyAll";
+    private static final String anonymous = "anonymous";
+    private static final String authenticated = "authenticated";
+    private static final String fullyAuthenticated = "fullyAuthenticated";
+    private static final String rememberMe = "rememberMe";
 
     private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
+    /**
+     * Allows customization of the {@link SecurityExpressionHandler} to be used. The default is {@link DefaultWebSecurityExpressionHandler}
+     *
+     * @param expressionHandler the {@link SecurityExpressionHandler} to be used
+     * @return the {@link ExpressionUrlAuthorizations} for further customization.
+     */
     public ExpressionUrlAuthorizations expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
         this.expressionHandler = expressionHandler;
         return this;
     }
 
     @Override
-    AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+    final AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
-    }
-
-    private ExpressionUrlAuthorizations interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
-        for(RequestMatcher requestMatcher : requestMatchers) {
-            addMapping(new UrlMapping(requestMatcher, configAttributes));
-        }
-        return this;
     }
 
     @Override
@@ -73,12 +99,26 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
     }
 
     @Override
-    ExpressionBasedFilterInvocationSecurityMetadataSource createMetadataSource() {
+    final ExpressionBasedFilterInvocationSecurityMetadataSource createMetadataSource() {
         LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = createRequestMap();
         return requestMap.isEmpty() ? null : new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, expressionHandler);
     }
 
-    public static String hasRole(String role) {
+    /**
+     * Allows registering multiple {@link RequestMatcher} instances to a collection of {@link ConfigAttribute} instances
+     *
+     * @param requestMatchers the {@link RequestMatcher} instances to register to the {@link ConfigAttribute} instances
+     * @param configAttributes the {@link ConfigAttribute} to be mapped by the {@link RequestMatcher} instances
+     * @return the {@link ExpressionUrlAuthorizations} for further customization.
+     */
+    private ExpressionUrlAuthorizations interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+        for(RequestMatcher requestMatcher : requestMatchers) {
+            addMapping(new UrlMapping(requestMatcher, configAttributes));
+        }
+        return this;
+    }
+
+    private static String hasRole(String role) {
         Assert.notNull(role, "role cannot be null");
         if (role.startsWith("ROLE_")) {
             throw new IllegalArgumentException("role should not start with 'ROLE_' since it is automatically inserted. Got '" + role + "'");
@@ -86,66 +126,137 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
         return "hasRole('ROLE_" + role + "')";
     }
 
-    public static String hasAuthority(String authority) {
+    private static String hasAuthority(String authority) {
         return "hasAuthority('" + authority + "')";
     }
 
-    public static String hasAnyAuthority(String... authorities) {
+    private static String hasAnyAuthority(String... authorities) {
         String anyAuthorities = StringUtils.arrayToDelimitedString(authorities, "','");
         return "hasAnyAuthority('" + anyAuthorities + "')";
     }
 
-    public static String hasIpAddress(String ipAddressExpression) {
+    private static String hasIpAddress(String ipAddressExpression) {
         return "hasIpAddress('" + ipAddressExpression + "')";
     }
 
-    public class AuthorizedUrl {
+    public final class AuthorizedUrl {
         private List<RequestMatcher> requestMatchers;
 
+        /**
+         * Creates a new instance
+         *
+         * @param requestMatchers the {@link RequestMatcher} instances to map
+         */
         private AuthorizedUrl(List<RequestMatcher> requestMatchers) {
             this.requestMatchers = requestMatchers;
         }
 
+        /**
+         * Shortcut for specifying URLs require a particular role. If you do not want to have "ROLE_" automatically
+         * inserted see {@link #hasAuthority(String)}.
+         *
+         * @param role the role to require (i.e. USER, ADMIN, etc). Note, it should not start with "ROLE_" as
+         *             this is automatically inserted.
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations hasRole(String role) {
             return access(ExpressionUrlAuthorizations.hasRole(role));
         }
 
+        /**
+         * Specify that URLs require a particular authority.
+         *
+         * @param authority the authority to require (i.e. ROLE_USER, ROLE_ADMIN, etc).
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations hasAuthority(String authority) {
             return access(ExpressionUrlAuthorizations.hasAuthority(authority));
         }
 
+        /**
+         * Specify that URLs requires any of a number authorities.
+         *
+         * @param authorities the requests require at least one of the authorities (i.e. "ROLE_USER","ROLE_ADMIN" would
+         *                    mean either "ROLE_USER" or "ROLE_ADMIN" is required).
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations hasAnyAuthority(String... authorities) {
             return access(ExpressionUrlAuthorizations.hasAnyAuthority(authorities));
         }
 
+        /**
+         * Specify that URLs requires a specific IP Address or
+         * <a href="http://forum.springsource.org/showthread.php?102783-How-to-use-hasIpAddress&p=343971#post343971">subnet</a>.
+         *
+         * @param ipaddressExpression the ipaddress (i.e. 192.168.1.79) or local subnet (i.e. 192.168.0/24)
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations hasIpAddress(String ipaddressExpression) {
             return access(ExpressionUrlAuthorizations.hasIpAddress(ipaddressExpression));
         }
 
+        /**
+         * Specify that URLs are allowed by anyone.
+         *
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations permitAll() {
             return access(permitAll);
         }
 
+        /**
+         * Specify that URLs are allowed by anonymous users.
+         *
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations anonymous() {
             return access(anonymous);
         }
 
+        /**
+         * Specify that URLs are allowed by users that have been remembered.
+         *
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @see {@link RememberMeConfigurator}
+         */
         public ExpressionUrlAuthorizations rememberMe() {
             return access(rememberMe);
         }
 
+        /**
+         * Specify that URLs are not allowed by anyone.
+         *
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations denyAll() {
             return access(denyAll);
         }
 
+        /**
+         * Specify that URLs are allowed by any authenticated user.
+         *
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations authenticated() {
             return access(authenticated);
         }
 
+        /**
+         * Specify that URLs are allowed by users who have authenticated and were not "remembered".
+         *
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @see {@link RememberMeConfigurator}
+         */
         public ExpressionUrlAuthorizations fullyAuthenticated() {
             return access(fullyAuthenticated);
         }
 
+        /**
+         * Allows specifying that URLs are secured by an arbitrary expression
+         *
+         * @param attribute the expression to secure the URLs (i.e. "hasRole('ROLE_USER') and hasRole('ROLE_SUPER')")
+         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         */
         public ExpressionUrlAuthorizations access(String attribute) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attribute));
             return ExpressionUrlAuthorizations.this;
