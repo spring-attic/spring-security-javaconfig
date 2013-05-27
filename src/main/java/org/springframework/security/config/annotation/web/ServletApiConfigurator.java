@@ -15,13 +15,35 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
 /**
- * @author Rob Winch
+ * Implements select methods from the {@link HttpServletRequest} using the {@link SecurityContext} from the {@link SecurityContextHolder}.
  *
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ * <li>{@link SecurityContextHolderAwareRequestFilter}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Created</h2>
+ *
+ * No shared objects are created.
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * No shared Objects are used.
+ *
+ * @author Rob Winch
+ * @since 3.2
  */
 public class ServletApiConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private SecurityContextHolderAwareRequestFilter securityContextRequestFilter = new SecurityContextHolderAwareRequestFilter();
