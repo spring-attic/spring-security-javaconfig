@@ -129,7 +129,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
                     .and()
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN")
-                    .userDetailsService(new CustomUserService());
+                    .authenticatedUserDetailsService(new CustomUserService());
         }
     }
 
