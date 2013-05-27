@@ -15,9 +15,25 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import javax.servlet.http.HttpSession;
+
+import org.springframework.security.core.context.SecurityContext;
+
+/**
+ * Specifies the various session creation policies for Spring Security.
+ *
+ * FIXME this should be removed once {@link org.springframework.security.config.http.SessionCreationPolicy} is made public.
+ *
+ * @author Rob Winch
+ * @since 3.2
+ */
 public enum SessionCreationPolicy {
+    /** Always create an {@link HttpSession} */
     always,
+    /** Spring Security will never create an {@link HttpSession}, but will use the {@link HttpSession} if it already exists */
     never,
+    /** Spring Security will only create an {@link HttpSession} if required */
     ifRequired,
+    /** Spring Security will never create an {@link HttpSession} and it will never use it to obtain the {@link SecurityContext} */
     stateless
 }
