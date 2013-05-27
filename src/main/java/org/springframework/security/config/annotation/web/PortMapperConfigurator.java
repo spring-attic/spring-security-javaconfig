@@ -24,6 +24,9 @@ import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.PortMapperImpl;
 
 /**
+ * Allows configuring a shared {@link PortMapper} instance used to determine the
+ * ports when redirecting between HTTP and HTTPS. The {@link PortMapper} can be
+ * obtained from {@link HttpConfiguration#getSharedObject(Class)}.
  *
  * @author Rob Winch
  * @since 3.2
@@ -32,13 +35,29 @@ public class PortMapperConfigurator extends SecurityConfiguratorAdapter<DefaultS
     private PortMapper portMapper;
     private Map<String, String> httpsPortMappings = new HashMap<String,String>();
 
+    /**
+     * Creates a new instance
+     */
+    PortMapperConfigurator() {
+    }
+
+    /**
+     * Allows specifying the {@link PortMapper} instance.
+     * @param portMapper
+     * @return
+     */
     public PortMapperConfigurator portMapper(PortMapper portMapper) {
         this.portMapper = portMapper;
         return this;
     }
 
+    /**
+     * Adds a port mapping
+     * @param httpPort the HTTP port that maps to a specific HTTPS port.
+     * @return {@link HttpPortMapping} to define the HTTPS port
+     */
     public HttpPortMapping http(int httpPort) {
-        return new HttpsPortMapping(httpPort);
+        return new HttpPortMapping(httpPort);
     }
 
     @Override
@@ -47,7 +66,11 @@ public class PortMapperConfigurator extends SecurityConfiguratorAdapter<DefaultS
     }
 
     /**
-     * @return
+     * Gets the {@link PortMapper} to use. If {@link #portMapper(PortMapper)}
+     * was not invoked, builds a {@link PortMapperImpl} using the port mappings
+     * specified with {@link #http(int)}.
+     *
+     * @return the {@link PortMapper} to use
      */
     private PortMapper getPortMapper() {
         if(portMapper == null) {
@@ -58,25 +81,33 @@ public class PortMapperConfigurator extends SecurityConfiguratorAdapter<DefaultS
         return portMapper;
     }
 
+    /**
+     * Allows specifying the HTTPS port for a given HTTP port when redirecting
+     * between HTTP and HTTPS.
+     *
+     * @author Rob Winch
+     * @since 3.2
+     */
+    public final class HttpPortMapping {
+        private final int httpPort;
 
-    public abstract static class HttpPortMapping {
-        abstract PortMapperConfigurator mapsTo(int httpsPort);
-
-        private HttpPortMapping(){}
-    }
-
-    public class HttpsPortMapping extends HttpPortMapping {
-        private int httpPort;
-
-        private HttpsPortMapping(int httpPort) {
+        /**
+         * Creates a new instance
+         * @param httpPort
+         * @see PortMapperConfigurator#http(int)
+         */
+        private HttpPortMapping(int httpPort) {
             this.httpPort = httpPort;
         }
 
-        @Override
-        PortMapperConfigurator mapsTo(int httpsPort) {
+        /**
+         * Maps the given HTTP port to the provided HTTPS port and vice versa.
+         * @param httpsPort the HTTPS port to map to
+         * @return the {@link PortMapperConfigurator} for further customization
+         */
+        public PortMapperConfigurator mapsTo(int httpsPort) {
             httpsPortMappings.put(String.valueOf(httpPort), String.valueOf(httpsPort));
             return PortMapperConfigurator.this;
         }
-
     }
 }

@@ -22,7 +22,7 @@ import org.springframework.security.web.util.AntPathRequestMatcher;
 
 
 /**
- *
+ * Configures non-null URL's to grant access to every URL
  * @author Rob Winch
  * @since 3.2
  */
