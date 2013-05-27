@@ -41,6 +41,7 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.NullRequestCache
+import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
 import org.springframework.security.web.session.SessionManagementFilter
 import org.springframework.security.web.util.RegexRequestMatcher
@@ -152,6 +153,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         findFilter(SecurityContextPersistenceFilter).repo.class == NullSecurityContextRepository
         findFilter(SessionManagementFilter).securityContextRepository.class == NullSecurityContextRepository
         findFilter(ExceptionTranslationFilter).requestCache.class == NullRequestCache
+        findFilter(RequestCacheAwareFilter).requestCache.class == NullRequestCache
     }
 
     @Configuration

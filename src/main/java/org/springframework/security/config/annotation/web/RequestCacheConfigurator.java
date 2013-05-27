@@ -17,6 +17,8 @@ package org.springframework.security.config.annotation.web;
 
 import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 
 /**
@@ -24,10 +26,31 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
  *
  */
 public class RequestCacheConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+    private RequestCache requestCache;
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {
-        RequestCacheAwareFilter requestCacheFilter = new RequestCacheAwareFilter();
+        RequestCacheAwareFilter requestCacheFilter = new RequestCacheAwareFilter(getRequestCache(http));
         http.addFilter(requestCacheFilter);
+    }
+
+    /**
+     * Gets the {@link RequestCache} to use. If one is defined using
+     * {@link #requestCache(org.springframework.security.web.savedrequest.RequestCache)}, then it is used. Otherwise, an
+     * attempt to find a {@link RequestCache} shared object is made. If that fails, an {@link HttpSessionRequestCache}
+     * is used
+     *
+     * @param http the {@link HttpConfiguration} to attempt to fined the shared object
+     * @return the {@link RequestCache} to use
+     */
+    private RequestCache getRequestCache(HttpConfiguration http) {
+        if(this.requestCache != null) {
+            return this.requestCache;
+        }
+        RequestCache result = http.getSharedObject(RequestCache.class);
+        if(result != null) {
+            return result;
+        }
+        return new HttpSessionRequestCache();
     }
 }
