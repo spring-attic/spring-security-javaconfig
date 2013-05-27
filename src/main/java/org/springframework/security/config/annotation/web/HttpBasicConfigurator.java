@@ -62,6 +62,10 @@ public class HttpBasicConfigurator extends SecurityConfiguratorAdapter<DefaultSe
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
 
+    /**
+     * Creates a new instance
+     * @throws Exception
+     */
     public HttpBasicConfigurator() throws Exception {
         realmName(DEFAULT_REALM);
     }
