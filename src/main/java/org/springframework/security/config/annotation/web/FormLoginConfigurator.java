@@ -62,8 +62,9 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link RememberMeServices} - see {@link RememberMeConfigurator}</li>
- * <li>{@link SessionAuthenticationStrategy} - see {@link SessionManagementConfigurator}</li>
+ * <li>{@link HttpConfiguration#authenticationManager()}</li>
+ * <li>{@link RememberMeServices} - is optionally used. See {@link RememberMeConfigurator}</li>
+ * <li>{@link SessionAuthenticationStrategy} - is optionally used. See {@link SessionManagementConfigurator}</li>
  * </ul>
  *
  * @author Rob Winch
@@ -192,11 +193,11 @@ public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSe
     }
 
     /**
-     * Specifies the URL used to log in. If the request is an HTTP POST, the
-     * {@link UsernamePasswordAuthenticationFilter} will attempt to authenicate
-     * the request. Otherwise, the user will be sent to the login form.
+     * Specifies the URL used to log in. If the request matches the URL and is an HTTP POST, the
+     * {@link UsernamePasswordAuthenticationFilter} will attempt to authenticate
+     * the request. Otherwise, if the request matches the URL the user will be sent to the login form.
      *
-     * @param loginUrl
+     * @param loginUrl the URL used to perform authentication
      * @return the {@link FormLoginConfigurator} for additional customization
      */
     public FormLoginConfigurator loginUrl(String loginUrl) {
