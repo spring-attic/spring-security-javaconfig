@@ -22,8 +22,37 @@ import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 
 /**
- * @author Rob Winch
+ * Adds request cache for Spring Security. Specifically this ensures that
+ * requests that are saved (i.e. after authentication is required) are later
+ * replayed. All properties have reasonable defaults, so no additional
+ * configuration is required other than applying this
+ * {@link org.springframework.security.config.annotation.SecurityConfigurator}.
  *
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ * <li>{@link RequestCacheAwareFilter}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Created</h2>
+ *
+ * No shared objects are created.
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * The following shared objects are used:
+ *
+ * <ul>
+ * <li>If no explicit {@link RequestCache}, is provided a {@link RequestCache}
+ * shared object is used to replay the request after authentication is
+ * successful</li>
+ * </ul>
+ *
+ * @author Rob Winch
+ * @since 3.2
+ * @see RequestCache
  */
 public class RequestCacheConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private RequestCache requestCache;
