@@ -122,6 +122,6 @@ public class ExceptionHandlingConfigurator extends SecurityConfiguratorAdapter<D
         if(result != null) {
             return result;
         }
-        return  new HttpSessionRequestCache();
+        return new HttpSessionRequestCache();
     }
 }
