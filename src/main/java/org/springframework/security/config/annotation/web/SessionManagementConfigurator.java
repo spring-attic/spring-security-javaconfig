@@ -17,7 +17,6 @@ package org.springframework.security.config.annotation.web;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.spockframework.util.Assert;
 import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -32,6 +31,7 @@ import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.util.Assert;
 
 /**
  * Allows configuring session management.
