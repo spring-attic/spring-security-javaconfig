@@ -70,7 +70,7 @@ public class SecurityContextConfigurator extends
         SessionManagementConfigurator sessionManagement = http
                 .getConfigurator(SessionManagementConfigurator.class);
         SessionCreationPolicy sessionCreationPolicy = sessionManagement == null ? null
-                : sessionManagement.sessionCreationPolicy();
+                : sessionManagement.getSessionCreationPolicy();
         if (SessionCreationPolicy.always == sessionCreationPolicy) {
             securityContextFilter.setForceEagerSessionCreation(true);
         }

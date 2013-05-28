@@ -15,6 +15,9 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.spockframework.util.Assert;
 import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -31,8 +34,37 @@ import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 
 /**
- * @author Rob Winch
+ * Allows configuring session management.
  *
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ * <li>{@link SessionManagementFilter}</li>
+ * <li>{@link ConcurrentSessionFilter} if there are restrictions on how many concurrent sessions a user can have</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Created</h2>
+ *
+ * The following shared objects are created:
+ *
+ * <ul>
+ * <li>{@link RequestCache}</li>
+ * <li>{@link SecurityContextRepository}</li>
+ * <li>{@link SessionManagementConfigurator}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * <ul>
+ * <li>{@link SecurityContextRepository}</li>
+ * </ul>
+ *
+ * @author Rob Winch
+ * @since 3.2
+ * @see SessionManagementFilter
+ * @see ConcurrentSessionFilter
  */
 public class SessionManagementConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private SessionManagementFilter sessionManagementFilter;
@@ -44,36 +76,92 @@ public class SessionManagementConfigurator extends SecurityConfiguratorAdapter<D
     private SessionCreationPolicy sessionPolicy = SessionCreationPolicy.ifRequired;
     private boolean enableUrlRewriting;
 
+    /**
+     * Creates a new instance
+     * @see HttpConfiguration#sessionManagement()
+     */
+    SessionManagementConfigurator() {
+    }
+
+    /**
+     * If set to true, allows HTTP sessions to be rewritten in the URLs when
+     * using {@link HttpServletResponse#encodeRedirectURL(String)} or
+     * {@link HttpServletResponse#encodeURL(String)}, otherwise disallows HTTP
+     * sessions to be included in the URL. This prevents leaking information to
+     * external domains.
+     *
+     * @param enableUrlRewriting true if should allow the JSESSIONID to be rewritten into the URLs, else false (default)
+     * @return the {@link SessionManagementConfigurator} for further customization
+     * @see HttpSessionSecurityContextRepository#setDisableUrlRewriting(boolean)
+     */
     public SessionManagementConfigurator enableUrlRewriting(boolean enableUrlRewriting) {
         this.enableUrlRewriting = enableUrlRewriting;
         return this;
     }
 
-    SessionCreationPolicy sessionCreationPolicy() {
-        return sessionPolicy;
-    }
-
+    /**
+     * Allows specifying the {@link SessionCreationPolicy}
+     * @param sessionCreationPolicy the {@link SessionCreationPolicy} to use. Cannot be null.
+     * @return the {@link SessionManagementConfigurator} for further customizations
+     * @see SessionCreationPolicy
+     * @throws IllegalArgumentException if {@link SessionCreationPolicy} is null.
+     */
     public SessionManagementConfigurator sessionCreationPolicy(SessionCreationPolicy sessionCreationPolicy) {
+        Assert.notNull(sessionCreationPolicy, "sessionCreationPolicy cannot be null");
         this.sessionPolicy = sessionCreationPolicy;
         return this;
     }
 
+    /**
+     * Allows explicitly specifying the {@link SessionAuthenticationStrategy}.
+     * The default is to use {@link SessionFixationProtectionStrategy}. If
+     * restricting the maximum number of sessions is configured,
+     * {@link ConcurrentSessionControlStrategy} will be used.
+     *
+     * @param sessionAuthenticationStrategy
+     * @return the {@link SessionManagementConfigurator} for further customizations
+     */
     public SessionManagementConfigurator sessionAuthenticationStrategy(SessionAuthenticationStrategy sessionAuthenticationStrategy) {
         this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
         return this;
     }
 
+    /**
+     * Controls the maximum number of sessions for a user. The default is to allow any number of users.
+     * @param maximumSessions the maximum number of sessions for a user
+     * @return the {@link SessionManagementConfigurator} for further customizations
+     */
     public SessionManagementConfigurator maximumSessions(int maximumSessions) {
         this.maximumSessions = maximumSessions;
         this.sessionAuthenticationStrategy = null;
         return this;
     }
 
+    /**
+     * The URL to redirect to if a user tries to access a resource and their
+     * session has been expired due to too many sessions for the current user.
+     * The default is to write a simple error message to the response.
+     *
+     * @param expiredUrl the URL to redirect to
+     * @return the {@link SessionManagementConfigurator} for further customizations
+     */
     public SessionManagementConfigurator expiredUrl(String expiredUrl) {
         this.expiredUrl = expiredUrl;
         return this;
     }
 
+    /**
+     * If true, prevents a user from authenticating when the
+     * {@link #maximumSessions(int)} has been reached. Otherwise (default), the user who
+     * authenticates is allowed access and an existing user's session is
+     * expired. The user's who's session is forcibly expired is sent to
+     * {@link #expiredUrl(String)}. The advantage of this approach is if a user
+     * accidentally does not log out, there is no need for an administrator to
+     * intervene or wait till their session expires.
+     *
+     * @param exceptionIfMaximumExceeded true to have an error at time of authentication, else false (default)
+     * @return the {@link SessionManagementConfigurator} for further customizations
+     */
     public SessionManagementConfigurator exceptionIfMaximumExceeded(boolean exceptionIfMaximumExceeded) {
         this.exceptionIfMaximumExceeded = exceptionIfMaximumExceeded;
         return this;
@@ -82,8 +170,6 @@ public class SessionManagementConfigurator extends SecurityConfiguratorAdapter<D
     @Override
     public void init(HttpConfiguration builder)
             throws Exception {
-        builder.setSharedObject(SessionManagementConfigurator.class, this);
-
         SecurityContextRepository securityContextRepository = builder.getSharedObject(SecurityContextRepository.class);
         if(securityContextRepository == null) {
             if(isStateless()) {
@@ -92,33 +178,58 @@ public class SessionManagementConfigurator extends SecurityConfiguratorAdapter<D
             } else {
                 HttpSessionSecurityContextRepository httpSecurityRepository = new HttpSessionSecurityContextRepository();
                 httpSecurityRepository.setDisableUrlRewriting(!enableUrlRewriting);
-                httpSecurityRepository.setAllowSessionCreation(allowSessionCreation());
+                httpSecurityRepository.setAllowSessionCreation(isAllowSessionCreation());
                 builder.setSharedObject(SecurityContextRepository.class, httpSecurityRepository);
             }
         }
         builder.setSharedObject(SessionAuthenticationStrategy.class, getSessionAuthenticationStrategy());
     }
 
-    private boolean allowSessionCreation() {
+    @Override
+    public void configure(HttpConfiguration http)
+            throws Exception {
+        SecurityContextRepository securityContextRepository = http.getSharedObject(SecurityContextRepository.class);
+        sessionManagementFilter = new SessionManagementFilter(securityContextRepository, getSessionAuthenticationStrategy());
+
+        http.addFilter(sessionManagementFilter);
+        if(isConcurrentSessionControlEnabled()) {
+            ConcurrentSessionFilter concurrentSessionFilter = new ConcurrentSessionFilter(sessionRegistry, expiredUrl);
+            http.addFilter(concurrentSessionFilter);
+        }
+    }
+
+    /**
+     * Gets the {@link SessionCreationPolicy}. Can not be null.
+     * @return the {@link SessionCreationPolicy}
+     */
+    SessionCreationPolicy getSessionCreationPolicy() {
+        return sessionPolicy;
+    }
+
+    /**
+     * Returns true if the {@link SessionCreationPolicy} allows session creation, else false
+     * @return true if the {@link SessionCreationPolicy} allows session creation
+     */
+    private boolean isAllowSessionCreation() {
         return SessionCreationPolicy.always == sessionPolicy || SessionCreationPolicy.ifRequired == sessionPolicy;
     }
 
+    /**
+     * Returns true if the {@link SessionCreationPolicy} is stateless
+     * @return
+     */
     private boolean isStateless() {
         return SessionCreationPolicy.stateless == sessionPolicy;
     }
 
-    @Override
-    public void configure(HttpConfiguration builder)
-            throws Exception {
-        sessionManagementFilter = new SessionManagementFilter(builder.getSharedObject(SecurityContextRepository.class), getSessionAuthenticationStrategy());
-
-        builder.addFilter(sessionManagementFilter);
-        if(isConcurrentSessionControlEnabled()) {
-            ConcurrentSessionFilter concurrentSessionFilter = new ConcurrentSessionFilter(sessionRegistry, expiredUrl);
-            builder.addFilter(concurrentSessionFilter);
-        }
-    }
-
+    /**
+     * Gets the customized {@link SessionAuthenticationStrategy} if
+     * {@link #sessionAuthenticationStrategy(SessionAuthenticationStrategy)} was
+     * specified. Otherwise creates a default
+     * {@link SessionAuthenticationStrategy}.
+     *
+     * @return the {@link SessionAuthenticationStrategy} to use
+     */
     private SessionAuthenticationStrategy getSessionAuthenticationStrategy() {
         if(sessionAuthenticationStrategy != null) {
             return sessionAuthenticationStrategy;
@@ -132,6 +243,10 @@ public class SessionManagementConfigurator extends SecurityConfiguratorAdapter<D
         return sessionAuthenticationStrategy;
     }
 
+    /**
+     * Returns true if the number of concurrent sessions per user should be restricted.
+     * @return
+     */
     private boolean isConcurrentSessionControlEnabled() {
         return maximumSessions != null;
     }
