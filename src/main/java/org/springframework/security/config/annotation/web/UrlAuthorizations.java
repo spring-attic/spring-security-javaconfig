@@ -16,10 +16,10 @@
 package org.springframework.security.config.annotation.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -28,30 +28,48 @@ import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+
 /**
+ * Adds URL based authorization using {@link DefaultFilterInvocationSecurityMetadataSource}. At least one
+ * {@link org.springframework.web.bind.annotation.RequestMapping} needs to be mapped to {@link ConfigAttribute}'s for
+ * this {@link SecurityContextConfigurator} to have meaning.
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ *     <li>{@link org.springframework.security.web.access.intercept.FilterSecurityInterceptor}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Created</h2>
+ *
+ * The following shared objects are populated to allow other {@link org.springframework.security.config.annotation.SecurityConfigurator}'s to customize:
+ * <ul>
+ *     <li>{@link org.springframework.security.web.access.intercept.FilterSecurityInterceptor}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * The following shared objects are used:
+ *
+ * <ul>
+ *     <li>{@link org.springframework.security.config.annotation.web.HttpConfiguration#authenticationManager()}</li>
+ * </ul>
  *
  * @author Rob Winch
  * @since 3.2
+ * @see ExpressionUrlAuthorizations
  */
-public class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthorizations.AuthorizedUrl> {
+public final class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthorizations.AuthorizedUrl> {
 
-    public UrlAuthorizations interceptUrl(RequestMatcher requestMatcher, String... configAttributes) {
-        return interceptUrl(Arrays.asList(requestMatcher), SecurityConfig.createList(configAttributes));
-    }
-
-    public UrlAuthorizations interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, String... configAttributes) {
-        return interceptUrl(requestMatchers, SecurityConfig.createList(configAttributes));
-    }
-
-    public UrlAuthorizations interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
-        for(RequestMatcher requestMatcher : requestMatchers) {
-            addMapping(new UrlMapping(requestMatcher, configAttributes));
-        }
-        return this;
-    }
-
+    /**
+     * Creates the default {@link AccessDecisionVoter} instances used if an
+     * {@link AccessDecisionManager} was not specified using
+     * {@link #accessDecisionManager(AccessDecisionManager)}.
+     */
     @Override
     final List<AccessDecisionVoter> decisionVoters() {
         List<AccessDecisionVoter> decisionVoters = new ArrayList<AccessDecisionVoter>();
@@ -60,72 +78,158 @@ public class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthoriza
         return decisionVoters;
     }
 
+    /**
+     * Creates the {@link FilterInvocationSecurityMetadataSource} to use. The
+     * implementation is a {@link DefaultFilterInvocationSecurityMetadataSource}
+     * .
+     */
     @Override
     FilterInvocationSecurityMetadataSource createMetadataSource() {
         return new DefaultFilterInvocationSecurityMetadataSource(createRequestMap());
     }
 
-    public class AuthorizedUrl {
-        private List<RequestMatcher> requestMatchers;
-
-        private AuthorizedUrl(List<RequestMatcher> requestMatchers) {
-            this.requestMatchers = requestMatchers;
-        }
-
-        public UrlAuthorizations hasRole(String role) {
-            return access(UrlAuthorizations.hasRole(role));
-        }
-
-        public UrlAuthorizations hasAnyRole(String role) {
-            return access(UrlAuthorizations.hasAnyRole(role));
-        }
-
-        public UrlAuthorizations hasAuthority(String authority) {
-            return access(UrlAuthorizations.hasAuthority(authority));
-        }
-
-        public UrlAuthorizations hasAnyAuthority(String... authorities) {
-            return access(UrlAuthorizations.hasAnyAuthority(authorities));
-        }
-
-        public UrlAuthorizations anonymous() {
-            return hasRole("ROLE_ANONYMOUS");
-        }
-
-        public UrlAuthorizations access(String... attributes) {
-            interceptUrl(requestMatchers, SecurityConfig.createList(attributes));
-            return UrlAuthorizations.this;
-        }
-    }
-
+    /**
+     * Chains the {@link RequestMatcher} creation to the {@link AuthorizedUrl} class.
+     */
     @Override
     AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }
 
     /**
-     * @param role
-     * @return
+     * Adds a mapping of the {@link RequestMatcher} instances to the {@link ConfigAttribute} instances.
+     * @param requestMatchers the {@link RequestMatcher} instances that should map to the provided {@link ConfigAttribute} instances
+     * @param configAttributes the {@link ConfigAttribute} instances that should be mapped by the {@link RequestMatcher} instances
+     * @return the {@link UrlAuthorizations} for further customizations
      */
-    public static String hasRole(String role) {
+    private UrlAuthorizations addMapping(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+        for(RequestMatcher requestMatcher : requestMatchers) {
+            addMapping(new UrlMapping(requestMatcher, configAttributes));
+        }
+        return this;
+    }
+
+    /**
+     * Creates a String for specifying a user requires a role.
+     *
+     * @param role
+     *            the role that should be required which is prepended with ROLE_
+     *            automatically (i.e. USER, ADMIN, etc). It should not start
+     *            with ROLE_
+     * @return the {@link ConfigAttribute} expressed as a String
+     */
+    private static String hasRole(String role) {
+        Assert.isTrue(
+                !role.startsWith("ROLE_"),
+                role
+                        + " should not start with ROLE_ since ROLE_ is automatically prepended when using hasRole. Consider using hasAuthority or access instead.");
         return "ROLE_" + role;
     }
 
     /**
-     * @param role
-     * @return
+     * Creates a String for specifying that a user requires one of many roles.
+     *
+     * @param roles
+     *            the roles that the user should have at least one of (i.e.
+     *            ADMIN, USER, etc). Each role should not start with ROLE_ since
+     *            it is automatically prepended already.
+     * @return the {@link ConfigAttribute} expressed as a String
      */
-    public static String hasAnyRole(String... roles) {
+    private static String hasAnyRole(String... roles) {
         return "'ROLE_" + StringUtils.arrayToDelimitedString(roles, "','ROLE_") + "'";
     }
 
-
-    public static String hasAuthority(String authority) {
-        return "hasAuthority('" + authority + "')";
-    }
-
-    public static String hasAnyAuthority(String... authorities) {
+    /**
+     * Creates a String for specifying that a user requires one of many authorities
+     * @param authorities the authorities that the user should have at least one of (i.e. ROLE_USER, ROLE_ADMIN, etc).
+     * @return the {@link ConfigAttribute} expressed as a String.
+     */
+    private static String hasAnyAuthority(String... authorities) {
         String anyAuthorities = StringUtils.arrayToDelimitedString(authorities, "','");
         return "'" + anyAuthorities + "'";
+    }
+
+    /**
+     * Maps the specified {@link RequestMatcher} instances to {@link ConfigAttribute} instances.
+     *
+     * @author Rob Winch
+     * @since 3.2
+     */
+    public final class AuthorizedUrl {
+        private final List<RequestMatcher> requestMatchers;
+
+        /**
+         * Creates a new instance
+         * @param requestMatchers the {@link RequestMatcher} instances to map to some {@link ConfigAttribute} instances.
+         * @see UrlAuthorizations#chainRequestMatchers(List)
+         */
+        private AuthorizedUrl(List<RequestMatcher> requestMatchers) {
+            Assert.notEmpty(requestMatchers, "requestMatchers must contain at least one value");
+            this.requestMatchers = requestMatchers;
+        }
+
+        /**
+         * Specifies a user requires a role.
+         *
+         * @param role
+         *            the role that should be required which is prepended with ROLE_
+         *            automatically (i.e. USER, ADMIN, etc). It should not start
+         *            with ROLE_
+         * the {@link UrlAuthorizations} for further customization
+         */
+        public UrlAuthorizations hasRole(String role) {
+            return access(UrlAuthorizations.hasRole(role));
+        }
+
+        /**
+         * Specifies that a user requires one of many roles.
+         *
+         * @param roles
+         *            the roles that the user should have at least one of (i.e.
+         *            ADMIN, USER, etc). Each role should not start with ROLE_ since
+         *            it is automatically prepended already.
+         * @return the {@link UrlAuthorizations} for further customization
+         */
+        public UrlAuthorizations hasAnyRole(String role) {
+            return access(UrlAuthorizations.hasAnyRole(role));
+        }
+
+        /**
+         * Specifies a user requires an authority.
+         *
+         * @param authority
+         *            the authority that should be required
+         * @return the {@link UrlAuthorizations} for further customization
+         */
+        public UrlAuthorizations hasAuthority(String authority) {
+            return access(authority);
+        }
+
+        /**
+         * Specifies that a user requires one of many authorities
+         * @param authorities the authorities that the user should have at least one of (i.e. ROLE_USER, ROLE_ADMIN, etc).
+         * @return the {@link UrlAuthorizations} for further customization
+         */
+        public UrlAuthorizations hasAnyAuthority(String... authorities) {
+            return access(UrlAuthorizations.hasAnyAuthority(authorities));
+        }
+
+        /**
+         * Specifies that an anonymous user is allowed access
+         * @return the {@link UrlAuthorizations} for further customization
+         */
+        public UrlAuthorizations anonymous() {
+            return hasRole("ROLE_ANONYMOUS");
+        }
+
+        /**
+         * Specifies that the user must have the specified {@link ConfigAttribute}'s
+         * @param attributes the {@link ConfigAttribute}'s that restrict access to a URL
+         * @return the {@link UrlAuthorizations} for further customization
+         */
+        public UrlAuthorizations access(String... attributes) {
+            addMapping(requestMatchers, SecurityConfig.createList(attributes));
+            return UrlAuthorizations.this;
+        }
     }
 }
