@@ -22,6 +22,7 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
+import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
@@ -53,12 +54,20 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * @author Rob Winch
  * @since 3.2
  */
-public final class WebSecurityBuilder extends AbstractConfiguredSecurityBuilder<FilterChainProxy, WebSecurityBuilder> {
-    private List<RequestMatcher> ignoredRequests = new ArrayList<RequestMatcher>();
-    private List<HttpConfiguration> httpBuilders = new ArrayList<HttpConfiguration>();
+public final class WebSecurityBuilder extends
+        AbstractConfiguredSecurityBuilder<FilterChainProxy, WebSecurityBuilder> {
+
+    private final List<RequestMatcher> ignoredRequests = new ArrayList<RequestMatcher>();
+
+    private final List<SecurityBuilder<? extends SecurityFilterChain>> securityFilterChainBuilders =
+            new ArrayList<SecurityBuilder<? extends SecurityFilterChain>>();
+
+    private final IgnoredRequestRegistry ignoredRequestRegistry =
+            new IgnoredRequestRegistry();
+
     private FilterSecurityInterceptor filterSecurityInterceptor;
+
     private HttpFirewall httpFirewall;
-    private final IgnoredRequestRegistry ignoredRequestRegistry = new IgnoredRequestRegistry();
 
     /**
      * Creates a new instance
@@ -124,22 +133,21 @@ public final class WebSecurityBuilder extends AbstractConfiguredSecurityBuilder<
      *            instances
      * @return the {@link WebSecurityBuilder} for further customizations
      */
-    public WebSecurityBuilder addSecurityFilterChainBuilder(HttpConfiguration securityFilterChainBuilder) {
-        this.httpBuilders.add(securityFilterChainBuilder);
+    public WebSecurityBuilder addSecurityFilterChainBuilder(SecurityBuilder<? extends SecurityFilterChain> securityFilterChainBuilder) {
+        this.securityFilterChainBuilders.add(securityFilterChainBuilder);
         return this;
     }
 
     @Override
     protected FilterChainProxy performBuild() throws Exception {
-        Assert.state(!httpBuilders.isEmpty(), "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains");
-        int chainSize = ignoredRequests.size() + httpBuilders.size();
+        Assert.state(!securityFilterChainBuilders.isEmpty(), "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains");
+        int chainSize = ignoredRequests.size() + securityFilterChainBuilders.size();
         List<SecurityFilterChain> securityFilterChains = new ArrayList<SecurityFilterChain>(chainSize);
         for(RequestMatcher ignoredRequest : ignoredRequests) {
             securityFilterChains.add(new DefaultSecurityFilterChain(ignoredRequest));
         }
-        for(HttpConfiguration http : httpBuilders) {
-            securityFilterChains.add(http.build());
-            this.filterSecurityInterceptor = http.getSharedObject(FilterSecurityInterceptor.class);
+        for(SecurityBuilder<? extends SecurityFilterChain> securityFilterChainBuilder : securityFilterChainBuilders) {
+            securityFilterChains.add(securityFilterChainBuilder.build());
         }
         FilterChainProxy filterChainProxy = new FilterChainProxy(securityFilterChains);
         if(httpFirewall != null) {
@@ -150,11 +158,19 @@ public final class WebSecurityBuilder extends AbstractConfiguredSecurityBuilder<
     }
 
     /**
-     * Gets one of the {@link FilterSecurityInterceptor} for the {@link HttpConfiguration} injected. May be null.
+     * Gets one of the {@link FilterSecurityInterceptor}. May be null.
      * @return a {@link FilterSecurityInterceptor}
      */
     FilterSecurityInterceptor getSecurityInterceptor() {
         return filterSecurityInterceptor;
+    }
+
+    /**
+     * Sets the {@link FilterSecurityInterceptor}. This is typically invoked by {@link WebSecurityConfigurerAdapter}.
+     * @param securityInterceptor the {@link FilterSecurityInterceptor} to use
+     */
+    void setSecurityInterceptor(FilterSecurityInterceptor securityInterceptor) {
+        this.filterSecurityInterceptor = securityInterceptor;
     }
 
     /**

@@ -26,6 +26,7 @@ import org.springframework.security.config.annotation.authentication.Authenticat
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 /**
  * @author Rob Winch
@@ -108,8 +109,12 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     @Override
     public void init(WebSecurityBuilder builder) throws Exception {
+        HttpConfiguration http = http();
+        FilterSecurityInterceptor securityInterceptor = http.getSharedObject(FilterSecurityInterceptor.class);
         builder
-            .addSecurityFilterChainBuilder(http());
+            .addSecurityFilterChainBuilder(http)
+            .setSecurityInterceptor(securityInterceptor);
+
     }
 
     @Override
