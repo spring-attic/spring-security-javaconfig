@@ -48,7 +48,7 @@ public class DaoAuthenticationConfigurator<T extends UserDetailsService> extends
      * @param passwordEncoder The {@link PasswordEncoder} to use.
      * @return
      */
-    public DaoAuthenticationConfigurator passwordEncoder(PasswordEncoder passwordEncoder) {
+    public DaoAuthenticationConfigurator<T> passwordEncoder(PasswordEncoder passwordEncoder) {
         provider.setPasswordEncoder(passwordEncoder);
         return this;
     }
