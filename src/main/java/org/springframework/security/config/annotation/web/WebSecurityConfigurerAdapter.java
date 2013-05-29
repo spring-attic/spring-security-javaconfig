@@ -107,14 +107,13 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     }
 
     @Override
-    public void init(WebSecurityConfiguration builder) throws Exception {
-        SpringSecurityFilterChainBuilder securityFilterChains = builder.springSecurityFilterChainBuilder();
-        securityFilterChains
+    public void init(SpringSecurityFilterChainBuilder builder) throws Exception {
+        builder
             .securityFilterChains(http());
     }
 
     @Override
-    public void configure(WebSecurityConfiguration builder) throws Exception {
+    public void configure(SpringSecurityFilterChainBuilder builder) throws Exception {
     }
 
     private <T> T getBeanExcluding(Class<T> clazz, String beanNameToExclude) {

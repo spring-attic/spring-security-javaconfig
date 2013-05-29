@@ -405,7 +405,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class SecurityNoneConfig extends BaseWebConfig {
 
         @Override
-        public void configure(WebSecurityConfiguration builder)
+        public void configure(SpringSecurityFilterChainBuilder builder)
                 throws Exception {
             builder
                 .ignoring()

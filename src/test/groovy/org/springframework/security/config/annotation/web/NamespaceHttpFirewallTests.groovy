@@ -114,7 +114,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) { }
 
         @Override
-        public void configure(WebSecurityConfiguration builder)	throws Exception {
+        public void configure(SpringSecurityFilterChainBuilder builder)	throws Exception {
             builder
                 .httpFirewall(new CustomHttpFirewall())
         }

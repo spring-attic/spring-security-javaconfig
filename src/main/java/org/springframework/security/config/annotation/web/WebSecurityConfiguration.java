@@ -27,16 +27,13 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.firewall.HttpFirewall;
 
 /**
  *
@@ -44,10 +41,10 @@ import org.springframework.security.web.firewall.HttpFirewall;
  * @since 3.2
  */
 @Configuration
-public class WebSecurityConfiguration extends AbstractConfiguredSecurityBuilder<FilterChainProxy, WebSecurityConfiguration> {
+public class WebSecurityConfiguration {
     private final SpringSecurityFilterChainBuilder springSecurityFilterChain = new SpringSecurityFilterChainBuilder();
 
-    private List<WebSecurityConfigurer> webSecurityConfigurers;
+    private List<SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder>> webSecurityConfigurers;
 
     @Bean
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {
@@ -56,64 +53,38 @@ public class WebSecurityConfiguration extends AbstractConfiguredSecurityBuilder<
 
     @Bean(name="springSecurityFilterChain")
     public FilterChainProxy springSecurityFilterChain() throws Exception {
-        return build();
+        boolean hasConfigurators = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
+        if(!hasConfigurators) {
+            throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
+        }
+        return springSecurityFilterChain.build();
     }
 
     @Bean
     public WebInvocationPrivilegeEvaluator privilegeEvaluator() throws Exception {
-        FilterSecurityInterceptor securityInterceptor = springSecurityFilterChainBuilder().securityInterceptor();
+        FilterSecurityInterceptor securityInterceptor = springSecurityFilterChain.securityInterceptor();
         return securityInterceptor == null ? null : new DefaultWebInvocationPrivilegeEvaluator(securityInterceptor);
     }
 
     @Autowired(required = false)
     public void setFilterChainProxySecurityConfigurator(
-            List<WebSecurityConfigurer> webSecurityConfigurers) throws Exception {
+            List<SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder>> webSecurityConfigurers) throws Exception {
         Collections.sort(webSecurityConfigurers, new AnnotationAwareOrderComparator());
 
         Integer previousOrder = null;
-        for(WebSecurityConfigurer config : webSecurityConfigurers) {
+        for(SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder> config : webSecurityConfigurers) {
             Integer order = AnnotationAwareOrderComparator.lookupOrder(config);
             if(previousOrder != null && previousOrder.equals(order)) {
                 throw new IllegalStateException("@Order on WebSecurityConfigurators must be unique. Order of " + order + " was already used, so it cannot be used on " + config + " too.");
             }
             previousOrder = order;
         }
-        for(SecurityConfigurator<FilterChainProxy, WebSecurityConfiguration> webSecurityConfigurer : webSecurityConfigurers) {
-            apply(webSecurityConfigurer);
+        for(SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder> webSecurityConfigurer : webSecurityConfigurers) {
+            springSecurityFilterChain.apply(webSecurityConfigurer);
         }
         this.webSecurityConfigurers = webSecurityConfigurers;
     }
 
-    public IgnoredRequestRegistry ignoring() {
-        return springSecurityFilterChain.ignoring();
-    }
-
-    public WebSecurityConfiguration httpFirewall(HttpFirewall httpFirewall) {
-        springSecurityFilterChain.httpFirewall(httpFirewall);
-        return this;
-    }
-
-    SpringSecurityFilterChainBuilder springSecurityFilterChainBuilder() throws Exception {
-        return springSecurityFilterChain;
-    }
-
-
-
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.AbstractSecurityBuilder#doBuild()
-     */
-    @Override
-    protected FilterChainProxy performBuild() throws Exception {
-        return springSecurityFilterChain.build();
-    }
-
-    @Override
-    protected void beforeInit() {
-        boolean hasConfigurators = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
-        if(!hasConfigurators) {
-            throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
-        }
-    }
 
     private static class AnnotationAwareOrderComparator extends OrderComparator {
 
@@ -128,7 +99,7 @@ public class WebSecurityConfiguration extends AbstractConfiguredSecurityBuilder<
                 return order;
             }
             if (obj != null) {
-                Class<?> clazz = (obj instanceof Class ? (Class) obj : obj.getClass());
+                Class<?> clazz = (obj instanceof Class ? (Class<?>) obj : obj.getClass());
                 Order order = AnnotationUtils.findAnnotation(clazz,Order.class);
                 if (order != null) {
                     return order.value();

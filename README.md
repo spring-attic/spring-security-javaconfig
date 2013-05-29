@@ -49,7 +49,7 @@ The following configuration
     @EnableWebSecurity
     public class SampleWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         @Override
-        public void configure(WebSecurityConfiguration builder) throws Exception {
+        public void configure(SpringSecurityFilterChainBuilder builder) throws Exception {
             builder
                 .ignoring()
                     .antMatchers("/resources/**");
@@ -144,7 +144,7 @@ The following configuration
         @Configuration
         public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            public void configure(WebSecurityConfiguration builder) throws Exception {
+            public void configure(SpringSecurityFilterChainBuilder builder) throws Exception {
                 builder
                     .ignoring()
                         .antMatchers("/resources/**");

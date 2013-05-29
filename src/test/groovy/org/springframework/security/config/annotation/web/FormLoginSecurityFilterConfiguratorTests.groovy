@@ -76,7 +76,7 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class FormLoginConfig extends BaseWebConfig {
         @Override
-        public void configure(WebSecurityConfiguration builder)	throws Exception {
+        public void configure(SpringSecurityFilterChainBuilder builder)	throws Exception {
             builder
                 .ignoring()
                     .antMatchers("/resources/**");

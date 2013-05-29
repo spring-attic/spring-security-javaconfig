@@ -67,7 +67,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         @Order(1)
         public static class WebConfigurer1 extends WebSecurityConfigurerAdapter {
             @Override
-            public void configure(WebSecurityConfiguration builder)	throws Exception {
+            public void configure(SpringSecurityFilterChainBuilder builder)	throws Exception {
                 builder
                     .ignoring()
                         .antMatchers("/ignore1","/ignore2");

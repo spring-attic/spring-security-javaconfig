@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
+import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurityConfiguration builder) throws Exception {
+    public void configure(SpringSecurityFilterChainBuilder builder) throws Exception {
         builder
             .ignoring()
                 .antMatchers("/resources/**");

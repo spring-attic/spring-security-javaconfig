@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.security.config.annotation.AbstractSecurityBuilder;
+import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<FilterChainProxy> {
+public class SpringSecurityFilterChainBuilder extends AbstractConfiguredSecurityBuilder<FilterChainProxy, SpringSecurityFilterChainBuilder> {
     private List<RequestMatcher> ignoredRequests = new ArrayList<RequestMatcher>();
     private List<HttpConfiguration> httpBuilders = new ArrayList<HttpConfiguration>();
     private FilterSecurityInterceptor filterSecurityInterceptor;
@@ -47,7 +47,7 @@ public class SpringSecurityFilterChainBuilder extends AbstractSecurityBuilder<Fi
     }
 
     @Override
-    protected FilterChainProxy doBuild() throws Exception {
+    protected FilterChainProxy performBuild() throws Exception {
         Assert.state(!httpBuilders.isEmpty(), "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains");
         int chainSize = ignoredRequests.size() + httpBuilders.size();
         List<SecurityFilterChain> securityFilterChains = new ArrayList<SecurityFilterChain>(chainSize);

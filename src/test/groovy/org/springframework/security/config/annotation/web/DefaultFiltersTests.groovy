@@ -117,11 +117,12 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class FilterChainProxyBuilderIgnoringConfig extends BaseWebConfig {
         @Override
-            public void configure(WebSecurityConfiguration builder)	throws Exception {
-                builder
-                    .ignoring()
-                        .antMatchers("/resources/**");
-            }
+        public void configure(SpringSecurityFilterChainBuilder builder)	throws Exception {
+            builder
+                .ignoring()
+                    .antMatchers("/resources/**");
+        }
+        @Override
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
