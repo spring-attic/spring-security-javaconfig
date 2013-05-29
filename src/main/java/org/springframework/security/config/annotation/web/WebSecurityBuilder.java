@@ -145,6 +145,7 @@ public final class WebSecurityBuilder extends AbstractConfiguredSecurityBuilder<
         if(httpFirewall != null) {
             filterChainProxy.setFirewall(httpFirewall);
         }
+        filterChainProxy.afterPropertiesSet();
         return filterChainProxy;
     }
 
