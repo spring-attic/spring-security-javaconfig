@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityBuilder;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 /**
@@ -40,7 +40,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * @param <B>
  *            The type of this builder (that is returned by the base class)
  *
- * @see SpringSecurityFilterChainBuilder
+ * @see WebSecurityBuilder
  *
  *
  */

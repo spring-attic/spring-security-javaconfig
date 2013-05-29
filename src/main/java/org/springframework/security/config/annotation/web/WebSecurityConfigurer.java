@@ -22,6 +22,6 @@ import org.springframework.security.web.FilterChainProxy;
  * @author Rob Winch
  *
  */
-public interface WebSecurityConfigurer extends SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder> {
+public interface WebSecurityConfigurer extends SecurityConfigurator<FilterChainProxy, WebSecurityBuilder> {
 
 }

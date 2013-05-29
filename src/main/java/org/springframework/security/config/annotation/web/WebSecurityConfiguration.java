@@ -42,9 +42,9 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  */
 @Configuration
 public class WebSecurityConfiguration {
-    private final SpringSecurityFilterChainBuilder springSecurityFilterChain = new SpringSecurityFilterChainBuilder();
+    private final WebSecurityBuilder springSecurityFilterChain = new WebSecurityBuilder();
 
-    private List<SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder>> webSecurityConfigurers;
+    private List<SecurityConfigurator<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers;
 
     @Bean
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {
@@ -62,24 +62,24 @@ public class WebSecurityConfiguration {
 
     @Bean
     public WebInvocationPrivilegeEvaluator privilegeEvaluator() throws Exception {
-        FilterSecurityInterceptor securityInterceptor = springSecurityFilterChain.securityInterceptor();
+        FilterSecurityInterceptor securityInterceptor = springSecurityFilterChain.getSecurityInterceptor();
         return securityInterceptor == null ? null : new DefaultWebInvocationPrivilegeEvaluator(securityInterceptor);
     }
 
     @Autowired(required = false)
     public void setFilterChainProxySecurityConfigurator(
-            List<SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder>> webSecurityConfigurers) throws Exception {
+            List<SecurityConfigurator<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers) throws Exception {
         Collections.sort(webSecurityConfigurers, new AnnotationAwareOrderComparator());
 
         Integer previousOrder = null;
-        for(SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder> config : webSecurityConfigurers) {
+        for(SecurityConfigurator<FilterChainProxy, WebSecurityBuilder> config : webSecurityConfigurers) {
             Integer order = AnnotationAwareOrderComparator.lookupOrder(config);
             if(previousOrder != null && previousOrder.equals(order)) {
                 throw new IllegalStateException("@Order on WebSecurityConfigurators must be unique. Order of " + order + " was already used, so it cannot be used on " + config + " too.");
             }
             previousOrder = order;
         }
-        for(SecurityConfigurator<FilterChainProxy, SpringSecurityFilterChainBuilder> webSecurityConfigurer : webSecurityConfigurers) {
+        for(SecurityConfigurator<FilterChainProxy, WebSecurityBuilder> webSecurityConfigurer : webSecurityConfigurers) {
             springSecurityFilterChain.apply(webSecurityConfigurer);
         }
         this.webSecurityConfigurers = webSecurityConfigurers;

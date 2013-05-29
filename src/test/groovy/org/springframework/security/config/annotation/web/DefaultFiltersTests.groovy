@@ -69,8 +69,8 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class FilterChainProxyBuilderNoSecurityFilterBuildersConfig {
         @Bean
-        public SpringSecurityFilterChainBuilder filterChainProxyBuilder() {
-            new SpringSecurityFilterChainBuilder()
+        public WebSecurityBuilder filterChainProxyBuilder() {
+            new WebSecurityBuilder()
                 .ignoring(antMatchers("/resources/**"))
         }
     }
@@ -117,7 +117,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class FilterChainProxyBuilderIgnoringConfig extends BaseWebConfig {
         @Override
-        public void configure(SpringSecurityFilterChainBuilder builder)	throws Exception {
+        public void configure(WebSecurityBuilder builder)	throws Exception {
             builder
                 .ignoring()
                     .antMatchers("/resources/**");

@@ -6,7 +6,7 @@ import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityBuilder;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.server.ApacheDSContainer;
@@ -19,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private String password = "secret";
 
     @Override
-    public void configure(SpringSecurityFilterChainBuilder builder) throws Exception {
+    public void configure(WebSecurityBuilder builder) throws Exception {
         builder
             .ignoring()
                 .antMatchers("/resources/**");

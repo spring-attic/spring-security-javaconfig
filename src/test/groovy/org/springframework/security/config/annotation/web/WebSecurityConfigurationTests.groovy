@@ -23,7 +23,6 @@ import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.util.AnyRequestMatcher
@@ -67,7 +66,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         @Order(1)
         public static class WebConfigurer1 extends WebSecurityConfigurerAdapter {
             @Override
-            public void configure(SpringSecurityFilterChainBuilder builder)	throws Exception {
+            public void configure(WebSecurityBuilder builder)	throws Exception {
                 builder
                     .ignoring()
                         .antMatchers("/ignore1","/ignore2");
