@@ -109,7 +109,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     @Override
     public void init(WebSecurityBuilder builder) throws Exception {
         builder
-            .securityFilterChains(http());
+            .addSecurityFilterChainBuilder(http());
     }
 
     @Override
