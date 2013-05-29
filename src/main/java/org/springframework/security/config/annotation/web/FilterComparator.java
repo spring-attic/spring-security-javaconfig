@@ -50,55 +50,55 @@ import org.springframework.security.web.session.SessionManagementFilter;
 
 final class FilterComparator implements Comparator<Filter>{
     private static int STEP = 100;
-    private Map<Class<? extends Filter>,Integer> filterToOrder = new HashMap<Class<? extends Filter>,Integer>();
+    private Map<String,Integer> filterToOrder = new HashMap<String,Integer>();
 
     FilterComparator() {
         int order = 100;
-        filterToOrder.put(ChannelProcessingFilter.class, order);
+        put(ChannelProcessingFilter.class, order);
         order += STEP;
-        filterToOrder.put(ConcurrentSessionFilter.class, order);
+        put(ConcurrentSessionFilter.class, order);
         order += STEP;
-        filterToOrder.put(SecurityContextPersistenceFilter.class, order);
+        put(SecurityContextPersistenceFilter.class, order);
         order += STEP;
-        filterToOrder.put(LogoutFilter.class, order);
+        put(LogoutFilter.class, order);
         order += STEP;
-        filterToOrder.put(X509AuthenticationFilter.class, order);
+        put(X509AuthenticationFilter.class, order);
         order += STEP;
-        filterToOrder.put(AbstractPreAuthenticatedProcessingFilter.class, order);
+        put(AbstractPreAuthenticatedProcessingFilter.class, order);
         order += STEP;
-//        filterToOrder.put(CasFilter, order);
-//        order += STEP;
-        filterToOrder.put(UsernamePasswordAuthenticationFilter.class, order);
+        filterToOrder.put("org.springframework.security.cas.web.CasAuthenticationFilter", order);
         order += STEP;
-        filterToOrder.put(ConcurrentSessionFilter.class, order);
+        put(UsernamePasswordAuthenticationFilter.class, order);
         order += STEP;
-//        filterToOrder.put(OpenIDFilter.class, order);
-//        order += STEP;
-        filterToOrder.put(DefaultLoginPageGeneratingFilter.class, order);
+        put(ConcurrentSessionFilter.class, order);
         order += STEP;
-        filterToOrder.put(ConcurrentSessionFilter.class, order);
+        filterToOrder.put("org.springframework.security.openid.OpenIDAuthenticationFilter", order);
         order += STEP;
-        filterToOrder.put(DigestAuthenticationFilter.class, order);
+        put(DefaultLoginPageGeneratingFilter.class, order);
         order += STEP;
-        filterToOrder.put(BasicAuthenticationFilter.class, order);
+        put(ConcurrentSessionFilter.class, order);
         order += STEP;
-        filterToOrder.put(RequestCacheAwareFilter.class, order);
+        put(DigestAuthenticationFilter.class, order);
         order += STEP;
-        filterToOrder.put(SecurityContextHolderAwareRequestFilter.class, order);
+        put(BasicAuthenticationFilter.class, order);
         order += STEP;
-        filterToOrder.put(JaasApiIntegrationFilter.class, order);
+        put(RequestCacheAwareFilter.class, order);
         order += STEP;
-        filterToOrder.put(RememberMeAuthenticationFilter.class, order);
+        put(SecurityContextHolderAwareRequestFilter.class, order);
         order += STEP;
-        filterToOrder.put(AnonymousAuthenticationFilter.class, order);
+        put(JaasApiIntegrationFilter.class, order);
         order += STEP;
-        filterToOrder.put(SessionManagementFilter.class, order);
+        put(RememberMeAuthenticationFilter.class, order);
         order += STEP;
-        filterToOrder.put(ExceptionTranslationFilter.class, order);
+        put(AnonymousAuthenticationFilter.class, order);
         order += STEP;
-        filterToOrder.put(FilterSecurityInterceptor.class, order);
+        put(SessionManagementFilter.class, order);
         order += STEP;
-        filterToOrder.put(SwitchUserFilter.class, order);
+        put(ExceptionTranslationFilter.class, order);
+        order += STEP;
+        put(FilterSecurityInterceptor.class, order);
+        order += STEP;
+        put(SwitchUserFilter.class, order);
     }
 
     @Override
@@ -129,7 +129,7 @@ final class FilterComparator implements Comparator<Filter>{
             throw new IllegalArgumentException("Cannot register after unregistered Filter "+afterFilter);
         }
 
-        filterToOrder.put(filter, position + 1);
+        put(filter, position + 1);
     }
 
     /**
@@ -143,7 +143,12 @@ final class FilterComparator implements Comparator<Filter>{
             throw new IllegalArgumentException("Cannot register after unregistered Filter "+beforeFilter);
         }
 
-        filterToOrder.put(filter, position - 1);
+        put(filter, position - 1);
+    }
+
+    private void put(Class<? extends Filter> filter, int position) {
+        String className = filter.getName();
+        filterToOrder.put(className, position);
     }
 
     /**
@@ -154,7 +159,7 @@ final class FilterComparator implements Comparator<Filter>{
      */
     private Integer getOrder(Class<?> clazz) {
         while(clazz != null) {
-            Integer result = filterToOrder.get(clazz);
+            Integer result = filterToOrder.get(clazz.getName());
             if(result != null) {
                 return result;
             }

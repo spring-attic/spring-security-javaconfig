@@ -188,6 +188,12 @@ public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<Default
     }
 
     public HttpConfiguration addFilter(Filter filter) {
+        Class<? extends Filter> filterClass = filter.getClass();
+        if(!comparitor.isRegistered(filterClass)) {
+            throw new IllegalArgumentException(
+                    "The Filter class " + filterClass.getName()
+                            + " does not have a registered order and cannot be added without a specified order. Consider using addFilterBefore or addFilterAfter instead.");
+        }
         this.filters.add(filter);
         return this;
     }

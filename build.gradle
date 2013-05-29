@@ -119,7 +119,8 @@ configure(rootProject) {
         optional "org.aspectj:aspectjrt:${aspectjVersion}",
                  apacheDsDependencies,
                  "org.springframework.security:spring-security-ldap:$springSecurityVersion",
-                 "org.springframework.security:spring-security-openid:$springSecurityVersion"
+                 "org.springframework.security:spring-security-openid:$springSecurityVersion",
+                 "org.springframework.security:spring-security-cas:$springSecurityVersion"
 
         optional "org.slf4j:slf4j-api:$slf4jVersion"
 

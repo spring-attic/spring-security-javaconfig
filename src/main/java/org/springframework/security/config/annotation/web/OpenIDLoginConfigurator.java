@@ -387,8 +387,7 @@ public class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<Default
         }
         openIDAuthenticationFilter.afterPropertiesSet();
 
-        // FIXME should be able to add OpenIDFilter w/out specifying class
-        http.addFilterBefore(openIDAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(openIDAuthenticationFilter);
     }
 
     String getLoginProcessingUrl() {
