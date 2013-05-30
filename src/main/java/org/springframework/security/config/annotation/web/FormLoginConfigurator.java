@@ -123,7 +123,57 @@ public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSe
      * {@link #passwordParameter(String)}</li>
      * </ul>
      *
-     * @param loginPage the login page to redirect to if authentication is required (i.e. "/login")
+     * <h2>Example login.jsp</h2>
+     *
+     * Login pages can be rendered with any technology you choose so long as the
+     * rules above are followed. Below is an example login.jsp that can be used as
+     * a quick start when using JSP's or as a baseline to translate into another view
+     * technology.
+     *
+     * <pre>
+     * <!-- loginProcessingUrl should correspond to FormLoginConfigurator#loginProcessingUrl. Don't forget to perform a POST -->
+     * &lt;c:url value="/login" var="loginProcessingUrl"/&gt;
+     * &lt;form action="${loginProcessingUrl}" method="post"&gt;
+     *    &lt;fieldset&gt;
+     *        &lt;legend&gt;Please Login&lt;/legend&gt;
+     *        &lt;!-- use param.error assuming FormLoginConfigurator#failureUrl contains the query parameter error --&gt;
+     *        &lt;c:if test="${param.error != null}"&gt;
+     *            &lt;div&gt;
+     *                Failed to login.
+     *                &lt;c:if test="${SPRING_SECURITY_LAST_EXCEPTION != null}"&gt;
+     *                  Reason: &lt;c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}" /&gt;
+     *                &lt;/c:if&gt;
+     *            &lt;/div&gt;
+     *        &lt;/c:if&gt;
+     *        &lt;!-- the configured LogoutConfigurator#logoutSuccessUrl is /login?logout and contains the query param logout --&gt;
+     *        &lt;c:if test="${param.logout != null}"&gt;
+     *            &lt;div&gt;
+     *                You have been logged out.
+     *            &lt;/div&gt;
+     *        &lt;/c:if&gt;
+     *        &lt;p&gt;
+     *        &lt;label for="username"&gt;Username&lt;/label&gt;
+     *        &lt;input type="text" id="username" name="username"/&gt;
+     *        &lt;/p&gt;
+     *        &lt;p&gt;
+     *        &lt;label for="password"&gt;Password&lt;/label&gt;
+     *        &lt;input type="password" id="password" name="password"/&gt;
+     *        &lt;/p&gt;
+     *        &lt;!-- if using RememberMeConfigurator make sure remember-me matches RememberMeConfigurator#rememberMeParameter --&gt;
+     *        &lt;p&gt;
+     *        &lt;label for="remember-me"&gt;Remember Me?&lt;/label&gt;
+     *        &lt;input type="checkbox" id="remember-me" name="remember-me"/&gt;
+     *        &lt;/p&gt;
+     *        &lt;div&gt;
+     *            &lt;button type="submit" class="btn"&gt;Log in&lt;/button&gt;
+     *        &lt;/div&gt;
+     *    &lt;/fieldset&gt;
+     * &lt;/form&gt;
+     * </pre>
+     *
+     * @param loginPage
+     *            the login page to redirect to if authentication is required
+     *            (i.e. "/login")
      * @return the {@link FormLoginConfigurator} for additional customization
      */
     public FormLoginConfigurator loginPage(String loginPage) {
