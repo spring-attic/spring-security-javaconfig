@@ -16,7 +16,6 @@
 package org.springframework.security.config.annotation.web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,19 +23,26 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.PortMapper;
+import org.springframework.security.web.PortMapperImpl;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
@@ -47,7 +53,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain> {
+public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain> {
 
     private AuthenticationManager authenticationManager;
 
@@ -57,68 +63,767 @@ public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<Default
     private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
-    public HttpConfiguration(AuthenticationManagerBuilder authenticationBuilder) {
-        initSharedObjects(authenticationBuilder);
+    /**
+     * Creates a new instance
+     * @param authenticationBuilder the {@link AuthenticationManagerBuilder} to use for additional updates
+     * @see WebSecurityConfiguration
+     */
+    HttpConfiguration(AuthenticationManagerBuilder authenticationBuilder) {
+        setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
     }
 
+    /**
+     * Gets the {@link SecurityConfigurator} by its class name or
+     * <code>null</code> if not found. Note that object hierarchies are not
+     * considered.
+     *
+     * @param clazz the Class of the {@link SecurityConfigurator} to attempt to get.
+     *
+     * @see org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder#getConfigurator(java.lang.Class)
+     */
     @Override
     public <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurator(
             Class<C> clazz) {
         return super.getConfigurator(clazz);
     }
 
+    /**
+     * Allows configuring OpenID based authentication. Multiple invocations of
+     * {@link #openidLogin()} will override previous invocations.
+     *
+     * <h2>Example Configurations</h2>
+     *
+     * A basic example accepting the defaults and not using attribute exchange:
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class OpenIDLoginConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .openidLogin()
+     *                 .permitAll();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry authenticationRegistry) throws Exception {
+     *         authenticationRegistry
+     *                 .inMemoryAuthentication()
+     *                     // the username must match the OpenID of the user you are
+     *                     // logging in with
+     *                     .withUser(&quot;https://www.google.com/accounts/o8/id?id=lmkCn9xzPdsxVwG7pjYMuDgNNdASFmobNkcRPaWU&quot;)
+     *                         .password(&quot;password&quot;)
+     *                         .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * A more advanced example demonstrating using attribute exchange and
+     * providing a custom AuthenticationUserDetailsService that will make any
+     * user that authenticates a valid user.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class OpenIDLoginConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .openidLogin()
+     *                 .loginPage(&quot;/login&quot;)
+     *                 .permitAll()
+     *                 .authenticationUserDetailsService(new AutoProvisioningUserDetailsService())
+     *                     .attributeExchange(&quot;https://www.google.com/.*&quot;)
+     *                         .attribute(&quot;email&quot;)
+     *                             .type(&quot;http://axschema.org/contact/email&quot;)
+     *                             .required(true)
+     *                             .and()
+     *                         .attribute(&quot;firstname&quot;)
+     *                             .type(&quot;http://axschema.org/namePerson/first&quot;)
+     *                             .required(true)
+     *                             .and()
+     *                         .attribute(&quot;lastname&quot;)
+     *                             .type(&quot;http://axschema.org/namePerson/last&quot;)
+     *                             .required(true)
+     *                             .and()
+     *                         .and()
+     *                     .attributeExchange(&quot;.*yahoo.com.*&quot;)
+     *                         .attribute(&quot;email&quot;)
+     *                             .type(&quot;http://schema.openid.net/contact/email&quot;)
+     *                             .required(true)
+     *                             .and()
+     *                         .attribute(&quot;fullname&quot;)
+     *                             .type(&quot;http://axschema.org/namePerson&quot;)
+     *                             .required(true)
+     *                             .and()
+     *                         .and()
+     *                     .attributeExchange(&quot;.*myopenid.com.*&quot;)
+     *                         .attribute(&quot;email&quot;)
+     *                             .type(&quot;http://schema.openid.net/contact/email&quot;)
+     *                             .required(true)
+     *                             .and()
+     *                         .attribute(&quot;fullname&quot;)
+     *                             .type(&quot;http://schema.openid.net/namePerson&quot;)
+     *                             .required(true);
+     *     }
+     * }
+     *
+     * public class AutoProvisioningUserDetailsService implements
+     *         AuthenticationUserDetailsService&lt;OpenIDAuthenticationToken&gt; {
+     *     public UserDetails loadUserDetails(OpenIDAuthenticationToken token) throws UsernameNotFoundException {
+     *         return new User(token.getName(), &quot;NOTUSED&quot;, AuthorityUtils.createAuthorityList(&quot;ROLE_USER&quot;));
+     *     }
+     * }
+     * </pre>
+     *
+     * @return the {@link OpenIDLoginConfigurator} for further customizations.
+     *
+     * @throws Exception
+     * @see OpenIDLoginConfigurator
+     */
     public OpenIDLoginConfigurator openidLogin() throws Exception {
         return apply(new OpenIDLoginConfigurator());
     }
 
+    /**
+     * Allows configuring of Session Management. Multiple invocations of
+     * {@link #sessionManagement()} will override previous invocations.
+     *
+     * <h2>Example Configuration</h2>
+     *
+     * The following configuration demonstrates how to enforce that only a
+     * single instance of a user is authenticated at a time. If a user
+     * authenticates with the username "user" without logging out and an attempt
+     * to authenticate with "user" is made the first session will be forcibly
+     * terminated and sent to the "/login?expired" URL.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class SessionManagementSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin()
+     *                 .permitAll()
+     *                 .and()
+     *             .sessionManagement()
+     *                 .maximumSessions(1)
+     *                 .expiredUrl(&quot;/login?expired&quot;);
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * Do not forget to configure {@link HttpSessionEventPublisher} for the
+     * application to ensure that expired sessions are cleaned up.
+     *
+     * In a web.xml this can be configured using the following:
+     *
+     * <pre>
+     * &lt;listener&gt;
+     *      &ltlistener-class&gt;org.springframework.security.web.session.HttpSessionEventPublisher&lt;/listener-class&gt;
+     * &lt/listener>
+     * </pre>
+     *
+     *
+     * @return the {@link SessionManagementConfigurator} for further customizations
+     * @throws Exception
+     */
     public SessionManagementConfigurator sessionManagement() throws Exception {
         return apply(new SessionManagementConfigurator());
     }
 
+    /**
+     * Allows configuring a {@link PortMapper} that is available from
+     * {@link HttpConfiguration#getSharedObject(Class)}. Other provided
+     * {@link SecurityConfigurator} objects use this configured
+     * {@link PortMapper} as a default {@link PortMapper} when redirecting from
+     * HTTP to HTTPS or from HTTPS to HTTP (for example when used in combination
+     * with {@link #requiresChannel()}. By default Spring Security uses a
+     * {@link PortMapperImpl} which maps the HTTP port 8080 to the HTTPS port
+     * 8443 and the HTTP port of 80 to the HTTPS port of 443.
+     *
+     * <h2>Example Configuration</h2>
+     *
+     * The following configuration will ensure that redirects within Spring
+     * Security from HTTP of a port of 9090 will redirect to HTTPS port of 9443
+     * and the HTTP port of 80 to the HTTPS port of 443.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class PortMapperSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin()
+     *                 .permitAll()
+     *                 .and()
+     *                 // Example portMapper() configuration
+     *                 .portMapper()
+     *                     .http(9090).mapsTo(9443)
+     *                     .http(80).mapsTo(443);
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder) throws Exception {
+     *         builder
+     *             .inMemoryAuthentication()
+     *                 .withUser(&quot;user&quot;)
+     *                     .password(&quot;password&quot;)
+     *                     .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * @return the {@link PortMapperConfigurator} for further customizations
+     * @throws Exception
+     * @see {@link #requiresChannel()}
+     */
     public PortMapperConfigurator portMapper() throws Exception {
         return apply(new PortMapperConfigurator());
     }
 
+    /**
+     * Configures container based based pre authentication. In this case,
+     * authentication is managed by the Servlet Container.
+     *
+     * <h2>Example Configuration</h2>
+     *
+     * The following configuration will use the principal found on the
+     * {@link HttpServletRequest} and if the user is in the role "ROLE_USER" or
+     * "ROLE_ADMIN" will add that to the resulting {@link Authentication}.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class JeeSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             // Example jee() configuration
+     *             .jee()
+     *                 .mappableRoles(&quot;ROLE_USER&quot;, &quot;ROLE_ADMIN&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * Developers wishing to use pre authentication with the container will need
+     * to ensure their web.xml configures the security constraints. For example,
+     * the web.xml (there is no equivalent Java based configuration supported by
+     * the Servlet specification) might look like:
+     *
+     * <pre>
+     * &lt;login-config&gt;
+     *     &lt;auth-method&gt;FORM&lt;/auth-method&gt;
+     *     &lt;form-login-config&gt;
+     *         &lt;form-login-page&gt;/login&lt;/form-login-page&gt;
+     *         &lt;form-error-page&gt;/login?error&lt;/form-error-page&gt;
+     *     &lt;/form-login-config&gt;
+     * &lt;/login-config&gt;
+     *
+     * &lt;security-role&gt;
+     *     &lt;role-name&gt;ROLE_USER&lt;/role-name&gt;
+     * &lt;/security-role&gt;
+     * &lt;security-constraint&gt;
+     *     &lt;web-resource-collection&gt;
+     *     &lt;web-resource-name&gt;Public&lt;/web-resource-name&gt;
+     *         &lt;description&gt;Matches unconstrained pages&lt;/description&gt;
+     *         &lt;url-pattern&gt;/login&lt;/url-pattern&gt;
+     *         &lt;url-pattern&gt;/logout&lt;/url-pattern&gt;
+     *         &lt;url-pattern&gt;/resources/*&lt;/url-pattern&gt;
+     *     &lt;/web-resource-collection&gt;
+     * &lt;/security-constraint&gt;
+     * &lt;security-constraint&gt;
+     *     &lt;web-resource-collection&gt;
+     *         &lt;web-resource-name&gt;Secured Areas&lt;/web-resource-name&gt;
+     *         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+     *     &lt;/web-resource-collection&gt;
+     *     &lt;auth-constraint&gt;
+     *         &lt;role-name&gt;ROLE_USER&lt;/role-name&gt;
+     *     &lt;/auth-constraint&gt;
+     * &lt;/security-constraint&gt;
+     * </pre>
+     *
+     * Last you will need to configure your container to contain the user with the
+     * correct roles. This configuration is specific to the Servlet Container, so consult
+     * your Servlet Container's documentation.
+     *
+     * @return the {@link JeeConfigurator} for further customizations
+     * @throws Exception
+     */
     public JeeConfigurator jee() throws Exception {
         return apply(new JeeConfigurator());
     }
 
+    /**
+     * Configures X509 based pre authentication.
+     *
+     * <h2>Example Configuration</h2>
+     *
+     * The following configuration will attempt to extract the username from
+     * the X509 certificate. Remember that the Servlet Container will need to be
+     * configured to request client certificates in order for this to work.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class X509SecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             // Example x509() configuration
+     *             .x509();
+     *     }
+     * }
+     * </pre>
+     *
+     * @return the {@link X509Configurator} for further customizations
+     * @throws Exception
+     */
     public X509Configurator x509() throws Exception {
         return apply(new X509Configurator());
     }
 
+    /**
+     * Allows configuring of Remember Me authentication. Multiple invocations of
+     * {@link #rememberMe()} will override previous invocations.
+     *
+     * <h2>Example Configuration</h2>
+     *
+     * The following configuration demonstrates how to allow token based remember me
+     * authentication. Upon authenticating if the HTTP parameter named "remember-me" exists,
+     * then the user will be remembered even after their {@link HttpSession} expires.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class RememberMeSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;);
+     *     }
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin()
+     *                 .permitAll()
+     *                 .and()
+     *              // Example Remember Me Configuration
+     *             .rememberMe();
+     *     }
+     * }
+     * </pre>
+     *
+     * @return the {@link RememberMeConfigurator} for further customizations
+     * @throws Exception
+     */
     public RememberMeConfigurator rememberMe() throws Exception {
         return apply(new RememberMeConfigurator());
     }
 
+    /**
+     * Allows restricting access based upon the {@link HttpServletRequest} using
+     * {@link RequestMatcher} implementations (i.e. via URL patterns). Invoking
+     * {@link #authorizeUrls()} twice will override previous invocations of
+     * {@link #authorizeUrls()}.
+     *
+     * <h2>Example Configurations</h2>
+     *
+     * The most basic example is to configure all URLs to require the role "ROLE_USER". The
+     * configuration below requires authentication to every URL and will grant access to
+     * both the user "admin" and "user".
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class AuthorizeUrlsSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;)
+     *                        .and()
+     *                   .withUser(&quot;adminr&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;ADMIN&quot;,&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * We can also configure multiple URLs. The configuration below requires authentication to every URL
+     * and will grant access to URLs starting with /admin/ to only the "admin" user. All other URLs either
+     * user can access.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class AuthorizeUrlsSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/admin/**&quot;).hasRole(&quot;ADMIN&quot;)
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;)
+     *                        .and()
+     *                   .withUser(&quot;adminr&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;ADMIN&quot;,&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * Note that the matchers are considered in order. Therefore, the following is invalid because the first
+     * matcher matches every request and will never get to the second mapping:
+     *
+     * <pre>
+     * http
+     *     .authorizeUrls()
+     *         .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *         .antMatchers(&quot;/admin/**&quot;).hasRole(&quot;ADMIN&quot;)
+     * </pre>
+     *
+     * @see #requestMatcher(RequestMatcher)
+     *
+     * @return
+     * @throws Exception
+     */
     public ExpressionUrlAuthorizations authorizeUrls() throws Exception {
         return apply(new ExpressionUrlAuthorizations());
     }
 
+    /**
+     * Allows configuring the Request Cache. For example, a protected page (/protected) may be requested prior
+     * to authentication. The application will redirect the user to a login page. After authentication, Spring
+     * Security will redirect the user to the originally requested protected page (/protected). This is
+     * automatically applied when using {@link WebSecurityConfigurerAdapter}.
+     *
+     * @return the {@link RequestCacheConfigurator} for further customizations
+     * @throws Exception
+     */
     public RequestCacheConfigurator requestCache() throws Exception {
         return apply(new RequestCacheConfigurator());
     }
 
+    /**
+     * Allows configuring exception handling. This is automatically applied when using
+     * {@link WebSecurityConfigurerAdapter}.
+     *
+     * @return the {@link ExceptionHandlingConfigurator} for further customizations
+     * @throws Exception
+     */
     public ExceptionHandlingConfigurator exceptionHandling() throws Exception {
         return apply(new ExceptionHandlingConfigurator());
     }
 
+    /**
+     * Sets up management of the {@link SecurityContext} on the
+     * {@link SecurityContextHolder} between {@link HttpServletRequest}'s. This is automatically
+     * applied when using {@link WebSecurityConfigurerAdapter}.
+     *
+     * @return the {@link SecurityContextConfigurator} for further customizations
+     * @throws Exception
+     */
     public SecurityContextConfigurator securityContext() throws Exception {
         return apply(new SecurityContextConfigurator());
     }
 
+    /**
+     * Integrates the {@link HttpServletRequest} methods with the values found
+     * on the {@link SecurityContext}. This is automatically applied when using
+     * {@link WebSecurityConfigurerAdapter}.
+     *
+     * @return the {@link ServletApiConfigurator} for further customizations
+     * @throws Exception
+     */
     public ServletApiConfigurator servletApi() throws Exception {
         return apply(new ServletApiConfigurator());
     }
 
+    /**
+     * Provides logout support. This is automatically applied when using
+     * {@link WebSecurityConfigurerAdapter}. The default is that accessing
+     * the URL "/logout" will log the user out by invalidating the HTTP Session,
+     * cleaning up any {@link #rememberMe()} authentication that was configured,
+     * clearing the {@link SecurityContextHolder}, and then redirect to
+     * "/login?success".
+     *
+     * <h2>Example Custom Configuration</h2>
+     *
+     * The following customization to log out when the URL "/custom-logout" is
+     * invoked. Log out will remove the cookie named "remove", not invalidate the
+     * HttpSession, clear the SecurityContextHolder, and upon completion redirect
+     * to "/logout-success".
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class LogoutSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin()
+     *                 .and()
+     *             // sample logout customization
+     *             .logout()
+     *                 .logout()
+     *                    .deleteCookies("remove")
+     *                    .invalidateHttpSession(false)
+     *                    .logoutUrl("/custom-logout")
+     *                    .logoutSuccessUrl("/logout-success");
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * @return
+     * @throws Exception
+     */
     public LogoutConfigurator logout() throws Exception {
         return apply(new LogoutConfigurator());
     }
 
+    /**
+     * Allows configuring how an anonymous user is represented. This is automatically applied
+     * when used in conjunction with {@link WebSecurityConfigurerAdapter}. By default anonymous
+     * users will be represented with an {@link AnonymousAuthenticationToken} and contain the role
+     * "ROLE_ANONYMOUS".
+     *
+     * <h2>Example Configuration</h2
+     *
+     * The following configuration demonstrates how to specify that anonymous users should contain
+     * the role "ROLE_ANON" instead.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class AnononymousSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin()
+     *                 .and()
+     *             // sample anonymous customization
+     *             .anonymous()
+     *                 .authorities("ROLE_ANON");
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * The following demonstrates how to represent anonymous users as null. Note that this can cause
+     * {@link NullPointerException} in code that assumes anonymous authentication is enabled.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class AnononymousSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin()
+     *                 .and()
+     *             // sample anonymous customization
+     *             .anonymous()
+     *                 .disabled();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * @return
+     * @throws Exception
+     */
     public AnonymousConfigurator anonymous() throws Exception {
         return apply(new AnonymousConfigurator());
     }
 
+    /**
+     * Specifies to support for based authentication. If
+     * {@link FormLoginConfigurator#loginPage(String)} is not specified a
+     * default login page will be generated.
+     *
+     * <h2>Example Configurations</h2>
+     *
+     * The most basic configuration defaults to automatically generating a login
+     * page at the URL "/login", redirecting to "/login?error" for
+     * authentication failure. The details of the login page can be found on
+     * {@link FormLoginConfigurator#loginPage(String)}
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class FormLoginSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * The configuration below demonstrates customizing the defaults.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class FormLoginSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin()
+     *                    .usernameParameter("j_username") // default is username
+     *                    .passwordParameter("j_password") // default is password
+     *                    .loginPage("/authentication/login") // default is /login with an HTTP get
+     *                    .failureUrl("/authentication/login?failed") // default is /login?error
+     *                    .loginProcessingUrl("/authentication/login/process"); // default is /login with an HTTP post
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * @see FormLoginConfigurator#loginPage(String)
+     *
+     * @return
+     * @throws Exception
+     */
     public FormLoginConfigurator formLogin() throws Exception {
         return apply(new FormLoginConfigurator());
     }
@@ -238,10 +943,6 @@ public class HttpConfiguration extends AbstractConfiguredSecurityBuilder<Default
         }
 
         private RequestMatcherRegistry(){}
-    }
-
-    private void initSharedObjects(AuthenticationManagerBuilder authenticationBuilder) {
-        setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
     }
 
     private static class OrRequestMatcher implements RequestMatcher {
