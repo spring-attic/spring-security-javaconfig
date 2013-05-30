@@ -47,7 +47,7 @@ abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> exte
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
 
     /**
-     * Create a {@link List} of {@link org.springframework.security.web.util.AntPathRequestMatcher} instances.
+     * Maps a {@link List} of {@link org.springframework.security.web.util.AntPathRequestMatcher} instances.
      *
      * @param method the {@link HttpMethod} to use or {@code null} for any {@link HttpMethod}.
      * @param antPatterns the ant patterns to create {@link org.springframework.security.web.util.AntPathRequestMatcher}
@@ -60,7 +60,7 @@ abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> exte
     }
 
     /**
-     * Create a {@link List} of {@link org.springframework.security.web.util.AntPathRequestMatcher} instances that do
+     * Maps a {@link List} of {@link org.springframework.security.web.util.AntPathRequestMatcher} instances that do
      * not care which {@link HttpMethod} is used.
      *
      * @param antPatterns the ant patterns to create {@link org.springframework.security.web.util.AntPathRequestMatcher}
@@ -73,7 +73,7 @@ abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> exte
     }
 
     /**
-     * Create a {@link List} of {@link org.springframework.security.web.util.RegexRequestMatcher} instances.
+     * Maps a {@link List} of {@link org.springframework.security.web.util.RegexRequestMatcher} instances.
      *
      * @param method the {@link HttpMethod} to use or {@code null} for any {@link HttpMethod}.
      * @param regexPatterns the regular expressions to create
