@@ -79,24 +79,47 @@ public final class WebSecurityBuilder extends
     /**
      * <p>
      * Allows adding {@link RequestMatcher} instances that should that Spring
-     * Security should ignore. Typically the requests that are registered should
-     * be that of only static resources. For requests that are dynamic, consider
-     * mapping the request to allow all users instead.
-     * </p>
-     *
-     * <p>
-     * Web Security provided by Spring Security (including the
-     * {@link SecurityContext}) will not be available on
-     * {@link HttpServletRequest} that match.
+     * Security should ignore. Web Security provided by Spring Security
+     * (including the {@link SecurityContext}) will not be available on
+     * {@link HttpServletRequest} that match. Typically the requests that are
+     * registered should be that of only static resources. For requests that are
+     * dynamic, consider mapping the request to allow all users instead.
      * </p>
      *
      * Example Usage:
      *
      * <pre>
-     * 	webSecurityBuilder
-     * 		.ignoring()
-     * 			// ignore all URLs that start with /resources/
-     * 			.antMatchers("/resources/**);
+     * webSecurityBuilder
+     *     .ignoring()
+     *         // ignore all URLs that start with /resources/ or /static/
+     *         .antMatchers(&quot;/resources/**&quot;, &quot;/static/**&quot;);
+     * </pre>
+     *
+     * Alternatively this will accomplish the same result:
+     *
+     * <pre>
+     * webSecurityBuilder
+     *     .ignoring()
+     *         // ignore all URLs that start with /resources/ or /static/
+     *         .antMatchers(&quot;/resources/**&quot;)
+     *         .antMatchers(&quot;/static/**&quot;);
+     * </pre>
+     *
+     * Multiple invocations of ignoring() are also additive, so the following is
+     * also equivalent to the previous two examples:
+     *
+     * Alternatively this will accomplish the same result:
+     *
+     * <pre>
+     * webSecurityBuilder
+     *     .ignoring()
+     *         // ignore all URLs that start with /resources/
+     *         .antMatchers(&quot;/resources/**&quot;);
+     * webSecurityBuilder
+     *     .ignoring()
+     *         // ignore all URLs that start with /static/
+     *         .antMatchers(&quot;/static/**&quot;);
+     * // now both URLs that start with /resources/ and /static/ will be ignored
      * </pre>
      *
      * @return the {@link IgnoredRequestRegistry} to use for registering request
