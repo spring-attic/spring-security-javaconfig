@@ -32,27 +32,27 @@ import org.springframework.security.config.annotation.authentication.Authenticat
 public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpec {
     def "README Sample works"() {
         setup:
-        loadConfig(SampleWebSecurityConfigurerAdapter)
+            loadConfig(SampleWebSecurityConfigurerAdapter)
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.getRedirectedUrl() == "http://localhost/login"
+            response.getRedirectedUrl() == "http://localhost/login"
         when: "fail to log in"
-        super.setup()
-        request.requestURI = "/login"
-        request.method = "POST"
-        springSecurityFilterChain.doFilter(request,response,chain)
+            super.setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to login error page"
-        response.getRedirectedUrl() == "/login?error"
+            response.getRedirectedUrl() == "/login?error"
         when: "login success"
-        super.setup()
-        request.requestURI = "/login"
-        request.method = "POST"
-        request.parameters.username = ["user"] as String[]
-        request.parameters.password = ["password"] as String[]
-        springSecurityFilterChain.doFilter(request,response,chain)
+            super.setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            request.parameters.username = ["user"] as String[]
+            request.parameters.password = ["password"] as String[]
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to default succes page"
-        response.getRedirectedUrl() == "/"
+            response.getRedirectedUrl() == "/"
     }
 
     /**
@@ -121,50 +121,50 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
 
     def "README Multi http Sample works"() {
         setup:
-        loadConfig(SampleMultiHttpSecurityConfig)
+            loadConfig(SampleMultiHttpSecurityConfig)
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.getRedirectedUrl() == "http://localhost/login"
+            response.getRedirectedUrl() == "http://localhost/login"
         when: "fail to log in"
-        super.setup()
-        request.requestURI = "/login"
-        request.method = "POST"
-        springSecurityFilterChain.doFilter(request,response,chain)
+            super.setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to login error page"
-        response.getRedirectedUrl() == "/login?error"
+            response.getRedirectedUrl() == "/login?error"
         when: "login success"
-        super.setup()
-        request.requestURI = "/login"
-        request.method = "POST"
-        request.parameters.username = ["user"] as String[]
-        request.parameters.password = ["password"] as String[]
-        springSecurityFilterChain.doFilter(request,response,chain)
+            super.setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            request.parameters.username = ["user"] as String[]
+            request.parameters.password = ["password"] as String[]
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to default succes page"
-        response.getRedirectedUrl() == "/"
+            response.getRedirectedUrl() == "/"
 
         when: "request protected API URL"
-        super.setup()
-        request.servletPath = "/api/admin/test"
-        springSecurityFilterChain.doFilter(request,response,chain)
+            super.setup()
+            request.servletPath = "/api/admin/test"
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "get 403"
-        response.getStatus() == 403
+            response.getStatus() == 403
 
         when: "request API for admins with user"
-        super.setup()
-        request.servletPath = "/api/admin/test"
-        request.addHeader("Authorization", "Basic " + "user:password".bytes.encodeBase64().toString())
-        springSecurityFilterChain.doFilter(request,response,chain)
+            super.setup()
+            request.servletPath = "/api/admin/test"
+            request.addHeader("Authorization", "Basic " + "user:password".bytes.encodeBase64().toString())
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "get 403"
-        response.getStatus() == 403
+            response.getStatus() == 403
 
         when: "request API for admins with admin"
-        super.setup()
-        request.servletPath = "/api/admin/test"
-        request.addHeader("Authorization", "Basic " + "admin:password".bytes.encodeBase64().toString())
-        springSecurityFilterChain.doFilter(request,response,chain)
+            super.setup()
+            request.servletPath = "/api/admin/test"
+            request.addHeader("Authorization", "Basic " + "admin:password".bytes.encodeBase64().toString())
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "get 200"
-        response.getStatus() == 200
+            response.getStatus() == 200
     }
 
 
