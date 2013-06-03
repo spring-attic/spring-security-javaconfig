@@ -130,6 +130,48 @@ configure(rootProject) {
         testCompile "org.hsqldb:hsqldb:2.2.8"
     }
 
+    task docsZip(type: Zip) {
+        group = "Distribution"
+        baseName = "spring-security-javaconfig"
+        classifier = "docs"
+        description = "Builds -${classifier} archive containing api and reference " +
+            "for deployment at http://static.springframework.org/spring-security-javaconfig/docs."
+
+        from (javadoc) {
+            into "api-reference"
+        }
+    }
+
+    task distZip(type: Zip, dependsOn: [docsZip]) {
+        group = "Distribution"
+        baseName = "spring-security-javaconfig"
+        classifier = "dist"
+        description = "Builds -${classifier} archive, containing all jars and docs, " +
+                    "suitable for community download page."
+
+        ext.baseDir = "${baseName}-${project.version}";
+
+        from(zipTree(docsZip.archivePath)) {
+            into "${baseDir}/docs"
+        }
+
+        [project].each { subproject ->
+            into ("${baseDir}/libs") {
+                from subproject.jar
+                if (subproject.tasks.findByPath("sourcesJar")) {
+                    from subproject.sourcesJar
+                }
+                if (subproject.tasks.findByPath("javadocJar")) {
+                    from subproject.javadocJar
+                }
+            }
+        }
+    }
+
+    artifacts {
+        archives docsZip
+        archives distZip
+    }
 }
 
 def warSamples = subprojects.findAll { project -> project.path.contains('samples') && project.path != ":spring-security-samples-messages" }
