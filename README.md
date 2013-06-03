@@ -40,7 +40,7 @@ Getting Started
 
 Below are a few things you can do to get up and running quickly.
 
-Sample Web Configuration
+Sample Web Configuration - See [SampleWebSecurityConfigurerAdapterTests.groovy](src/test/groovy/org/springframework/security/config/annotation/web/SampleWebSecurityConfigurerAdapterTests.groovy)
 ----------------------
 
 The following configuration
@@ -110,7 +110,7 @@ is similar to the following XML configuration:
 Notice that Spring Security uses different defaults that will make your HTTP requests appear more RESTful. For example, the URL /login POST is used to
 authenticate users. The URL /login GET is used to request the user for credentials (i.e. present a login form).
 
-Sample Multi HTTP Web Configuration
+Sample Multi HTTP Web Configuration - See [SampleWebSecurityConfigurerAdapterTests.groovy](src/test/groovy/org/springframework/security/config/annotation/web/SampleWebSecurityConfigurerAdapterTests.groovy)
 ----------------------
 
 The following configuration
@@ -199,7 +199,7 @@ is similar to the following XML configuration:
       </authentication-provider>
     </authentication-manager>
 
-Sample Global Security Configuration
+Sample Global Security Configuration - See [SampleEnableGlobalMethodSecurityTests.groovy](src/test/groovy/org/springframework/security/config/annotation/method/SampleEnableGlobalMethodSecurityTests.groovy)
 -------------
 
 Global configuration is quite simple. For example, the following Java Configuration:
