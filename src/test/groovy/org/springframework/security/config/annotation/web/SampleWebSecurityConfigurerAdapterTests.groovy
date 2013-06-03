@@ -18,10 +18,12 @@ package org.springframework.security.config.annotation.web
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * Demonstrate the samples
@@ -31,8 +33,10 @@ import org.springframework.security.config.annotation.authentication.Authenticat
  */
 public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpec {
     def "README Sample works"() {
-        setup:
+        when: "Sample Config is loaded"
             loadConfig(SampleWebSecurityConfigurerAdapter)
+        then: "UserDetailsService is found"
+            context.getBean(UserDetailsService)
         when:
             springSecurityFilterChain.doFilter(request,response,chain)
         then:
