@@ -93,10 +93,6 @@ class NamespacePasswordEncoderTests extends BaseSpringSpec {
                 .build();
         }
 
-        @Override
-        protected void configure(HttpConfiguration http) throws Exception {
-        }
-
         @Bean
         public BCryptPasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder()
