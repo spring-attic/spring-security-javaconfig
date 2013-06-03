@@ -32,6 +32,14 @@ import org.springframework.context.annotation.Import;
  * public class MyWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
  *
  *    &#064;Override
+ *    public void configure(WebSecurityConfiguration builder) throws Exception {
+ *        builder
+ *            .ignoring()
+ *                // Spring Security should completely ignore URLs starting with /resources/
+ *                .antMatchers("/resources/**");
+ *    }
+ *
+ *    &#064;Override
  *    protected void configure(HttpConfiguration http) throws Exception {
  *        http
  *            .authorizeUrls()

@@ -107,6 +107,7 @@ import org.springframework.security.web.util.RequestMatcher;
  *
  * @author Rob Winch
  * @since 3.2
+ * @see EnableWebSecurity
  */
 public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain> {
 
