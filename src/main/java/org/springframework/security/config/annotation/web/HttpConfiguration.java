@@ -36,19 +36,74 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.openid.OpenIDAuthenticationFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.PortMapperImpl;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.preauth.x509.X509AuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
+import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher;
 
 /**
+ * A {@link HttpConfiguration} is similar to Spring Security's XML <http> element in the namespace
+ * configuration. It allows configuring web based security for specific http requests. By default
+ * it will be applied to all requests, but can be restricted using {@link #requestMatcher(RequestMatcher)}
+ * or other similar methods.
+ *
+ * <h2>Example Usage</h2>
+ *
+ * The most basic form based configuration can be seen below. The configuration will require that any URL
+ * that is requested will require a User with the role "ROLE_USER". It also defines an in memory authentication
+ * scheme with a user that has the username "user", the password "password", and the role "ROLE_USER". For
+ * additional examples, refer to the Java Doc of individual methods on {@link HttpConfiguration}.
+ *
+ * <pre>
+ * &#064;Configuration
+ * &#064;EnableWebSecurity
+ * public class FormLoginSecurityConfig extends WebSecurityConfigurerAdapter {
+ *
+ *     &#064;Override
+ *     protected void configure(HttpConfiguration http) throws Exception {
+ *         http
+ *             .authorizeUrls()
+ *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+ *                 .and()
+ *             .formLogin();
+ *     }
+ *
+ *     &#064;Override
+ *     protected void registerAuthentication(AuthenticationRegistry builder) throws Exception {
+ *         builder
+ *              .inMemoryAuthentication()
+ *                   .withUser(&quot;user&quot;)
+ *                        .password(&quot;password&quot;)
+ *                        .roles(&quot;USER&quot;);
+ *     }
+ * }
+ * </pre>
  *
  * @author Rob Winch
  * @since 3.2
@@ -749,7 +804,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     }
 
     /**
-     * Specifies to support for based authentication. If
+     * Specifies to support form based authentication. If
      * {@link FormLoginConfigurator#loginPage(String)} is not specified a
      * default login page will be generated.
      *
@@ -828,10 +883,94 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return apply(new FormLoginConfigurator());
     }
 
+    /**
+     * Configures channel security. In order for this configuration to be useful at least
+     * one mapping to a required channel must be provided. Invoking this method multiple times
+     * will reset previous invocations of the method.
+     *
+     * <h2>Example Configuration</h2>
+     *
+     * The example below demonstrates how to require HTTPs for every request. Only requiring HTTPS
+     * for some requests is supported, but not recommended since an application that allows for HTTP
+     * introduces many security vulnerabilities. For one such example, read about
+     * <a href="http://en.wikipedia.org/wiki/Firesheep">Firesheep</a>.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class ChannelSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .and()
+     *             .formLogin()
+     *                 .and()
+     *             .channelSecurity()
+     *                 .antMatchers("/**").requiresSecure();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *              .inMemoryAuthentication()
+     *                   .withUser(&quot;user&quot;)
+     *                        .password(&quot;password&quot;)
+     *                        .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     *
+     * @return the {@link ChannelSecurityFilterConfigurator} for further customizations
+     * @throws Exception
+     */
     public ChannelSecurityFilterConfigurator requiresChannel() throws Exception {
         return apply(new ChannelSecurityFilterConfigurator());
     }
 
+    /**
+     * Configures HTTP Basic authentication. Multiple infocations of
+     * {@link #httpBasic()} will override previous invocations.
+     *
+     * <h2>Example Configuration</h2>
+     *
+     * The example below demonstrates how to configure HTTP Basic authentication
+     * for an application. The default realm is "Spring Security Application",
+     * but can be customized using
+     * {@link HttpBasicConfigurator#realmName(String)}.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class HttpBasicSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;).and()
+     *                 .httpBasic();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *             .inMemoryAuthentication()
+     *                 .withUser(&quot;user&quot;)
+     *                     .password(&quot;password&quot;)
+     *                     .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * @return the {@link HttpBasicConfigurator} for further customizations
+     * @throws Exception
+     */
     public HttpBasicConfigurator httpBasic() throws Exception {
         return apply(new HttpBasicConfigurator());
     }
@@ -842,11 +981,23 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         }
     }
 
+    /**
+     * Sets an object that is shared by multiple {@link SecurityConfigurator}.
+     *
+     * @param sharedType the Class to key the shared object by.
+     * @param object the Object to store
+     */
     @SuppressWarnings("unchecked")
     public <C> void setSharedObject(Class<C> sharedType, C object) {
         this.sharedObjects.put((Class<Object>) sharedType, object);
     }
 
+    /**
+     * Gets a shared Object. Note that object heirarchies are not considered.
+     *
+     * @param sharedType the type of the shared Object
+     * @return the shared Object or null if it is not found
+     */
     @SuppressWarnings("unchecked")
     public <C> C getSharedObject(Class<C> sharedType) {
         return (C) this.sharedObjects.get(sharedType);
@@ -863,11 +1014,23 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }
 
+    /**
+     * Allows adding an additional {@link AuthenticationProvider} to be used
+     *
+     * @param authenticationProvider the {@link AuthenticationProvider} to be added
+     * @return the {@link HttpConfiguration} for further customizations
+     */
     public HttpConfiguration authenticationProvider(AuthenticationProvider authenticationProvider) {
         getAuthenticationRegistry().add(authenticationProvider);
         return this;
     }
 
+    /**
+     * Allows adding an additional {@link UserDetailsService} to be used
+     *
+     * @param userDetailsService the {@link UserDetailsService} to be added
+     * @return the {@link HttpConfiguration} for further customizations
+     */
     public HttpConfiguration userDetailsService(UserDetailsService userDetailsService) throws Exception {
         getAuthenticationRegistry().userDetailsService(userDetailsService);
         return this;
@@ -877,21 +1040,85 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return getSharedObject(AuthenticationManagerBuilder.class);
     }
 
+    /**
+     * Specifies the shared {@link SecurityContextRepository} that is to be used
+     * @param securityContextRepository the {@link SecurityContextRepository} to use
+     * @return the {@link HttpConfiguration} for further customizations
+     */
     public HttpConfiguration securityContextRepsitory(SecurityContextRepository securityContextRepository) {
         this.setSharedObject(SecurityContextRepository.class, securityContextRepository);
         return this;
     }
 
+
+    /**
+     * Allows adding a {@link Filter} after one of the known {@link Filter}
+     * classes. The known {@link Filter} instances are either a {@link Filter}
+     * listed in {@link #addFilter(Filter)} or a {@link Filter} that has already
+     * been added using {@link #addFilterAfter(Filter, Class)} or
+     * {@link #addFilterBefore(Filter, Class)}.
+     *
+     * @param filter the {@link Filter} to register before the type {@code afterFilter}
+     * @param afterFilter the Class of the known {@link Filter}.
+     * @return the {@link HttpConfiguration} for further customizations
+     */
     public HttpConfiguration addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerAfter(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    public HttpConfiguration addFilterBefore(Filter filter, Class<? extends Filter> afterFilter) {
-        comparitor.registerBefore(filter.getClass(), afterFilter);
+    /**
+     * Allows adding a {@link Filter} before one of the known {@link Filter}
+     * classes. The known {@link Filter} instances are either a {@link Filter}
+     * listed in {@link #addFilter(Filter)} or a {@link Filter} that has already
+     * been added using {@link #addFilterAfter(Filter, Class)} or
+     * {@link #addFilterBefore(Filter, Class)}.
+     *
+     * @param filter the {@link Filter} to register before the type {@code beforeFilter}
+     * @param beforeFilter the Class of the known {@link Filter}.
+     * @return the {@link HttpConfiguration} for further customizations
+     */
+    public HttpConfiguration addFilterBefore(Filter filter, Class<? extends Filter> beforeFilter) {
+        comparitor.registerBefore(filter.getClass(), beforeFilter);
         return addFilter(filter);
     }
 
+    /**
+     * Adds a {@link Filter} that must be an instance of or extend one of the
+     * Filters provided within the Security framework. The method ensures that
+     * the ordering of the Filters is automatically taken care of.
+     *
+     * The ordering of the Filters is:
+     *
+     * <ul>
+     * <li>{@link ChannelProcessingFilter}</li>
+     * <li>{@link ConcurrentSessionFilter}</li>
+     * <li>{@link SecurityContextPersistenceFilter}</li>
+     * <li>{@link LogoutFilter}</li>
+     * <li>{@link X509AuthenticationFilter}</li>
+     * <li>{@link AbstractPreAuthenticatedProcessingFilter}</li>
+     * <li>{@link CasAuthenticationFilter}</li>
+     * <li>{@link UsernamePasswordAuthenticationFilter}</li>
+     * <li>{@link ConcurrentSessionFilter}</li>
+     * <li>{@link OpenIDAuthenticationFilter}</li>
+     * <li>{@link DefaultLoginPageGeneratingFilter}</li>
+     * <li>{@link ConcurrentSessionFilter}</li>
+     * <li>{@link DigestAuthenticationFilter}</li>
+     * <li>{@link BasicAuthenticationFilter}</li>
+     * <li>{@link RequestCacheAwareFilter}</li>
+     * <li>{@link SecurityContextHolderAwareRequestFilter}</li>
+     * <li>{@link JaasApiIntegrationFilter}</li>
+     * <li>{@link RememberMeAuthenticationFilter}</li>
+     * <li>{@link AnonymousAuthenticationFilter}</li>
+     * <li>{@link SessionManagementFilter}</li>
+     * <li>{@link ExceptionTranslationFilter}</li>
+     * <li>{@link FilterSecurityInterceptor}</li>
+     * <li>{@link SwitchUserFilter}</li>
+     * </ul>
+     *
+     * @param filter the {@link Filter} to add
+     * @return the {@link HttpConfiguration} for further customizations
+     */
     public HttpConfiguration addFilter(Filter filter) {
         Class<? extends Filter> filterClass = filter.getClass();
         if(!comparitor.isRegistered(filterClass)) {
@@ -903,19 +1130,183 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return this;
     }
 
+    /**
+     * Allows specifying which {@link HttpServletRequest} instances this
+     * {@link HttpConfiguration} will be invoked on.  This method allows for
+     * easily invoking the {@link HttpConfiguration} for multiple
+     * different {@link RequestMatcher} instances. If only a single {@link RequestMatcher}
+     * is necessary consider using {@link #antMatcher(String)},
+     * {@link #regexMatcher(String)}, or {@link #requestMatcher(RequestMatcher)}.
+     *
+     * <p>
+     * Invoking {@link #requestMatchers()} will override previous invocations of
+     * {@link #requestMatchers()}, {@link #antMatcher(String)}, {@link #regexMatcher(String)},
+     * and {@link #requestMatcher(RequestMatcher)}.
+     * </p>
+     *
+     * <h3>Example Configurations</h3>
+     *
+     * The following configuration enables the {@link HttpConfiguration} for URLs that
+     * begin with "/api/" or "/oauth/".
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class RequestMatchersSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .requestMatchers()
+     *                 .antMatchers("/api/**","/oauth/**")
+     *                 .and()
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;).and()
+     *                 .httpBasic();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *             .inMemoryAuthentication()
+     *                 .withUser(&quot;user&quot;)
+     *                     .password(&quot;password&quot;)
+     *                     .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * The configuration below is the same as the previous configuration.
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class RequestMatchersSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .requestMatchers()
+     *                 .antMatchers("/api/**")
+     *                 .antMatchers("/oauth/**")
+     *                 .and()
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;).and()
+     *                 .httpBasic();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *             .inMemoryAuthentication()
+     *                 .withUser(&quot;user&quot;)
+     *                     .password(&quot;password&quot;)
+     *                     .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * The configuration differs from the previous configurations because it invokes
+     * {@link #requestMatchers()} twice which resets the {@link RequestMatcherRegistry}.
+     * Therefore the configuration below only matches on URLs that start with "/oauth/**".
+     *
+     * <pre>
+     * &#064;Configuration
+     * &#064;EnableWebSecurity
+     * public class RequestMatchersSecurityConfig extends WebSecurityConfigurerAdapter {
+     *
+     *     &#064;Override
+     *     protected void configure(HttpConfiguration http) throws Exception {
+     *         http
+     *             .requestMatchers()
+     *                 .antMatchers("/api/**")
+     *                 .and()
+     *             .requestMatchers()
+     *                 .antMatchers("/oauth/**")
+     *                 .and()
+     *             .authorizeUrls()
+     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;).and()
+     *                 .httpBasic();
+     *     }
+     *
+     *     &#064;Override
+     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *             throws Exception {
+     *         builder
+     *             .inMemoryAuthentication()
+     *                 .withUser(&quot;user&quot;)
+     *                     .password(&quot;password&quot;)
+     *                     .roles(&quot;USER&quot;);
+     *     }
+     * }
+     * </pre>
+     *
+     * @return the {@link RequestMatcherRegistry} for further customizations
+     */
     public RequestMatcherRegistry requestMatchers() {
         return new RequestMatcherRegistry();
     }
 
+    /**
+     * Allows configuring the {@link HttpConfiguration} to only be invoked when
+     * matching the provided {@link RequestMatcher}. If more advanced configuration is
+     * necessary, consider using {@link #requestMatchers()}.
+     *
+     * <p>
+     * Invoking {@link #requestMatcher(RequestMatcher)} will override previous invocations of
+     * {@link #requestMatchers()}, {@link #antMatcher(String)}, {@link #regexMatcher(String)},
+     * and {@link #requestMatcher(RequestMatcher)}.
+     * </p>
+     *
+     * @param requestMatcher the {@link RequestMatcher} to use (i.e. new AntPathRequestMatcher("/admin/**","GET") )
+     * @return the {@link HttpConfiguration} for further customizations
+     * @see #requestMatchers()
+     * @see #antMatcher(String)
+     * @see #regexMatcher(String)
+     */
     public HttpConfiguration requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
         return this;
     }
 
-    public HttpConfiguration antMatcher(String pattern) {
-        return requestMatcher(new AntPathRequestMatcher(pattern));
+    /**
+     * Allows configuring the {@link HttpConfiguration} to only be invoked when
+     * matching the provided ant pattern. If more advanced configuration is
+     * necessary, consider using {@link #requestMatchers()} or
+     * {@link #requestMatcher(RequestMatcher)}.
+     *
+     * <p>
+     * Invoking {@link #antMatcher(String)} will override previous invocations of
+     * {@link #requestMatchers()}, {@link #antMatcher(String)}, {@link #regexMatcher(String)},
+     * and {@link #requestMatcher(RequestMatcher)}.
+     * </p>
+     *
+     * @param antPattern the Ant Pattern to match on (i.e. "/admin/**")
+     * @return the {@link HttpConfiguration} for further customizations
+     * @see AntPathRequestMatcher
+     */
+    public HttpConfiguration antMatcher(String antPattern) {
+        return requestMatcher(new AntPathRequestMatcher(antPattern));
     }
 
+    /**
+     * Allows configuring the {@link HttpConfiguration} to only be invoked when
+     * matching the provided regex pattern. If more advanced configuration is
+     * necessary, consider using {@link #requestMatchers()} or
+     * {@link #requestMatcher(RequestMatcher)}.
+     *
+     * <p>
+     * Invoking {@link #regexMatcher(String)} will override previous invocations of
+     * {@link #requestMatchers()}, {@link #antMatcher(String)}, {@link #regexMatcher(String)},
+     * and {@link #requestMatcher(RequestMatcher)}.
+     * </p>
+     *
+     * @param pattern the Regular Expression to match on (i.e. "/admin/.+")
+     * @return the {@link HttpConfiguration} for further customizations
+     * @see RegexRequestMatcher
+     */
     public HttpConfiguration regexMatcher(String pattern) {
         return requestMatcher(new RegexRequestMatcher(pattern, null));
     }
@@ -934,6 +1325,12 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return this;
     }
 
+    /**
+     * Allows mapping HTTP requests that this {@link HttpConfiguration} will be used for
+     *
+     * @author Rob Winch
+     * @since 3.2
+     */
     public final class RequestMatcherRegistry extends BaseRequestMatcherRegistry<HttpConfiguration,DefaultSecurityFilterChain,HttpConfiguration> {
 
         @Override
@@ -945,7 +1342,15 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         private RequestMatcherRegistry(){}
     }
 
-    private static class OrRequestMatcher implements RequestMatcher {
+    /**
+     * Internal {@link RequestMatcher} instance used by {@link RequestMatcher}
+     * that will match if any of the passed in {@link RequestMatcher} instances
+     * match.
+     *
+     * @author Rob Winch
+     * @since 3.2
+     */
+    private static final class OrRequestMatcher implements RequestMatcher {
         private final List<RequestMatcher> requestMatchers;
 
         private OrRequestMatcher(List<RequestMatcher> requestMatchers) {
