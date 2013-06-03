@@ -19,6 +19,7 @@ package org.springframework.security.config.annotation.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
@@ -29,8 +30,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 /**
- * @author Rob Winch
+ * Provides a convenient base class for creating a {@link WebSecurityConfigurer}
+ * instance. The implementation allows customization by overriding methods.
  *
+ * @see EnableWebSecurity
+ *
+ * @author Rob Winch
  */
 public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigurer {
     @Autowired
@@ -44,19 +49,60 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private HttpConfiguration http;
     private boolean disableDefaults;
 
+    /**
+     * Creates an instance with the default configuration enabled.
+     */
     protected WebSecurityConfigurerAdapter() {
         this(false);
     }
 
+    /**
+     * Creates an instance which allows specifying if the default configuration
+     * should be enabled. Disabling the default configuration should be
+     * considered more advanced usage as it requires more understanding of how
+     * the framework is implemented.
+     *
+     * @param disableDefaults
+     *            true if the default configuration should be enabled, else
+     *            false
+     */
     protected WebSecurityConfigurerAdapter(boolean disableDefaults) {
         this.disableDefaults = disableDefaults;
     }
 
+    /**
+     * Used by the default implementation of {@link #authenticationManager()} to attempt to obtain an
+     * {@link AuthenticationManager}. If overridden, the {@link AuthenticationRegistry} should be used to specify
+     * the {@link AuthenticationManager}. The resulting {@link AuthenticationManager}
+     * will be exposed as a Bean as will any {@link UserDetailsService} that is created with the
+     * {@link AuthenticationRegistry}. For example, the following configuration could be used to register
+     * in memory authentication that exposes an in memory {@link UserDetailsService}:
+     *
+     * <pre>
+     * &#064;Override
+     * protected void registerAuthentication(AuthenticationRegistry registry) {
+     *     registry
+     *         // enable in memory based authentication with a user named "user" and "admin"
+     *         .inMemoryAuthentication()
+     *             .withUser("user").password("password").roles("USER").and()
+     *             .withUser("admin").password("password").roles("USER", "ADMIN");
+     * }
+     * </pre>
+     *
+     * @param registry the {@link AuthenticationRegistry} to use
+     * @throws Exception
+     */
     protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
         this.disableAuthenticationRegistry = true;
     }
 
-    protected HttpConfiguration http() throws Exception {
+    /**
+     * Creates the {@link HttpConfiguration} or returns the current instance
+     *
+     * @return the {@link HttpConfiguration}
+     * @throws Exception
+     */
+    protected final HttpConfiguration getHttp() throws Exception {
         if(http != null) {
             return http;
         }
@@ -79,11 +125,25 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return http;
     }
 
+    /**
+     * Exposes the {@link AuthenticationManager} as a bean
+     * @return the {@link AuthenticationManager}
+     * @throws Exception
+     */
     @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return new AuthenticationManagerDelegator(authenticationBuilder);
     }
 
+    /**
+     * Gets the {@link AuthenticationManager} to use. The default strategy is if
+     * {@link #registerAuthentication(AuthenticationRegistry)} method is
+     * overridden to use the {@link AuthenticationRegistry} that was passed in.
+     * Otherwise, autowire the {@link AuthenticationManager} by type.
+     *
+     * @return
+     * @throws Exception
+     */
     protected AuthenticationManager authenticationManager() throws Exception {
         if(!authenticationManagerInitialized) {
             registerAuthentication(parentAuthenticationRegistry);
@@ -98,18 +158,34 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return authenticationManager;
     }
 
+    /**
+     * Exposes the {@link UserDetailsService} as a bean. To override, developers
+     * should change {@link #userDetailsService()} instead (this method would be
+     * marked final except that the rules for {@link Configuration} forbid it.
+     *
+     * @return
+     * @throws Exception
+     * @see {@link #userDetailsService()}
+     */
     @Bean(name=BeanIds.USER_DETAILS_SERVICE)
     public UserDetailsService userDetailsServiceBean() throws Exception {
         return userDetailsService();
     }
 
+    /**
+     * Allows modifying and accessing the {@link UserDetailsService} from
+     * {@link #userDetailsServiceBean()()} without interacting with the
+     * {@link ApplicationContext}. Developers should override this method instead of {@link #userDetailsServiceBean()}.
+     *
+     * @return
+     */
     protected UserDetailsService userDetailsService() {
         return parentAuthenticationRegistry.getDefaultUserDetailsService();
     }
 
     @Override
     public void init(WebSecurityBuilder builder) throws Exception {
-        HttpConfiguration http = http();
+        HttpConfiguration http = getHttp();
         FilterSecurityInterceptor securityInterceptor = http.getSharedObject(FilterSecurityInterceptor.class);
         builder
             .addSecurityFilterChainBuilder(http)
@@ -117,10 +193,20 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     }
 
+    /**
+     * Override this method to configure {@link WebSecurityBuilder}. For
+     * example, if you wish to ignore certain requests.
+     */
     @Override
     public void configure(WebSecurityBuilder builder) throws Exception {
     }
 
+    /**
+     * Gets a bean of a specific type, but excludes the bean name.
+     * @param clazz the Class of the bean to look up
+     * @param beanNameToExclude the name of the bean to exclude
+     * @return the bean or null if it could not be found
+     */
     private <T> T getBeanExcluding(Class<T> clazz, String beanNameToExclude) {
         String[] beanNames = context.getBeanNamesForType(clazz);
         if(beanNames.length == 1 && !beanNameToExclude.equals(beanNames[0])) {
@@ -137,8 +223,21 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         return null;
     }
 
+    /**
+     * Override this method to configure the {@link HttpConfiguration}
+     * @param http
+     * @throws Exception
+     */
     protected abstract void configure(HttpConfiguration http) throws Exception;
 
+    /**
+     * Delays the use of the {@link AuthenticationManager} build from the
+     * {@link AuthenticationManagerBuilder} to ensure that it has been fully
+     * configured.
+     *
+     * @author Rob Winch
+     * @since 3.2
+     */
     static final class AuthenticationManagerDelegator implements AuthenticationManager {
         private AuthenticationManagerBuilder delegateBuilder;
         private AuthenticationManager delegate;

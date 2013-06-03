@@ -64,7 +64,7 @@ public abstract class OAuth2ServerConfigurerAdapter extends WebSecurityConfigure
     }
 
     private OAuth2ServerConfigurator oauthConfigurator() throws Exception {
-        return http().getConfigurator(OAuth2ServerConfigurator.class);
+        return getHttp().getConfigurator(OAuth2ServerConfigurator.class);
     }
 
     @Bean
