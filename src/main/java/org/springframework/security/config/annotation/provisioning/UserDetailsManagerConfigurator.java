@@ -35,12 +35,12 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry<T>> extends
+public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry<T>> extends
         UserDetailsServiceConfigurator<UserDetailsManager> implements UserDetailsManagerRegistry<T> {
 
     private final List<UserDetailsBuilder<T>> userBuilders = new ArrayList<UserDetailsBuilder<T>>();
 
-    public UserDetailsManagerConfigurator(UserDetailsManager userDetailsManager) {
+    UserDetailsManagerConfigurator(UserDetailsManager userDetailsManager) {
         super(userDetailsManager);
     }
 
