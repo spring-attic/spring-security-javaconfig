@@ -299,6 +299,26 @@ We include a number of complete [Sample Web Applications](./samples/) that use S
 Also refer to the tests for further examples. You will notice a convention of Namespace<Security Element>Tests where <Security Element> is the Security Namespace
 Element. For example, to learn how the <http> element and its attributes map to Spring Security Java Configuration look in the NamespaceHttpTests
 
+FAQ
+==============
+
+Q: I'm getting getting a NoSuchBeanDefinitionException:
+
+The full Exception is something similar (bean names can vary)
+
+```
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'org.springframework.security.userDetailsService' is defined
+    at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBeanDefinition(DefaultListableBeanFactory.java:568)
+    at org.springframework.beans.factory.support.AbstractBeanFactory.getMergedLocalBeanDefinition(AbstractBeanFactory.java:1099)
+    at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:278)
+    at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:194)
+    at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:297)
+    at org.test.demo.SecurityConfiguration$ApiConfiguration$$EnhancerByCGLIB$$e681011a.userDetailsServiceBean(<generated>)
+    at org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter.http(WebSecurityConfigurerAdapter.java:66)
+```
+
+A: If you are get the error above or something similar, you should ensure you have updated to Spring Framework 3.2.3.RELEASE+ or 4.0.0.M1+ to avoid running into [SPR-10546](https://jira.springsource.org/browse/SPR-10546)
+
 Contributing
 ==============
 Before contributing or logging an issue please be sure to the issue does not already exist in this project's [issue tracking](https://github.com/SpringSource/spring-security-javaconfig/issues). If one does not exist, please create an issue.
@@ -310,3 +330,4 @@ Before we accept a non-trivial patch or pull request we will need you to sign th
 License
 ==============
 The Spring Security Java Config project is available under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
+
