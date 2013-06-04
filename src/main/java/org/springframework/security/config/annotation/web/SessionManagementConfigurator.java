@@ -74,7 +74,7 @@ public final class SessionManagementConfigurator extends SecurityConfiguratorAda
     private String expiredUrl;
     private boolean exceptionIfMaximumExceeded;
     private SessionCreationPolicy sessionPolicy = SessionCreationPolicy.ifRequired;
-    private boolean enableUrlRewriting;
+    private boolean enableSessionUrlRewriting;
 
     /**
      * Creates a new instance
@@ -90,12 +90,12 @@ public final class SessionManagementConfigurator extends SecurityConfiguratorAda
      * sessions to be included in the URL. This prevents leaking information to
      * external domains.
      *
-     * @param enableUrlRewriting true if should allow the JSESSIONID to be rewritten into the URLs, else false (default)
+     * @param enableSessionUrlRewriting true if should allow the JSESSIONID to be rewritten into the URLs, else false (default)
      * @return the {@link SessionManagementConfigurator} for further customization
      * @see HttpSessionSecurityContextRepository#setDisableUrlRewriting(boolean)
      */
-    public SessionManagementConfigurator enableUrlRewriting(boolean enableUrlRewriting) {
-        this.enableUrlRewriting = enableUrlRewriting;
+    public SessionManagementConfigurator enableSessionUrlRewriting(boolean enableSessionUrlRewriting) {
+        this.enableSessionUrlRewriting = enableSessionUrlRewriting;
         return this;
     }
 
@@ -177,7 +177,7 @@ public final class SessionManagementConfigurator extends SecurityConfiguratorAda
                 builder.setSharedObject(RequestCache.class, new NullRequestCache());
             } else {
                 HttpSessionSecurityContextRepository httpSecurityRepository = new HttpSessionSecurityContextRepository();
-                httpSecurityRepository.setDisableUrlRewriting(!enableUrlRewriting);
+                httpSecurityRepository.setDisableUrlRewriting(!enableSessionUrlRewriting);
                 httpSecurityRepository.setAllowSessionCreation(isAllowSessionCreation());
                 builder.setSharedObject(SecurityContextRepository.class, httpSecurityRepository);
             }
