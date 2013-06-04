@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation.provisioning;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.security.config.annotation.authentication.UserDetailsServiceConfigurator;
@@ -158,23 +159,47 @@ public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry
                 Assert.isTrue(!role.startsWith("ROLE_"), role + " cannot start with ROLE_ (it is automatically added)");
                 authorities.add(new SimpleGrantedAuthority("ROLE_"+role));
             }
-            this.authorities = authorities;
-            return this;
+            return authorities(authorities);
         }
-
 
         /**
          * Populates the authorities. This attribute is required.
          *
-         * @param authorities the roles for this user (i.e. ROLE_USER, ROLE_ADMIN, etc). Cannot be null, or contain null
+         * @param authorities the authorities for this user. Cannot be null, or contain null
+         *                    values
+         * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
+         *         user)
+         * @see #roles(String...)
+         */
+        public UserDetailsBuilder<T> authorities(GrantedAuthority...authorities) {
+            return authorities(Arrays.asList(authorities));
+        }
+
+        /**
+         * Populates the authorities. This attribute is required.
+         *
+         * @param authorities the authorities for this user. Cannot be null, or contain null
+         *                    values
+         * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
+         *         user)
+         * @see #roles(String...)
+         */
+        public UserDetailsBuilder<T> authorities(List<? extends GrantedAuthority> authorities) {
+            this.authorities = new ArrayList<GrantedAuthority>(authorities);
+            return this;
+        }
+
+        /**
+         * Populates the authorities. This attribute is required.
+         *
+         * @param authorities the authorities for this user (i.e. ROLE_USER, ROLE_ADMIN, etc). Cannot be null, or contain null
          *                    values
          * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
          *         user)
          * @see #roles(String...)
          */
         public UserDetailsBuilder<T> authorities(String... authorities) {
-            this.authorities = AuthorityUtils.createAuthorityList(authorities);
-            return this;
+            return authorities(AuthorityUtils.createAuthorityList(authorities));
         }
 
         /**
