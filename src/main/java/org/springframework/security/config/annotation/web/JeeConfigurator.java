@@ -82,9 +82,14 @@ public final class JeeConfigurator extends SecurityConfiguratorAdapter<DefaultSe
     /**
      * Specifies roles to use map from the {@link HttpServletRequest} to the
      * {@link UserDetails}. If {@link HttpServletRequest#isUserInRole(String)}
-     * returns true, the role is added to the {@link UserDetails}.
+     * returns true, the role is added to the {@link UserDetails}. This method
+     * is the equivalent of invoking {@link #mappableRoles(Set)}. Multiple
+     * invocations of {@link #mappableRoles(String...)} will override previous
+     * invocations.
      *
-     * <p>There are no default roles that are mapped.</p>
+     * <p>
+     * There are no default roles that are mapped.
+     * </p>
      *
      * @param mappableRoles
      *            the roles to attempt to map to the {@link UserDetails} (i.e.
@@ -93,6 +98,7 @@ public final class JeeConfigurator extends SecurityConfiguratorAdapter<DefaultSe
      * @see SimpleMappableAttributesRetriever
      */
     public JeeConfigurator mappableRoles(String... mappableRoles) {
+        this.mappableRoles.clear();
         for(String role : mappableRoles) {
             this.mappableRoles.add(role);
         }
@@ -102,11 +108,16 @@ public final class JeeConfigurator extends SecurityConfiguratorAdapter<DefaultSe
     /**
      * Specifies roles to use map from the {@link HttpServletRequest} to the
      * {@link UserDetails}. If {@link HttpServletRequest#isUserInRole(String)}
-     * returns true, the role is added to the {@link UserDetails}.
+     * returns true, the role is added to the {@link UserDetails}. This is the
+     * equivalent of {@link #mappableRoles(String...)}. Multiple invocations of
+     * {@link #mappableRoles(Set)} will override previous invocations.
      *
-     * <p>There are no default roles that are mapped.</p>
+     * <p>
+     * There are no default roles that are mapped.
+     * </p>
      *
-     * @param mappableRoles the roles to attempt to map to the {@link UserDetails}.
+     * @param mappableRoles
+     *            the roles to attempt to map to the {@link UserDetails}.
      * @return the {@link JeeConfigurator} for further customizations
      * @see SimpleMappableAttributesRetriever
      */
