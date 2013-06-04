@@ -93,8 +93,8 @@ public interface AuthenticationRegistry {
      *             if an error occurs when adding the {@link UserDetailsService}
      *             based authentication
      */
-    DaoAuthenticationConfigurator userDetailsService(
-            UserDetailsService userDetailsService) throws Exception;
+    <T extends UserDetailsService> DaoAuthenticationConfigurator<T> userDetailsService(
+            T userDetailsService) throws Exception;
 
     /**
      * Add authentication based upon the custom {@link AuthenticationProvider}
