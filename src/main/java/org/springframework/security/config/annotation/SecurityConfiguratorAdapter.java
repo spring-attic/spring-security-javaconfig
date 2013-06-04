@@ -46,6 +46,16 @@ public abstract class SecurityConfiguratorAdapter<O,B extends SecurityBuilder<O>
      * @return
      */
     public B and() {
+        return getBuilder();
+    }
+
+    /**
+     * Gets the {@link SecurityBuilder}. Cannot be null.
+     *
+     * @return the {@link SecurityBuilder}
+     * @throw {@link IllegalStateException} if {@link SecurityBuilder} is null
+     */
+    protected final B getBuilder() {
         if(securityBuilder == null) {
             throw new IllegalStateException("securityBuilder cannot be null");
         }

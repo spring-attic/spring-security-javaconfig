@@ -58,7 +58,7 @@ public final class AnonymousConfigurator extends SecurityConfiguratorAdapter<Def
      *         meaningful.
      */
     public HttpConfiguration disable() {
-        return and().removeConfigurator(getClass()).and();
+        return getBuilder().removeConfigurator(getClass()).getBuilder();
     }
 
     /**

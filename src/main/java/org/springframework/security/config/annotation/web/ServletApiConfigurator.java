@@ -61,7 +61,7 @@ public final class ServletApiConfigurator extends SecurityConfiguratorAdapter<De
     }
 
     public HttpConfiguration disable() {
-        return and().removeConfigurator(getClass()).and();
+        return getBuilder().removeConfigurator(getClass()).getBuilder();
     }
 
     @Override
