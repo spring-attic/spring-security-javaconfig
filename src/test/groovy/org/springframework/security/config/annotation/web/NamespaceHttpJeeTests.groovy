@@ -97,7 +97,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN");
@@ -124,7 +124,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .jee()
                     .mappableRoles("ROLE_USER","ROLE_ADMIN")

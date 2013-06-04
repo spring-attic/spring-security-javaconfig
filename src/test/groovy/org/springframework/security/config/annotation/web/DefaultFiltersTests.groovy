@@ -125,7 +125,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER");
+                    .anyRequest().hasRole("USER");
         }
     }
 

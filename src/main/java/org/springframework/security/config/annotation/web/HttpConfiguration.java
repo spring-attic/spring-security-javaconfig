@@ -910,7 +910,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *             .formLogin()
      *                 .and()
      *             .channelSecurity()
-     *                 .antMatchers("/**").requiresSecure();
+     *                 .anyRequest().requiresSecure();
      *     }
      *
      *     &#064;Override

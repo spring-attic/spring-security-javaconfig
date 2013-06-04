@@ -161,7 +161,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                     //    <intercept-url pattern="/admin/another-post/**" access="hasRole('ROLE_ADMIN')" method="POST"/>
                     .antMatchers(HttpMethod.POST, "/admin/post","/admin/another-post/**").hasRole("ADMIN")
                     .antMatchers("/signup").permitAll()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .requiresChannel()
                     // NOTE: channel security is configured separately of authorization (i.e. intercept-url@access
@@ -171,7 +171,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                     .antMatchers("/login","/secured/**").requiresSecure()
                     // the line below is similar to intercept-url@requires-channel="http":
                     //    <intercept-url pattern="/**" requires-channel="http"/>
-                    .antMatchers("/**").requiresInsecure()
+                    .anyRequest().requiresInsecure()
         }
         protected void registerAuthentication(
                 AuthenticationRegistry authenticationRegistry) throws Exception {

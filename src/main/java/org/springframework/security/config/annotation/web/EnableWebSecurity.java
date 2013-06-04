@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Import;
  *        http
  *            .authorizeUrls()
  *                .antMatchers("/public/**").permitAll()
- *                .antMatchers("/**").hasRole("USER")
+ *                .anyRequest().hasRole("USER")
  *                .and()
  *            // Possibly more configuration ...
  *            .formLogin() // enable form based log in

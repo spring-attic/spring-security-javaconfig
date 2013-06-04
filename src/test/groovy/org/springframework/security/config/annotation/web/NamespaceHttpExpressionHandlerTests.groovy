@@ -48,7 +48,7 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
                     .expressionHandler(EXPRESSION_HANDLER)
                     .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
                     .antMatchers("/signup").permitAll()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
         }
     }
 }

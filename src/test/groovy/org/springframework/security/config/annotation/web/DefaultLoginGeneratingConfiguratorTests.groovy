@@ -106,7 +106,7 @@ public class DefaultLoginGeneratingConfiguratorTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
         }
@@ -138,7 +138,7 @@ public class DefaultLoginGeneratingConfiguratorTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
                     .and()
@@ -168,7 +168,7 @@ public class DefaultLoginGeneratingConfiguratorTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .openidLogin()
         }
@@ -205,7 +205,7 @@ public class DefaultLoginGeneratingConfiguratorTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .rememberMe()
                     .and()

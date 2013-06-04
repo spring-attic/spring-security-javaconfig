@@ -86,7 +86,7 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
                     .loginUrl("/login")
@@ -118,7 +118,7 @@ class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
                     .permitAll()

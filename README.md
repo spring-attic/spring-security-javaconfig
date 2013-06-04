@@ -63,7 +63,7 @@ The following configuration
             http
                 .authorizeUrls()
                     .antMatchers("/signup","/about").permitAll()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
                     .loginUrl("/login")
@@ -160,7 +160,7 @@ The following configuration
                 http
                     .authorizeUrls()
                         .antMatchers("/signup","/about").permitAll()
-                        .antMatchers("/**").hasRole("USER")
+                        .anyRequest().hasRole("USER")
                         .and()
                     .formLogin()
                         .loginUrl("/login")

@@ -86,7 +86,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
         }
@@ -124,7 +124,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
             boolean alwaysUseDefaultSuccess = true;
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
                     .usernameParameter("j_username") // form-login@username-parameter

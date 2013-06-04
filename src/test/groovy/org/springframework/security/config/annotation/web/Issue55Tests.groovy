@@ -50,7 +50,7 @@ class Issue55Tests extends BaseSpringSpec {
             protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .authorizeUrls()
-                        .antMatchers("/**").hasRole("USER");
+                        .anyRequest().hasRole("USER");
             }
         }
         @Configuration
@@ -82,7 +82,7 @@ class Issue55Tests extends BaseSpringSpec {
                 http
                     .antMatcher("/api/**")
                     .authorizeUrls()
-                        .antMatchers("/**").hasRole("USER");
+                        .anyRequest().hasRole("USER");
             }
         }
         @Component
@@ -91,7 +91,7 @@ class Issue55Tests extends BaseSpringSpec {
             protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .authorizeUrls()
-                        .antMatchers("/**").hasRole("USER");
+                        .anyRequest().hasRole("USER");
             }
         }
         @Configuration

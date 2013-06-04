@@ -77,7 +77,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
                 http
                     .antMatcher("/role1/**")
                     .authorizeUrls()
-                        .antMatchers("/**").hasRole("1");
+                        .anyRequest().hasRole("1");
             }
         }
 
@@ -89,7 +89,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
                 http
                     .antMatcher("/role2/**")
                         .authorizeUrls()
-                            .antMatchers("/**").hasRole("2");
+                            .anyRequest().hasRole("2");
             }
         }
 
@@ -101,7 +101,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
                 http
                     .antMatcher("/role3/**")
                     .authorizeUrls()
-                        .antMatchers("/**").hasRole("3");
+                        .anyRequest().hasRole("3");
             }
         }
 
@@ -112,7 +112,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
             protected void configure(HttpConfiguration http) throws Exception {
                 http
                     .authorizeUrls()
-                        .antMatchers("/**").hasRole("4");
+                        .anyRequest().hasRole("4");
             }
         }
     }
@@ -145,7 +145,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
                 http
                     .antMatcher("/role1/**")
                     .authorizeUrls()
-                        .antMatchers("/**").hasRole("1");
+                        .anyRequest().hasRole("1");
             }
         }
 
@@ -156,7 +156,7 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
                 http
                     .antMatcher("/role2/**")
                     .authorizeUrls()
-                        .antMatchers("/**").hasRole("2");
+                        .anyRequest().hasRole("2");
             }
         }
     }

@@ -106,7 +106,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
             http
                 .authorizeUrls()
                     .antMatchers("/signup","/about").permitAll()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
                     .loginUrl("/login")
@@ -249,7 +249,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
                 http
                     .authorizeUrls()
                         .antMatchers("/signup","/about").permitAll()
-                        .antMatchers("/**").hasRole("USER")
+                        .anyRequest().hasRole("USER")
                         .and()
                     .formLogin()
                         .loginUrl("/login")

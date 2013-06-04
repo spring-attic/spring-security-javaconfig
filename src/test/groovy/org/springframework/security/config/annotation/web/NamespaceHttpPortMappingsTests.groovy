@@ -86,14 +86,14 @@ public class NamespaceHttpPortMappingsTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .portMapper()
                     .http(9080).mapsTo(9443)
                     .and()
                 .requiresChannel()
                     .antMatchers("/login","/secured/**").requiresSecure()
-                    .antMatchers("/**").requiresInsecure()
+                    .anyRequest().requiresInsecure()
         }
 
         protected void registerAuthentication(

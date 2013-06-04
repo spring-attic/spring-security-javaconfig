@@ -76,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeUrls()
                 .antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook").permitAll()
-                .antMatchers("/**").authenticated()
+                .anyRequest().authenticated()
                 .and()
             .addFilterBefore(socialAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .logout()

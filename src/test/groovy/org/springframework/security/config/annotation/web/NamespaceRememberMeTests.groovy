@@ -108,7 +108,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
                     .and()

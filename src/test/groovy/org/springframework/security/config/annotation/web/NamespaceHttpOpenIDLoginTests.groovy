@@ -71,7 +71,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .openidLogin()
                     .permitAll();
@@ -122,7 +122,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .openidLogin()
                     .attributeExchange("https://www.google.com/.*")
@@ -176,7 +176,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
             boolean alwaysUseDefaultSuccess = true;
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .openidLogin()
                     .permitAll()
@@ -206,7 +206,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .openidLogin()
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure")) // openid-login@authentication-failure-handler-ref

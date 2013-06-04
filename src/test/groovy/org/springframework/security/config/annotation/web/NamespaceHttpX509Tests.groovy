@@ -101,7 +101,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .x509();
         }
@@ -134,7 +134,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .x509()
                     .authenticationDetailsSource(AUTHENTICATION_DETAILS_SOURCE);
@@ -170,7 +170,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .x509()
                     .subjectPrincipalRegex('CN=(.*?)@example.com(?:,|$)');
@@ -206,7 +206,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .x509()
                     .userDetailsService(new CustomUserDetailsService());
@@ -240,7 +240,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
-                    .antMatchers("/**").hasRole("USER")
+                    .anyRequest().hasRole("USER")
                     .and()
                 .x509()
                     .userDetailsService(new CustomUserDetailsService());

@@ -26,6 +26,7 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.web.util.AntPathRequestMatcher;
+import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher;
 
@@ -45,7 +46,22 @@ import org.springframework.security.web.util.RequestMatcher;
  * @see ExpressionUrlAuthorizations
  */
 abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> extends SecurityConfiguratorAdapter<O,B> {
+    private static final RequestMatcher ANY_REQUEST = new AnyRequestMatcher();
+
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
+
+    /**
+     * Maps any request.
+     *
+     * @param method the {@link HttpMethod} to use or {@code null} for any {@link HttpMethod}.
+     * @param antPatterns the ant patterns to create {@link org.springframework.security.web.util.AntPathRequestMatcher}
+     *                    from
+     *
+     * @return the object that is chained after creating the {@link RequestMatcher}
+     */
+    public C anyRequest() {
+        return requestMatchers(ANY_REQUEST);
+    }
 
     /**
      * Maps a {@link List} of {@link org.springframework.security.web.util.AntPathRequestMatcher} instances.

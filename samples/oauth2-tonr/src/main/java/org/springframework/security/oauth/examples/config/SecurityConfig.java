@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeUrls()
                 .antMatchers("/sparklr/**","/facebook/**").hasRole("USER")
-                .antMatchers("/**").permitAll()
+                .anyRequest().permitAll()
                 .and()
             .addFilterAfter(oauth2ClientFilter, ExceptionTranslationFilter.class)
             .logout()
