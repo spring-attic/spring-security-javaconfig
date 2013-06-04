@@ -15,8 +15,6 @@
  */
 package org.springframework.security.config.annotation.web
 
-import static org.springframework.security.web.util.RequestMatchers.*
-
 import org.springframework.beans.factory.BeanCreationException
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
@@ -71,7 +69,8 @@ class DefaultFiltersTests extends BaseSpringSpec {
         @Bean
         public WebSecurityBuilder filterChainProxyBuilder() {
             new WebSecurityBuilder()
-                .ignoring(antMatchers("/resources/**"))
+                .ignoring()
+                    .antMatchers("/resources/**")
         }
     }
 

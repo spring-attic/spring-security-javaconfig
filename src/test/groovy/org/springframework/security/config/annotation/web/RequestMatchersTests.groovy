@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.config.annotation.web.util;
+package org.springframework.security.config.annotation.web;
 
-import static org.springframework.security.web.util.RequestMatchers.*;
-
+import static org.springframework.security.config.annotation.web.BaseRequestMatcherRegistry.RequestMatchers.*
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
