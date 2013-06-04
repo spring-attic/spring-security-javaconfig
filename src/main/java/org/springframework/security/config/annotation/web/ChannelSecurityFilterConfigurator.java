@@ -66,11 +66,18 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public class ChannelSecurityFilterConfigurator extends
+public final class ChannelSecurityFilterConfigurator extends
         BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private List<ChannelProcessor> channelProcessors;
+
+    /**
+     * Creates a new instance
+     * @see HttpConfiguration#requiresChannel()
+     */
+    ChannelSecurityFilterConfigurator() {
+    }
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {

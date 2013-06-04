@@ -54,10 +54,17 @@ import org.springframework.security.web.savedrequest.RequestCache;
  * @author Rob Winch
  * @since 3.2
  */
-public class ExceptionHandlingConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class ExceptionHandlingConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
 
     private AccessDeniedHandler accessDeniedHandler;
     private RequestCache requestCache;
+
+    /**
+     * Creates a new instance
+     * @see HttpConfiguration#exceptionHandling()
+     */
+    ExceptionHandlingConfigurator() {
+    }
 
     /**
      * Shortcut to specify the {@link AccessDeniedHandler} to be used is a specific error page

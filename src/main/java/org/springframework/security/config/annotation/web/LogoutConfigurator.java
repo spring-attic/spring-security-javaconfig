@@ -56,13 +56,20 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
  * @since 3.2
  * @see RememberMeConfigurator
  */
-public class LogoutConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class LogoutConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";
     private LogoutSuccessHandler logoutSuccessHandler;
     private String logoutUrl = "/logout";
     private boolean permitAll;
+
+    /**
+     * Creates a new instance
+     * @see HttpConfiguration#logout()
+     */
+    LogoutConfigurator() {
+    }
 
     /**
      * Adds a {@link LogoutHandler}. The {@link SecurityContextLogoutHandler} is

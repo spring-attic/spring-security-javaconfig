@@ -63,7 +63,7 @@ import org.springframework.util.StringUtils;
  * @since 3.2
  * @see {@link org.springframework.security.config.annotation.web.HttpConfiguration#authorizeUrls()}
  */
-public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<ExpressionUrlAuthorizations.AuthorizedUrl> {
+public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<ExpressionUrlAuthorizations.AuthorizedUrl> {
     static final String permitAll = "permitAll";
     private static final String denyAll = "denyAll";
     private static final String anonymous = "anonymous";
@@ -72,6 +72,13 @@ public class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<Ex
     private static final String rememberMe = "rememberMe";
 
     private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
+
+    /**
+     * Creates a new instance
+     * @see HttpConfiguration#exceptionHandling()
+     */
+    ExpressionUrlAuthorizations() {
+    }
 
     /**
      * Allows customization of the {@link SecurityExpressionHandler} to be used. The default is {@link DefaultWebSecurityExpressionHandler}

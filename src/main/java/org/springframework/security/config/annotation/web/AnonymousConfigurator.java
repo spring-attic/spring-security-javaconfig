@@ -37,12 +37,19 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
  * @author  Rob Winch
  * @since  3.2
  */
-public class AnonymousConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class AnonymousConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private String key;
     private AuthenticationProvider authenticationProvider;
     private AnonymousAuthenticationFilter authenticationFilter;
     private Object principal = "anonymousUser";
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS");
+
+    /**
+     * Creates a new instance
+     * @see HttpConfiguration#anonymous()
+     */
+    AnonymousConfigurator() {
+    }
 
     /**
      * Disables anonymous authentication.

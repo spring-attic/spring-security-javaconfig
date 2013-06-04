@@ -58,8 +58,15 @@ import org.springframework.security.web.context.SecurityContextRepository;
  * @author Rob Winch
  * @since 3.2
  */
-public class SecurityContextConfigurator extends
+public final class SecurityContextConfigurator extends
         SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
+
+    /**
+     * Creates a new instance
+     * @see HttpConfiguration#securityContext()
+     */
+    SecurityContextConfigurator() {
+    }
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {

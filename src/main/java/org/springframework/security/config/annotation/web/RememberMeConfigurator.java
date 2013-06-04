@@ -69,7 +69,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
  * @author Rob Winch
  * @since 3.2
  */
-public class RememberMeConfigurator extends
+public final class RememberMeConfigurator extends
         SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private String key;

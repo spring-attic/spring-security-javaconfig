@@ -70,7 +70,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private UsernamePasswordAuthenticationFilter usernamePasswordFilter = new UsernamePasswordAuthenticationFilter() {
         @Override
         protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -90,6 +90,7 @@ public class FormLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSe
 
     /**
      * Creates a new instance
+     * @see HttpConfiguration#formLogin()
      */
     FormLoginConfigurator() {
         loginUrl("/login");

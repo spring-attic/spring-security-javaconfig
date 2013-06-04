@@ -20,7 +20,7 @@ import org.springframework.security.openid.OpenIDAuthenticationFilter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 
 /**
- * Adds a Filter that will generate a login page if one is not specified on .
+ * Adds a Filter that will generate a login page if one is not specified otherwise when using {@link WebSecurityConfigurerAdapter}.
  *
  * <p>
  * By default an {@link org.springframework.security.web.access.channel.InsecureChannelProcessor} and a {@link org.springframework.security.web.access.channel.SecureChannelProcessor} will be registered.
@@ -47,10 +47,12 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
  *     <li>{@link FormLoginConfigurator} is used to determine if the {@link DefaultLoginPageConfigurator} should be added and how to configure it.</li>
  * </ul>
  *
+ * @see WebSecurityConfigurerAdapter
+ *
  * @author Rob Winch
  * @since 3.2
  */
-class DefaultLoginPageConfigurator extends
+final class DefaultLoginPageConfigurator extends
         SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
 
     private DefaultLoginPageGeneratingFilter loginPageGeneratingFilter = new DefaultLoginPageGeneratingFilter();

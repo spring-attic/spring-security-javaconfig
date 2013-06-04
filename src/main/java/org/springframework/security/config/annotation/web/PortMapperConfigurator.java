@@ -31,7 +31,7 @@ import org.springframework.security.web.PortMapperImpl;
  * @author Rob Winch
  * @since 3.2
  */
-public class PortMapperConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class PortMapperConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private PortMapper portMapper;
     private Map<String, String> httpsPortMappings = new HashMap<String,String>();
 

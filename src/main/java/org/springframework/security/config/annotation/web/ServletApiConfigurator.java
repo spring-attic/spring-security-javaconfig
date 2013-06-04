@@ -45,8 +45,15 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
  * @author Rob Winch
  * @since 3.2
  */
-public class ServletApiConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class ServletApiConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private SecurityContextHolderAwareRequestFilter securityContextRequestFilter = new SecurityContextHolderAwareRequestFilter();
+
+    /**
+     * Creates a new instance
+     * @see HttpConfiguration#servletApi()
+     */
+    ServletApiConfigurator() {
+    }
 
     public ServletApiConfigurator rolePrefix(String rolePrefix) {
         securityContextRequestFilter.setRolePrefix(rolePrefix);

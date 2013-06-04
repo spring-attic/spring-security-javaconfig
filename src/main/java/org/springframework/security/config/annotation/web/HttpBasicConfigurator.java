@@ -55,7 +55,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public class HttpBasicConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class HttpBasicConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private static final String DEFAULT_REALM = "Spring Security Application";
 
     private BasicAuthenticationFilter basicAuthenticationFilter;

@@ -54,8 +54,11 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
  * @since 3.2
  * @see RequestCache
  */
-public class RequestCacheConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class RequestCacheConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
     private RequestCache requestCache;
+
+    RequestCacheConfigurator() {
+    }
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {
