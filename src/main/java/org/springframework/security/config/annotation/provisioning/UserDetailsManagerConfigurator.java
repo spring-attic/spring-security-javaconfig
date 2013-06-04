@@ -64,6 +64,7 @@ public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry
      * @return
      */
     @Override
+    @SuppressWarnings("unchecked")
     public final UserDetailsBuilder<T> withUser(String username) {
         UserDetailsBuilder<T> userBuilder = new UserDetailsBuilder<T>((T)this);
         userBuilder.username(username);
@@ -81,10 +82,10 @@ public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry
         private String username;
         private String password;
         private List<GrantedAuthority> authorities;
-        private boolean accountNonExpired = true;
-        private boolean accountNonLocked = true;
-        private boolean credentialsNonExpired = true;
-        private boolean enabled = true;
+        private boolean accountExpired;
+        private boolean accountLocked;
+        private boolean credentialsExpired;
+        private boolean disabled;
         private final T builder;
 
         /**
@@ -176,9 +177,58 @@ public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry
             return this;
         }
 
+        /**
+         * Defines if the account is expired or not. Default is false.
+         *
+         * @param accountExpired true if the account is expired, false otherwise
+         * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
+         *         user)
+         */
+        public UserDetailsBuilder<T> accountExpired(boolean accountExpired) {
+            this.accountExpired = accountExpired;
+            return this;
+        }
+
+        /**
+         * Defines if the account is locked or not. Default is false.
+         *
+         * @param accountLocked true if the account is locked, false otherwise
+         * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
+         *         user)
+         */
+        public UserDetailsBuilder<T> accountLocked(boolean accountLocked) {
+            this.accountLocked = accountLocked;
+            return this;
+        }
+
+        /**
+         * Defines if the credentials are expired or not. Default is false.
+         *
+         * @param credentialsExpired true if the credentials are expired, false otherwise
+         * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
+         *         user)
+         */
+        public UserDetailsBuilder<T> credentialsExpired(boolean credentialsExpired) {
+            this.credentialsExpired = credentialsExpired;
+            return this;
+        }
+
+
+        /**
+         * Defines if the account is disabled or not. Default is false.
+         *
+         * @param disabled true if the account is disabled, false otherwise
+         * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
+         *         user)
+         */
+        public UserDetailsBuilder<T> disabled(boolean disabled) {
+            this.disabled = disabled;
+            return this;
+        }
+
         private UserDetails build() {
-            return new User(username, password, enabled, accountNonExpired,
-                    credentialsNonExpired, accountNonLocked, authorities);
+            return new User(username, password, !disabled, !accountExpired,
+                    !credentialsExpired, !accountLocked, authorities);
         }
     }
 }
