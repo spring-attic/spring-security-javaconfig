@@ -244,7 +244,9 @@ public class NamespaceHttpTests extends BaseSpringSpec {
             HttpSessionSecurityContextRepository repository = new HttpSessionSecurityContextRepository()
             repository.disableUrlRewriting = false // explicitly configured (not necessary due to default values)
 
-            http.securityContextRepsitory(repository)
+            http.
+                securityContext()
+                    .securityContextRepsitory(repository)
         }
     }
 
@@ -428,7 +430,8 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class SecurityContextRepoConfig extends BaseWebConfig {
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .securityContextRepsitory(new NullSecurityContextRepository()) // security-context-repository-ref
+                .securityContext()
+                    .securityContextRepsitory(new NullSecurityContextRepository()) // security-context-repository-ref
         }
     }
 

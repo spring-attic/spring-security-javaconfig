@@ -51,8 +51,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
  * {@link SecurityContextPersistenceFilter#setForceEagerSessionCreation(boolean)}
  * will be set to true.</li>
  * <li>{@link SecurityContextRepository} must be set and is used on
- * {@link SecurityContextPersistenceFilter}. This is typically configured using
- * {@link HttpConfiguration#securityContextRepsitory(SecurityContextRepository)}.</li>
+ * {@link SecurityContextPersistenceFilter}.</li>
  * </ul>
  *
  * @author Rob Winch
@@ -66,6 +65,16 @@ public final class SecurityContextConfigurator extends
      * @see HttpConfiguration#securityContext()
      */
     SecurityContextConfigurator() {
+    }
+
+    /**
+     * Specifies the shared {@link SecurityContextRepository} that is to be used
+     * @param securityContextRepository the {@link SecurityContextRepository} to use
+     * @return the {@link HttpConfiguration} for further customizations
+     */
+    public SecurityContextConfigurator securityContextRepsitory(SecurityContextRepository securityContextRepository) {
+        getBuilder().setSharedObject(SecurityContextRepository.class, securityContextRepository);
+        return this;
     }
 
     @Override

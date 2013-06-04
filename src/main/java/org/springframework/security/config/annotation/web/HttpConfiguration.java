@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurator;
@@ -55,7 +56,6 @@ import org.springframework.security.web.authentication.switchuser.SwitchUserFilt
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
@@ -1040,17 +1040,6 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     private AuthenticationManagerBuilder getAuthenticationRegistry() {
         return getSharedObject(AuthenticationManagerBuilder.class);
     }
-
-    /**
-     * Specifies the shared {@link SecurityContextRepository} that is to be used
-     * @param securityContextRepository the {@link SecurityContextRepository} to use
-     * @return the {@link HttpConfiguration} for further customizations
-     */
-    public HttpConfiguration securityContextRepsitory(SecurityContextRepository securityContextRepository) {
-        this.setSharedObject(SecurityContextRepository.class, securityContextRepository);
-        return this;
-    }
-
 
     /**
      * Allows adding a {@link Filter} after one of the known {@link Filter}
