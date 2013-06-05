@@ -26,17 +26,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  *
  * @author Rob Winch
  * @since 3.2
+ *
+ * @param <T> This
+ * @param <U> The type of {@link UserDetailsService} that is being used
+ *
  */
-public class DaoAuthenticationConfigurator<T extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> {
+public class DaoAuthenticationConfigurator<C extends DaoAuthenticationRegitry<C>,U extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> implements DaoAuthenticationRegitry<C> {
     private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    private final T userDetailsService;
+    private final U userDetailsService;
 
     /**
      * Creates a new instance
      *
      * @param userDetailsService
      */
-    public DaoAuthenticationConfigurator(T userDetailsService) {
+    public DaoAuthenticationConfigurator(U userDetailsService) {
         this.userDetailsService = userDetailsService;
         provider.setUserDetailsService(userDetailsService);
     }
@@ -48,9 +52,10 @@ public class DaoAuthenticationConfigurator<T extends UserDetailsService> extends
      * @param passwordEncoder The {@link PasswordEncoder} to use.
      * @return
      */
-    public DaoAuthenticationConfigurator<T> passwordEncoder(PasswordEncoder passwordEncoder) {
+    @SuppressWarnings("unchecked")
+    public C passwordEncoder(PasswordEncoder passwordEncoder) {
         provider.setPasswordEncoder(passwordEncoder);
-        return this;
+        return (C) this;
     }
 
     @Override
@@ -63,7 +68,7 @@ public class DaoAuthenticationConfigurator<T extends UserDetailsService> extends
      *
      * @return the {@link UserDetailsService} that is used with the {@link DaoAuthenticationProvider}
      */
-    protected T getUserDetailsService() {
+    protected U getUserDetailsService() {
         return userDetailsService;
     }
 }

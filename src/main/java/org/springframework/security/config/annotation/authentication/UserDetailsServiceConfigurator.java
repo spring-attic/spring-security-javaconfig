@@ -15,11 +15,8 @@
  */
 package org.springframework.security.config.annotation.authentication;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
+import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.util.Assert;
 
 /**
  * Allows configuring a {@link UserDetailsService} within a {@link AuthenticationManagerBuilder}.
@@ -27,9 +24,10 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  *
+ * @param <C> the {@link SecurityConfigurator} (or this)
  * @param <T> the type of UserDetailsService being used to allow for returning the concrete UserDetailsService.
  */
-public class UserDetailsServiceConfigurator<T extends UserDetailsService> extends DaoAuthenticationConfigurator<T> {
+public class UserDetailsServiceConfigurator<C extends DaoAuthenticationRegitry<C>,T extends UserDetailsService> extends DaoAuthenticationConfigurator<C,T> {
 
     /**
      * Creates a new instance

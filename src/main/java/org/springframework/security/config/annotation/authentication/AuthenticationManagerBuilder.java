@@ -120,10 +120,10 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#userDetailsService(org.springframework.security.core.userdetails.UserDetailsService)
      */
     @Override
-    public DaoAuthenticationConfigurator<UserDetailsService> userDetailsService(
-            UserDetailsService userDetailsService) throws Exception {
+    public <T extends UserDetailsService> DaoAuthenticationConfigurator userDetailsService(
+            T userDetailsService) throws Exception {
         this.defaultUserDetailsService = userDetailsService;
-        return apply(new DaoAuthenticationConfigurator<UserDetailsService>(userDetailsService));
+        return apply(new DaoAuthenticationConfigurator(userDetailsService));
     }
 
     /**
@@ -158,7 +158,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         return this.defaultUserDetailsService;
     }
 
-    private <C extends UserDetailsServiceConfigurator<?>> C apply(C configurer)
+    private <C extends UserDetailsServiceConfigurator<AuthenticationManagerBuilder,?>> C apply(C configurer)
             throws Exception {
         this.defaultUserDetailsService = configurer.getUserDetailsService();
         return (C) super.apply(configurer);
