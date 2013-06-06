@@ -15,6 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.security.authentication.AnonymousAuthenticationToken
@@ -47,6 +48,13 @@ class EnableWebSecurityTests extends BaseSpringSpec {
             registry
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER");
+        }
+
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean()
+                throws Exception {
+            return super.authenticationManagerBean();
         }
 
         @Override

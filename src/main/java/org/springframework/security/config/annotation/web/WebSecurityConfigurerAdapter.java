@@ -16,12 +16,12 @@
 package org.springframework.security.config.annotation.web;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.core.Authentication;
@@ -38,6 +38,8 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  * @author Rob Winch
  */
 public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigurer {
+    private final Log logger = LogFactory.getLog(getClass());
+
     @Autowired
     private ApplicationContext context;
 
@@ -126,11 +128,21 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     }
 
     /**
-     * Exposes the {@link AuthenticationManager} as a bean
+     * Override this method to expose the {@link AuthenticationManager} from
+     * {@link #registerAuthentication(AuthenticationRegistry)} to be exposed as
+     * a Bean. For example:
+     *
+     * <pre>
+     * &#064;Bean(name name="myAuthenticationManager")
+     * &#064;Override
+     * public AuthenticationManager authenticationManagerBean() throws Exception {
+     *     return super.authenticationManagerBean();
+     * }
+     * </pre>
+     *
      * @return the {@link AuthenticationManager}
      * @throws Exception
      */
-    @Bean(name=BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return new AuthenticationManagerDelegator(authenticationBuilder);
     }
@@ -148,7 +160,11 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         if(!authenticationManagerInitialized) {
             registerAuthentication(parentAuthenticationRegistry);
             if(disableAuthenticationRegistry) {
-                authenticationManager = getBeanExcluding(AuthenticationManager.class, BeanIds.AUTHENTICATION_MANAGER);
+                try {
+                    authenticationManager = context.getBean(AuthenticationManager.class);
+                } catch(NoSuchBeanDefinitionException e) {
+                    logger.debug("The AuthenticationManager was not found. This is ok for now as it may not be required.",e);
+                }
             } else {
                 authenticationManagerInitialized = true;
                 authenticationManager = parentAuthenticationRegistry.build();
@@ -159,15 +175,24 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     }
 
     /**
-     * Exposes the {@link UserDetailsService} as a bean. To override, developers
-     * should change {@link #userDetailsService()} instead (this method would be
-     * marked final except that the rules for {@link Configuration} forbid it.
+     * Override this method to expose a {@link UserDetailsService} created from
+     * {@link #registerAuthentication(AuthenticationRegistry)} as a bean. In
+     * general only the following override should be done of this method:
      *
+     * <pre>
+     * &#064;Bean(name = "myUserDetailsService") // any or no name specified is allowed
+     * &#064;Override
+     * public UserDetailsService userDetailsServiceBean() throws Exception {
+     *     return super.userDetailsServiceBean();
+     * }
+     * </pre>
+     *
+     * To change the instance returned, developers should change
+     * {@link #userDetailsService()} instead
      * @return
      * @throws Exception
      * @see {@link #userDetailsService()}
      */
-    @Bean(name=BeanIds.USER_DETAILS_SERVICE)
     public UserDetailsService userDetailsServiceBean() throws Exception {
         return userDetailsService();
     }
@@ -175,7 +200,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     /**
      * Allows modifying and accessing the {@link UserDetailsService} from
      * {@link #userDetailsServiceBean()()} without interacting with the
-     * {@link ApplicationContext}. Developers should override this method instead of {@link #userDetailsServiceBean()}.
+     * {@link ApplicationContext}. Developers should override this method when
+     * changing the instance of {@link #userDetailsServiceBean()}.
      *
      * @return
      */
@@ -199,28 +225,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      */
     @Override
     public void configure(WebSecurityBuilder builder) throws Exception {
-    }
-
-    /**
-     * Gets a bean of a specific type, but excludes the bean name.
-     * @param clazz the Class of the bean to look up
-     * @param beanNameToExclude the name of the bean to exclude
-     * @return the bean or null if it could not be found
-     */
-    private <T> T getBeanExcluding(Class<T> clazz, String beanNameToExclude) {
-        String[] beanNames = context.getBeanNamesForType(clazz);
-        if(beanNames.length == 1 && !beanNameToExclude.equals(beanNames[0])) {
-            return context.getBean(beanNames[0],clazz);
-        }
-        if(beanNames.length == 2) {
-            if(beanNameToExclude.equals(beanNames[0])) {
-                return context.getBean(beanNames[1],clazz);
-            }
-            if(beanNameToExclude.equals(beanNames[1])) {
-                return context.getBean(beanNames[0],clazz);
-            }
-        }
-        return null;
     }
 
     /**

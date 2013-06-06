@@ -45,6 +45,13 @@ public class NamespacePasswordEncoderConfigs {
                     .passwordEncoder(encoder);
         }
 
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean()
+                throws Exception {
+            return super.authenticationManagerBean();
+        }
+
         @Override
         protected void configure(HttpConfiguration http) throws Exception {
         }
@@ -55,6 +62,34 @@ public class NamespacePasswordEncoderConfigs {
         }
     }
 
+    @EnableWebSecurity
+    @Configuration
+    static class PasswordEncoderNoAuthManagerLoadsConfig extends WebSecurityConfigurerAdapter {
+        protected void registerAuthentication(
+                AuthenticationRegistry registry) throws Exception {
+            BCryptPasswordEncoder encoder = passwordEncoder();
+            registry
+                .inMemoryAuthentication()
+                    .withUser("user").password(encoder.encode("password")).roles("USER").and()
+                    .passwordEncoder(encoder);
+        }
+
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean()
+                throws Exception {
+            return super.authenticationManagerBean();
+        }
+
+        @Override
+        protected void configure(HttpConfiguration http) throws Exception {
+        }
+
+        @Bean
+        public BCryptPasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+    }
 
     @Configuration
     static class PasswordEncoderWithBuilderConfig {

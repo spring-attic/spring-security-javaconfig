@@ -19,6 +19,7 @@ import org.springframework.security.config.annotation.authentication.Authenticat
 
 import javax.servlet.http.Cookie
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -178,6 +179,13 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
                     .and()
                 .rememberMe()
                     .key("KeyConfig")
+        }
+
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean()
+                throws Exception {
+            return super.authenticationManagerBean();
         }
     }
 

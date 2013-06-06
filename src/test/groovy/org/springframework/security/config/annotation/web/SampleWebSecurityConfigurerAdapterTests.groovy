@@ -33,10 +33,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpec {
     def "README Sample works"() {
-        when: "Sample Config is loaded"
+        setup: "Sample Config is loaded"
             loadConfig(SampleWebSecurityConfigurerAdapter)
-        then: "UserDetailsService is found"
-            context.getBean(UserDetailsService)
         when:
             springSecurityFilterChain.doFilter(request,response,chain)
         then:
