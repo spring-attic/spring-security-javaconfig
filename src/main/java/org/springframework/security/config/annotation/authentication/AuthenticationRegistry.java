@@ -77,7 +77,7 @@ public interface AuthenticationRegistry {
 
     /**
      * Add authentication based upon the custom {@link UserDetailsService} that
-     * is passed in. It then returns a {@link DaoAuthenticationConfigurator} to
+     * is passed in. It then returns a {@link DaoAuthenticationRegistry} to
      * allow customization of the authentication.
      *
      * <p>
@@ -93,7 +93,7 @@ public interface AuthenticationRegistry {
      *             if an error occurs when adding the {@link UserDetailsService}
      *             based authentication
      */
-    <T extends UserDetailsService> DaoAuthenticationConfigurator<? extends DaoAuthenticationConfigurator<?, T>,T> userDetailsService(
+    <T extends UserDetailsService> DaoAuthenticationRegistry<? extends DaoAuthenticationRegistry<?>> userDetailsService(
             T userDetailsService) throws Exception;
 
     /**

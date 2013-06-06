@@ -15,60 +15,26 @@
  */
 package org.springframework.security.config.annotation.authentication;
 
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * Allows configuring a {@link DaoAuthenticationProvider}
- *
- * @author Rob Winch
- * @since 3.2
- *
- * @param <T> This
- * @param <U> The type of {@link UserDetailsService} that is being used
- *
- */
-public class DaoAuthenticationConfigurator<C extends DaoAuthenticationRegitry<C>,U extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> implements DaoAuthenticationRegitry<C> {
-    private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    private final U userDetailsService;
+* Allows configuring a {@link DaoAuthenticationProvider}
+*
+* @author Rob Winch
+* @since 3.2
+*
+* @param <T> This
+* @param <U> The type of {@link UserDetailsService} that is being used
+*
+*/
+public class DaoAuthenticationConfigurator<U extends UserDetailsService> extends BaseDaoAuthenticationConfigurator<DaoAuthenticationConfigurator<U>, U>{
 
     /**
      * Creates a new instance
-     *
      * @param userDetailsService
      */
     public DaoAuthenticationConfigurator(U userDetailsService) {
-        this.userDetailsService = userDetailsService;
-        provider.setUserDetailsService(userDetailsService);
-    }
-
-    /**
-     * Allows specifying the {@link PasswordEncoder} to use with the {@link DaoAuthenticationProvider}. The default is
-     * is to use plain text.
-     *
-     * @param passwordEncoder The {@link PasswordEncoder} to use.
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public C passwordEncoder(PasswordEncoder passwordEncoder) {
-        provider.setPasswordEncoder(passwordEncoder);
-        return (C) this;
-    }
-
-    @Override
-    public void configure(AuthenticationManagerBuilder builder) throws Exception {
-        builder.add(provider);
-    }
-
-    /**
-     * Gets the {@link UserDetailsService} that is used with the {@link DaoAuthenticationProvider}
-     *
-     * @return the {@link UserDetailsService} that is used with the {@link DaoAuthenticationProvider}
-     */
-    protected U getUserDetailsService() {
-        return userDetailsService;
+        super(userDetailsService);
     }
 }

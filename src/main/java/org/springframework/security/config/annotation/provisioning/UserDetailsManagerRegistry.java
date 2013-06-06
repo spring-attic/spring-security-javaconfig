@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.provisioning;
 
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.authentication.DaoAuthenticationRegitry;
+import org.springframework.security.config.annotation.authentication.DaoAuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.UserDetailsManagerConfigurator.UserDetailsBuilder;
 import org.springframework.security.provisioning.UserDetailsManager;
 
@@ -28,7 +28,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
  *
  * @param <T> the type for "this" to allow for returning sub interfaces/classes that allow method chaining.
  */
-public interface UserDetailsManagerRegistry<T extends UserDetailsManagerRegistry<T>> extends DaoAuthenticationRegitry<T> {
+public interface UserDetailsManagerRegistry<T extends UserDetailsManagerRegistry<T>> extends DaoAuthenticationRegistry<T> {
 
     /**
      * Adds a {@link org.springframework.security.core.userdetails.UserDetails} that can be authenticated with

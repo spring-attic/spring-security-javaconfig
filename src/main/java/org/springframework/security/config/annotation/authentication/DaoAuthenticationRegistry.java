@@ -19,10 +19,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * @author Rob Winch
+ * Allows configuring a {@link DaoAuthenticationProvider}
  *
+ * @author Rob Winch
+ * @since 3.2
  */
-public interface DaoAuthenticationRegitry<T extends DaoAuthenticationRegitry<T>> {
+public interface DaoAuthenticationRegistry<T extends DaoAuthenticationRegistry<T>> {
 
     /**
      * Allows specifying the {@link PasswordEncoder} to use with the {@link DaoAuthenticationProvider}. The default is

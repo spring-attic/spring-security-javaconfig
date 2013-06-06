@@ -1,0 +1,77 @@
+/*
+ * Copyright 2002-2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.security.config.annotation.authentication;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.web.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+/**
+ * Class Containing the {@link Configuration} for
+ * {@link NamespacePasswordEncoderTests}. Separate to ensure the configuration
+ * compiles in Java (i.e. we are not using hidden methods).
+ *
+ * @author Rob Winch
+ * @since 3.2
+ */
+public class NamespacePasswordEncoderConfigs {
+
+    @EnableWebSecurity
+    @Configuration
+    static class PasswordEncoderConfig extends WebSecurityConfigurerAdapter {
+        protected void registerAuthentication(
+                AuthenticationRegistry registry) throws Exception {
+            BCryptPasswordEncoder encoder = passwordEncoder();
+            registry
+                .inMemoryAuthentication()
+                    .withUser("user").password(encoder.encode("password")).roles("USER").and()
+                    .passwordEncoder(encoder);
+        }
+
+        @Override
+        protected void configure(HttpConfiguration http) throws Exception {
+        }
+
+        @Bean
+        public BCryptPasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+    }
+
+
+    @Configuration
+    static class PasswordEncoderWithBuilderConfig {
+        @Bean
+        public AuthenticationManager authenticationManager() throws Exception {
+            BCryptPasswordEncoder encoder = passwordEncoder();
+            return new AuthenticationManagerBuilder()
+                .inMemoryAuthentication()
+                    .withUser("user").password(encoder.encode("password")).roles("USER").and()
+                    .passwordEncoder(encoder)
+                    .and()
+                .build();
+        }
+
+        @Bean
+        public BCryptPasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+    }
+}

@@ -15,6 +15,8 @@
  */
 package org.springframework.security.config.annotation.authentication
 
+import static org.springframework.security.config.annotation.authentication.NamespacePasswordEncoderConfigs.*
+
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean
@@ -50,52 +52,11 @@ class NamespacePasswordEncoderTests extends BaseSpringSpec {
             authMgr.authenticate(new UsernamePasswordAuthenticationToken("user", "password"))
     }
 
-    @EnableWebSecurity
-    @Configuration
-    static class PasswordEncoderConfig extends WebSecurityConfigurerAdapter {
-        protected void registerAuthentication(
-                AuthenticationRegistry registry) throws Exception {
-            BCryptPasswordEncoder encoder = passwordEncoder();
-            registry
-                .inMemoryAuthentication()
-                    .withUser("user").password(encoder.encode("password")).roles("USER").and()
-                    .passwordEncoder(encoder);
-        }
-
-        @Override
-        protected void configure(HttpConfiguration http) throws Exception {
-        }
-
-        @Bean
-        public BCryptPasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder()
-        }
-    }
-
     def "password-encoder@ref with AuthenticationBuilder"() {
         when:
             loadConfig(PasswordEncoderWithBuilderConfig)
             AuthenticationManager authMgr = authenticationManager()
         then:
             authMgr.authenticate(new UsernamePasswordAuthenticationToken("user", "password"))
-    }
-
-    @Configuration
-    static class PasswordEncoderWithBuilderConfig {
-        @Bean
-        public AuthenticationManager authenticationManager() throws Exception {
-            BCryptPasswordEncoder encoder = passwordEncoder();
-            return new AuthenticationManagerBuilder()
-                .inMemoryAuthentication()
-                    .withUser("user").password(encoder.encode("password")).roles("USER").and()
-                    .passwordEncoder(encoder)
-                    .and()
-                .build();
-        }
-
-        @Bean
-        public BCryptPasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder()
-        }
     }
 }
