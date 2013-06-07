@@ -42,7 +42,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  *
  * @author Rob Winch
  */
-class FormLoginSecurityFilterConfiguratorTests extends BaseSpringSpec {
+class FormLoginConfiguratorTests extends BaseSpringSpec {
     def "Form Login"() {
         when:
         context = new AnnotationConfigApplicationContext(FormLoginConfig)
