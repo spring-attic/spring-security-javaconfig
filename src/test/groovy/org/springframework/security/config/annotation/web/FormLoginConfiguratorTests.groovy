@@ -46,8 +46,9 @@ class FormLoginConfiguratorTests extends BaseSpringSpec {
     def "Form Login"() {
         when: "load formLogin()"
             context = new AnnotationConfigApplicationContext(FormLoginConfig)
-        then: "Configured correctly"
-            List<DefaultSecurityFilterChain> filterChains = context.getBean(FilterChainProxy).filterChains
+
+        then: "FilterChains configured correctly"
+            def filterChains = filterChains()
             filterChains.size() == 2
             filterChains[0].requestMatcher.pattern == '/resources/**'
             filterChains[0].filters.empty
@@ -56,16 +57,21 @@ class FormLoginConfiguratorTests extends BaseSpringSpec {
                     [SecurityContextPersistenceFilter, LogoutFilter, UsernamePasswordAuthenticationFilter,
                      RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter,
                      AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, FilterSecurityInterceptor ]
-            UsernamePasswordAuthenticationFilter authFilter = filterChains[1].filters.find { it instanceof UsernamePasswordAuthenticationFilter}
+
+        and: "UsernamePasswordAuthentictionFilter is configured correctly"
+            UsernamePasswordAuthenticationFilter authFilter = findFilter(UsernamePasswordAuthenticationFilter,1)
             authFilter.usernameParameter == "username"
             authFilter.passwordParameter == "password"
             authFilter.failureHandler.defaultFailureUrl == "/login?error"
             authFilter.successHandler.defaultTargetUrl == "/"
-            SessionFixationProtectionStrategy sessionStrategy = ReflectionTestUtils.getField(authFilter,"sessionStrategy")
-            sessionStrategy.migrateSessionAttributes
             authFilter.requiresAuthentication(new MockHttpServletRequest(requestURI : "/login", method: "POST"), new MockHttpServletResponse())
             !authFilter.requiresAuthentication(new MockHttpServletRequest(requestURI : "/login", method: "GET"), new MockHttpServletResponse())
 
+        and: "SessionFixationProtectionStrategy is configured correctly"
+            SessionFixationProtectionStrategy sessionStrategy = ReflectionTestUtils.getField(authFilter,"sessionStrategy")
+            sessionStrategy.migrateSessionAttributes
+
+        and: "Exception handling is configured correctly"
             AuthenticationEntryPoint authEntryPoint = filterChains[1].filters.find { it instanceof ExceptionTranslationFilter}.authenticationEntryPoint
             MockHttpServletResponse response = new MockHttpServletResponse()
             authEntryPoint.commence(new MockHttpServletRequest(requestURI: "/private/"), response, new BadCredentialsException(""))
@@ -96,12 +102,14 @@ class FormLoginConfiguratorTests extends BaseSpringSpec {
     def "FormLogin.permitAll()"() {
         when: "load formLogin() with permitAll"
             context = new AnnotationConfigApplicationContext(FormLoginConfigPermitAll)
+
         then: "the formLogin URLs are granted access"
             FilterChainProxy filterChain = context.getBean(FilterChainProxy)
             MockHttpServletResponse response = new MockHttpServletResponse()
             filterChain.doFilter(new MockHttpServletRequest(servletPath : servletPath, requestURI: servletPath, queryString: query, method: method), response, new MockFilterChain())
             response.redirectedUrl == redirectUrl
-            where:
+
+        where:
             servletPath | method | query | redirectUrl
             "/login" | "GET" | null | null
             "/login" | "POST" | null | "/login?error"

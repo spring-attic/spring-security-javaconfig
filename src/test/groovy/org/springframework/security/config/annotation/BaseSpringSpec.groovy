@@ -46,7 +46,11 @@ abstract class BaseSpringSpec extends Specification {
     }
 
     def filterChain(int index=0) {
-        context.getBean(FilterChainProxy).filterChains[index]
+        filterChains()[index]
+    }
+
+    def filterChains() {
+        context.getBean(FilterChainProxy).filterChains
     }
 
     AuthenticationManager authenticationManager() {
