@@ -120,7 +120,9 @@ public final class RememberMeConfigurator extends
      * Specifies the {@link UserDetailsService} used to look up the
      * {@link UserDetails} when a remember me token is valid. The default is to
      * use the {@link UserDetailsService} found by invoking
-     * {@link HttpConfiguration#getSharedObject(Class)}
+     * {@link HttpConfiguration#getSharedObject(Class)} which is set when using
+     * {@link WebSecurityConfigurerAdapter#registerAuthentication(org.springframework.security.config.annotation.authentication.AuthenticationRegistry)}.
+     * Alternatively, one can populate {@link #rememberMeServices(RememberMeServices)}.
      *
      * @param userDetailsService
      *            the {@link UserDetailsService} to configure
@@ -301,8 +303,14 @@ public final class RememberMeConfigurator extends
      * @return the {@link UserDetailsService} to use
      */
     private UserDetailsService getUserDetailsService(HttpConfiguration http) {
-        return userDetailsService == null ? http
-                .getSharedObject(UserDetailsService.class) : userDetailsService;
+        if(userDetailsService == null) {
+            userDetailsService = http.getSharedObject(UserDetailsService.class);
+        }
+        if(userDetailsService == null) {
+            throw new IllegalStateException("userDetailsService cannot be null. Invoke "
+                    + RememberMeConfigurator.class.getSimpleName() + "#userDetailsService(UserDetailsService) or see its javadoc for alternative approaches.");
+        }
+        return userDetailsService;
     }
 
     /**

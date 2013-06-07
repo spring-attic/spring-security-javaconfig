@@ -76,9 +76,13 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      * Used by the default implementation of {@link #authenticationManager()} to attempt to obtain an
      * {@link AuthenticationManager}. If overridden, the {@link AuthenticationRegistry} should be used to specify
      * the {@link AuthenticationManager}. The resulting {@link AuthenticationManager}
-     * will be exposed as a Bean as will any {@link UserDetailsService} that is created with the
-     * {@link AuthenticationRegistry}. For example, the following configuration could be used to register
-     * in memory authentication that exposes an in memory {@link UserDetailsService}:
+     * will be exposed as a Bean as will the last populated {@link UserDetailsService} that is created with the
+     * {@link AuthenticationRegistry}. The {@link UserDetailsService} will also automatically be populated on
+     * {@link HttpConfiguration#getSharedObject(Class)} for use with other {@link SecurityContextConfigurator}
+     * (i.e. RememberMeConfigurator )
+     *
+     * <p>For example, the following configuration could be used to register
+     * in memory authentication that exposes an in memory {@link UserDetailsService}:</p>
      *
      * <pre>
      * &#064;Override
@@ -111,7 +115,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
         http = new HttpConfiguration(authenticationBuilder);
-        http.setSharedObject(UserDetailsService.class, userDetailsServiceBean());
+        http.setSharedObject(UserDetailsService.class, userDetailsService());
         if(!disableDefaults) {
             http
                 .exceptionHandling().and()
