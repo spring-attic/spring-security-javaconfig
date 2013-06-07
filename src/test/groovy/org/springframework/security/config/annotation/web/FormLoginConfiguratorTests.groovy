@@ -44,32 +44,32 @@ import org.springframework.test.util.ReflectionTestUtils;
  */
 class FormLoginConfiguratorTests extends BaseSpringSpec {
     def "Form Login"() {
-        when:
-        context = new AnnotationConfigApplicationContext(FormLoginConfig)
-        then:
-        List<DefaultSecurityFilterChain> filterChains = context.getBean(FilterChainProxy).filterChains
-        filterChains.size() == 2
-        filterChains[0].requestMatcher.pattern == '/resources/**'
-        filterChains[0].filters.empty
-        filterChains[1].requestMatcher instanceof AnyRequestMatcher
-        filterChains[1].filters.collect { it.class.name.contains('$') ? it.class.superclass : it.class } ==
-                [SecurityContextPersistenceFilter, LogoutFilter, UsernamePasswordAuthenticationFilter,
-                 RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter,
-                 AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, FilterSecurityInterceptor ]
-        UsernamePasswordAuthenticationFilter authFilter = filterChains[1].filters.find { it instanceof UsernamePasswordAuthenticationFilter}
-        authFilter.usernameParameter == "username"
-        authFilter.passwordParameter == "password"
-        authFilter.failureHandler.defaultFailureUrl == "/login?error"
-        authFilter.successHandler.defaultTargetUrl == "/"
-        SessionFixationProtectionStrategy sessionStrategy = ReflectionTestUtils.getField(authFilter,"sessionStrategy")
-        sessionStrategy.migrateSessionAttributes
-        authFilter.requiresAuthentication(new MockHttpServletRequest(requestURI : "/login", method: "POST"), new MockHttpServletResponse())
-        !authFilter.requiresAuthentication(new MockHttpServletRequest(requestURI : "/login", method: "GET"), new MockHttpServletResponse())
+        when: "load formLogin()"
+            context = new AnnotationConfigApplicationContext(FormLoginConfig)
+        then: "Configured correctly"
+            List<DefaultSecurityFilterChain> filterChains = context.getBean(FilterChainProxy).filterChains
+            filterChains.size() == 2
+            filterChains[0].requestMatcher.pattern == '/resources/**'
+            filterChains[0].filters.empty
+            filterChains[1].requestMatcher instanceof AnyRequestMatcher
+            filterChains[1].filters.collect { it.class.name.contains('$') ? it.class.superclass : it.class } ==
+                    [SecurityContextPersistenceFilter, LogoutFilter, UsernamePasswordAuthenticationFilter,
+                     RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter,
+                     AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, FilterSecurityInterceptor ]
+            UsernamePasswordAuthenticationFilter authFilter = filterChains[1].filters.find { it instanceof UsernamePasswordAuthenticationFilter}
+            authFilter.usernameParameter == "username"
+            authFilter.passwordParameter == "password"
+            authFilter.failureHandler.defaultFailureUrl == "/login?error"
+            authFilter.successHandler.defaultTargetUrl == "/"
+            SessionFixationProtectionStrategy sessionStrategy = ReflectionTestUtils.getField(authFilter,"sessionStrategy")
+            sessionStrategy.migrateSessionAttributes
+            authFilter.requiresAuthentication(new MockHttpServletRequest(requestURI : "/login", method: "POST"), new MockHttpServletResponse())
+            !authFilter.requiresAuthentication(new MockHttpServletRequest(requestURI : "/login", method: "GET"), new MockHttpServletResponse())
 
-        AuthenticationEntryPoint authEntryPoint = filterChains[1].filters.find { it instanceof ExceptionTranslationFilter}.authenticationEntryPoint
-        MockHttpServletResponse response = new MockHttpServletResponse()
-        authEntryPoint.commence(new MockHttpServletRequest(requestURI: "/private/"), response, new BadCredentialsException(""))
-        response.redirectedUrl == "http://localhost/login"
+            AuthenticationEntryPoint authEntryPoint = filterChains[1].filters.find { it instanceof ExceptionTranslationFilter}.authenticationEntryPoint
+            MockHttpServletResponse response = new MockHttpServletResponse()
+            authEntryPoint.commence(new MockHttpServletRequest(requestURI: "/private/"), response, new BadCredentialsException(""))
+            response.redirectedUrl == "http://localhost/login"
     }
 
     @Configuration
@@ -94,20 +94,18 @@ class FormLoginConfiguratorTests extends BaseSpringSpec {
     }
 
     def "FormLogin.permitAll()"() {
-        when:
-        context = new AnnotationConfigApplicationContext(FormLoginConfigPermitAll)
-        then:
-        FilterChainProxy filterChain = context.getBean(FilterChainProxy)
-
-        expect:
-        MockHttpServletResponse response = new MockHttpServletResponse()
-        filterChain.doFilter(new MockHttpServletRequest(servletPath : servletPath, requestURI: servletPath, queryString: query, method: method), response, new MockFilterChain())
-        response.redirectedUrl == redirectUrl
-        where:
-        servletPath | method | query | redirectUrl
-        "/login" | "GET" | null | null
-        "/login" | "POST" | null | "/login?error"
-        "/login" | "GET" | "error" | null
+        when: "load formLogin() with permitAll"
+            context = new AnnotationConfigApplicationContext(FormLoginConfigPermitAll)
+        then: "the formLogin URLs are granted access"
+            FilterChainProxy filterChain = context.getBean(FilterChainProxy)
+            MockHttpServletResponse response = new MockHttpServletResponse()
+            filterChain.doFilter(new MockHttpServletRequest(servletPath : servletPath, requestURI: servletPath, queryString: query, method: method), response, new MockFilterChain())
+            response.redirectedUrl == redirectUrl
+            where:
+            servletPath | method | query | redirectUrl
+            "/login" | "GET" | null | null
+            "/login" | "POST" | null | "/login?error"
+            "/login" | "GET" | "error" | null
     }
 
     @Configuration
