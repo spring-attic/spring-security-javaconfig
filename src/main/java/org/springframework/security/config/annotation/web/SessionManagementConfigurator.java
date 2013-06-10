@@ -17,10 +17,8 @@ package org.springframework.security.config.annotation.web;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
@@ -66,7 +64,7 @@ import org.springframework.util.Assert;
  * @see SessionManagementFilter
  * @see ConcurrentSessionFilter
  */
-public final class SessionManagementConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class SessionManagementConfigurator extends BaseHttpConfigurator {
     private SessionManagementFilter sessionManagementFilter;
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
@@ -190,10 +188,12 @@ public final class SessionManagementConfigurator extends SecurityConfiguratorAda
             throws Exception {
         SecurityContextRepository securityContextRepository = http.getSharedObject(SecurityContextRepository.class);
         sessionManagementFilter = new SessionManagementFilter(securityContextRepository, getSessionAuthenticationStrategy());
+        sessionManagementFilter = registerLifecycle(sessionManagementFilter);
 
         http.addFilter(sessionManagementFilter);
         if(isConcurrentSessionControlEnabled()) {
             ConcurrentSessionFilter concurrentSessionFilter = new ConcurrentSessionFilter(sessionRegistry, expiredUrl);
+            concurrentSessionFilter = registerLifecycle(concurrentSessionFilter);
             http.addFilter(concurrentSessionFilter);
         }
     }
