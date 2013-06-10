@@ -21,8 +21,6 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.security.config.annotation.SecurityConfigurator;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -56,7 +54,7 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
  * @since 3.2
  * @see RememberMeConfigurator
  */
-public final class LogoutConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class LogoutConfigurator extends BaseHttpConfigurator {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";
@@ -207,7 +205,7 @@ public final class LogoutConfigurator extends SecurityConfiguratorAdapter<Defaul
         LogoutHandler[] handlers = logoutHandlers.toArray(new LogoutHandler[logoutHandlers.size()]);
         LogoutFilter result = new LogoutFilter(getLogoutSuccessHandler(), handlers);
         result.setFilterProcessesUrl(logoutUrl);
-        result.afterPropertiesSet();
+        result = registerLifecycle(result);
         return result;
     }
 }
