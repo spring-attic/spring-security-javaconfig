@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,7 +37,6 @@ import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.security.openid.OpenIDConsumer;
 import org.springframework.security.openid.RegexBasedAxFetchListFactory;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -117,7 +115,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public final class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
     private OpenIDAuthenticationFilter openIDAuthenticationFilter = new OpenIDAuthenticationFilter();
     private OpenIDConsumer openIDConsumer;
     private ConsumerManager consumerManager;
@@ -306,7 +304,7 @@ public final class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<D
      */
     public OpenIDLoginConfigurator loginPage(String loginPage) {
         this.loginPage = loginPage;
-        this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
+        this.authenticationEntryPoint = registerLifecycle(new LoginUrlAuthenticationEntryPoint(loginPage));
         this.customLoginPage = true;
         return this;
     }
@@ -365,6 +363,7 @@ public final class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<D
 
         OpenIDAuthenticationProvider authenticationProvider = new OpenIDAuthenticationProvider();
         authenticationProvider.setAuthenticationUserDetailsService(getAuthenticationUserDetailsService(http));
+        authenticationProvider = registerLifecycle(authenticationProvider);
         http.authenticationProvider(authenticationProvider);
     }
 
@@ -385,7 +384,7 @@ public final class OpenIDLoginConfigurator extends SecurityConfiguratorAdapter<D
         if(rememberMeServices != null) {
             openIDAuthenticationFilter.setRememberMeServices(rememberMeServices);
         }
-        openIDAuthenticationFilter.afterPropertiesSet();
+        openIDAuthenticationFilter = registerLifecycle(openIDAuthenticationFilter);
 
         http.addFilter(openIDAuthenticationFilter);
     }
