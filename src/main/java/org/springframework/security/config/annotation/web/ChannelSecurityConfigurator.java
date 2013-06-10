@@ -83,15 +83,21 @@ public final class ChannelSecurityConfigurator extends
     public void configure(HttpConfiguration http) throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(getChannelProcessors(http));
+        channelDecisionManager = registerLifecycle(channelDecisionManager);
+
         channelFilter.setChannelDecisionManager(channelDecisionManager);
 
         DefaultFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource =
                 new DefaultFilterInvocationSecurityMetadataSource(requestMap);
         channelFilter.setSecurityMetadataSource(filterInvocationSecurityMetadataSource);
 
+        channelFilter = registerLifecycle(channelFilter);
         http.addFilter(channelFilter);
     }
 
+    private <T> T registerLifecycle(T object) {
+        return getBuilder().registerLifecycle(object);
+    }
 
     private List<ChannelProcessor> getChannelProcessors(HttpConfiguration http) {
         if(channelProcessors != null) {
@@ -111,6 +117,8 @@ public final class ChannelSecurityConfigurator extends
             httpsEntryPoint.setPortMapper(portMapper);
             secureChannelProcessor.setEntryPoint(httpsEntryPoint);
         }
+        insecureChannelProcessor = registerLifecycle(insecureChannelProcessor);
+        secureChannelProcessor = registerLifecycle(secureChannelProcessor);
         return Arrays.<ChannelProcessor>asList(insecureChannelProcessor, secureChannelProcessor);
     }
 
