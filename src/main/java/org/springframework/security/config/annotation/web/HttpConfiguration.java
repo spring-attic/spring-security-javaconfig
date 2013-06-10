@@ -931,11 +931,11 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * </pre>
      *
      *
-     * @return the {@link ChannelSecurityFilterConfigurator} for further customizations
+     * @return the {@link ChannelSecurityConfigurator} for further customizations
      * @throws Exception
      */
-    public ChannelSecurityFilterConfigurator requiresChannel() throws Exception {
-        return apply(new ChannelSecurityFilterConfigurator());
+    public ChannelSecurityConfigurator requiresChannel() throws Exception {
+        return apply(new ChannelSecurityConfigurator());
     }
 
     /**

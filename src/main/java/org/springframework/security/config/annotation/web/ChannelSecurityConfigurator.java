@@ -36,7 +36,7 @@ import org.springframework.security.web.util.RequestMatcher;
 
 /**
  * Adds channel security (i.e. requires HTTPS or HTTP) to an application. In order for
- * {@link ChannelSecurityFilterConfigurator} to be useful, at least one {@link RequestMatcher} should be mapped to HTTP
+ * {@link ChannelSecurityConfigurator} to be useful, at least one {@link RequestMatcher} should be mapped to HTTP
  * or HTTPS.
  *
  * <p>
@@ -66,8 +66,8 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public final class ChannelSecurityFilterConfigurator extends
-        BaseRequestMatcherRegistry<ChannelSecurityFilterConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
+public final class ChannelSecurityConfigurator extends
+        BaseRequestMatcherRegistry<ChannelSecurityConfigurator.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private List<ChannelProcessor> channelProcessors;
@@ -76,7 +76,7 @@ public final class ChannelSecurityFilterConfigurator extends
      * Creates a new instance
      * @see HttpConfiguration#requiresChannel()
      */
-    ChannelSecurityFilterConfigurator() {
+    ChannelSecurityConfigurator() {
     }
 
     @Override
@@ -115,7 +115,7 @@ public final class ChannelSecurityFilterConfigurator extends
     }
 
 
-    private ChannelSecurityFilterConfigurator addAttribute(String attribute, List<RequestMatcher> matchers) {
+    private ChannelSecurityConfigurator addAttribute(String attribute, List<RequestMatcher> matchers) {
         for(RequestMatcher matcher : matchers) {
             Collection<ConfigAttribute> attrs = Arrays.<ConfigAttribute>asList(new SecurityConfig(attribute));
             requestMap.put(matcher, attrs);
@@ -135,15 +135,15 @@ public final class ChannelSecurityFilterConfigurator extends
             this.requestMatchers = requestMatchers;
         }
 
-        public ChannelSecurityFilterConfigurator requiresSecure() {
+        public ChannelSecurityConfigurator requiresSecure() {
             return requires("REQUIRES_SECURE_CHANNEL");
         }
 
-        public ChannelSecurityFilterConfigurator requiresInsecure() {
+        public ChannelSecurityConfigurator requiresInsecure() {
             return requires("REQUIRES_INSECURE_CHANNEL");
         }
 
-        public ChannelSecurityFilterConfigurator requires(String attribute) {
+        public ChannelSecurityConfigurator requires(String attribute) {
             return addAttribute(attribute, requestMatchers);
         }
     }

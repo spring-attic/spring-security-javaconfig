@@ -41,7 +41,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @param <O> The Object being built by Builder B
  * @param <B> The Builder that is building Object O and is configured by this {@link BaseRequestMatcherRegistry}
  *
- * @see ChannelSecurityFilterConfigurator
+ * @see ChannelSecurityConfigurator
  * @see UrlAuthorizations
  * @see ExpressionUrlAuthorizations
  */
