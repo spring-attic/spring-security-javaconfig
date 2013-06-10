@@ -61,7 +61,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
  * @author Rob Winch
  * @since 3.2
  */
-public final class X509Configurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
+public final class X509Configurator extends BaseHttpConfigurator {
     private X509AuthenticationFilter x509AuthenticationFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService;
     private String subjectPrincipalRegex;
@@ -170,7 +170,7 @@ public final class X509Configurator extends SecurityConfiguratorAdapter<DefaultS
             if(authenticationDetailsSource != null) {
                 x509AuthenticationFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
             }
-            x509AuthenticationFilter.afterPropertiesSet();
+            x509AuthenticationFilter = registerLifecycle(x509AuthenticationFilter);
         }
 
         return x509AuthenticationFilter;
