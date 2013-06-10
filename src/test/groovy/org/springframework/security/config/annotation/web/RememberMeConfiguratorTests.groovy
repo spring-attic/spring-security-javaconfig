@@ -87,4 +87,19 @@ public class RememberMeConfiguratorTests extends BaseSpringSpec {
             noExceptionThrown()
     }
 
+    def "rememberMe LifecycleManager"() {
+        setup:
+            LifecycleManager lifecycleManager = Mock()
+            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
+        when:
+            http
+                .rememberMe()
+                    .userDetailsService(authenticationBldr.getDefaultUserDetailsService())
+                    .and()
+                .build()
+
+        then: "RememberMeAuthenticationFilter is registered with LifecycleManager"
+            1 * lifecycleManager.registerLifecycle(_ as RememberMeAuthenticationFilter) >> {RememberMeAuthenticationFilter o -> o}
+    }
 }

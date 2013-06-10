@@ -18,10 +18,8 @@ package org.springframework.security.config.annotation.web;
 import java.util.UUID;
 
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -69,8 +67,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
  * @author Rob Winch
  * @since 3.2
  */
-public final class RememberMeConfigurator extends
-        SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
+public final class RememberMeConfigurator extends BaseHttpConfigurator {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private String key;
     private RememberMeServices rememberMeServices;
@@ -198,6 +195,7 @@ public final class RememberMeConfigurator extends
 
         RememberMeAuthenticationProvider authenticationProvider = new RememberMeAuthenticationProvider(
                 key);
+        authenticationProvider = registerLifecycle(authenticationProvider);
         http.authenticationProvider(authenticationProvider);
     }
 
@@ -209,6 +207,7 @@ public final class RememberMeConfigurator extends
             rememberMeFilter
                     .setAuthenticationSuccessHandler(authenticationSuccessHandler);
         }
+        rememberMeFilter = registerLifecycle(rememberMeFilter);
         http.addFilter(rememberMeFilter);
     }
 
@@ -225,9 +224,10 @@ public final class RememberMeConfigurator extends
      * @param http the {@link HttpConfiguration} to lookup shared objects
      * @param key the {@link #key(String)}
      * @return the {@link RememberMeServices} to use
+     * @throws Exception
      */
     private RememberMeServices getRememberMeServices(HttpConfiguration http,
-            String key) {
+            String key) throws Exception {
         if (rememberMeServices != null) {
             if (rememberMeServices instanceof LogoutHandler
                     && logoutHandler == null) {
@@ -246,6 +246,7 @@ public final class RememberMeConfigurator extends
         if (useSecureCookie != null) {
             tokenRememberMeServices.setUseSecureCookie(useSecureCookie);
         }
+        tokenRememberMeServices.afterPropertiesSet();
         logoutHandler = tokenRememberMeServices;
         rememberMeServices = tokenRememberMeServices;
         return tokenRememberMeServices;
@@ -260,9 +261,10 @@ public final class RememberMeConfigurator extends
      * @param http the {@link HttpConfiguration} to lookup shared objects
      * @param key the {@link #key(String)}
      * @return the {@link RememberMeServices} to use
+     * @throws Exception
      */
     private AbstractRememberMeServices createRememberMeServices(
-            HttpConfiguration http, String key) {
+            HttpConfiguration http, String key) throws Exception {
         return tokenRepository == null ? createTokenBasedRememberMeServices(
                 http, key) : createPersistentRememberMeServices(http, key);
     }
