@@ -17,10 +17,8 @@ package org.springframework.security.config.annotation.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 
 /**
@@ -45,7 +43,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
  * @author Rob Winch
  * @since 3.2
  */
-public final class ServletApiConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class ServletApiConfigurator extends BaseHttpConfigurator {
     private SecurityContextHolderAwareRequestFilter securityContextRequestFilter = new SecurityContextHolderAwareRequestFilter();
 
     /**
@@ -67,7 +65,7 @@ public final class ServletApiConfigurator extends SecurityConfiguratorAdapter<De
     @Override
     public void configure(HttpConfiguration builder)
             throws Exception {
-        securityContextRequestFilter.afterPropertiesSet();
+        securityContextRequestFilter = registerLifecycle(securityContextRequestFilter);
         builder.addFilter(securityContextRequestFilter);
     }
 }
