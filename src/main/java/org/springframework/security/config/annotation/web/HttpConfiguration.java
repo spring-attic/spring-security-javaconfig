@@ -66,6 +66,7 @@ import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.util.Assert;
 
 /**
  * A {@link HttpConfiguration} is similar to Spring Security's XML <http> element in the namespace
@@ -110,7 +111,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * @see EnableWebSecurity
  */
 public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain> {
-
+    private final LifecycleManager lifecycleManager;
     private AuthenticationManager authenticationManager;
 
     private List<Filter> filters =  new ArrayList<Filter>();
@@ -121,10 +122,14 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
 
     /**
      * Creates a new instance
+     * @param lifecycleManager the {@link LifecycleManager} that should be used
      * @param authenticationBuilder the {@link AuthenticationManagerBuilder} to use for additional updates
      * @see WebSecurityConfiguration
      */
-    HttpConfiguration(AuthenticationManagerBuilder authenticationBuilder) {
+    HttpConfiguration(LifecycleManager lifecycleManager, AuthenticationManagerBuilder authenticationBuilder) {
+        Assert.notNull(lifecycleManager,"lifecycleManager cannot be null");
+        Assert.notNull(authenticationBuilder, "authenticationBuilder cannot be null");
+        this.lifecycleManager = lifecycleManager;
         setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
     }
 
@@ -1035,6 +1040,10 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     public HttpConfiguration userDetailsService(UserDetailsService userDetailsService) throws Exception {
         getAuthenticationRegistry().userDetailsService(userDetailsService);
         return this;
+    }
+
+    final <T> T registerLifecycle(T object) {
+        return lifecycleManager.registerLifecycle(object);
     }
 
     private AuthenticationManagerBuilder getAuthenticationRegistry() {

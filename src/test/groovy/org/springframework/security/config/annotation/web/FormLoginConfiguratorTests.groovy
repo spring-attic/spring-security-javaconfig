@@ -22,21 +22,22 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.access.ExceptionTranslationFilter
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.logout.LogoutFilter
-import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
+import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
-import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.security.web.session.SessionManagementFilter
 import org.springframework.security.web.util.AnyRequestMatcher
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.util.ReflectionTestUtils
 
 /**
  *
@@ -128,6 +129,38 @@ class FormLoginConfiguratorTests extends BaseSpringSpec {
                     .and()
                 .formLogin()
                     .permitAll()
+        }
+    }
+
+    def "formLogin LifecycleManager"() {
+        setup: "initialize the AUTH_FILTER as a mock"
+            LifecycleManager lifecycleManager = Mock(LifecycleManager)
+            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+        when:
+            http
+                .formLogin()
+                    .and()
+                .build()
+
+        then: "UsernamePasswordAuthenticationFilter is registered with LifecycleManager"
+            1 * lifecycleManager.registerLifecycle(_ as UsernamePasswordAuthenticationFilter)
+        and: "LoginUrlAuthenticationEntryPoint is registered with LifecycleManager"
+            1 * lifecycleManager.registerLifecycle(_ as LoginUrlAuthenticationEntryPoint)
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    static class FormLoginAfterPropertiesConfig extends BaseWebConfig {
+        static UsernamePasswordAuthenticationFilter AUTH_FILTER
+        @Override
+        protected void configure(HttpConfiguration http) {
+            http
+                .authorizeUrls()
+                    .anyRequest().hasRole("USER")
+                    .and()
+                .formLogin()
+
+            http.getConfigurator(FormLoginConfigurator).usernamePasswordFilter = AUTH_FILTER
         }
     }
 }

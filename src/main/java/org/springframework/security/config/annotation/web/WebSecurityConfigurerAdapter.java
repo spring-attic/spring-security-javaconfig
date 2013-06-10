@@ -114,7 +114,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         }
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
-        http = new HttpConfiguration(authenticationBuilder);
+        AutowireBeanFactoryLifecycleManager lifecycleManager = new AutowireBeanFactoryLifecycleManager(context.getAutowireCapableBeanFactory());
+        http = new HttpConfiguration(lifecycleManager,authenticationBuilder);
         http.setSharedObject(UserDetailsService.class, userDetailsService());
         if(!disableDefaults) {
             http

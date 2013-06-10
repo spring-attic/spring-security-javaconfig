@@ -18,6 +18,7 @@ package org.springframework.security.config.annotation;
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.FilterChainProxy
 
@@ -31,6 +32,8 @@ import spock.lang.Specification
 abstract class BaseSpringSpec extends Specification {
     @AutoCleanup
     ConfigurableApplicationContext context
+
+    AuthenticationManagerBuilder authenticationBldr = new AuthenticationManagerBuilder().inMemoryAuthentication().and()
 
     def cleanup() {
         SecurityContextHolder.clearContext()

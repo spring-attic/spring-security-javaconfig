@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.OrderComparator;
@@ -54,6 +55,11 @@ public class WebSecurityConfiguration {
     private final WebSecurityBuilder webSecurityBuilder = new WebSecurityBuilder();
 
     private List<SecurityConfigurator<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers;
+
+    @Bean
+    public LifecycleManager lifecycleManager(AutowireCapableBeanFactory beanFactory) {
+        return new AutowireBeanFactoryLifecycleManager(beanFactory);
+    }
 
     @Bean
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {
