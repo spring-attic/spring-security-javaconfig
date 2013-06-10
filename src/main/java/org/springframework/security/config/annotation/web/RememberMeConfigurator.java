@@ -191,9 +191,10 @@ public final class RememberMeConfigurator extends
         String key = getKey();
         RememberMeServices rememberMeServices = getRememberMeServices(http, key);
         http.setSharedObject(RememberMeServices.class, rememberMeServices);
-        LogoutConfigurator logoutConfigurator = http
-                .getConfigurator(LogoutConfigurator.class);
-        logoutConfigurator.addLogoutHandler(logoutHandler);
+        LogoutConfigurator logoutConfigurator = http.getConfigurator(LogoutConfigurator.class);
+        if(logoutConfigurator != null) {
+            logoutConfigurator.addLogoutHandler(logoutHandler);
+        }
 
         RememberMeAuthenticationProvider authenticationProvider = new RememberMeAuthenticationProvider(
                 key);

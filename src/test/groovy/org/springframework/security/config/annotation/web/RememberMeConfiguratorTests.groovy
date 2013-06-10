@@ -70,4 +70,21 @@ public class RememberMeConfiguratorTests extends BaseSpringSpec {
                 .rememberMe()
         }
     }
+
+    def "rememberMe No LogoutConfigurator"() {
+        setup:
+            LifecycleManager lifecycleManager = Mock()
+            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
+        when:
+            http
+                .rememberMe()
+                    .userDetailsService(uds)
+                    .and()
+                .build()
+
+        then:
+            noExceptionThrown()
+    }
+
 }
