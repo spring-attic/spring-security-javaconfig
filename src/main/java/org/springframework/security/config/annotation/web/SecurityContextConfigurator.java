@@ -15,10 +15,8 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 
@@ -57,8 +55,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
  * @author Rob Winch
  * @since 3.2
  */
-public final class SecurityContextConfigurator extends
-        SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
+public final class SecurityContextConfigurator extends BaseHttpConfigurator {
 
     /**
      * Creates a new instance
@@ -90,7 +87,7 @@ public final class SecurityContextConfigurator extends
         if (SessionCreationPolicy.always == sessionCreationPolicy) {
             securityContextFilter.setForceEagerSessionCreation(true);
         }
-        securityContextFilter.afterPropertiesSet();
+        securityContextFilter = registerLifecycle(securityContextFilter);
         http.addFilter(securityContextFilter);
     }
 }
