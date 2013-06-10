@@ -15,8 +15,6 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
@@ -54,7 +52,7 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
  * @since 3.2
  * @see RequestCache
  */
-public final class RequestCacheConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class RequestCacheConfigurator extends BaseHttpConfigurator {
     private RequestCache requestCache;
 
     RequestCacheConfigurator() {
@@ -62,7 +60,9 @@ public final class RequestCacheConfigurator extends SecurityConfiguratorAdapter<
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {
-        RequestCacheAwareFilter requestCacheFilter = new RequestCacheAwareFilter(getRequestCache(http));
+        RequestCache requestCache = getRequestCache(http);
+        RequestCacheAwareFilter requestCacheFilter = new RequestCacheAwareFilter(requestCache);
+        requestCacheFilter = registerLifecycle(requestCacheFilter);
         http.addFilter(requestCacheFilter);
     }
 
