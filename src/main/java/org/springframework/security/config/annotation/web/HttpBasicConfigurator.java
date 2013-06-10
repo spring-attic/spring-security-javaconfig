@@ -19,9 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -55,7 +53,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public final class HttpBasicConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class HttpBasicConfigurator extends BaseHttpConfigurator {
     private static final String DEFAULT_REALM = "Spring Security Application";
 
     private BasicAuthenticationFilter basicAuthenticationFilter;
@@ -121,7 +119,7 @@ public final class HttpBasicConfigurator extends SecurityConfiguratorAdapter<Def
         if(authenticationDetailsSource != null) {
             basicAuthenticationFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
         }
-        basicAuthenticationFilter.afterPropertiesSet();
+        basicAuthenticationFilter = registerLifecycle(basicAuthenticationFilter);
         http.addFilter(basicAuthenticationFilter);
     }
 }
