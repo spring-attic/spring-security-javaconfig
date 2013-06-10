@@ -32,7 +32,7 @@ import org.springframework.security.web.FilterChainProxy
  * @author Rob Winch
  *
  */
-public class DefaultLoginGeneratingConfiguratorTests extends BaseSpringSpec {
+public class DefaultLoginPageConfiguratorTests extends BaseSpringSpec {
     FilterChainProxy springSecurityFilterChain
     MockHttpServletRequest request
     MockHttpServletResponse response
@@ -213,5 +213,21 @@ public class DefaultLoginGeneratingConfiguratorTests extends BaseSpringSpec {
                     .and()
                 .openidLogin()
         }
+    }
+
+    def "DefaultLoginPage LifecycleManager"() {
+        setup:
+            LifecycleManager lifecycleManager = Mock()
+        when:
+            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            http
+                // must set builder manually due to groovy not selecting correct method
+                .apply(new DefaultLoginPageConfigurator([builder:http])).and()
+                .formLogin()
+                    .and()
+                .build()
+
+        then: "DefaultLoginPageGeneratingFilter is registered with LifecycleManager"
+            1 * lifecycleManager.registerLifecycle(_ as DefaultLoginPageGeneratingFilter) >> {DefaultLoginPageGeneratingFilter o -> o}
     }
 }

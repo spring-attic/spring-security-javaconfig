@@ -15,9 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.openid.OpenIDAuthenticationFilter;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 
 /**
  * Adds a Filter that will generate a login page if one is not specified otherwise when using {@link WebSecurityConfigurerAdapter}.
@@ -53,7 +51,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
  * @since 3.2
  */
 final class DefaultLoginPageConfigurator extends
-        SecurityConfiguratorAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+        BaseHttpConfigurator {
 
     private DefaultLoginPageGeneratingFilter loginPageGeneratingFilter = new DefaultLoginPageGeneratingFilter();
     DefaultLoginPageConfigurator(){}
@@ -86,15 +84,12 @@ final class DefaultLoginPageConfigurator extends
             }
             loginPageGeneratingFilter.setOpenIDusernameParameter(OpenIDAuthenticationFilter.DEFAULT_CLAIMED_IDENTITY_FIELD);
         }
-
-        if(loginPageGeneratingFilter.isEnabled()) {
-            loginPageGeneratingFilter.afterPropertiesSet();
-        }
     }
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {
         if(loginPageGeneratingFilter.isEnabled()) {
+            loginPageGeneratingFilter = registerLifecycle(loginPageGeneratingFilter);
             http.addFilter(loginPageGeneratingFilter);
         }
     }
