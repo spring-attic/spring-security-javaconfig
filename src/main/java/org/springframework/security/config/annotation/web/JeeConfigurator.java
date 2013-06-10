@@ -21,11 +21,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.authority.mapping.SimpleMappableAttributesRetriever;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -67,7 +65,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  * @author Rob Winch
  * @since 3.2
  */
-public final class JeeConfigurator extends SecurityConfiguratorAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
+public final class JeeConfigurator extends BaseHttpConfigurator {
     private J2eePreAuthenticatedProcessingFilter j2eePreAuthenticatedProcessingFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService;
     private Set<String> mappableRoles = new HashSet<String>();
@@ -166,6 +164,7 @@ public final class JeeConfigurator extends SecurityConfiguratorAdapter<DefaultSe
     public void init(HttpConfiguration http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getUserDetailsService());
+        authenticationProvider = registerLifecycle(authenticationProvider);
 
         http
             .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
@@ -192,7 +191,7 @@ public final class JeeConfigurator extends SecurityConfiguratorAdapter<DefaultSe
                     .setAuthenticationManager(authenticationManager);
             j2eePreAuthenticatedProcessingFilter
                     .setAuthenticationDetailsSource(createWebAuthenticationDetailsSource());
-            j2eePreAuthenticatedProcessingFilter.afterPropertiesSet();
+            j2eePreAuthenticatedProcessingFilter = registerLifecycle(j2eePreAuthenticatedProcessingFilter);
         }
 
         return j2eePreAuthenticatedProcessingFilter;
@@ -224,6 +223,8 @@ public final class JeeConfigurator extends SecurityConfiguratorAdapter<DefaultSe
         SimpleMappableAttributesRetriever rolesRetriever = new SimpleMappableAttributesRetriever();
         rolesRetriever.setMappableAttributes(mappableRoles);
         detailsSource.setMappableRolesRetriever(rolesRetriever);
+
+        detailsSource = registerLifecycle(detailsSource);
         return detailsSource;
     }
 }
