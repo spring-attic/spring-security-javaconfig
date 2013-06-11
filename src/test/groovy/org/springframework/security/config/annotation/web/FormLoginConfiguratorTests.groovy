@@ -147,20 +147,4 @@ class FormLoginConfiguratorTests extends BaseSpringSpec {
         and: "LoginUrlAuthenticationEntryPoint is registered with LifecycleManager"
             1 * lifecycleManager.registerLifecycle(_ as LoginUrlAuthenticationEntryPoint)
     }
-
-    @Configuration
-    @EnableWebSecurity
-    static class FormLoginAfterPropertiesConfig extends BaseWebConfig {
-        static UsernamePasswordAuthenticationFilter AUTH_FILTER
-        @Override
-        protected void configure(HttpConfiguration http) {
-            http
-                .authorizeUrls()
-                    .anyRequest().hasRole("USER")
-                    .and()
-                .formLogin()
-
-            http.getConfigurator(FormLoginConfigurator).usernamePasswordFilter = AUTH_FILTER
-        }
-    }
 }
