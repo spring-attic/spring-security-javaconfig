@@ -304,7 +304,7 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
      */
     public OpenIDLoginConfigurator loginPage(String loginPage) {
         this.loginPage = loginPage;
-        this.authenticationEntryPoint = registerLifecycle(new LoginUrlAuthenticationEntryPoint(loginPage));
+        this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
         this.customLoginPage = true;
         return this;
     }
@@ -359,6 +359,7 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
+        authenticationEntryPoint = registerLifecycle(authenticationEntryPoint);
         http.authenticationEntryPoint(authenticationEntryPoint);
 
         OpenIDAuthenticationProvider authenticationProvider = new OpenIDAuthenticationProvider();
