@@ -16,9 +16,11 @@
 package org.springframework.security.config.annotation.web;
 
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.config.annotation.web.BaseRequestMatcherRegistry.UrlMapping;
-import org.springframework.security.web.util.AntPathRequestMatcher;
+import org.springframework.security.web.util.RequestMatcher;
 
 
 /**
@@ -30,12 +32,38 @@ final class PermitAllSupport {
 
     public static void permitAll(HttpConfiguration http, String... urls) {
         ExpressionUrlAuthorizations configurator = http.getConfigurator(ExpressionUrlAuthorizations.class);
-        if(configurator != null) {
-            for(String url : urls) {
-                if(url != null) {
-                    configurator.addMapping(0, new UrlMapping(new AntPathRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizations.permitAll)));
-                }
+
+        if(configurator == null) {
+            throw new IllegalStateException("permitAll only works with HttpConfiguration.authorizeUrls()");
+        }
+
+        for(String url : urls) {
+            if(url != null) {
+                configurator.addMapping(0, new UrlMapping(new ExactUrlRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizations.permitAll)));
             }
+        }
+    }
+
+    private static class ExactUrlRequestMatcher implements RequestMatcher {
+        private String processUrl;
+
+        private ExactUrlRequestMatcher(String processUrl) {
+            this.processUrl = processUrl;
+        }
+
+        public boolean matches(HttpServletRequest request) {
+            String uri = request.getRequestURI();
+            String query = request.getQueryString();
+
+            if(query != null) {
+                uri += "?" + query;
+            }
+
+            if ("".equals(request.getContextPath())) {
+                return uri.equals(processUrl);
+            }
+
+            return uri.equals(request.getContextPath() + processUrl);
         }
     }
 }
