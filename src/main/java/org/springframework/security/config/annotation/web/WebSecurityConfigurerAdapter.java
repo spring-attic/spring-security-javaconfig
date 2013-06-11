@@ -52,6 +52,16 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private boolean disableDefaults;
 
     /**
+     * Sets the {@link LifecycleManager} to be used on the {@link AuthenticationManagerBuilder}
+     *
+     * @param lifecycleManager
+     */
+    private void setLifecycleManager(LifecycleManager lifecycleManager) {
+        authenticationBuilder.lifecycleManager(lifecycleManager);
+        parentAuthenticationRegistry.lifecycleManager(lifecycleManager);
+    }
+
+    /**
      * Creates an instance with the default configuration enabled.
      */
     protected WebSecurityConfigurerAdapter() {
@@ -112,9 +122,10 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         if(http != null) {
             return http;
         }
+        AutowireBeanFactoryLifecycleManager lifecycleManager = new AutowireBeanFactoryLifecycleManager(context.getAutowireCapableBeanFactory());
+        setLifecycleManager(lifecycleManager);
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
-        AutowireBeanFactoryLifecycleManager lifecycleManager = new AutowireBeanFactoryLifecycleManager(context.getAutowireCapableBeanFactory());
         http = new HttpConfiguration(lifecycleManager,authenticationBuilder);
         http.setSharedObject(UserDetailsService.class, userDetailsService());
         if(!disableDefaults) {

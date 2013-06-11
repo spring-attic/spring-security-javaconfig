@@ -18,6 +18,7 @@ package org.springframework.security.config.annotation;
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.FilterChainProxy
@@ -58,5 +59,15 @@ abstract class BaseSpringSpec extends Specification {
 
     AuthenticationManager authenticationManager() {
         context.getBean(AuthenticationManager)
+    }
+
+    List<AuthenticationProvider> authenticationProviders() {
+        List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>()
+        AuthenticationManager authenticationManager = authenticationManager().delegateBuilder.getObject()
+        while(authenticationManager?.providers) {
+            providers.addAll(authenticationManager.providers)
+            authenticationManager = authenticationManager.parent
+        }
+        providers
     }
 }

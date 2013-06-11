@@ -26,6 +26,7 @@ import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurator;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurator;
+import org.springframework.security.config.annotation.web.LifecycleManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -41,9 +42,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder>
         implements SecurityBuilder<AuthenticationManager>, AuthenticationRegistry {
 
+    private LifecycleManager lifecycleManager;
+
     private AuthenticationManager parentAuthenticationManager;
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
     private UserDetailsService defaultUserDetailsService;
+
+    /**
+     * Sets the {@link LifecycleManager} to be used on the {@link AuthenticationManagerBuilder}
+     * @param lifecycleManager
+     * @return the {@link AuthenticationManagerBuilder} for further customizations
+     */
+    public AuthenticationManagerBuilder lifecycleManager(LifecycleManager lifecycleManager) {
+        this.lifecycleManager = lifecycleManager;
+        return this;
+    }
 
     /**
      * Allows providing a parent {@link AuthenticationManager} that will be
@@ -137,6 +150,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     @Override
     public AuthenticationRegistry add(
             AuthenticationProvider authenticationProvider) {
+        authenticationProvider = registerLifecycle(authenticationProvider);
         this.authenticationProviders.add(authenticationProvider);
         return this;
     }
@@ -145,6 +159,10 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     protected AuthenticationManager performBuild() throws Exception {
         return new ProviderManager(authenticationProviders,
                 parentAuthenticationManager);
+    }
+
+    private <T> T registerLifecycle(T object) {
+        return lifecycleManager == null ? object : lifecycleManager.registerLifecycle(object);
     }
 
     /**

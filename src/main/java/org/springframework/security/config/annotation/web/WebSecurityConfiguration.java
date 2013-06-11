@@ -52,12 +52,15 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  */
 @Configuration
 public class WebSecurityConfiguration {
+    @Autowired
+    private AutowireCapableBeanFactory beanFactory;
+
     private final WebSecurityBuilder webSecurityBuilder = new WebSecurityBuilder();
 
     private List<SecurityConfigurator<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers;
 
     @Bean
-    public LifecycleManager lifecycleManager(AutowireCapableBeanFactory beanFactory) {
+    public LifecycleManager lifecycleManager() {
         return new AutowireBeanFactoryLifecycleManager(beanFactory);
     }
 
