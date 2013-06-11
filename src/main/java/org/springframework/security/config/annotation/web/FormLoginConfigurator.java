@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -78,7 +79,7 @@ public final class FormLoginConfigurator extends BaseHttpConfigurator {
 
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-    private AuthenticationEntryPoint authenticationEntryPoint;
+    private LoginUrlAuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationFailureHandler failureHandler;
     private boolean permitAll;
     private boolean customLoginPage;
@@ -356,6 +357,11 @@ public final class FormLoginConfigurator extends BaseHttpConfigurator {
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {
+        PortMapper portMapper = http.getSharedObject(PortMapper.class);
+        if(portMapper != null) {
+            authenticationEntryPoint.setPortMapper(portMapper);
+        }
+
         usernamePasswordFilter.setAuthenticationManager(http.authenticationManager());
         usernamePasswordFilter.setAuthenticationSuccessHandler(successHandler);
         usernamePasswordFilter.setAuthenticationFailureHandler(failureHandler);
