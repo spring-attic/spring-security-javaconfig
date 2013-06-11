@@ -15,37 +15,15 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.access.vote.AffirmativeBased
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityExpressions.*
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 
-public class ExpressionUrlAuthorizationsTests extends BaseSpringSpec {
+public class UrlAuthorizationsTests extends BaseSpringSpec {
 
-    def "hasAnyAuthority('ROLE_USER')"() {
-        when:
-            def expression = ExpressionUrlAuthorizations.hasAnyAuthority("ROLE_USER")
-        then:
-            expression == "hasAnyAuthority('ROLE_USER')"
-    }
-
-    def "hasAnyAuthority('ROLE_USER','ROLE_ADMIN')"() {
-        when:
-            def expression = ExpressionUrlAuthorizations.hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
-        then:
-            expression == "hasAnyAuthority('ROLE_USER','ROLE_ADMIN')"
-    }
-
-    def "hasRole('ROLE_USER') is rejected due to starting with ROLE_"() {
-        when:
-            def expression = ExpressionUrlAuthorizations.hasRole("ROLE_USER")
-        then:
-            IllegalArgumentException e = thrown()
-            e.message == "role should not start with 'ROLE_' since it is automatically inserted. Got 'ROLE_USER'"
-    }
-
-    def "authorizeUrls() uses AffirmativeBased AccessDecisionManager"() {
+    def "uses AffirmativeBased AccessDecisionManager"() {
         when: "Load Config with no specific AccessDecisionManager"
             loadConfig(NoSpecificAccessDecessionManagerConfig)
         then: "AccessDecessionManager matches the HttpConfigurationBuilder's default"
@@ -57,7 +35,7 @@ public class ExpressionUrlAuthorizationsTests extends BaseSpringSpec {
     static class NoSpecificAccessDecessionManagerConfig extends WebSecurityConfigurerAdapter {
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .authorizeUrls()
+                .apply(new UrlAuthorizations())
                     .anyRequest().hasRole("USER")
         }
     }

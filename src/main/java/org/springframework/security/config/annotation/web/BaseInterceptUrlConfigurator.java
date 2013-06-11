@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.vote.ConsensusBased;
+import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -128,7 +128,7 @@ abstract class BaseInterceptUrlConfigurator<T> extends
      * @return the default {@code AccessDecisionManager}
      */
     private AccessDecisionManager createDefaultAccessDecisionManager() {
-        return new ConsensusBased(decisionVoters());
+        return new AffirmativeBased(decisionVoters());
     }
 
     /**
