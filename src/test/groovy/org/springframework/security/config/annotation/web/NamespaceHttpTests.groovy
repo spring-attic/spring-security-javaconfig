@@ -261,7 +261,8 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class EntryPointRefConfig extends BaseWebConfig {
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/EntryPointRefConfig"))
+                .exceptionHandling()
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/EntryPointRefConfig"))
         }
     }
 

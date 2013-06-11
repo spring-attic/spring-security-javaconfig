@@ -19,12 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -48,7 +47,16 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
  *
  * <h2>Shared Objects Created</h2>
  *
- * No shared objects are created.
+ * The following shared objects are created
+ *
+ * <ul>
+ * <li>
+ * {@link AuthenticationEntryPoint}
+ * is populated with an {@link Http403ForbiddenEntryPoint}</li>
+ * <li>A {@link PreAuthenticatedAuthenticationProvider} is populated into
+ * {@link HttpConfiguration#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
+ * </li>
+ * </ul>
  *
  * <h2>Shared Objects Used</h2>
  *
@@ -147,8 +155,8 @@ public final class X509Configurator extends BaseHttpConfigurator {
         authenticationProvider.setPreAuthenticatedUserDetailsService(getAuthenticationUserDetailsService(http));
 
         http
-            .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
-                .authenticationProvider(authenticationProvider);
+            .authenticationProvider(authenticationProvider)
+            .setSharedObject(AuthenticationEntryPoint.class,new Http403ForbiddenEntryPoint());
     }
 
     @Override

@@ -117,7 +117,6 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     private List<Filter> filters =  new ArrayList<Filter>();
     private RequestMatcher requestMatcher = new AnyRequestMatcher();
     private FilterComparator comparitor = new FilterComparator();
-    private AuthenticationEntryPoint authenticationEntryPoint = new Http403ForbiddenEntryPoint();
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
     /**
@@ -1313,15 +1312,6 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     // FIXME shared object or explicit?
     public AuthenticationManager authenticationManager() {
         return authenticationManager;
-    }
-
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return authenticationEntryPoint;
-    }
-
-    public HttpConfiguration authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        return this;
     }
 
     /**

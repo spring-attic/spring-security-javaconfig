@@ -116,7 +116,7 @@ public class OAuth2ServerConfigurator
 
         http.userDetailsService(getUserDetailsService());
 
-        http.authenticationEntryPoint(authenticationEntryPoint);
+        http.setSharedObject(AuthenticationEntryPoint.class, authenticationEntryPoint);
 
         clientCredentialsTokenEndpointFilter = new ClientCredentialsTokenEndpointFilter();
         clientCredentialsTokenEndpointFilter.setAuthenticationManager(http

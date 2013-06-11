@@ -15,9 +15,11 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 
@@ -47,12 +49,15 @@ import org.springframework.security.web.savedrequest.RequestCache;
  *     authentication</li>
  *     <li>If no explicit {@link RequestCache}, is provided a {@link RequestCache} shared object is used to replay
  *     the request after authentication is successful</li>
+ *     <li>{@link AuthenticationEntryPoint} - see {@link #authenticationEntryPoint(AuthenticationEntryPoint)} </li>
  * </ul>
  *
  * @author Rob Winch
  * @since 3.2
  */
 public final class ExceptionHandlingConfigurator extends BaseHttpConfigurator {
+
+    private AuthenticationEntryPoint authenticationEntryPoint;
 
     private AccessDeniedHandler accessDeniedHandler;
     private RequestCache requestCache;
@@ -101,14 +106,54 @@ public final class ExceptionHandlingConfigurator extends BaseHttpConfigurator {
         return this;
     }
 
+    /**
+     * Sets the {@link AuthenticationEntryPoint} to be used. Defaults to the
+     * {@link HttpConfiguration#getSharedObject(Class)} value. If that is not
+     * provided defaults to {@link Http403ForbiddenEntryPoint}.
+     *
+     * @param authenticationEntryPoint the {@link AuthenticationEntryPoint} to use
+     * @return the {@link ExceptionHandlingConfigurator} for further customizations
+     */
+    public ExceptionHandlingConfigurator authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        return this;
+    }
+
+    /**
+     * Gets any explicitly configured {@link AuthenticationEntryPoint}
+     * @return
+     */
+    AuthenticationEntryPoint getAuthenticationEntryPoint() {
+        return this.authenticationEntryPoint;
+    }
+
     @Override
     public void configure(HttpConfiguration http) throws Exception {
-        ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(http.authenticationEntryPoint(), getRequestCache(http));
+        AuthenticationEntryPoint entryPoint = getEntryPoint(http);
+        ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(entryPoint, getRequestCache(http));
         if(accessDeniedHandler != null) {
             exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);
         }
         exceptionTranslationFilter = registerLifecycle(exceptionTranslationFilter);
         http.addFilter(exceptionTranslationFilter);
+    }
+
+    /**
+     * Gets the {@link AuthenticationEntryPoint} according to the rules specified by {@link #authenticationEntryPoint(AuthenticationEntryPoint)}
+     * @param http the {@link HttpConfiguration} used to look up shared {@link AuthenticationEntryPoint}
+     * @return the {@link AuthenticationEntryPoint} to use
+     */
+    private AuthenticationEntryPoint getEntryPoint(HttpConfiguration http) {
+        AuthenticationEntryPoint entryPoint = this.authenticationEntryPoint;
+        if(entryPoint == null) {
+            AuthenticationEntryPoint sharedEntryPoint = http.getSharedObject(AuthenticationEntryPoint.class);
+            if(sharedEntryPoint != null) {
+                entryPoint = sharedEntryPoint;
+            } else {
+                entryPoint = new Http403ForbiddenEntryPoint();
+            }
+        }
+        return entryPoint;
     }
 
     /**

@@ -93,7 +93,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  *
  * <ul>
  * <li>
- * {@link HttpConfiguration#authenticationEntryPoint(org.springframework.security.web.AuthenticationEntryPoint)}
+ * {@link AuthenticationEntryPoint}
  * is populated with a {@link LoginUrlAuthenticationEntryPoint}</li>
  * <li>A {@link OpenIDAuthenticationProvider} is populated into
  * {@link HttpConfiguration#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
@@ -360,7 +360,7 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
         authenticationEntryPoint = registerLifecycle(authenticationEntryPoint);
-        http.authenticationEntryPoint(authenticationEntryPoint);
+        http.setSharedObject(AuthenticationEntryPoint.class,authenticationEntryPoint);
 
         OpenIDAuthenticationProvider authenticationProvider = new OpenIDAuthenticationProvider();
         authenticationProvider.setAuthenticationUserDetailsService(getAuthenticationUserDetailsService(http));

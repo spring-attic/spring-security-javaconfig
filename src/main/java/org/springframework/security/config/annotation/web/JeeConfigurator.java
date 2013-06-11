@@ -24,6 +24,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.authority.mapping.SimpleMappableAttributesRetriever;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -47,7 +48,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  *
  * <ul>
  * <li>
- * {@link HttpConfiguration#authenticationEntryPoint(org.springframework.security.web.AuthenticationEntryPoint)}
+ * {@link AuthenticationEntryPoint}
  * is populated with an {@link Http403ForbiddenEntryPoint}</li>
  * <li>A {@link PreAuthenticatedAuthenticationProvider} is populated into
  * {@link HttpConfiguration#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
@@ -167,8 +168,8 @@ public final class JeeConfigurator extends BaseHttpConfigurator {
         authenticationProvider = registerLifecycle(authenticationProvider);
 
         http
-            .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
-            .authenticationProvider(authenticationProvider);
+            .authenticationProvider(authenticationProvider)
+            .setSharedObject(AuthenticationEntryPoint.class,new Http403ForbiddenEntryPoint());
     }
 
     @Override

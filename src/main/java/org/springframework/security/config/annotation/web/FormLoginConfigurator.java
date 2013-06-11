@@ -51,9 +51,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * The following shared objects are populated
  *
  * <ul>
- * <li>
- * <li>{@link HttpConfiguration#authenticationEntryPoint(AuthenticationEntryPoint)}</li>
- * </li>
+ * <li> {@link AuthenticationEntryPoint} </li>
  * </ul>
  *
  * <h2>Shared Objects Used</h2>
@@ -352,7 +350,7 @@ public final class FormLoginConfigurator extends BaseHttpConfigurator {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
-        http.authenticationEntryPoint(registerLifecycle(authenticationEntryPoint));
+        http.setSharedObject(AuthenticationEntryPoint.class,registerLifecycle(authenticationEntryPoint));
     }
 
     @Override
