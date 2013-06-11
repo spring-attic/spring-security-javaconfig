@@ -29,7 +29,6 @@ import org.springframework.security.web.access.intercept.DefaultFilterInvocation
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 
 /**
@@ -135,8 +134,11 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAut
      *            it is automatically prepended already.
      * @return the {@link ConfigAttribute} expressed as a String
      */
-    private static String hasAnyRole(String... roles) {
-        return "'ROLE_" + StringUtils.arrayToDelimitedString(roles, "','ROLE_") + "'";
+    private static String[] hasAnyRole(String... roles) {
+        for(int i=0;i<roles.length;i++) {
+            roles[i] = "ROLE_" + roles[i];
+        }
+        return roles;
     }
 
     /**
@@ -144,9 +146,8 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAut
      * @param authorities the authorities that the user should have at least one of (i.e. ROLE_USER, ROLE_ADMIN, etc).
      * @return the {@link ConfigAttribute} expressed as a String.
      */
-    private static String hasAnyAuthority(String... authorities) {
-        String anyAuthorities = StringUtils.arrayToDelimitedString(authorities, "','");
-        return "'" + anyAuthorities + "'";
+    private static String[] hasAnyAuthority(String... authorities) {
+        return authorities;
     }
 
     /**
@@ -190,8 +191,8 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAut
          *            it is automatically prepended already.
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations hasAnyRole(String role) {
-            return access(UrlAuthorizations.hasAnyRole(role));
+        public UrlAuthorizations hasAnyRole(String... roles) {
+            return access(UrlAuthorizations.hasAnyRole(roles));
         }
 
         /**

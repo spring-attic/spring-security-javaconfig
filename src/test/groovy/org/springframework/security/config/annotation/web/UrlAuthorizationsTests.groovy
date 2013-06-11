@@ -21,7 +21,40 @@ import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityExpressions.*
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 
+/**
+ *
+ * @author Rob Winch
+ *
+ */
 public class UrlAuthorizationsTests extends BaseSpringSpec {
+
+    def "hasAnyAuthority('ROLE_USER')"() {
+        when:
+            def expression = UrlAuthorizations.hasAnyAuthority("ROLE_USER")
+        then:
+            expression == ["ROLE_USER"]
+    }
+
+    def "hasAnyAuthority('ROLE_USER','ROLE_ADMIN')"() {
+        when:
+            def expression =  UrlAuthorizations.hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
+        then:
+            expression == ["ROLE_USER","ROLE_ADMIN"]
+    }
+
+    def "hasAnyRole('USER')"() {
+        when:
+            def expression = UrlAuthorizations.hasAnyRole("USER")
+        then:
+            expression == ["ROLE_USER"]
+    }
+
+    def "hasAnyRole('ROLE_USER','ROLE_ADMIN')"() {
+        when:
+            def expression =  UrlAuthorizations.hasAnyRole("USER","ADMIN")
+        then:
+            expression == ["ROLE_USER","ROLE_ADMIN"]
+    }
 
     def "uses AffirmativeBased AccessDecisionManager"() {
         when: "Load Config with no specific AccessDecisionManager"
