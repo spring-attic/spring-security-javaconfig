@@ -25,6 +25,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.web.FilterChainProxy
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 
 /**
  * Tests to verify that {@link DefaultLoginPageConfigurator} works
@@ -212,6 +213,28 @@ public class DefaultLoginPageConfiguratorTests extends BaseSpringSpec {
                 .formLogin()
                     .and()
                 .openidLogin()
+        }
+    }
+
+    def "default login with custom AuthenticationEntryPoint"() {
+        when:
+            loadConfig(DefaultLoginWithCustomAuthenticationEntryPointConfig)
+        then:
+            !findFilter(DefaultLoginPageGeneratingFilter)
+    }
+
+    @Configuration
+    static class DefaultLoginWithCustomAuthenticationEntryPointConfig extends BaseWebConfig {
+        @Override
+        protected void configure(HttpConfiguration http) {
+            http
+                .exceptionHandling()
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                    .and()
+                .authorizeUrls()
+                    .anyRequest().hasRole("USER")
+                    .and()
+                .formLogin()
         }
     }
 

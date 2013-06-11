@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation.web;
 
 import org.springframework.security.openid.OpenIDAuthenticationFilter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
 /**
  * Adds a Filter that will generate a login page if one is not specified otherwise when using {@link WebSecurityConfigurerAdapter}.
@@ -88,7 +89,13 @@ final class DefaultLoginPageConfigurator extends
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {
-        if(loginPageGeneratingFilter.isEnabled()) {
+        AuthenticationEntryPoint authenticationEntryPoint = null;
+        ExceptionHandlingConfigurator exceptionConf = http.getConfigurator(ExceptionHandlingConfigurator.class);
+        if(exceptionConf != null) {
+            authenticationEntryPoint = exceptionConf.getAuthenticationEntryPoint();
+        }
+
+        if(loginPageGeneratingFilter.isEnabled() && authenticationEntryPoint == null) {
             loginPageGeneratingFilter = registerLifecycle(loginPageGeneratingFilter);
             http.addFilter(loginPageGeneratingFilter);
         }
