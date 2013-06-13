@@ -63,8 +63,9 @@ public final class HttpBasicConfigurator extends BaseHttpConfigurator {
     /**
      * Creates a new instance
      * @throws Exception
+     * @see {@link HttpConfiguration#httpBasic()}
      */
-    public HttpBasicConfigurator() throws Exception {
+    HttpBasicConfigurator() throws Exception {
         realmName(DEFAULT_REALM);
     }
 
@@ -86,7 +87,7 @@ public final class HttpBasicConfigurator extends BaseHttpConfigurator {
     }
 
     /**
-     * The {@link AuthenticationEntryPoint} to be ppulated on
+     * The {@link AuthenticationEntryPoint} to be po	pulated on
      * {@link BasicAuthenticationFilter} in the event that authentication fails.
      * The default to use {@link BasicAuthenticationEntryPoint} with the realm
      * "Spring Security Application".

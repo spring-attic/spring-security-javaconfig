@@ -15,11 +15,10 @@
  */
 package org.springframework.security.config.annotation.web
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
-import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder
+import org.springframework.security.config.annotation.SecurityConfigurator
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter
+import org.springframework.test.util.ReflectionTestUtils
 
 import spock.lang.Specification
 
@@ -39,11 +38,34 @@ class AbstractConfiguredBuilderTests extends Specification {
             ReflectionTestUtils.getField(builder,"configurators").size() == 1
     }
 
+
+    def "Configurator.init can apply another configurator"() {
+        setup:
+            DelegateConfigurator.CONF = Mock(SecurityConfiguratorAdapter)
+        when:
+            builder.apply(new DelegateConfigurator())
+            builder.build()
+        then:
+            1 * DelegateConfigurator.CONF.init(builder)
+            1 * DelegateConfigurator.CONF.configure(builder)
+    }
+
+    private static class DelegateConfigurator extends SecurityConfiguratorAdapter<Object, ConcreteAbstractConfiguredBuilder> {
+        private static SecurityConfigurator<Object, ConcreteAbstractConfiguredBuilder> CONF;
+
+        @Override
+        public void init(ConcreteAbstractConfiguredBuilder builder)
+                throws Exception {
+            builder.apply(CONF);
+        }
+    }
+
+    private static class ConcreteConfigurator extends SecurityConfiguratorAdapter<Object, ConcreteAbstractConfiguredBuilder> { }
+
     private static class ConcreteAbstractConfiguredBuilder extends AbstractConfiguredSecurityBuilder<Object, ConcreteAbstractConfiguredBuilder> {
         public Object performBuild() throws Exception {
             return "success";
         }
     }
 
-    private static class ConcreteConfigurator extends SecurityConfiguratorAdapter<Object, ConcreteAbstractConfiguredBuilder> { }
 }

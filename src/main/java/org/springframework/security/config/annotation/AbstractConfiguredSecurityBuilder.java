@@ -15,6 +15,7 @@
  */
 package org.springframework.security.config.annotation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
@@ -49,6 +50,8 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     private final LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>> configurators =
             new LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>>();
 
+    private BuildState buildState = BuildState.UNBUILT;
+
     /**
      * Applies a {@link SecurityConfiguratorAdapter} to this
      * {@link SecurityBuilder} and invokes
@@ -61,11 +64,9 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     @SuppressWarnings("unchecked")
     public <C extends SecurityConfiguratorAdapter<T, B>> C apply(C configurer)
             throws Exception {
-        if(isBuildingOrBuilt()) {
-            throw new IllegalStateException("Cannot apply "+configurer+" to already built object");
-        }
+        add(configurer);
         configurer.setBuilder((B) this);
-        return (C) apply((SecurityConfigurator<T, B>)configurer);
+        return configurer;
     }
 
     /**
@@ -77,16 +78,33 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     public <C extends SecurityConfigurator<T, B>> C apply(C configurer)
             throws Exception {
-        if(isBuildingOrBuilt()) {
-            throw new IllegalStateException("Cannot apply "+configurer+" to already built object");
-        }
+        add(configurer);
+        return configurer;
+    }
+
+    /**
+     * Adds {@link SecurityConfigurator} ensuring that it is allowed and
+     * invoking {@link SecurityConfigurator#init(SecurityBuilder)} immediately
+     * if necessary.
+     *
+     * @param configurer the {@link SecurityConfigurator} to add
+     * @throws Exception if an error occurs
+     */
+    @SuppressWarnings("unchecked")
+    private <C extends SecurityConfigurator<T, B>> void add(C configurer) throws Exception {
         Class<? extends SecurityConfigurator<T, B>> clazz = (Class<? extends SecurityConfigurator<T, B>>) configurer
                 .getClass();
-        this.configurators.put(clazz, configurer);
-        return configurer;
+        synchronized(configurators) {
+            if(buildState.isConfigured()) {
+                throw new IllegalStateException("Cannot apply "+configurer+" to already built object");
+            }
+            this.configurators.put(clazz, configurer);
+            if(buildState.isInitializing()) {
+                configurer.init((B)this);
+            }
+        }
     }
 
     /**
@@ -128,15 +146,25 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      */
     @Override
     protected final T doBuild() throws Exception {
-        beforeInit();
+        synchronized(configurators) {
+            buildState = BuildState.INITIALIZING;
 
-        init();
+            beforeInit();
+            init();
 
-        beforeConfigure();
+            buildState = BuildState.CONFIGURING;
 
-        configure();
+            beforeConfigure();
+            configure();
 
-        return performBuild();
+            buildState = BuildState.BUILDING;
+
+            T result = performBuild();
+
+            buildState = BuildState.BUILT;
+
+            return result;
+        }
     }
 
     /**
@@ -183,6 +211,28 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     }
 
     private Collection<SecurityConfigurator<T, B>> getConfigurators() {
-        return this.configurators.values();
+        return new ArrayList<SecurityConfigurator<T,B>>(this.configurators.values());
+    }
+
+    private static enum BuildState {
+        UNBUILT(0), INITIALIZING(1), CONFIGURING(2), BUILDING(3), BUILT(4);
+
+        private final int order;
+
+        BuildState(int order) {
+            this.order = order;
+        }
+
+        public boolean isInitializing() {
+            return INITIALIZING.order == order;
+        }
+
+        /**
+         * Determines if the state is CONFIGURING or later
+         * @return
+         */
+        public boolean isConfigured() {
+            return order >= CONFIGURING.order;
+        }
     }
 }

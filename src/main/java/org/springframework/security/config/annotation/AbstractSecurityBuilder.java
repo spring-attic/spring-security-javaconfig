@@ -48,7 +48,11 @@ public abstract class AbstractSecurityBuilder<T> implements SecurityBuilder<T> {
         return object;
     }
 
-    final boolean isBuildingOrBuilt() {
+    /**
+     * Determines if invoking {@link #build()} is allowed
+     * @return
+     */
+    private final boolean isBuildAllowed() {
         return building.get();
     }
 
