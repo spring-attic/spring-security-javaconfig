@@ -15,17 +15,45 @@
  */
 package org.springframework.security.config.annotation.web
 
+import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
-import org.springframework.security.web.session.ConcurrentSessionFilter;
-import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter
+import org.springframework.security.web.savedrequest.RequestCache
+import org.springframework.security.web.session.ConcurrentSessionFilter
+import org.springframework.security.web.session.SessionManagementFilter
 
 /**
  *
  * @author Rob Winch
  */
 class SessionManagementConfiguratorTests extends BaseSpringSpec {
+
+    def "sessionManagement does not override ExceptionHandlingConfiurator.requestCache"() {
+        setup:
+            SessionManagementDoesNotOverrideExplicitRequestCacheConfig.REQUEST_CACHE = Mock(RequestCache)
+        when:
+            loadConfig(SessionManagementDoesNotOverrideExplicitRequestCacheConfig)
+        then:
+            findFilter(ExceptionTranslationFilter).requestCache == SessionManagementDoesNotOverrideExplicitRequestCacheConfig.REQUEST_CACHE
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class SessionManagementDoesNotOverrideExplicitRequestCacheConfig extends WebSecurityConfigurerAdapter {
+        static RequestCache REQUEST_CACHE
+
+        @Override
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .exceptionHandling()
+                    .requestCache(REQUEST_CACHE)
+                    .and()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.stateless)
+        }
+
+    }
 
     def "sessionManagement LifecycleManager"() {
         setup:
