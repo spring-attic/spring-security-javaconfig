@@ -32,6 +32,67 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  *
  */
 public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpec {
+    def "README HelloWorld Sample works"() {
+        setup: "Sample Config is loaded"
+            loadConfig(HelloWorldWebSecurityConfigurerAdapter)
+        when:
+            springSecurityFilterChain.doFilter(request,response,chain)
+        then:
+            response.getRedirectedUrl() == "http://localhost/login"
+        when: "fail to log in"
+            super.setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            springSecurityFilterChain.doFilter(request,response,chain)
+        then: "sent to login error page"
+            response.getRedirectedUrl() == "/login?error"
+        when: "login success"
+            super.setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            request.parameters.username = ["user"] as String[]
+            request.parameters.password = ["password"] as String[]
+            springSecurityFilterChain.doFilter(request,response,chain)
+        then: "sent to default succes page"
+            response.getRedirectedUrl() == "/"
+    }
+
+    /**
+     * <code>
+     *   <http use-expressions="true">
+     *     <intercept-url pattern="/resources/**" access="permitAll"/>
+     *     <intercept-url pattern="/**" access="authenticated"/>
+     *     <logout
+     *         logout-success-url="/login?logout"
+     *         logout-url="/logout"
+     *     <form-login
+     *         authentication-failure-url="/login?error"
+     *         login-page="/login" <!-- Except Spring Security renders the login page -->
+     *         login-processing-url="/login" <!-- but only POST -->
+     *         password-parameter="password"
+     *         username-parameter="username"
+     *     />
+     *   </http>
+     *   <authentication-manager>
+     *     <authentication-provider>
+     *       <user-service>
+     *         <user username="user" password="password" authorities="ROLE_USER"/>
+     *       </user-service>
+     *     </authentication-provider>
+     *   </authentication-manager>
+     * </code>
+     * @author Rob Winch
+     */
+    @EnableWebSecurity
+    public static class HelloWorldWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+        @Override
+        protected void registerAuthentication(AuthenticationRegistry registry) {
+            registry
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER");
+        }
+    }
+
     def "README Sample works"() {
         setup: "Sample Config is loaded"
             loadConfig(SampleWebSecurityConfigurerAdapter)

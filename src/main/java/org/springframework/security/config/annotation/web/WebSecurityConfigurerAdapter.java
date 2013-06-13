@@ -244,11 +244,35 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     }
 
     /**
-     * Override this method to configure the {@link HttpConfiguration}
+     * Override this method to configure the {@link HttpConfiguration}.
+     * Typically subclasses should not invoke this method by calling super
+     * as it may override their configuration. The default configuration is:
+     *
+     * <pre>
+     * http
+     *     .authorizeUrls()
+     *         .antMatchers(&quot;/resources/**&quot;).permitAll()
+     *         .anyRequest().authenticated().and()
+     *     .formLogin().and()
+     *     .httpBasic();
+     * </pre>
+     *
      * @param http
+     *            the {@link HttpConfiguration} to modify
      * @throws Exception
+     *             if an error occurs
      */
-    protected abstract void configure(HttpConfiguration http) throws Exception;
+    protected void configure(HttpConfiguration http) throws Exception {
+        logger.debug("Using default configure(HttpConfiguration). If subclassed this will potentially override subclass configure(HttpConfiguration).");
+
+        http
+            .authorizeUrls()
+                .antMatchers("/resources/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .formLogin().and()
+            .httpBasic();
+    }
 
     /**
      * Delays the use of the {@link AuthenticationManager} build from the

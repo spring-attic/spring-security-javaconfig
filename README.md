@@ -40,6 +40,47 @@ Getting Started
 
 Below are a few things you can do to get up and running quickly.
 
+Hello World Web Configuration
+----------------------
+
+See [SampleWebSecurityConfigurerAdapterTests.groovy](src/test/groovy/org/springframework/security/config/annotation/web/SampleWebSecurityConfigurerAdapterTests.groovy)
+
+The following configuration
+
+    @EnableWebSecurity
+    public class HelloWorldWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void registerAuthentication(AuthenticationRegistry registry) {
+            registry
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER");
+        }
+    }
+
+is similar to the following XML configuration:
+
+    <http use-expressions="true">
+      <intercept-url pattern="/resources/**" access="permitAll"/>
+      <intercept-url pattern="/**" access="authenticated"/>
+      <logout
+          logout-success-url="/login?logout"
+          logout-url="/logout"
+      <form-login
+          authentication-failure-url="/login?error"
+          login-page="/login" <!-- Except Spring Security renders the login page -->
+          login-processing-url="/login" <!-- but only POST -->
+          password-parameter="password"
+          username-parameter="username"
+      />
+    </http>
+    <authentication-manager>
+      <authentication-provider>
+          <user username="user" password="password" authorities="ROLE_USER"/>
+        </user-service>
+      </authentication-provider>
+    </authentication-manager>
+
 Sample Web Configuration
 ----------------------
 
@@ -66,6 +107,7 @@ The following configuration
                     .anyRequest().hasRole("USER")
                     .and()
                 .formLogin()
+                    // You must render the login page now
                     .loginUrl("/login")
                     // set permitAll for all URLs associated with Form Login
                     .permitAll();
