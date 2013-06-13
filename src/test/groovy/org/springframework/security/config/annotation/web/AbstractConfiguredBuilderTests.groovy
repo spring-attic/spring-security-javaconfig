@@ -33,10 +33,10 @@ class AbstractConfiguredBuilderTests extends Specification {
 
     def "Duplicate configurator is removed"() {
         when:
-        builder.apply(new ConcreteConfigurator())
-        builder.apply(new ConcreteConfigurator())
+            builder.apply(new ConcreteConfigurator())
+            builder.apply(new ConcreteConfigurator())
         then:
-        ReflectionTestUtils.getField(builder,"configurators").size() == 1
+            ReflectionTestUtils.getField(builder,"configurators").size() == 1
     }
 
     private static class ConcreteAbstractConfiguredBuilder extends AbstractConfiguredSecurityBuilder<Object, ConcreteAbstractConfiguredBuilder> {
