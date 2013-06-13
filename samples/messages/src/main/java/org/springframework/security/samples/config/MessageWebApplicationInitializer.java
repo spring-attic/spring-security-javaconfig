@@ -2,13 +2,13 @@ package org.springframework.security.samples.config;
 
 import javax.servlet.Filter;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.security.samples.mvc.config.WebMvcConfiguration;
-import org.springframework.web.filter.DelegatingFilterProxy;
-import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 
+@Order(1)
 public class MessageWebApplicationInitializer extends
         AbstractAnnotationConfigDispatcherServletInitializer {
 
@@ -27,18 +27,8 @@ public class MessageWebApplicationInitializer extends
         return new String[] { "/" };
     }
 
-    /**
-     * NOTE: It is important to note that these Filter's are only invoked on the
-     * {@link DispatcherServlet}. This means any resources not served by the
-     * {@link DispatcherServlet} will not be protected. If you want to protect
-     * all URLs instead, you can override
-     * {@link #onStartup(javax.servlet.ServletContext)} and add the
-     * {@link DelegatingFilterProxy} there.
-     */
     @Override
     protected Filter[] getServletFilters() {
-        DelegatingFilterProxy filterChainProxy = new DelegatingFilterProxy();
-        filterChainProxy.setTargetBeanName("springSecurityFilterChain");
-        return new Filter[] { filterChainProxy, new SiteMeshFilter() };
+        return new Filter[] { new SiteMeshFilter() };
     }
 }
