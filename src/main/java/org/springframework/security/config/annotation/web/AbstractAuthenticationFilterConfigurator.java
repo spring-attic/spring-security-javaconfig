@@ -192,8 +192,9 @@ abstract class AbstractAuthenticationFilterConfigurator<T extends AbstractAuthen
      * @return the {@link FormLoginConfigurator} for additional customization
      */
     public T failureUrl(String failureUrl) {
+        T result = failureHandler(new SimpleUrlAuthenticationFailureHandler(failureUrl));
         this.failureUrl = failureUrl;
-        return failureHandler(new SimpleUrlAuthenticationFailureHandler(failureUrl));
+        return result;
     }
 
     /**
@@ -207,6 +208,7 @@ abstract class AbstractAuthenticationFilterConfigurator<T extends AbstractAuthen
      * @return the {@link FormLoginConfigurator} for additional customization
      */
     public T failureHandler(AuthenticationFailureHandler failureHandler) {
+        this.failureUrl = null;
         this.failureHandler = failureHandler;
         return getSelf();
     }

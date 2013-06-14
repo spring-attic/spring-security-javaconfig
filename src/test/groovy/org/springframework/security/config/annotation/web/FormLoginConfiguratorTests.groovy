@@ -16,7 +16,6 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
-import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
@@ -29,6 +28,8 @@ import org.springframework.security.web.PortMapper
 import org.springframework.security.web.access.ExceptionTranslationFilter
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.logout.LogoutFilter
@@ -157,6 +158,35 @@ class FormLoginConfiguratorTests extends BaseSpringSpec {
                     .and()
                 .portMapper()
                     .portMapper(PORT_MAPPER)
+        }
+    }
+
+    def "FormLogin permitAll ignores failureUrl when failureHandler set"() {
+        setup:
+            PermitAllIgnoresFailureHandlerConfig.FAILURE_HANDLER = Mock(AuthenticationFailureHandler)
+            loadConfig(PermitAllIgnoresFailureHandlerConfig)
+            FilterChainProxy springSecurityFilterChain = context.getBean(FilterChainProxy)
+        when: "access default failureUrl and configured explicit FailureHandler"
+            MockHttpServletRequest request = new MockHttpServletRequest(requestURI:"/login",queryString:"error")
+            MockHttpServletResponse response = new MockHttpServletResponse()
+            springSecurityFilterChain.doFilter(request,response,new MockFilterChain())
+        then: "access is not granted to the failure handler (sent to login page)"
+            response.status == 302
+    }
+
+    @EnableWebSecurity
+    static class PermitAllIgnoresFailureHandlerConfig extends BaseWebConfig {
+        static AuthenticationFailureHandler FAILURE_HANDLER
+
+        @Override
+        protected void configure(HttpConfiguration http) {
+            http
+                .authorizeUrls()
+                    .anyRequest().hasRole("USER")
+                    .and()
+                .formLogin()
+                    .failureHandler(FAILURE_HANDLER)
+                    .permitAll()
         }
     }
 
