@@ -6,11 +6,18 @@ to be able to iterate quickly. Additionally, this will allow users of Spring Sec
 Java Configuration earlier and give more feedback. Eventually (targeting spring-security-config-3.2.0.RELEASE)
 we will merge this code in with spring-security-config.
 
-Building with Maven
+Quick Start - Hello Spring Security
 ==============
 
-The project is available in the [Spring Snapshot Repository](https://github.com/SpringSource/spring-framework/wiki/SpringSource-repository-FAQ).
-In short ensure you have the following repository in your pom.xml:
+Below are the steps to get your application up and running quickly with Spring Security's Java Configuration. You can find this complete example in [samples/helloworld](samples/helloworld).
+
+Building with Maven
+-------------
+
+You will need to ensure you have added the dependencies. The project is available in the [Spring Snapshot Repository](https://github.com/SpringSource/spring-framework/wiki/SpringSource-repository-FAQ).
+In short, if you are using Maven ensure you have the following repository in your pom.xml:
+
+```xml
 
     <repository>
         <id>spring-libs-snapshot</id>
@@ -23,8 +30,11 @@ In short ensure you have the following repository in your pom.xml:
             <enabled>true</enabled>
         </snapshots>
     </repository>
+```
 
 You will then need to include the Spring Security Java Configuration jar.
+
+```xml
 
     <dependencies>
         <dependency>
@@ -33,22 +43,23 @@ You will then need to include the Spring Security Java Configuration jar.
             <version>1.0.0.CI-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
-
-Getting Started
-======================
-
-Below are a few things you can do to get up and running quickly.
+```
 
 Hello World Web Configuration
 ----------------------
 
-See [SampleWebSecurityConfigurerAdapterTests.groovy](src/test/groovy/org/springframework/security/config/annotation/web/SampleWebSecurityConfigurerAdapterTests.groovy)
+See [samples/helloworld/.../SecurityConfig.java](samples/helloworld/src/main/java/org/springframework/security/samples/config/SecurityConfig.java)
 
-The following configuration
+Create a `WebSecurityConfigurerAdapter` that is annotated with `@EnableWebSecurity`. You can find the simplest example below which does the following:
 
+* Secures all URLs to require the user to be authenticated
+* Creates a user with the username "user", password "password", and role of "ROLE_USER"
+* Enables HTTP Basic and Form based authentication
+* Spring Security will automatically render a login page for you
+
+```java
     @EnableWebSecurity
-    public class HelloWorldWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void registerAuthentication(AuthenticationRegistry registry) {
@@ -57,9 +68,11 @@ The following configuration
                     .withUser("user").password("password").roles("USER");
         }
     }
+```
 
-is similar to the following XML configuration:
+For reference, the JavaConfig above is similar to the following XML:
 
+```xml
     <http use-expressions="true">
       <intercept-url pattern="/resources/**" access="permitAll"/>
       <intercept-url pattern="/**" access="authenticated"/>
@@ -80,14 +93,71 @@ is similar to the following XML configuration:
         </user-service>
       </authentication-provider>
     </authentication-manager>
+```
 
-Sample Web Configuration
+Sample WebApplicationInitializer's
+----------------------
+
+While using a web.xml is permissible, most users wanting to leverage Spring Security will want to use Java Configuration instead of a web.xml. If you wish to continue to use a web.xml use the same configuration for springSecurityFilterChain.
+
+The first step is to ensure that you have initialized the ContextLoaderListener. Below is an example of how this is done when using Spring's WebApplicationInitializer interface. A complete example can be
+in [MessageWebApplicationInitializer.java](samples/messages/src/main/java/org/springframework/security/samples/config/MessageWebApplicationInitializer.java) within the samples.
+
+```java
+    @Order(1)
+    public class MessageWebApplicationInitializer extends
+            AbstractAnnotationConfigDispatcherServletInitializer {
+
+        @Override
+        protected Class<?>[] getRootConfigClasses() {
+            return new Class[] { RootConfiguration.class };
+        }
+
+        @Override
+        protected Class<?>[] getServletConfigClasses() {
+            return new Class[] { WebMvcConfiguration.class };
+        }
+
+        @Override
+        protected String[] getServletMappings() {
+            return new String[] { "/" };
+        }
+
+        @Override
+        protected Filter[] getServletFilters() {
+            return new Filter[] { new SiteMeshFilter() };
+        }
+    }
+```
+
+A few important points:
+
+* The getRootConfigClasses is what initializes the ContextLoaderListener and should somehow include the Spring Security configuration. In our sample, RootConfiguration performs `@ComponentScan` that picks up our `@SecurityConfig`
+* We add the @Order annotation to ensure that this WebApplicationInitializer happens first. This ensures that our SitemeshFilter is added AFTER our springSecurityFilterChain.
+* SitemeshFilter is not required, but happens to be used in this application. If you do not use it do not worry about it
+* WebMvcConfiguration is the Spring Web MVC configuration, if you are not using Spring Web MVC, consider using [AbstractContextLoaderInitializer](http://static.springsource.org/spring/docs/3.2.x/javadoc-api/org/springframework/web/context/AbstractContextLoaderInitializer.html)
+
+Last you will want to add the springSecurityFilterChain. This can be done in many ways, but the easiest is to extend AbstractSecurityWebApplicationInitializer. In many instances, the following is all you will need to do:
+
+```java
+    public class MessageSecurityWebApplicationInitializer extends
+            AbstractSecurityWebApplicationInitializer {
+    }
+```
+
+Samples
+======================
+
+Below are a few additional samples to get you up and running quickly
+
+Sample Web Security Spring Java Config
 ----------------------
 
 See [SampleWebSecurityConfigurerAdapterTests.groovy](src/test/groovy/org/springframework/security/config/annotation/web/SampleWebSecurityConfigurerAdapterTests.groovy)
 
 The following configuration
 
+```java
     @Configuration
     @EnableWebSecurity
     public class SampleWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
@@ -121,9 +191,11 @@ The following configuration
                     .withUser("admin").password("password").roles("USER", "ADMIN");
         }
     }
+```
 
 is similar to the following XML configuration:
 
+```xml
     <http security="none" pattern="/resources/**"/>
     <http use-expressions="true">
       <intercept-url pattern="/logout" access="permitAll"/>
@@ -150,6 +222,7 @@ is similar to the following XML configuration:
         </user-service>
       </authentication-provider>
     </authentication-manager>
+```
 
 Notice that Spring Security uses different defaults that will make your HTTP requests appear more RESTful. For example, the URL /login POST is used to
 authenticate users. The URL /login GET is used to request the user for credentials (i.e. present a login form).
@@ -161,6 +234,7 @@ See [SampleWebSecurityConfigurerAdapterTests.groovy](src/test/groovy/org/springf
 
 The following configuration
 
+```java
     @Configuration
     @EnableWebSecurity
     public class SampleMultiHttpSecurityConfig {
@@ -210,9 +284,11 @@ The following configuration
             }
         }
     }
+```
 
 is similar to the following XML configuration:
 
+```xml
     <http security="none" pattern="/resources/**"/>
     <http use-expressions="true" pattern="/api/**">
           <intercept-url pattern="/api/admin/**" access="hasRole('ROLE_ADMIN')"/>
@@ -244,6 +320,7 @@ is similar to the following XML configuration:
         </user-service>
       </authentication-provider>
     </authentication-manager>
+```
 
 Sample Global Security Configuration
 -------------
@@ -252,6 +329,7 @@ See [SampleEnableGlobalMethodSecurityTests.groovy](src/test/groovy/org/springfra
 
 Global configuration is quite simple. For example, the following Java Configuration:
 
+```java
     @Configuration
     @EnableGlobalMethodSecurity(prePostEnabled=true)
     public class SampleWebSecurityConfig {
@@ -269,9 +347,11 @@ Global configuration is quite simple. For example, the following Java Configurat
                 .build();
         }
     }
+```
 
 is the equivalent of:
 
+```xml
     <global-method-security pre-post-annotations="enabled"/>
     <authentication-manager>
       <authentication-provider>
@@ -282,11 +362,13 @@ is the equivalent of:
       </authentication-provider>
     </authentication-manager>
     <beans:bean id="methodSecuriytService" class="MethodSecurityServiceImpl"/>
+```
 
 There are additional attributes on `EnableGlobalMethodSecurity`, but in more advanced situations you may want to refer to another object. In order to do this,
 override the `GlobalMethodSecurityConfiguration` class. For example, following Java configuration demonstrates how to override the MethodExpressionHandler to use
 `CustomPermissionEvaluator`.
 
+```java
     @Configuration
     @EnableGlobalMethodSecurity(prePostEnabled=true)
     public class CustomPermissionEvaluatorWebSecurityConfig extends GlobalMethodSecurityConfiguration {
@@ -311,9 +393,11 @@ override the `GlobalMethodSecurityConfiguration` class. For example, following J
                     .withUser("admin").password("password").roles("USER", "ADMIN");
         }
     }
+```
 
 The configuration above is the similar to the following XML configuration:
 
+```xml
     <global-method-security pre-post-annotations="enabled">
         <expression-handler ref="expressionHandler"/>
     </global-method-security>
@@ -327,6 +411,7 @@ The configuration above is the similar to the following XML configuration:
     </authentication-manager>
     <beans:bean id="methodSecuriytService" class="MethodSecurityServiceImpl"/>
     <beans:bean id="expressionHandler" class="CustomExpressionHandler"/>
+```
 
 Additional Samples
 -------------
