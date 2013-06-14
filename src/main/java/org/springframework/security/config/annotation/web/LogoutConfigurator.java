@@ -61,6 +61,7 @@ public final class LogoutConfigurator extends BaseHttpConfigurator {
     private LogoutSuccessHandler logoutSuccessHandler;
     private String logoutUrl = "/logout";
     private boolean permitAll;
+    private boolean customLogoutSuccess;
 
     /**
      * Creates a new instance
@@ -112,6 +113,7 @@ public final class LogoutConfigurator extends BaseHttpConfigurator {
      * @return the {@link LogoutConfigurator} for further customization
      */
     public LogoutConfigurator logoutSuccessUrl(String logoutSuccessUrl) {
+        this.customLogoutSuccess = true;
         this.logoutSuccessUrl = logoutSuccessUrl;
         return this;
     }
@@ -148,6 +150,7 @@ public final class LogoutConfigurator extends BaseHttpConfigurator {
      */
     public LogoutConfigurator logoutSuccessHandler(LogoutSuccessHandler logoutSuccessHandler) {
         this.logoutSuccessUrl = null;
+        this.customLogoutSuccess = true;
         this.logoutSuccessHandler = logoutSuccessHandler;
         return this;
     }
@@ -190,6 +193,27 @@ public final class LogoutConfigurator extends BaseHttpConfigurator {
     public void configure(HttpConfiguration http) throws Exception {
         LogoutFilter logoutFilter = createLogoutFilter();
         http.addFilter(logoutFilter);
+    }
+
+    /**
+     * Returns true if the logout success has been customized via
+     * {@link #logoutSuccessUrl(String)} or
+     * {@link #logoutSuccessHandler(LogoutSuccessHandler)}.
+     *
+     * @return true if logout success handling has been customized, else false
+     */
+    boolean isCustomLogoutSuccess() {
+        return customLogoutSuccess;
+    }
+
+    /**
+     * Gets the logoutSuccesUrl or null if a
+     * {@link #logoutSuccessHandler(LogoutSuccessHandler)} was configured.
+     *
+     * @return the logoutSuccessUrl
+     */
+    String getLogoutSuccessUrl() {
+        return logoutSuccessUrl;
     }
 
     /**

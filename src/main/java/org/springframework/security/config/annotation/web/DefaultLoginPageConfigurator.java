@@ -36,7 +36,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * <h2>Shared Objects Created</h2>
  *
  * No shared objects are created.
- *
+ *isLogoutRequest
  * <h2>Shared Objects Used</h2>
  *
  * The following shared objects are used:
@@ -84,6 +84,11 @@ final class DefaultLoginPageConfigurator extends
                 loginPageGeneratingFilter.setFailureUrl(openidLogin.getFailureUrl());
             }
             loginPageGeneratingFilter.setOpenIDusernameParameter(OpenIDAuthenticationFilter.DEFAULT_CLAIMED_IDENTITY_FIELD);
+        }
+
+        LogoutConfigurator logout = http.getConfigurator(LogoutConfigurator.class);
+        if(logout != null && !logout.isCustomLogoutSuccess()) {
+            loginPageGeneratingFilter.setLogoutSuccessUrl(logout.getLogoutSuccessUrl());
         }
     }
 

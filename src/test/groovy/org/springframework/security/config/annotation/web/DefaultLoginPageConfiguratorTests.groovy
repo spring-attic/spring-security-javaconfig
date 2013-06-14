@@ -26,6 +26,7 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler
 
 /**
  * Tests to verify that {@link DefaultLoginPageConfigurator} works
@@ -101,6 +102,26 @@ public class DefaultLoginPageConfiguratorTests extends BaseSpringSpec {
             response.getRedirectedUrl() == "/"
     }
 
+    def "logout success renders"() {
+        setup:
+            loadConfig(DefaultLoginPageConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+        when: "logout success"
+            request.requestURI = "/login"
+            request.queryString = "logout"
+            request.method = "GET"
+            springSecurityFilterChain.doFilter(request,response,chain)
+        then: "sent to default success page"
+            response.getContentAsString() == """<html><head><title>Login Page</title></head><body onload='document.f.username.focus();'>
+<p><font color='green'>You have been logged out</font></p><h3>Login with Username and Password</h3><form name='f' action='/login' method='POST'>
+ <table>
+    <tr><td>User:</td><td><input type='text' name='username' value=''></td></tr>
+    <tr><td>Password:</td><td><input type='password' name='password'/></td></tr>
+    <tr><td colspan='2'><input name="submit" type="submit" value="Login"/></td></tr>
+  </table>
+</form></body></html>"""
+    }
+
     @Configuration
     static class DefaultLoginPageConfig extends BaseWebConfig {
         @Override
@@ -108,6 +129,62 @@ public class DefaultLoginPageConfiguratorTests extends BaseSpringSpec {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
+                    .and()
+                .formLogin()
+        }
+    }
+
+    def "custom logout success handler prevents rendering"() {
+        setup:
+            loadConfig(DefaultLoginPageCustomLogoutSuccessHandlerConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+        when: "logout success"
+            request.requestURI = "/login"
+            request.queryString = "logout"
+            request.method = "GET"
+            springSecurityFilterChain.doFilter(request,response,chain)
+        then: "default success page is NOT rendered (application is in charge of it)"
+            response.getContentAsString() == ""
+    }
+
+    @Configuration
+    static class DefaultLoginPageCustomLogoutSuccessHandlerConfig extends BaseWebConfig {
+        @Override
+        protected void configure(HttpConfiguration http) {
+            http
+                .authorizeUrls()
+                    .anyRequest().hasRole("USER")
+                    .and()
+                .logout()
+                    .logoutSuccessHandler(new SimpleUrlLogoutSuccessHandler())
+                    .and()
+                .formLogin()
+        }
+    }
+
+    def "custom logout success url prevents rendering"() {
+        setup:
+            loadConfig(DefaultLoginPageCustomLogoutConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+        when: "logout success"
+            request.requestURI = "/login"
+            request.queryString = "logout"
+            request.method = "GET"
+            springSecurityFilterChain.doFilter(request,response,chain)
+        then: "default success page is NOT rendered (application is in charge of it)"
+            response.getContentAsString() == ""
+    }
+
+    @Configuration
+    static class DefaultLoginPageCustomLogoutConfig extends BaseWebConfig {
+        @Override
+        protected void configure(HttpConfiguration http) {
+            http
+                .authorizeUrls()
+                    .anyRequest().hasRole("USER")
+                    .and()
+                .logout()
+                    .logoutSuccessUrl("/login?logout")
                     .and()
                 .formLogin()
         }

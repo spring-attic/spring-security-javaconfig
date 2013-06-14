@@ -36,6 +36,7 @@ import java.io.IOException;
  */
 final class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
     private String loginPageUrl;
+    private String logoutSuccessUrl;
     private String failureUrl;
     private boolean formLoginEnabled;
     private boolean openIdEnabled;
@@ -49,6 +50,10 @@ final class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
 
     boolean isEnabled() {
         return formLoginEnabled || openIdEnabled;
+    }
+
+    void setLogoutSuccessUrl(String logoutSuccessUrl) {
+        this.logoutSuccessUrl = logoutSuccessUrl;
     }
 
     void setLoginPageUrl(String loginPageUrl) {
@@ -98,8 +103,9 @@ final class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
         HttpServletResponse response = (HttpServletResponse) res;
 
         boolean loginError = isErrorPage(request);
-        if (isLoginUrlRequest(request) || loginError) {
-            String loginPageHtml = generateLoginPageHtml(request, loginError);
+        boolean logoutSuccess = isLogoutSuccess(request);
+        if (isLoginUrlRequest(request) || loginError || logoutSuccess) {
+            String loginPageHtml = generateLoginPageHtml(request, loginError, logoutSuccess);
             response.setContentType("text/html;charset=UTF-8");
             response.setContentLength(loginPageHtml.length());
             response.getWriter().write(loginPageHtml);
@@ -110,7 +116,7 @@ final class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
         chain.doFilter(request, response);
     }
 
-    private String generateLoginPageHtml(HttpServletRequest request, boolean loginError) {
+    private String generateLoginPageHtml(HttpServletRequest request, boolean loginError, boolean logoutSuccess) {
         String errorMsg = "none";
 
         if (loginError) {
@@ -134,6 +140,10 @@ final class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
             sb.append("<p><font color='red'>Your login attempt was not successful, try again.<br/><br/>Reason: ");
             sb.append(errorMsg);
             sb.append("</font></p>");
+        }
+
+        if (logoutSuccess) {
+            sb.append("<p><font color='green'>You have been logged out</font></p>");
         }
 
         if (formLoginEnabled) {
@@ -172,6 +182,10 @@ final class DefaultLoginPageGeneratingFilter extends GenericFilterBean {
         sb.append("</body></html>");
 
         return sb.toString();
+    }
+
+    private boolean isLogoutSuccess(HttpServletRequest request) {
+        return logoutSuccessUrl != null && matches(request, logoutSuccessUrl);
     }
 
     private boolean isLoginUrlRequest(HttpServletRequest request) {
