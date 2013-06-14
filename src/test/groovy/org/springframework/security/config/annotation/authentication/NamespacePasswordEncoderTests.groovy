@@ -29,7 +29,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
@@ -51,7 +51,7 @@ class NamespacePasswordEncoderTests extends BaseSpringSpec {
             noExceptionThrown()
     }
 
-    def "password-encoder@ref with AuthenticationRegistry"() {
+    def "password-encoder@ref with AuthenticationManagerBuilder"() {
         when:
             loadConfig(PasswordEncoderNoAuthManagerLoadsConfig)
             AuthenticationManager authMgr = authenticationManager()

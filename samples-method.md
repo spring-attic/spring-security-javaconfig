@@ -66,9 +66,9 @@ override the `GlobalMethodSecurityConfiguration` class. For example, following J
         }
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry)
+        protected void registerAuthentication(AuthenticationManagerBuilder auth)
             throws Exception {
-            registry
+            auth
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN");

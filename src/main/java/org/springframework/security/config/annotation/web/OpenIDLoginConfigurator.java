@@ -64,8 +64,8 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  *
  * 	&#064;Override
  * 	protected void registerAuthentication(
- * 			AuthenticationRegistry authenticationRegistry) throws Exception {
- * 		authenticationRegistry
+ * 			AuthenticationManagerBuilder auth) throws Exception {
+ * 		auth
  * 			.inMemoryAuthentication()
  * 				.withUser(&quot;https://www.google.com/accounts/o8/id?id=lmkCn9xzPdsxVwG7pjYMuDgNNdASFmobNkcRPaWU&quot;)
  * 					.password(&quot;password&quot;)

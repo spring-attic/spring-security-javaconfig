@@ -19,7 +19,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.web.util.RequestMatcher
 
 /**
@@ -52,9 +52,9 @@ class PermitAllSupportTests extends BaseSpringSpec {
     static class NoAuthorizedUrlsConfig extends WebSecurityConfigurerAdapter {
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry)
+        protected void registerAuthentication(AuthenticationManagerBuilder auth)
                 throws Exception {
-            registry
+            auth
                 .inMemoryAuthentication()
         }
 

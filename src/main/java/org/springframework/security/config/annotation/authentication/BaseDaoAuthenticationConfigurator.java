@@ -15,9 +15,7 @@
  */
 package org.springframework.security.config.annotation.authentication;
 
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -31,7 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @param <U> The type of {@link UserDetailsService} that is being used
  *
  */
-abstract class BaseDaoAuthenticationConfigurator<C extends DaoAuthenticationRegistry<C>,U extends UserDetailsService> extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> implements DaoAuthenticationRegistry<C> {
+abstract class BaseDaoAuthenticationConfigurator<C extends BaseDaoAuthenticationConfigurator<C,U>,U extends UserDetailsService> extends UserDetailsAwareConfigurator<U> {
     private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     private final U userDetailsService;
 

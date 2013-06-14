@@ -3,7 +3,7 @@ package org.springframework.security.samples.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityBuilder;
@@ -27,8 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void registerAuthentication(
-            AuthenticationRegistry builder) throws Exception {
-        builder
+            AuthenticationManagerBuilder auth) throws Exception {
+        auth
             .ldapAuthenticationProvider()
                 .contextSource(contextSource())
                 .userDnPatterns("uid={0},ou=people")

@@ -27,7 +27,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * @param <C> the {@link SecurityConfigurator} (or this)
  * @param <T> the type of UserDetailsService being used to allow for returning the concrete UserDetailsService.
  */
-public class UserDetailsServiceConfigurator<C extends DaoAuthenticationRegistry<C>,T extends UserDetailsService> extends BaseDaoAuthenticationConfigurator<C,T> {
+public class UserDetailsServiceConfigurator<C extends UserDetailsServiceConfigurator<C, T>,T extends UserDetailsService> extends BaseDaoAuthenticationConfigurator<C,T> {
 
     /**
      * Creates a new instance

@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.web.FilterChainProxy
@@ -174,8 +174,8 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                     .anyRequest().requiresInsecure()
         }
         protected void registerAuthentication(
-                AuthenticationRegistry authenticationRegistry) throws Exception {
-            authenticationRegistry
+                AuthenticationManagerBuilder auth) throws Exception {
+            auth
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN")

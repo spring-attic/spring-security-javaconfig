@@ -37,8 +37,8 @@ The following configuration
         }
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry) {
-            registry
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) {
+            auth
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN");

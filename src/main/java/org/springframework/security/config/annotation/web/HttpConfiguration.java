@@ -38,7 +38,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.openid.OpenIDAuthenticationFilter;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.PortMapperImpl;
@@ -46,7 +45,6 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -96,8 +94,8 @@ import org.springframework.util.Assert;
  *     }
  *
  *     &#064;Override
- *     protected void registerAuthentication(AuthenticationRegistry builder) throws Exception {
- *         builder
+ *     protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+ *         auth
  *              .inMemoryAuthentication()
  *                   .withUser(&quot;user&quot;)
  *                        .password(&quot;password&quot;)
@@ -171,8 +169,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry authenticationRegistry) throws Exception {
-     *         authenticationRegistry
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+     *         auth
      *                 .inMemoryAuthentication()
      *                     // the username must match the OpenID of the user you are
      *                     // logging in with
@@ -286,9 +284,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -353,8 +351,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder) throws Exception {
-     *         builder
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+     *         auth
      *             .inMemoryAuthentication()
      *                 .withUser(&quot;user&quot;)
      *                     .password(&quot;password&quot;)
@@ -496,9 +494,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class RememberMeSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -554,9 +552,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -589,9 +587,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -709,9 +707,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -757,9 +755,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -790,9 +788,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -835,9 +833,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -868,9 +866,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -918,9 +916,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *              .inMemoryAuthentication()
      *                   .withUser(&quot;user&quot;)
      *                        .password(&quot;password&quot;)
@@ -962,9 +960,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *             .inMemoryAuthentication()
      *                 .withUser(&quot;user&quot;)
      *                     .password(&quot;password&quot;)
@@ -1164,9 +1162,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *             .inMemoryAuthentication()
      *                 .withUser(&quot;user&quot;)
      *                     .password(&quot;password&quot;)
@@ -1195,9 +1193,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *             .inMemoryAuthentication()
      *                 .withUser(&quot;user&quot;)
      *                     .password(&quot;password&quot;)
@@ -1230,9 +1228,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void registerAuthentication(AuthenticationRegistry builder)
+     *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         builder
+     *         auth
      *             .inMemoryAuthentication()
      *                 .withUser(&quot;user&quot;)
      *                     .password(&quot;password&quot;)

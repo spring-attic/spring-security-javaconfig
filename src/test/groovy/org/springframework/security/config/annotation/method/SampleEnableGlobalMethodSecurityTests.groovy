@@ -25,7 +25,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.TestingAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder
 
@@ -103,9 +103,9 @@ public class SampleEnableGlobalMethodSecurityTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry)
+        protected void registerAuthentication(AuthenticationManagerBuilder auth)
             throws Exception {
-            registry
+            auth
                 .inMemoryAuthentication()
                 .withUser("user").password("password").roles("USER").and()
                 .withUser("admin").password("password").roles("USER", "ADMIN");

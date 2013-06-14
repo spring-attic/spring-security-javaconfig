@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -44,8 +43,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private ApplicationContext context;
 
     private final AuthenticationManagerBuilder authenticationBuilder = new AuthenticationManagerBuilder();
-    private AuthenticationManagerBuilder parentAuthenticationRegistry = new AuthenticationManagerBuilder();
-    private boolean disableAuthenticationRegistry;
+    private AuthenticationManagerBuilder parentAuthenticationBuilder = new AuthenticationManagerBuilder();
+    private boolean disableAuthenticationRegistration;
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;
     private HttpConfiguration http;
@@ -58,7 +57,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      */
     private void setLifecycleManager(LifecycleManager lifecycleManager) {
         authenticationBuilder.lifecycleManager(lifecycleManager);
-        parentAuthenticationRegistry.lifecycleManager(lifecycleManager);
+        parentAuthenticationBuilder.lifecycleManager(lifecycleManager);
     }
 
     /**
@@ -84,10 +83,10 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     /**
      * Used by the default implementation of {@link #authenticationManager()} to attempt to obtain an
-     * {@link AuthenticationManager}. If overridden, the {@link AuthenticationRegistry} should be used to specify
+     * {@link AuthenticationManager}. If overridden, the {@link AuthenticationManagerBuilder} should be used to specify
      * the {@link AuthenticationManager}. The resulting {@link AuthenticationManager}
      * will be exposed as a Bean as will the last populated {@link UserDetailsService} that is created with the
-     * {@link AuthenticationRegistry}. The {@link UserDetailsService} will also automatically be populated on
+     * {@link AuthenticationManagerBuilder}. The {@link UserDetailsService} will also automatically be populated on
      * {@link HttpConfiguration#getSharedObject(Class)} for use with other {@link SecurityContextConfigurator}
      * (i.e. RememberMeConfigurator )
      *
@@ -96,7 +95,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      *
      * <pre>
      * &#064;Override
-     * protected void registerAuthentication(AuthenticationRegistry registry) {
+     * protected void registerAuthentication(AuthenticationManagerBuilder auth) {
      *     registry
      *         // enable in memory based authentication with a user named "user" and "admin"
      *         .inMemoryAuthentication()
@@ -105,11 +104,11 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      * }
      * </pre>
      *
-     * @param registry the {@link AuthenticationRegistry} to use
+     * @param auth the {@link AuthenticationManagerBuilder} to use
      * @throws Exception
      */
-    protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
-        this.disableAuthenticationRegistry = true;
+    protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+        this.disableAuthenticationRegistration = true;
     }
 
     /**
@@ -145,7 +144,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     /**
      * Override this method to expose the {@link AuthenticationManager} from
-     * {@link #registerAuthentication(AuthenticationRegistry)} to be exposed as
+     * {@link #registerAuthentication(AuthenticationManagerBuilder)} to be exposed as
      * a Bean. For example:
      *
      * <pre>
@@ -165,8 +164,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     /**
      * Gets the {@link AuthenticationManager} to use. The default strategy is if
-     * {@link #registerAuthentication(AuthenticationRegistry)} method is
-     * overridden to use the {@link AuthenticationRegistry} that was passed in.
+     * {@link #registerAuthentication(AuthenticationManagerBuilder)} method is
+     * overridden to use the {@link AuthenticationManagerBuilder} that was passed in.
      * Otherwise, autowire the {@link AuthenticationManager} by type.
      *
      * @return
@@ -174,8 +173,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      */
     protected AuthenticationManager authenticationManager() throws Exception {
         if(!authenticationManagerInitialized) {
-            registerAuthentication(parentAuthenticationRegistry);
-            if(disableAuthenticationRegistry) {
+            registerAuthentication(parentAuthenticationBuilder);
+            if(disableAuthenticationRegistration) {
                 try {
                     authenticationManager = context.getBean(AuthenticationManager.class);
                 } catch(NoSuchBeanDefinitionException e) {
@@ -183,7 +182,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
                 }
             } else {
                 authenticationManagerInitialized = true;
-                authenticationManager = parentAuthenticationRegistry.build();
+                authenticationManager = parentAuthenticationBuilder.build();
             }
             authenticationManagerInitialized = true;
         }
@@ -192,7 +191,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     /**
      * Override this method to expose a {@link UserDetailsService} created from
-     * {@link #registerAuthentication(AuthenticationRegistry)} as a bean. In
+     * {@link #registerAuthentication(AuthenticationManagerBuilder)} as a bean. In
      * general only the following override should be done of this method:
      *
      * <pre>
@@ -222,7 +221,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      * @return
      */
     protected UserDetailsService userDetailsService() {
-        return parentAuthenticationRegistry.getDefaultUserDetailsService();
+        return parentAuthenticationBuilder.getDefaultUserDetailsService();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.springframework.security.samples.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityBuilder;
@@ -19,9 +19,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void registerAuthentication(AuthenticationRegistry registry)
+    protected void registerAuthentication(AuthenticationManagerBuilder auth)
             throws Exception {
-        registry.
+        auth.
             inMemoryAuthentication()
                 .withUser("dianne").password("password").roles("USER").and()
                 .withUser("rod").password("password").roles("USER","ADMIN").and()

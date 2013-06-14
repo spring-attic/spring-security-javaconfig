@@ -37,9 +37,9 @@ public class NamespacePasswordEncoderConfigs {
     @Configuration
     static class PasswordEncoderConfig extends WebSecurityConfigurerAdapter {
         protected void registerAuthentication(
-                AuthenticationRegistry registry) throws Exception {
+                AuthenticationManagerBuilder auth) throws Exception {
             BCryptPasswordEncoder encoder = passwordEncoder();
-            registry
+            auth
                 .inMemoryAuthentication()
                     .withUser("user").password(encoder.encode("password")).roles("USER").and()
                     .passwordEncoder(encoder);
@@ -66,9 +66,9 @@ public class NamespacePasswordEncoderConfigs {
     @Configuration
     static class PasswordEncoderNoAuthManagerLoadsConfig extends WebSecurityConfigurerAdapter {
         protected void registerAuthentication(
-                AuthenticationRegistry registry) throws Exception {
+                AuthenticationManagerBuilder auth) throws Exception {
             BCryptPasswordEncoder encoder = passwordEncoder();
-            registry
+            auth
                 .inMemoryAuthentication()
                     .withUser("user").password(encoder.encode("password")).roles("USER").and()
                     .passwordEncoder(encoder);

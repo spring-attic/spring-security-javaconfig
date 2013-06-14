@@ -59,7 +59,6 @@ import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
 import org.springframework.util.Assert;
 
 /**
@@ -76,7 +75,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     @Autowired
     private ApplicationContext context;
     private AuthenticationManager authenticationManager;
-    private AuthenticationManagerBuilder authenticationRegistry = new AuthenticationManagerBuilder();
+    private AuthenticationManagerBuilder auth = new AuthenticationManagerBuilder();
     private boolean disableAuthenticationRegistry;
     private AnnotationAttributes enableMethodSecurity;
     private MethodSecurityExpressionHandler expressionHandler;
@@ -215,17 +214,17 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
 
     /**
      * Allows providing a custom {@link AuthenticationManager}. The default is
-     * to use any authentication mechanisms registered by {@link #registerAuthentication(AuthenticationRegistry)}. If
-     * {@link #registerAuthentication(AuthenticationRegistry)} was not overriden, then an {@link AuthenticationManager}
+     * to use any authentication mechanisms registered by {@link #registerAuthentication(AuthenticationManagerBuilder)}. If
+     * {@link #registerAuthentication(AuthenticationManagerBuilder)} was not overriden, then an {@link AuthenticationManager}
      * is attempted to be autowired by type.
      *
      * @return
      */
     protected AuthenticationManager authenticationManager() throws Exception {
         if(authenticationManager == null) {
-            registerAuthentication(authenticationRegistry);
+            registerAuthentication(auth);
             if(!disableAuthenticationRegistry) {
-                authenticationManager = authenticationRegistry.build();
+                authenticationManager = auth.build();
             }
             if(authenticationManager == null) {
                 authenticationManager = lazyBean(AuthenticationManager.class);
@@ -235,14 +234,14 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     }
 
     /**
-     * Sub classes can override this method to register different types of authentication. If not overriden,
-     * {@link #registerAuthentication(AuthenticationRegistry)} will attempt to autowire by type.
+     * Sub classes can override this method to register different types of authentication. If not overridden,
+     * {@link #registerAuthentication(AuthenticationManagerBuilder)} will attempt to autowire by type.
      *
-     * @param registry the {@link AuthenticationRegistry} used to register different authentication mechanisms for the
+     * @param auth the {@link AuthenticationManagerBuilder} used to register different authentication mechanisms for the
      *                 global method security.
      * @throws Exception
      */
-    protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
+    protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         this.disableAuthenticationRegistry = true;
     }
 

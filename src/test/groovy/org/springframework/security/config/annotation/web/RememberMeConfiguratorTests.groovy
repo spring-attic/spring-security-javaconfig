@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web
 
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 
 import javax.servlet.http.Cookie
 

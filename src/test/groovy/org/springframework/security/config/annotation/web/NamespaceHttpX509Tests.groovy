@@ -27,7 +27,7 @@ import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.AuthenticationDetailsSource
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
 import org.springframework.security.core.userdetails.User
@@ -91,8 +91,8 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     @EnableWebSecurity
     public static class X509Config extends WebSecurityConfigurerAdapter {
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
-            registry.
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+            auth.
                 inMemoryAuthentication()
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
@@ -125,8 +125,8 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     public static class AuthenticationDetailsSourceRefConfig extends WebSecurityConfigurerAdapter {
         static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
 
-        protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
-            registry.
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+            auth.
                 inMemoryAuthentication()
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
@@ -160,8 +160,8 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
-            registry.
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+            auth.
                 inMemoryAuthentication()
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
@@ -196,8 +196,8 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
-            registry.
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+            auth.
                 inMemoryAuthentication()
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
@@ -231,8 +231,8 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     public static class AuthenticationUserDetailsServiceConfig extends WebSecurityConfigurerAdapter {
         static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
 
-        protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
-            registry.
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+            auth.
                 inMemoryAuthentication()
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }

@@ -27,7 +27,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.server.ApacheDSContainer;
@@ -54,8 +54,8 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     @Configuration
     static class DefaultLdapConfig extends BaseLdapProviderConfig {
         protected void registerAuthentication(
-                AuthenticationRegistry registry) throws Exception {
-            registry
+                AuthenticationManagerBuilder auth) throws Exception {
+            auth
                 .ldapAuthenticationProvider()
                     .contextSource(contextSource())
         }
@@ -71,8 +71,8 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
 
     @Configuration
     static class GroupRolesConfig extends BaseLdapProviderConfig {
-        protected void registerAuthentication(AuthenticationRegistry registry) throws Exception {
-            registry
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+            auth
                 .ldapAuthenticationProvider()
                     .contextSource(contextSource())
                     .groupRoleAttribute("group")
@@ -90,8 +90,8 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     @Configuration
     static class GroupSearchConfig extends BaseLdapProviderConfig {
         protected void registerAuthentication(
-            AuthenticationRegistry registry) throws Exception {
-            registry
+            AuthenticationManagerBuilder auth) throws Exception {
+            auth
                 .ldapAuthenticationProvider()
                     .contextSource(contextSource())
                     .groupSearchFilter("ou=groupName");
@@ -109,8 +109,8 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     @Configuration
     static class RolePrefixConfig extends BaseLdapProviderConfig {
         protected void registerAuthentication(
-            AuthenticationRegistry registry) throws Exception {
-            registry
+            AuthenticationManagerBuilder auth) throws Exception {
+            auth
                 .ldapAuthenticationProvider()
                     .contextSource(contextSource())
                     .rolePrefix("role_")
@@ -129,8 +129,8 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     @Configuration
     static class BindAuthenticationConfig extends BaseLdapServerConfig {
         protected void registerAuthentication(
-            AuthenticationRegistry registry) throws Exception {
-            registry
+            AuthenticationManagerBuilder auth) throws Exception {
+            auth
                 .ldapAuthenticationProvider()
                     .contextSource(contextSource())
                     .userDnPatterns("uid={0},ou=people")
@@ -162,7 +162,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
         }
 
         protected abstract void registerAuthentication(
-            AuthenticationRegistry registry) throws Exception;
+            AuthenticationManagerBuilder auth) throws Exception;
 
         @Bean
         public BaseLdapPathContextSource contextSource() throws Exception {

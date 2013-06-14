@@ -36,8 +36,8 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry<T>> extends
-        UserDetailsServiceConfigurator<T,UserDetailsManager> implements UserDetailsManagerRegistry<T> {
+public class UserDetailsManagerConfigurator<T extends UserDetailsManagerConfigurator<T>> extends
+        UserDetailsServiceConfigurator<T,UserDetailsManager> {
 
     private final List<UserDetailsBuilder<T>> userBuilders = new ArrayList<UserDetailsBuilder<T>>();
 
@@ -64,7 +64,6 @@ public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry
      * @param username the username for the user being added. Cannot be null.
      * @return
      */
-    @Override
     @SuppressWarnings("unchecked")
     public final UserDetailsBuilder<T> withUser(String username) {
         UserDetailsBuilder<T> userBuilder = new UserDetailsBuilder<T>((T)this);
@@ -77,9 +76,9 @@ public class UserDetailsManagerConfigurator<T extends UserDetailsManagerRegistry
      * Builds the user to be added. At minimum the username, password, and authorities should provided. The remaining
      * attributes have reasonable defaults.
      *
-     * @param <T> the type of {@link UserDetailsManagerRegistry} to return for chaining methods.
+     * @param <T> the type of {@link UserDetailsManagerConfigurator} to return for chaining methods.
      */
-    public static class UserDetailsBuilder<T extends UserDetailsManagerRegistry<T>> {
+    public static class UserDetailsBuilder<T extends UserDetailsManagerConfigurator<T>> {
         private String username;
         private String password;
         private List<GrantedAuthority> authorities;

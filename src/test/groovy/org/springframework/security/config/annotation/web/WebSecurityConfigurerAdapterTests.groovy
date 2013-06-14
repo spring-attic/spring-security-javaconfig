@@ -27,7 +27,7 @@ import org.springframework.ldap.core.support.BaseLdapPathContextSource
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource
 
 /**
@@ -87,9 +87,9 @@ class WebSecurityConfigurerAdapterTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry)
+        protected void registerAuthentication(AuthenticationManagerBuilder auth)
                 throws Exception {
-            registry
+            auth
                 .inMemoryAuthentication().and()
                 .jdbcUserDetailsManager()
                     .dataSource(dataSource())

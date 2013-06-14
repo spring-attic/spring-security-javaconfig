@@ -55,8 +55,8 @@ Create a `WebSecurityConfigurerAdapter` that is annotated with `@EnableWebSecuri
     public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry) {
-            registry
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) {
+            auth
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER");
         }

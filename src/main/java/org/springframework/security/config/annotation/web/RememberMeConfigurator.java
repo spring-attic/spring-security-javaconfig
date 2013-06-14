@@ -118,7 +118,7 @@ public final class RememberMeConfigurator extends BaseHttpConfigurator {
      * {@link UserDetails} when a remember me token is valid. The default is to
      * use the {@link UserDetailsService} found by invoking
      * {@link HttpConfiguration#getSharedObject(Class)} which is set when using
-     * {@link WebSecurityConfigurerAdapter#registerAuthentication(org.springframework.security.config.annotation.authentication.AuthenticationRegistry)}.
+     * {@link WebSecurityConfigurerAdapter#registerAuthentication(org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder)}.
      * Alternatively, one can populate {@link #rememberMeServices(RememberMeServices)}.
      *
      * @param userDetailsService

@@ -24,6 +24,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurator;
+import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityConfigurator;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurator;
 import org.springframework.security.config.annotation.web.LifecycleManager;
@@ -39,8 +40,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * @author Rob Winch
  * @since 3.2
  */
-public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder>
-        implements SecurityBuilder<AuthenticationManager>, AuthenticationRegistry {
+public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder> {
 
     private LifecycleManager lifecycleManager;
 
@@ -77,6 +77,10 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     }
 
     /**
+     * Add in memory authentication to the {@link AuthenticationManagerBuilder} and
+     * return a {@link UserDetailsManagerRegistry} to allow customization of the
+     * in memory authentication.
+     *
      * <p>
      * This method also ensure that a {@link UserDetailsService} is available
      * for the {@link #getDefaultUserDetailsService()} method. Note that
@@ -84,29 +88,39 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#inMemoryAuthentication()
+     * @return a {@link UserDetailsManagerRegistry} to allow customization of
+     *         the in memory authentication
+     * @throws Exception if an error occurs when adding the in memory authentication
      */
-    @Override
     public InMemoryUserDetailsManagerSecurityConfigurator inMemoryAuthentication()
             throws Exception {
         return apply(new InMemoryUserDetailsManagerSecurityConfigurator());
     }
 
     /**
+     * Add LDAP authentication to the {@link AuthenticationManagerBuilder} and
+     * return a {@link LdapAuthenticationRegistry} to allow customization of the
+     * LDAP authentication.
+     *
      * <p>
      * This method <b>does NOT</b> ensure that a {@link UserDetailsService} is
      * available for the {@link #getDefaultUserDetailsService()} method.
      * </p>
      *
-     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#ldapAuthenticationProvider()
+     * @return a {@link LdapAuthenticationRegistry} to allow customization of the
+     * LDAP authentication
+     * @throws Exception if an error occurs when adding the LDAP authentication
      */
-    @Override
     public LdapAuthenticationProviderConfigurator ldapAuthenticationProvider()
             throws Exception {
         return apply(new LdapAuthenticationProviderConfigurator());
     }
 
     /**
+     * Add JDBC authentication to the {@link AuthenticationManagerBuilder} and
+     * return a {@link JdbcUserDetailsManagerRegistry} to allow customization of the
+     * JDBC authentication.
+     *
      * <p>
      * This method also ensure that a {@link UserDetailsService} is available
      * for the {@link #getDefaultUserDetailsService()} method. Note that
@@ -114,25 +128,33 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#jdbcUserDetailsManager()
+     * @return a {@link JdbcUserDetailsManagerRegistry} to allow customization of the
+     * JDBC authentication
+     * @throws Exception if an error occurs when adding the JDBC authentication
      */
-    @Override
     public JdbcUserDetailsManagerConfigurator jdbcUserDetailsManager()
             throws Exception {
         return apply(new JdbcUserDetailsManagerConfigurator());
     }
 
     /**
+     * Add authentication based upon the custom {@link UserDetailsService} that
+     * is passed in. It then returns a {@link DaoAuthenticationRegistry} to
+     * allow customization of the authentication.
+     *
      * <p>
-     * This method also ensure that a {@link UserDetailsService} is available
+     * This method also ensure that the {@link UserDetailsService} is available
      * for the {@link #getDefaultUserDetailsService()} method. Note that
      * additional {@link UserDetailsService}'s may override this
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#userDetailsService(org.springframework.security.core.userdetails.UserDetailsService)
+     * @return a {@link DaoAuthenticationConfigurator} to allow customization
+     *         of the DAO authentication
+     * @throws Exception
+     *             if an error occurs when adding the {@link UserDetailsService}
+     *             based authentication
      */
-    @Override
     public <T extends UserDetailsService> DaoAuthenticationConfigurator<T> userDetailsService(
             T userDetailsService) throws Exception {
         this.defaultUserDetailsService = userDetailsService;
@@ -140,15 +162,22 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     }
 
     /**
+     * Add authentication based upon the custom {@link AuthenticationProvider}
+     * that is passed in. Since the {@link AuthenticationProvider}
+     * implementation is unknown, all customizations must be done externally and
+     * the {@link AuthenticationManagerBuilder} is returned immediately.
+     *
      * <p>
-     * This method <b>does NOT</b> ensure that a {@link UserDetailsService} is
+     * This method <b>does NOT</b> ensure that the {@link UserDetailsService} is
      * available for the {@link #getDefaultUserDetailsService()} method.
      * </p>
      *
-     * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#add(org.springframework.security.authentication.AuthenticationProvider)
+     * @return a {@link AuthenticationManagerBuilder} to allow further authentication
+     *         to be provided to the {@link AuthenticationManagerBuilder}
+     * @throws Exception
+     *             if an error occurs when adding the {@link AuthenticationProvider}
      */
-    @Override
-    public AuthenticationRegistry add(
+    public AuthenticationManagerBuilder add(
             AuthenticationProvider authenticationProvider) {
         authenticationProvider = registerLifecycle(authenticationProvider);
         this.authenticationProviders.add(authenticationProvider);
@@ -176,8 +205,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         return this.defaultUserDetailsService;
     }
 
-    private <C extends UserDetailsServiceConfigurator<? extends DaoAuthenticationRegistry<?>,?>> C apply(C configurer)
-            throws Exception {
+    private <C extends UserDetailsAwareConfigurator<? extends UserDetailsService>> C apply(C configurer) throws Exception {
         this.defaultUserDetailsService = configurer.getUserDetailsService();
         return (C) super.apply(configurer);
     }

@@ -42,7 +42,7 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
  * @since 3.2
  */
 public class JdbcUserDetailsManagerConfigurator extends
-        UserDetailsManagerConfigurator<JdbcUserDetailsManagerConfigurator> implements JdbcUserDetailsManagerRegistry<JdbcUserDetailsManagerConfigurator> {
+        UserDetailsManagerConfigurator<JdbcUserDetailsManagerConfigurator> {
 
     private DataSource dataSource;
 
@@ -55,32 +55,47 @@ public class JdbcUserDetailsManagerConfigurator extends
     }
 
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#dataSource(javax.sql.DataSource)
+    /**
+     * Populates the {@link DataSource} to be used. This is the only required attribute.
+     *
+     * @param dataSource the {@link DataSource} to be used. Cannot be null.
+     * @return
+     * @throws Exception
      */
-    @Override
     public JdbcUserDetailsManagerConfigurator dataSource(DataSource dataSource) throws Exception {
         this.dataSource = dataSource;
         getUserDetailsService().setDataSource(dataSource);
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#usersByUsernameQuery(java.lang.String)
-     */
-    @Override
+    /**
+    * Sets the query to be used for finding a user by their username. For example:
+    *
+    * <code>
+    *     select username,password,enabled from users where username = ?
+    * </code>
+    * @param query  The query to use for selecting the username, password, and if the user is enabled by username.
+    *               Must contain a single parameter for the username.
+    * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
+    * @throws Exception
+    */
     public JdbcUserDetailsManagerConfigurator usersByUsernameQuery(String query) throws Exception {
         getUserDetailsService().setUsersByUsernameQuery(query);
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#authoritiesByUsernameQuery(java.lang.String)
+    /**
+     * Sets the query to be used for finding a user's authorities by their username. For example:
+     *
+     * <code>
+     *     select username,authority from authorities where username = ?
+     * </code>
+     *
+     * @param query  The query to use for selecting the username, authority  by username.
+     *               Must contain a single parameter for the username.
+     * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
+     * @throws Exception
      */
-    @Override
     public JdbcUserDetailsManagerConfigurator authoritiesByUsernameQuery(String query) throws Exception {
         getUserDetailsService().setAuthoritiesByUsernameQuery(query);
         return this;
@@ -99,11 +114,11 @@ public class JdbcUserDetailsManagerConfigurator extends
         return (JdbcUserDetailsManager) super.getUserDetailsService();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerRegistry#withDefaultSchema()
+    /**
+     * Populates the default schema that allows users and authorities to be stored.
+     *
+     * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
      */
-    @Override
     public JdbcUserDetailsManagerConfigurator withDefaultSchema() {
         this.initScripts.add(new ClassPathResource("org/springframework/security/core/userdetails/jdbc/users.ddl"));
         return this;

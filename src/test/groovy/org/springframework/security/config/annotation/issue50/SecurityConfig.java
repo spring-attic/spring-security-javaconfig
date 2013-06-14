@@ -23,7 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.issue50.domain.User;
 import org.springframework.security.config.annotation.issue50.repo.UserRepository;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
@@ -46,10 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserRepository myUserRepository;
 
     @Override
-    protected void registerAuthentication(
-            AuthenticationRegistry builder) throws Exception {
-        builder
-                .add(authenticationProvider());
+    protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+            .add(authenticationProvider());
     }
 
     @Override

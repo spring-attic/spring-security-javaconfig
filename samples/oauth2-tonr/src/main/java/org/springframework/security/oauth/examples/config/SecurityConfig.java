@@ -2,7 +2,7 @@ package org.springframework.security.oauth.examples.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityBuilder;
@@ -18,8 +18,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void registerAuthentication(
-            AuthenticationRegistry builder) throws Exception {
-        builder
+            AuthenticationManagerBuilder auth) throws Exception {
+        auth
             .inMemoryAuthentication()
                 .withUser("marissa").password("wombat").roles("USER").and()
                 .withUser("sam").password("kangaroo").roles("USER");

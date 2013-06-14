@@ -22,7 +22,7 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
@@ -87,8 +87,8 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
     @EnableWebSecurity
     public static class HelloWorldWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry) {
-            registry
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) {
+            auth
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER");
         }
@@ -175,8 +175,8 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
         }
 
         @Override
-        protected void registerAuthentication(AuthenticationRegistry registry) {
-            registry
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) {
+            auth
                 .inMemoryAuthentication()
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN");

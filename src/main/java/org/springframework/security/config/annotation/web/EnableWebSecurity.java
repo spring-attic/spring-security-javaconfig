@@ -53,7 +53,7 @@ import org.springframework.context.annotation.Import;
  *    }
  *
  *    &#064;Override
- *    protected void registerAuthentication(AuthenticationRegistry registry) {
+ *    protected void registerAuthentication(AuthenticationManagerBuilder auth) {
  *        registry
  *            // enable in memory based authentication with a user named "user" and "admin"
  *            .inMemoryAuthentication()

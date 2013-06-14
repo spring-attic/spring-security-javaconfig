@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web
 
-import org.springframework.security.config.annotation.authentication.AuthenticationRegistry
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 
 import javax.servlet.http.Cookie
 
@@ -307,8 +307,8 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
         }
 
         protected void registerAuthentication(
-                AuthenticationRegistry authenticationRegistry) throws Exception {
-            authenticationRegistry
+                AuthenticationManagerBuilder auth) throws Exception {
+            auth
                     .userDetailsService(USERDETAILS_SERVICE);
         }
     }
