@@ -83,6 +83,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
      * </code>
      * @author Rob Winch
      */
+    @Configuration
     @EnableWebSecurity
     public static class HelloWorldWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         @Override
