@@ -251,7 +251,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      * <pre>
      * http
      *     .authorizeUrls()
-     *         .antMatchers(&quot;/resources/**&quot;).permitAll()
      *         .anyRequest().authenticated().and()
      *     .formLogin().and()
      *     .httpBasic();
@@ -267,7 +266,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
         http
             .authorizeUrls()
-                .antMatchers("/resources/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
             .formLogin().and()
