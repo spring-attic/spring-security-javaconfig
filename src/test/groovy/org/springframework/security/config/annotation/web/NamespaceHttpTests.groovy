@@ -246,7 +246,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
             http.
                 securityContext()
-                    .securityContextRepsitory(repository)
+                    .securityContextRepository(repository)
         }
     }
 
@@ -432,7 +432,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .securityContext()
-                    .securityContextRepsitory(new NullSecurityContextRepository()) // security-context-repository-ref
+                    .securityContextRepository(new NullSecurityContextRepository()) // security-context-repository-ref
         }
     }
 

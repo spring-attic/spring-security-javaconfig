@@ -69,7 +69,7 @@ public final class SecurityContextConfigurator extends BaseHttpConfigurator {
      * @param securityContextRepository the {@link SecurityContextRepository} to use
      * @return the {@link HttpConfiguration} for further customizations
      */
-    public SecurityContextConfigurator securityContextRepsitory(SecurityContextRepository securityContextRepository) {
+    public SecurityContextConfigurator securityContextRepository(SecurityContextRepository securityContextRepository) {
         getBuilder().setSharedObject(SecurityContextRepository.class, securityContextRepository);
         return this;
     }
