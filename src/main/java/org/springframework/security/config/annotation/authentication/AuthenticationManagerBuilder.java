@@ -24,7 +24,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurator;
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder;
+import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityConfigurator;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurator;
 import org.springframework.security.config.annotation.web.LifecycleManager;
 import org.springframework.security.core.Authentication;
@@ -87,9 +87,9 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * @see org.springframework.security.config.annotation.authentication.AuthenticationRegistry#inMemoryAuthentication()
      */
     @Override
-    public InMemoryUserDetailsManagerSecurityBuilder inMemoryAuthentication()
+    public InMemoryUserDetailsManagerSecurityConfigurator inMemoryAuthentication()
             throws Exception {
-        return apply(new InMemoryUserDetailsManagerSecurityBuilder());
+        return apply(new InMemoryUserDetailsManagerSecurityConfigurator());
     }
 
     /**

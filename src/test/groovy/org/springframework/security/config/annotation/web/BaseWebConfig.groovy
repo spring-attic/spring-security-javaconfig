@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.authentication.AuthenticationRegistry;
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityBuilder
+import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityConfigurator
 
 /**
  *

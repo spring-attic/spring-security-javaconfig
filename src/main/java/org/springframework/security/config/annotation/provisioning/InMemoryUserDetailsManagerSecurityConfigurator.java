@@ -28,13 +28,13 @@ import java.util.ArrayList;
  * @since 3.2
  */
 
-public class InMemoryUserDetailsManagerSecurityBuilder extends
-        UserDetailsManagerConfigurator<InMemoryUserDetailsManagerSecurityBuilder> {
+public class InMemoryUserDetailsManagerSecurityConfigurator extends
+        UserDetailsManagerConfigurator<InMemoryUserDetailsManagerSecurityConfigurator> {
 
     /**
      * Creates a new instance
      */
-    public InMemoryUserDetailsManagerSecurityBuilder() {
+    public InMemoryUserDetailsManagerSecurityConfigurator() {
         super(new InMemoryUserDetailsManager(new ArrayList<UserDetails>()));
     }
 }
