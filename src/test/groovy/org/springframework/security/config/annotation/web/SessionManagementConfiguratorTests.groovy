@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.ExceptionTranslationFilter
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.savedrequest.RequestCache
 import org.springframework.security.web.session.ConcurrentSessionFilter
 import org.springframework.security.web.session.SessionManagementFilter
@@ -48,6 +50,31 @@ class SessionManagementConfiguratorTests extends BaseSpringSpec {
             http
                 .exceptionHandling()
                     .requestCache(REQUEST_CACHE)
+                    .and()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.stateless)
+        }
+
+    }
+
+    def "sessionManagement does not override explict SecurityContextRepository"() {
+        setup:
+            SessionManagementDoesNotOverrideExplicitSecurityContextRepositoryConfig.SECURITY_CONTEXT_REPO = Mock(SecurityContextRepository)
+        when:
+            loadConfig(SessionManagementDoesNotOverrideExplicitSecurityContextRepositoryConfig)
+        then:
+            findFilter(SecurityContextPersistenceFilter).repo == SessionManagementDoesNotOverrideExplicitSecurityContextRepositoryConfig.SECURITY_CONTEXT_REPO
+    }
+
+    @EnableWebSecurity
+    static class SessionManagementDoesNotOverrideExplicitSecurityContextRepositoryConfig extends WebSecurityConfigurerAdapter {
+        static SecurityContextRepository SECURITY_CONTEXT_REPO
+
+        @Override
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .securityContext()
+                    .securityContextRepository(SECURITY_CONTEXT_REPO)
                     .and()
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.stateless)
