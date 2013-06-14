@@ -37,14 +37,8 @@ import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.security.openid.OpenIDConsumer;
 import org.springframework.security.openid.RegexBasedAxFetchListFactory;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 /**
@@ -115,20 +109,9 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
-    private OpenIDAuthenticationFilter openIDAuthenticationFilter = new OpenIDAuthenticationFilter();
+public final class OpenIDLoginConfigurator extends AbstractAuthenticationFilterConfigurator<OpenIDLoginConfigurator,OpenIDAuthenticationFilter> {
     private OpenIDConsumer openIDConsumer;
     private ConsumerManager consumerManager;
-
-    private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
-    private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-    private AuthenticationEntryPoint authenticationEntryPoint;
-    private AuthenticationFailureHandler failureHandler;
-    private boolean permitAll;
-    private boolean customLoginPage;
-    private String loginPage;
-    private String loginProcessingUrl;
-    private String failureUrl;
     private AuthenticationUserDetailsService<OpenIDAuthenticationToken> authenticationUserDetailsService;
     private List<AttributeExchangeConfigurator> attributeExchangeConfigurators = new ArrayList<AttributeExchangeConfigurator>();
 
@@ -136,10 +119,7 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
      * Creates a new instance
      */
     OpenIDLoginConfigurator() {
-        loginPage("/login");
-        failureUrl("/login?error");
-        loginProcessingUrl("/login/openid");
-        this.customLoginPage = false;
+        super(new OpenIDAuthenticationFilter(),"/login/openid");
     }
 
     /**
@@ -188,17 +168,6 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
     }
 
     /**
-     * Specifies the {@link AuthenticationDetailsSource} to use. The default is a {@link WebAuthenticationDetailsSource}.
-     *
-     * @param authenticationDetailsSource the {@link AuthenticationDetailsSource} to use.
-     * @return the {@link OpenIDLoginConfigurator} for further customizations
-     */
-    public OpenIDLoginConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
-        this.authenticationDetailsSource = authenticationDetailsSource;
-        return this;
-    }
-
-    /**
      * The {@link AuthenticationUserDetailsService} to use. By default a
      * {@link UserDetailsByNameServiceWrapper} is used with the
      * {@link UserDetailsService} shared object found with
@@ -213,54 +182,6 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
     }
 
     /**
-     * Specifies where users will go after authenticating successfully if they
-     * have not visited a secured page prior to authenticating. This is a
-     * shortcut for calling {@link #defaultSuccessUrl(String)}.
-     *
-     * @param defaultSuccessUrl
-     *            the default success url
-     * @return the {@link OpenIDLoginConfigurator} for additional customization
-     */
-    public OpenIDLoginConfigurator defaultSuccessUrl(String defaultSuccessUrl) {
-        return defaultSuccessUrl(defaultSuccessUrl, false);
-    }
-
-    /**
-     * Specifies where users will go after authenticating successfully if they
-     * have not visited a secured page prior to authenticating or
-     * {@code alwaysUse} is true. This is a shortcut for calling
-     * {@link #successHandler(AuthenticationSuccessHandler)}.
-     *
-     * @param defaultSuccessUrl
-     *            the default success url
-     * @param alwaysUse
-     *            true if the {@code defaultSuccesUrl} should be used after
-     *            authentication despite if a protected page had been previously
-     *            visited
-     * @return the {@link OpenIDLoginConfigurator} for additional customization
-     */
-    public OpenIDLoginConfigurator defaultSuccessUrl(String defaultSuccessUrl, boolean alwaysUse) {
-        SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
-        handler.setDefaultTargetUrl(defaultSuccessUrl);
-        handler.setAlwaysUseDefaultTargetUrl(alwaysUse);
-        return successHandler(handler);
-    }
-
-    /**
-     * Specifies the {@link AuthenticationSuccessHandler} to be used. The
-     * default is {@link SavedRequestAwareAuthenticationSuccessHandler} with no
-     * additional properites set.
-     *
-     * @param successHandler
-     *            the {@link AuthenticationSuccessHandler}.
-     * @return the {@link OpenIDLoginConfigurator} for additional customization
-     */
-    public OpenIDLoginConfigurator successHandler(AuthenticationSuccessHandler successHandler) {
-        this.successHandler = successHandler;
-        return this;
-    }
-
-    /**
      * Specifies the URL used to authenticate OpenID requests. If the {@link HttpServletRequest}
      * matches this URL the {@link OpenIDAuthenticationFilter} will attempt to
      * authenticate the request. The default is "/login/openid".
@@ -270,9 +191,7 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
      * @return the {@link OpenIDLoginConfigurator} for additional customization
      */
     public OpenIDLoginConfigurator loginProcessingUrl(String loginProcessingUrl) {
-        this.loginProcessingUrl = loginProcessingUrl;
-        openIDAuthenticationFilter.setFilterProcessesUrl(loginProcessingUrl);
-        return this;
+        return super.loginProcessingUrl(loginProcessingUrl);
     }
 
     /**
@@ -285,9 +204,7 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
      * <p>
      * If a URL is specified or this is not being used in conjuction with
      * {@link WebSecurityConfigurerAdapter}, users are required to process the
-     * specified URL to generate a login page. In general, the login page should
-     * create a form that submits a request with the following requirements to
-     * work with {@link UsernamePasswordAuthenticationFilter}:
+     * specified URL to generate a login page.
      * </p>
      *
      * <ul>
@@ -295,72 +212,18 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
      * <li>It must be submitted to {@link #loginProcessingUrl(String)}</li>
      * <li>It should include the OpenID as an HTTP parameter by the name of
      * {@link OpenIDAuthenticationFilter#DEFAULT_CLAIMED_IDENTITY_FIELD}</li>
-     * <li>It should include the password as an HTTP parameter by the name of
-     * {@link #passwordParameter(String)}</li>
      * </ul>
      *
      * @param loginPage the login page to redirect to if authentication is required (i.e. "/login")
      * @return the {@link FormLoginConfigurator} for additional customization
      */
     public OpenIDLoginConfigurator loginPage(String loginPage) {
-        this.loginPage = loginPage;
-        this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
-        this.customLoginPage = true;
-        return this;
-    }
-
-    /**
-     * Equivalent of invoking permitAll(true)
-     * @return the {@link OpenIDLoginConfigurator} for further customization
-     */
-    public OpenIDLoginConfigurator permitAll() {
-        return permitAll(true);
-    }
-
-    /**
-     * Ensures the urls for {@link #failureUrl(String)} and
-     * {@link #loginUrl(String)} are granted access to any user.
-     *
-     * @param permitAll
-     *            true if access should be granted to the URLs, false if nothing
-     *            additional should be done
-     * @return the {@link OpenIDLoginConfigurator} for further customization
-     */
-    public OpenIDLoginConfigurator permitAll(boolean permitAll) {
-        this.permitAll = permitAll;
-        return this;
-    }
-
-    /**
-     * Specifies the URL to redirect to when authentication fails. This is a shortcut
-     * for invoking {@link #failureHandler(AuthenticationFailureHandler)} with a
-     * {@link SimpleUrlAuthenticationFailureHandler}. The default is "/login?error".
-     *
-     * @param failureUrl the URL to redirect to when authentication fails.
-     * @return the {@link OpenIDLoginConfigurator} for further customization
-     */
-    public OpenIDLoginConfigurator failureUrl(String failureUrl) {
-        this.failureUrl = failureUrl;
-        return failureHandler(new SimpleUrlAuthenticationFailureHandler(failureUrl));
-    }
-
-    /**
-     * Specifies the {@link AuthenticationFailureHandler} to use when authentication fails. The default is to redirect to "/login?error".
-     * @param failureHandler the {@link AuthenticationFailureHandler} to use
-     * @return the {@link OpenIDLoginConfigurator} for further customization
-     */
-    public OpenIDLoginConfigurator failureHandler(AuthenticationFailureHandler failureHandler) {
-        this.failureHandler = failureHandler;
-        return this;
+        return super.loginPage(loginPage);
     }
 
     @Override
     public void init(HttpConfiguration http) throws Exception {
-        if(permitAll) {
-            PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
-        }
-        authenticationEntryPoint = registerLifecycle(authenticationEntryPoint);
-        http.setSharedObject(AuthenticationEntryPoint.class,authenticationEntryPoint);
+        super.init(http);
 
         OpenIDAuthenticationProvider authenticationProvider = new OpenIDAuthenticationProvider();
         authenticationProvider.setAuthenticationUserDetailsService(getAuthenticationUserDetailsService(http));
@@ -370,40 +233,8 @@ public final class OpenIDLoginConfigurator extends BaseHttpConfigurator {
 
     @Override
     public void configure(HttpConfiguration http) throws Exception {
-        openIDAuthenticationFilter.setAuthenticationManager(http.authenticationManager());
-        openIDAuthenticationFilter.setAuthenticationSuccessHandler(successHandler);
-        openIDAuthenticationFilter.setAuthenticationFailureHandler(failureHandler);
-        openIDAuthenticationFilter.setConsumer(getConsumer());
-        if(authenticationDetailsSource != null) {
-            openIDAuthenticationFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
-        }
-        SessionAuthenticationStrategy sessionAuthenticationStrategy = http.getSharedObject(SessionAuthenticationStrategy.class);
-        if(sessionAuthenticationStrategy != null) {
-            openIDAuthenticationFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
-        }
-        RememberMeServices rememberMeServices = http.getSharedObject(RememberMeServices.class);
-        if(rememberMeServices != null) {
-            openIDAuthenticationFilter.setRememberMeServices(rememberMeServices);
-        }
-        openIDAuthenticationFilter = registerLifecycle(openIDAuthenticationFilter);
-
-        http.addFilter(openIDAuthenticationFilter);
-    }
-
-    String getLoginProcessingUrl() {
-        return this.loginProcessingUrl;
-    }
-
-    String getLoginPage() {
-        return this.loginPage;
-    }
-
-    String getFailureUrl() {
-        return this.failureUrl;
-    }
-
-    boolean isCustomLoginPage() {
-        return customLoginPage;
+        authFilter.setConsumer(getConsumer());
+        super.configure(http);
     }
 
     /**

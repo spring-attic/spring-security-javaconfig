@@ -18,17 +18,9 @@ package org.springframework.security.config.annotation.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.PortMapper;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 /**
@@ -67,34 +59,15 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public final class FormLoginConfigurator extends BaseHttpConfigurator {
-    private UsernamePasswordAuthenticationFilter usernamePasswordFilter = new UsernamePasswordAuthenticationFilter() {
-        @Override
-        protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-            return "POST".equals(request.getMethod()) && super.requiresAuthentication(request, response);
-        }
-    };
-
-    private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
-    private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-    private LoginUrlAuthenticationEntryPoint authenticationEntryPoint;
-    private AuthenticationFailureHandler failureHandler;
-    private boolean permitAll;
-    private boolean customLoginPage;
-    private String loginPage;
-    private String loginProcessingUrl;
-    private String failureUrl;
-
+public final class FormLoginConfigurator extends AbstractAuthenticationFilterConfigurator<FormLoginConfigurator,UsernamePasswordAuthenticationFilter> {
     /**
      * Creates a new instance
      * @see HttpConfiguration#formLogin()
      */
     FormLoginConfigurator() {
-        loginUrl("/login");
-        failureUrl("/login?error");
+        super(createUsernamePasswordAuthenticationFilter(),"/login");
         usernameParameter("username");
         passwordParameter("password");
-        this.customLoginPage = false;
     }
 
     /**
@@ -175,97 +148,10 @@ public final class FormLoginConfigurator extends BaseHttpConfigurator {
      * @return the {@link FormLoginConfigurator} for additional customization
      */
     public FormLoginConfigurator loginPage(String loginPage) {
-        this.loginPage = loginPage;
-        this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
-        this.customLoginPage = true;
-        return this;
+        return super.loginPage(loginPage);
     }
 
-    /**
-     * Specifies a custom {@link AuthenticationDetailsSource}. The default is {@link WebAuthenticationDetailsSource}.
-     *
-     * @param authenticationDetailsSource the custom {@link AuthenticationDetailsSource}
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
-        this.authenticationDetailsSource = authenticationDetailsSource;
-        return this;
-    }
 
-    /**
-     * Specifies where users will go after authenticating successfully if they
-     * have not visited a secured page prior to authenticating. This is a
-     * shortcut for calling {@link #defaultSuccessUrl(String)}.
-     *
-     * @param defaultSuccessUrl
-     *            the default success url
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator defaultSuccessUrl(String defaultSuccessUrl) {
-        return defaultSuccessUrl(defaultSuccessUrl, false);
-    }
-
-    /**
-     * Specifies where users will go after authenticating successfully if they
-     * have not visited a secured page prior to authenticating or
-     * {@code alwaysUse} is true. This is a shortcut for calling
-     * {@link #successHandler(AuthenticationSuccessHandler)}.
-     *
-     * @param defaultSuccessUrl
-     *            the default success url
-     * @param alwaysUse
-     *            true if the {@code defaultSuccesUrl} should be used after
-     *            authentication despite if a protected page had been previously
-     *            visited
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator defaultSuccessUrl(String defaultSuccessUrl, boolean alwaysUse) {
-        SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
-        handler.setDefaultTargetUrl(defaultSuccessUrl);
-        handler.setAlwaysUseDefaultTargetUrl(alwaysUse);
-        return successHandler(handler);
-    }
-
-    /**
-     * Specifies the {@link AuthenticationSuccessHandler} to be used. The
-     * default is {@link SavedRequestAwareAuthenticationSuccessHandler} with no
-     * additional properites set.
-     *
-     * @param successHandler
-     *            the {@link AuthenticationSuccessHandler}.
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator successHandler(AuthenticationSuccessHandler successHandler) {
-        this.successHandler = successHandler;
-        return this;
-    }
-
-    /**
-     * Specifies the URL used to log in. If the request matches the URL and is an HTTP POST, the
-     * {@link UsernamePasswordAuthenticationFilter} will attempt to authenticate
-     * the request. Otherwise, if the request matches the URL the user will be sent to the login form.
-     *
-     * @param loginUrl the URL used to perform authentication
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator loginUrl(String loginUrl) {
-        loginProcessingUrl(loginUrl);
-        return loginPage(loginUrl);
-    }
-
-    /**
-     * Specifies the URL to validate the username and password. Note that only a
-     * POST will be used to authenticate users.
-     *
-     * @param loginProcessingUrl
-     *            the URL to validate username and password
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator loginProcessingUrl(String loginProcessingUrl) {
-        this.loginProcessingUrl = loginProcessingUrl;
-        usernamePasswordFilter.setFilterProcessesUrl(loginProcessingUrl);
-        return this;
-    }
 
     /**
      * The HTTP parameter to look for the username when performing
@@ -277,7 +163,7 @@ public final class FormLoginConfigurator extends BaseHttpConfigurator {
      * @return the {@link FormLoginConfigurator} for additional customization
      */
     public FormLoginConfigurator usernameParameter(String usernameParameter) {
-        usernamePasswordFilter.setUsernameParameter(usernameParameter);
+        authFilter.setUsernameParameter(usernameParameter);
         return this;
     }
 
@@ -291,125 +177,8 @@ public final class FormLoginConfigurator extends BaseHttpConfigurator {
      * @return the {@link FormLoginConfigurator} for additional customization
      */
     public FormLoginConfigurator passwordParameter(String passwordParameter) {
-        usernamePasswordFilter.setPasswordParameter(passwordParameter);
+        authFilter.setPasswordParameter(passwordParameter);
         return this;
-    }
-
-    /**
-     * Equivalent of invoking permitAll(true)
-     * @return
-     */
-    public FormLoginConfigurator permitAll() {
-        return permitAll(true);
-    }
-
-    /**
-     * Ensures the urls for {@link #failureUrl(String)} and
-     * {@link #loginUrl(String)} are granted access to any user.
-     *
-     * @param permitAll true to grant access to the URLs false to skip this step
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator permitAll(boolean permitAll) {
-        this.permitAll = permitAll;
-        return this;
-    }
-
-    /**
-     * The URL to send users if authentication fails. This is a shortcut for
-     * invoking {@link #failureHandler(AuthenticationFailureHandler)}. The
-     * default is "/login?error".
-     *
-     * @param failureUrl
-     *            the URL to send users if authentication fails (i.e.
-     *            "/login?error").
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator failureUrl(String failureUrl) {
-        this.failureUrl = failureUrl;
-        return failureHandler(new SimpleUrlAuthenticationFailureHandler(failureUrl));
-    }
-
-    /**
-     * Specifies the {@link AuthenticationFailureHandler} to use when
-     * authentication fails. The default is redirecting to "/login?error" using
-     * {@link SimpleUrlAuthenticationFailureHandler}
-     *
-     * @param failureHandler
-     *            the {@link AuthenticationFailureHandler} to use when
-     *            authentication fails.
-     * @return the {@link FormLoginConfigurator} for additional customization
-     */
-    public FormLoginConfigurator failureHandler(AuthenticationFailureHandler failureHandler) {
-        this.failureHandler = failureHandler;
-        return this;
-    }
-
-    @Override
-    public void init(HttpConfiguration http) throws Exception {
-        if(permitAll) {
-            PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
-        }
-        http.setSharedObject(AuthenticationEntryPoint.class,registerLifecycle(authenticationEntryPoint));
-    }
-
-    @Override
-    public void configure(HttpConfiguration http) throws Exception {
-        PortMapper portMapper = http.getSharedObject(PortMapper.class);
-        if(portMapper != null) {
-            authenticationEntryPoint.setPortMapper(portMapper);
-        }
-
-        usernamePasswordFilter.setAuthenticationManager(http.authenticationManager());
-        usernamePasswordFilter.setAuthenticationSuccessHandler(successHandler);
-        usernamePasswordFilter.setAuthenticationFailureHandler(failureHandler);
-        if(authenticationDetailsSource != null) {
-            usernamePasswordFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
-        }
-        SessionAuthenticationStrategy sessionAuthenticationStrategy = http.getSharedObject(SessionAuthenticationStrategy.class);
-        if(sessionAuthenticationStrategy != null) {
-            usernamePasswordFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
-        }
-        RememberMeServices rememberMeServices = http.getSharedObject(RememberMeServices.class);
-        if(rememberMeServices != null) {
-            usernamePasswordFilter.setRememberMeServices(rememberMeServices);
-        }
-        usernamePasswordFilter = registerLifecycle(usernamePasswordFilter);
-        http.addFilter(usernamePasswordFilter);
-    }
-
-    /**
-     *
-     * @return true if a custom login page has been specified, else false
-     */
-    boolean isCustomLoginPage() {
-        return customLoginPage;
-    }
-
-    /**
-     * Gets the login page
-     * @return the login page
-     */
-    String getLoginPage() {
-        return loginPage;
-    }
-
-    /**
-     * Gets the URL to submit an authentication request to (i.e. where
-     * username/password must be submitted)
-     *
-     * @return the URL to submit an authentication request to
-     */
-    String getLoginProcessingUrl() {
-        return loginProcessingUrl;
-    }
-
-    /**
-     * Gets the URL to send users to if authentication fails
-     * @return
-     */
-    String getFailureUrl() {
-        return failureUrl;
     }
 
     /**
@@ -418,7 +187,7 @@ public final class FormLoginConfigurator extends BaseHttpConfigurator {
      * @return the HTTP parameter that is used to submit the username
      */
     String getUsernameParameter() {
-        return usernamePasswordFilter.getUsernameParameter();
+        return authFilter.getUsernameParameter();
     }
 
     /**
@@ -427,6 +196,16 @@ public final class FormLoginConfigurator extends BaseHttpConfigurator {
      * @return the HTTP parameter that is used to submit the password
      */
     String getPasswordParameter() {
-        return usernamePasswordFilter.getPasswordParameter();
+        return authFilter.getPasswordParameter();
+    }
+
+
+    private static UsernamePasswordAuthenticationFilter createUsernamePasswordAuthenticationFilter() {
+        return new UsernamePasswordAuthenticationFilter() {
+            @Override
+            protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+                return "POST".equals(request.getMethod()) && super.requiresAuthentication(request, response);
+            }
+        };
     }
 }
