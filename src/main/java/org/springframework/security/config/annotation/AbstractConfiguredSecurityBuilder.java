@@ -34,16 +34,14 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * populate the {@link SecurityBuilder} with the filters necessary for session
  * management, form based login, authorization, etc.</p>
  *
+ * @see WebSecurityBuilder
+ *
  * @author Rob Winch
  *
  * @param <T>
  *            The object that this builder returns
  * @param <B>
  *            The type of this builder (that is returned by the base class)
- *
- * @see WebSecurityBuilder
- *
- *
  */
 public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBuilder<T>> extends AbstractSecurityBuilder<T> {
 
@@ -214,8 +212,46 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
         return new ArrayList<SecurityConfigurator<T,B>>(this.configurators.values());
     }
 
+    /**
+     * The build state for the application
+     *
+     * @author Rob Winch
+     * @since 3.2
+     */
     private static enum BuildState {
-        UNBUILT(0), INITIALIZING(1), CONFIGURING(2), BUILDING(3), BUILT(4);
+        /**
+         * This is the state before the {@link Builder#build()} is invoked
+         */
+        UNBUILT(0),
+
+        /**
+         * The state from when {@link Builder#build()} is first invoked until
+         * all the {@link SecurityConfigurator#init(SecurityBuilder)} methods
+         * have been invoked.
+         */
+        INITIALIZING(1),
+
+        /**
+         * The state from after all
+         * {@link SecurityConfigurator#init(SecurityBuilder)} have been invoked
+         * until after all the
+         * {@link SecurityConfigurator#configure(SecurityBuilder)} methods have
+         * been invoked.
+         */
+        CONFIGURING(2),
+
+        /**
+         * From the point after all the
+         * {@link SecurityConfigurator#configure(SecurityBuilder)} have
+         * completed to just after
+         * {@link AbstractConfiguredSecurityBuilder#performBuild()}.
+         */
+        BUILDING(3),
+
+        /**
+         * After the object has been completely built.
+         */
+        BUILT(4);
 
         private final int order;
 
