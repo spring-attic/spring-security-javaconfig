@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.ExceptionTranslationFilter
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter
+import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.security.web.savedrequest.RequestCache
 import org.springframework.security.web.session.ConcurrentSessionFilter
 import org.springframework.security.web.session.SessionManagementFilter
@@ -66,6 +66,7 @@ class SessionManagementConfiguratorTests extends BaseSpringSpec {
             findFilter(SecurityContextPersistenceFilter).repo == SessionManagementDoesNotOverrideExplicitSecurityContextRepositoryConfig.SECURITY_CONTEXT_REPO
     }
 
+    @Configuration
     @EnableWebSecurity
     static class SessionManagementDoesNotOverrideExplicitSecurityContextRepositoryConfig extends WebSecurityConfigurerAdapter {
         static SecurityContextRepository SECURITY_CONTEXT_REPO

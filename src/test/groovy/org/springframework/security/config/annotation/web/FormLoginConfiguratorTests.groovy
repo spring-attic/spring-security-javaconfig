@@ -175,6 +175,7 @@ class FormLoginConfiguratorTests extends BaseSpringSpec {
     }
 
     @EnableWebSecurity
+    @Configuration
     static class PermitAllIgnoresFailureHandlerConfig extends BaseWebConfig {
         static AuthenticationFailureHandler FAILURE_HANDLER
 

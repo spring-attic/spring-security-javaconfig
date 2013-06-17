@@ -17,8 +17,8 @@ package org.springframework.security.config.annotation.authentication.ldap;
 
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
@@ -33,7 +33,7 @@ import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
  * @since 3.2
  */
 public class LdapAuthenticationProviderConfigurator extends SecurityConfiguratorAdapter<AuthenticationManager,AuthenticationManagerBuilder> implements
-        SecurityBuilder<LdapAuthenticationProvider>, LdapAuthenticationRegistry {
+        SecurityBuilder<LdapAuthenticationProvider> {
     private String groupRoleAttribute = "cn";
     private String groupSearchBase = "ou=groups";
     private String groupSearchFilter = "(uniqueMember={0})";
@@ -75,53 +75,41 @@ public class LdapAuthenticationProviderConfigurator extends SecurityConfigurator
         return ldapAuthenticationProvider;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationRegistry#contextSource(org.springframework.ldap.core.support.BaseLdapPathContextSource)
-     */
-    @Override
     public LdapAuthenticationProviderConfigurator contextSource(BaseLdapPathContextSource contextSource) {
         this.contextSource = contextSource;
         return this;
     }
 
-    @Override
     public LdapAuthenticationProviderConfigurator userDnPatterns(String...userDnPatterns) {
         this.userDnPatterns = userDnPatterns;
         return this;
     }
 
-    @Override
     public LdapAuthenticationProviderConfigurator userDetailsContextMapper(UserDetailsContextMapper userDetailsContextMapper) {
         this.userDetailsContextMapper = userDetailsContextMapper;
         return this;
     }
 
-    @Override
     public LdapAuthenticationProviderConfigurator groupRoleAttribute(String groupRoleAttribute) {
         this.groupRoleAttribute = groupRoleAttribute;
         return this;
     }
 
-    @Override
     public LdapAuthenticationProviderConfigurator groupSearchBase(String groupSearchBase) {
         this.groupSearchBase = groupSearchBase;
         return this;
     }
 
-    @Override
     public LdapAuthenticationProviderConfigurator groupSearchFilter(String groupSearchFilter) {
         this.groupSearchFilter = groupSearchFilter;
         return this;
     }
 
-    @Override
     public LdapAuthenticationProviderConfigurator rolePrefix(String rolePrefix) {
         this.rolePrefix = rolePrefix;
         return this;
     }
 
-    @Override
     public LdapAuthenticationProviderConfigurator userSearchFilter(String userSearchFilter) {
         this.userSearchFilter = userSearchFilter;
         return this;

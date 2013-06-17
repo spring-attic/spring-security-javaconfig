@@ -24,7 +24,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurator;
-import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationRegistry;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityConfigurator;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurator;
 import org.springframework.security.config.annotation.web.LifecycleManager;
@@ -77,9 +76,9 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     }
 
     /**
-     * Add in memory authentication to the {@link AuthenticationManagerBuilder} and
-     * return a {@link UserDetailsManagerRegistry} to allow customization of the
-     * in memory authentication.
+     * Add in memory authentication to the {@link AuthenticationManagerBuilder}
+     * and return a {@link InMemoryUserDetailsManagerSecurityConfigurator} to
+     * allow customization of the in memory authentication.
      *
      * <p>
      * This method also ensure that a {@link UserDetailsService} is available
@@ -88,9 +87,10 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @return a {@link UserDetailsManagerRegistry} to allow customization of
-     *         the in memory authentication
-     * @throws Exception if an error occurs when adding the in memory authentication
+     * @return a {@link InMemoryUserDetailsManagerSecurityConfigurator} to allow
+     *         customization of the in memory authentication
+     * @throws Exception
+     *             if an error occurs when adding the in memory authentication
      */
     public InMemoryUserDetailsManagerSecurityConfigurator inMemoryAuthentication()
             throws Exception {
@@ -99,17 +99,18 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
 
     /**
      * Add LDAP authentication to the {@link AuthenticationManagerBuilder} and
-     * return a {@link LdapAuthenticationRegistry} to allow customization of the
-     * LDAP authentication.
+     * return a {@link LdapAuthenticationProviderConfigurator} to allow
+     * customization of the LDAP authentication.
      *
      * <p>
      * This method <b>does NOT</b> ensure that a {@link UserDetailsService} is
      * available for the {@link #getDefaultUserDetailsService()} method.
      * </p>
      *
-     * @return a {@link LdapAuthenticationRegistry} to allow customization of the
-     * LDAP authentication
-     * @throws Exception if an error occurs when adding the LDAP authentication
+     * @return a {@link LdapAuthenticationProviderConfigurator} to allow
+     *         customization of the LDAP authentication
+     * @throws Exception
+     *             if an error occurs when adding the LDAP authentication
      */
     public LdapAuthenticationProviderConfigurator ldapAuthenticationProvider()
             throws Exception {
@@ -118,7 +119,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
 
     /**
      * Add JDBC authentication to the {@link AuthenticationManagerBuilder} and
-     * return a {@link JdbcUserDetailsManagerRegistry} to allow customization of the
+     * return a {@link JdbcUserDetailsManagerConfigurator} to allow customization of the
      * JDBC authentication.
      *
      * <p>
@@ -128,7 +129,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @return a {@link JdbcUserDetailsManagerRegistry} to allow customization of the
+     * @return a {@link JdbcUserDetailsManagerConfigurator} to allow customization of the
      * JDBC authentication
      * @throws Exception if an error occurs when adding the JDBC authentication
      */
@@ -139,7 +140,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
 
     /**
      * Add authentication based upon the custom {@link UserDetailsService} that
-     * is passed in. It then returns a {@link DaoAuthenticationRegistry} to
+     * is passed in. It then returns a {@link DaoAuthenticationConfigurator} to
      * allow customization of the authentication.
      *
      * <p>
