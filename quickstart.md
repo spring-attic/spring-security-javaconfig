@@ -67,7 +67,6 @@ For reference, the JavaConfig above is similar to the following XML:
 
 ```xml
     <http use-expressions="true">
-      <intercept-url pattern="/resources/**" access="permitAll"/>
       <intercept-url pattern="/**" access="authenticated"/>
       <logout
           logout-success-url="/login?logout"
