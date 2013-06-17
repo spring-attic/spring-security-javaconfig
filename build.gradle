@@ -231,5 +231,5 @@ configure(warSamples) {
 
 task wrapper(type: Wrapper) {
     description = 'Generates gradlew[.bat] scripts'
-    gradleVersion = '1.4'
+    gradleVersion = '1.6'
 }
