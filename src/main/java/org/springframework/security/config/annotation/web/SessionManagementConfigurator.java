@@ -65,7 +65,6 @@ import org.springframework.util.Assert;
  * @see ConcurrentSessionFilter
  */
 public final class SessionManagementConfigurator extends BaseHttpConfigurator {
-    private SessionManagementFilter sessionManagementFilter;
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
     private Integer maximumSessions;
@@ -187,7 +186,7 @@ public final class SessionManagementConfigurator extends BaseHttpConfigurator {
     public void configure(HttpConfiguration http)
             throws Exception {
         SecurityContextRepository securityContextRepository = http.getSharedObject(SecurityContextRepository.class);
-        sessionManagementFilter = new SessionManagementFilter(securityContextRepository, getSessionAuthenticationStrategy());
+        SessionManagementFilter sessionManagementFilter = new SessionManagementFilter(securityContextRepository, getSessionAuthenticationStrategy());
         sessionManagementFilter = registerLifecycle(sessionManagementFilter);
 
         http.addFilter(sessionManagementFilter);

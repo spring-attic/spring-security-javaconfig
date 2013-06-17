@@ -43,7 +43,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-abstract class AbstractAuthenticationFilterConfigurator<T extends AbstractAuthenticationFilterConfigurator<T,F>, F extends AbstractAuthenticationProcessingFilter> extends BaseHttpConfigurator {
+abstract class AbstractAuthenticationFilterConfigurator<T extends AbstractAuthenticationFilterConfigurator<T, F>, F extends AbstractAuthenticationProcessingFilter> extends BaseHttpConfigurator {
 
     protected final F authFilter;
 
@@ -65,11 +65,11 @@ abstract class AbstractAuthenticationFilterConfigurator<T extends AbstractAuthen
 
     /**
      * Creates a new instance
-     * @param authFilter the {@link AbstractAuthenticationProcessingFilter} to use
+     * @param authenticationFilter the {@link AbstractAuthenticationProcessingFilter} to use
      * @param defaultLoginProcessingUrl the default URL to use for {@link #loginProcessingUrl(String)}
      */
-    AbstractAuthenticationFilterConfigurator(F authFilter, String defaultLoginProcessingUrl) {
-        this.authFilter = authFilter;
+    AbstractAuthenticationFilterConfigurator(F authenticationFilter, String defaultLoginProcessingUrl) {
+        this.authFilter = authenticationFilter;
         loginUrl("/login");
         failureUrl("/login?error");
         loginProcessingUrl(defaultLoginProcessingUrl);
@@ -186,14 +186,14 @@ abstract class AbstractAuthenticationFilterConfigurator<T extends AbstractAuthen
      * invoking {@link #failureHandler(AuthenticationFailureHandler)}. The
      * default is "/login?error".
      *
-     * @param failureUrl
+     * @param authenticationFailureUrl
      *            the URL to send users if authentication fails (i.e.
      *            "/login?error").
      * @return the {@link FormLoginConfigurator} for additional customization
      */
-    public T failureUrl(String failureUrl) {
-        T result = failureHandler(new SimpleUrlAuthenticationFailureHandler(failureUrl));
-        this.failureUrl = failureUrl;
+    public T failureUrl(String authenticationFailureUrl) {
+        T result = failureHandler(new SimpleUrlAuthenticationFailureHandler(authenticationFailureUrl));
+        this.failureUrl = authenticationFailureUrl;
         return result;
     }
 
@@ -202,14 +202,14 @@ abstract class AbstractAuthenticationFilterConfigurator<T extends AbstractAuthen
      * authentication fails. The default is redirecting to "/login?error" using
      * {@link SimpleUrlAuthenticationFailureHandler}
      *
-     * @param failureHandler
+     * @param authenticationFailureHandler
      *            the {@link AuthenticationFailureHandler} to use when
      *            authentication fails.
      * @return the {@link FormLoginConfigurator} for additional customization
      */
-    public T failureHandler(AuthenticationFailureHandler failureHandler) {
+    public T failureHandler(AuthenticationFailureHandler authenticationFailureHandler) {
         this.failureUrl = null;
-        this.failureHandler = failureHandler;
+        this.failureHandler = authenticationFailureHandler;
         return getSelf();
     }
 
@@ -218,7 +218,7 @@ abstract class AbstractAuthenticationFilterConfigurator<T extends AbstractAuthen
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
-        http.setSharedObject(AuthenticationEntryPoint.class,registerLifecycle(authenticationEntryPoint));
+        http.setSharedObject(AuthenticationEntryPoint.class, registerLifecycle(authenticationEntryPoint));
     }
 
     @Override

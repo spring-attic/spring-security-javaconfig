@@ -42,7 +42,7 @@ public abstract class AbstractSecurityBuilder<T> implements SecurityBuilder<T> {
     }
 
     public final T getObject() {
-        if(building.equals(false)) {
+        if(!building.get()) {
             throw new IllegalStateException("This object has not been built");
         }
         return object;

@@ -56,7 +56,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public final class HttpBasicConfigurator extends BaseHttpConfigurator {
     private static final String DEFAULT_REALM = "Spring Security Application";
 
-    private BasicAuthenticationFilter basicAuthenticationFilter;
     private AuthenticationEntryPoint authenticationEntryPoint;
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
 
@@ -116,7 +115,7 @@ public final class HttpBasicConfigurator extends BaseHttpConfigurator {
     @Override
     public void configure(HttpConfiguration http) throws Exception {
         AuthenticationManager authenticationManager = http.authenticationManager();
-        basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
+        BasicAuthenticationFilter basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {
             basicAuthenticationFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
         }

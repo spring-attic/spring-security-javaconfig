@@ -49,7 +49,7 @@ import org.springframework.security.web.session.SessionManagementFilter;
  */
 
 final class FilterComparator implements Comparator<Filter>{
-    private static int STEP = 100;
+    private static final int STEP = 100;
     private Map<String,Integer> filterToOrder = new HashMap<String,Integer>();
 
     FilterComparator() {

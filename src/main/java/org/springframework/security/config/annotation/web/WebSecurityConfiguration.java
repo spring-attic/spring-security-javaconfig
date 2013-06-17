@@ -129,7 +129,7 @@ public class WebSecurityConfiguration {
      * @since 3.2
      */
     private static class AnnotationAwareOrderComparator extends OrderComparator {
-        private static AnnotationAwareOrderComparator INSTANCE = new AnnotationAwareOrderComparator();
+        private static final AnnotationAwareOrderComparator INSTANCE = new AnnotationAwareOrderComparator();
 
         @Override
         protected int getOrder(Object obj) {
@@ -138,8 +138,7 @@ public class WebSecurityConfiguration {
 
         private static int lookupOrder(Object obj) {
             if (obj instanceof Ordered) {
-                int order = ((Ordered) obj).getOrder();
-                return order;
+                return ((Ordered) obj).getOrder();
             }
             if (obj != null) {
                 Class<?> clazz = (obj instanceof Class ? (Class<?>) obj : obj.getClass());

@@ -48,8 +48,6 @@ public class JdbcUserDetailsManagerConfigurator extends
 
     private List<Resource> initScripts = new ArrayList<Resource>();
 
-    private ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-
     public JdbcUserDetailsManagerConfigurator() {
         super(new JdbcUserDetailsManager());
     }

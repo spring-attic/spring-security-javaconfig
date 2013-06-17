@@ -67,7 +67,7 @@ final class AutowireBeanFactoryLifecycleManager implements LifecycleManager, Dis
         for(DisposableBean disposable : disposableBeans) {
             try {
                 disposable.destroy();
-            } catch(Throwable error) {
+            } catch(Exception error) {
                 logger.error(error);
             }
         }
