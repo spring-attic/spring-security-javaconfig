@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.config.annotation.web;
+package org.springframework.security.config.annotation;
 
 import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.DisposableBean;
@@ -23,6 +23,8 @@ import org.springframework.beans.factory.InitializingBean;
  * Allows initialization of Objects. Typically this is used to call the
  * {@link Aware} methods, {@link InitializingBean#afterPropertiesSet()}, and
  * ensure that {@link DisposableBean#destroy()} has been invoked.
+ *
+ * This interface is intended for internal use only.
  *
  * @author Rob Winch
  * @since 3.2

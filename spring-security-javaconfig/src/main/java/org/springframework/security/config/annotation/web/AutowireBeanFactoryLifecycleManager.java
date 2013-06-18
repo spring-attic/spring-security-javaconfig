@@ -24,6 +24,7 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.util.Assert;
 
 /**

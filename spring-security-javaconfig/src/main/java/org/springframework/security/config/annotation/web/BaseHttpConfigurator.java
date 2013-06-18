@@ -15,6 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;

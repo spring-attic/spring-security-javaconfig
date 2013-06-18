@@ -24,6 +24,7 @@ import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler

@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockServletConfig
 import org.springframework.mock.web.MockServletContext
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.web.context.ServletConfigAware
 import org.springframework.web.context.ServletContextAware
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext

@@ -27,6 +27,7 @@ import org.springframework.mock.web.MockHttpSession
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.userdetails.UserDetailsService

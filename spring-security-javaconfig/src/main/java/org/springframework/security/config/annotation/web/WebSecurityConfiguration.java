@@ -27,6 +27,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
+import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityConfigurator;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
