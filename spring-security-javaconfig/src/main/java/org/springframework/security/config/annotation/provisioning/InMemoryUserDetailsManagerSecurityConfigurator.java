@@ -15,10 +15,10 @@
  */
 package org.springframework.security.config.annotation.provisioning;
 
+import java.util.ArrayList;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-
-import java.util.ArrayList;
 
 /**
  * Configures an {@link org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder} to

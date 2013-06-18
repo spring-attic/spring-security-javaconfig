@@ -23,12 +23,9 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
@@ -487,7 +484,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *
      * The following configuration demonstrates how to allow token based remember me
      * authentication. Upon authenticating if the HTTP parameter named "remember-me" exists,
-     * then the user will be remembered even after their {@link HttpSession} expires.
+     * then the user will be remembered even after their {@link javax.servlet.http.HttpSession} expires.
      *
      * <pre>
      * &#064;Configuration
@@ -729,7 +726,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     /**
      * Allows configuring how an anonymous user is represented. This is automatically applied
      * when used in conjunction with {@link WebSecurityConfigurerAdapter}. By default anonymous
-     * users will be represented with an {@link AnonymousAuthenticationToken} and contain the role
+     * users will be represented with an {@link org.springframework.security.authentication.AnonymousAuthenticationToken} and contain the role
      * "ROLE_ANONYMOUS".
      *
      * <h2>Example Configuration</h2
@@ -1094,7 +1091,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * <li>{@link LogoutFilter}</li>
      * <li>{@link X509AuthenticationFilter}</li>
      * <li>{@link AbstractPreAuthenticatedProcessingFilter}</li>
-     * <li>{@link CasAuthenticationFilter}</li>
+     * <li>{@link org.springframework.security.cas.web.CasAuthenticationFilter}</li>
      * <li>{@link UsernamePasswordAuthenticationFilter}</li>
      * <li>{@link ConcurrentSessionFilter}</li>
      * <li>{@link OpenIDAuthenticationFilter}</li>
