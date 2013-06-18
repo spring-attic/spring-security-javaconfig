@@ -51,7 +51,7 @@ public class NamespaceHttpRequestCacheTests extends BaseSpringSpec {
         static RequestCache REQUEST_CACHE
         protected void configure(HttpConfiguration http) {
             http.
-                exceptionHandling()
+                requestCache()
                     .requestCache(REQUEST_CACHE)
         }
     }

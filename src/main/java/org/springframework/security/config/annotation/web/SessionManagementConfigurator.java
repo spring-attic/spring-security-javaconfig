@@ -168,15 +168,23 @@ public final class SessionManagementConfigurator extends BaseHttpConfigurator {
     public void init(HttpConfiguration builder)
             throws Exception {
         SecurityContextRepository securityContextRepository = builder.getSharedObject(SecurityContextRepository.class);
+        boolean stateless = isStateless();
+
         if(securityContextRepository == null) {
-            if(isStateless()) {
+            if(stateless) {
                 builder.setSharedObject(SecurityContextRepository.class, new NullSecurityContextRepository());
-                builder.setSharedObject(RequestCache.class, new NullRequestCache());
             } else {
                 HttpSessionSecurityContextRepository httpSecurityRepository = new HttpSessionSecurityContextRepository();
                 httpSecurityRepository.setDisableUrlRewriting(!enableSessionUrlRewriting);
                 httpSecurityRepository.setAllowSessionCreation(isAllowSessionCreation());
                 builder.setSharedObject(SecurityContextRepository.class, httpSecurityRepository);
+            }
+        }
+
+        RequestCache requestCache = builder.getSharedObject(RequestCache.class);
+        if(requestCache == null) {
+            if(stateless) {
+                builder.setSharedObject(RequestCache.class, new NullRequestCache());
             }
         }
         builder.setSharedObject(SessionAuthenticationStrategy.class, getSessionAuthenticationStrategy());

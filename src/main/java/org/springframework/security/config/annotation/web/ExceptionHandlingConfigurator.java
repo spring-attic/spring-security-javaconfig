@@ -60,7 +60,6 @@ public final class ExceptionHandlingConfigurator extends BaseHttpConfigurator {
     private AuthenticationEntryPoint authenticationEntryPoint;
 
     private AccessDeniedHandler accessDeniedHandler;
-    private RequestCache requestCache;
 
     /**
      * Creates a new instance
@@ -91,18 +90,6 @@ public final class ExceptionHandlingConfigurator extends BaseHttpConfigurator {
      */
     public ExceptionHandlingConfigurator accessDeniedHandler(AccessDeniedHandler accessDeniedHandler) {
         this.accessDeniedHandler = accessDeniedHandler;
-        return this;
-    }
-
-    /**
-     * Allows explicit configuration of the {@link RequestCache} to be used. Defaults to try finding a
-     * {@link RequestCache} as a shared object. Then falls back to a {@link HttpSessionRequestCache}.
-     *
-     * @param requestCache the explicit {@link RequestCache} to use
-     * @return the {@link ExceptionHandlingConfigurator} for further customization
-     */
-    public ExceptionHandlingConfigurator requestCache(RequestCache requestCache) {
-        this.requestCache = requestCache;
         return this;
     }
 
@@ -166,9 +153,6 @@ public final class ExceptionHandlingConfigurator extends BaseHttpConfigurator {
      * @return the {@link RequestCache} to use
      */
     private RequestCache getRequestCache(HttpConfiguration http) {
-        if(this.requestCache != null) {
-            return this.requestCache;
-        }
         RequestCache result = http.getSharedObject(RequestCache.class);
         if(result != null) {
             return result;

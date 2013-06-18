@@ -31,7 +31,7 @@ import org.springframework.security.web.session.SessionManagementFilter
  */
 class SessionManagementConfiguratorTests extends BaseSpringSpec {
 
-    def "sessionManagement does not override ExceptionHandlingConfiurator.requestCache"() {
+    def "sessionManagement does not override explicit RequestCache"() {
         setup:
             SessionManagementDoesNotOverrideExplicitRequestCacheConfig.REQUEST_CACHE = Mock(RequestCache)
         when:
@@ -48,7 +48,7 @@ class SessionManagementConfiguratorTests extends BaseSpringSpec {
         @Override
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .exceptionHandling()
+                .requestCache()
                     .requestCache(REQUEST_CACHE)
                     .and()
                 .sessionManagement()

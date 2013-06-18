@@ -95,6 +95,16 @@ public final class ChannelSecurityConfigurator extends
         http.addFilter(channelFilter);
     }
 
+    /**
+     * Sets the {@link ChannelProcessor} instances to use in  {@link ChannelDecisionManagerImpl}
+     * @param channelProcessors
+     * @return
+     */
+    public ChannelSecurityConfigurator channelProcessors(List<ChannelProcessor> channelProcessors) {
+        this.channelProcessors = channelProcessors;
+        return this;
+    }
+
     private <T> T registerLifecycle(T object) {
         return getBuilder().registerLifecycle(object);
     }

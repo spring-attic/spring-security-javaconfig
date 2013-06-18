@@ -53,9 +53,20 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
  * @see RequestCache
  */
 public final class RequestCacheConfigurator extends BaseHttpConfigurator {
-    private RequestCache requestCache;
 
     RequestCacheConfigurator() {
+    }
+
+    /**
+     * Allows explicit configuration of the {@link RequestCache} to be used. Defaults to try finding a
+     * {@link RequestCache} as a shared object. Then falls back to a {@link HttpSessionRequestCache}.
+     *
+     * @param requestCache the explicit {@link RequestCache} to use
+     * @return the {@link RequestCacheConfigurator} for further customization
+     */
+    public RequestCacheConfigurator requestCache(RequestCache requestCache) {
+        getBuilder().setSharedObject(RequestCache.class, requestCache);
+        return this;
     }
 
     @Override
@@ -76,9 +87,6 @@ public final class RequestCacheConfigurator extends BaseHttpConfigurator {
      * @return the {@link RequestCache} to use
      */
     private RequestCache getRequestCache(HttpConfiguration http) {
-        if(this.requestCache != null) {
-            return this.requestCache;
-        }
         RequestCache result = http.getSharedObject(RequestCache.class);
         if(result != null) {
             return result;
