@@ -1,3 +1,7 @@
+test {
+    jvmArgs "-javaagent:${configurations.jacoco.asPath}=destfile=${buildDir}/jacoco.exec,includes=${project.group}.*"
+}
+
 dependencies {
     compile "org.springframework.security:spring-security-config:$springSecurityVersion"
     optional "org.aspectj:aspectjrt:${aspectjVersion}",

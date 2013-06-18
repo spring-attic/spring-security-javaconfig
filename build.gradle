@@ -63,7 +63,13 @@ configure(allprojects) { p->
         }
     }
 
+    configurations {
+        jacoco //Configuration Group used by Sonar to provide Code Coverage using JaCoCo
+    }
+
     dependencies {
+        jacoco group: "org.jacoco", name: "org.jacoco.agent", version: "0.6.2.201302030002", classifier: "runtime"
+
         groovy "org.codehaus.groovy:groovy:1.8.8"
 
         compile "org.springframework.security:spring-security-core:$springSecurityVersion",
@@ -114,6 +120,19 @@ configure(allprojects) { p->
 }
 
 configure(rootProject) {
+    apply plugin: 'sonar-runner'
+
+    sonarRunner {
+        sonarProperties {
+            property "sonar.jacoco.reportPath", "${buildDir.name}/jacoco.exec"
+            property "sonar.links.homepage", 'https://github.com/SpringSource/spring-security-javaconfig'
+            property "sonar.links.ci", 'https://build.springsource.org/browse/https://build.springsource.org/browse/SEC-JAVACONFIG'
+            property "sonar.links.issue", 'https://github.com/SpringSource/spring-security-javaconfig/issues'
+            property "sonar.links.scm", 'https://github.com/SpringSource/spring-security-javaconfig'
+            property "sonar.links.scm_dev", 'https://github.com/SpringSource/spring-security-javaconfig.git'
+            property "sonar.java.coveragePlugin", "jacoco"
+        }
+    }
     task docsZip(type: Zip) {
         group = "Distribution"
         baseName = "spring-security-javaconfig"
@@ -162,6 +181,10 @@ def warSamples = subprojects.findAll { project -> project.path.contains('samples
 
 configure(warSamples) {
     apply plugin: 'war'
+
+    sonarRunner {
+        skipProject = true
+    }
 
     configurations {
         integrationTestCompile {
