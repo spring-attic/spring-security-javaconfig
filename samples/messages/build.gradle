@@ -1,5 +1,5 @@
 dependencies {
-    compile rootProject,
+    compile project(":spring-security-javaconfig"),
             "org.springframework.data:spring-data-jpa:1.2.0.RELEASE",
             "org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.0.Final",
             "org.hibernate:hibernate-entitymanager:3.6.10.Final",

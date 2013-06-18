@@ -1,5 +1,6 @@
-rootProject.name = 'spring-security-javaconfig'
+rootProject.name = 'spring-security-javaconfig-build'
 
+include "spring-security-javaconfig"
 include "spring-security-oauth2-javaconfig"
 
 def samplesDirName = "samples"

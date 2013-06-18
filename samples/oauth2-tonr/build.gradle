@@ -1,7 +1,7 @@
 ext.springOauthVersion = "1.0.1.BUILD-SNAPSHOT"
 
 dependencies {
-    compile rootProject,
+    compile project(":spring-security-javaconfig"),
             "org.springframework.security:spring-security-taglibs:$springSecurityVersion",
             "org.springframework.security.oauth:spring-security-oauth2:$springOauthVersion",
             "org.springframework:spring-jdbc:$springVersion",
