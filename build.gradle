@@ -124,9 +124,10 @@ configure(rootProject) {
 
     sonarRunner {
         sonarProperties {
+            property "sonar.java.coveragePlugin", "jacoco"
             property "sonar.jacoco.reportPath", "${buildDir.name}/jacoco.exec"
             property "sonar.links.homepage", 'https://github.com/SpringSource/spring-security-javaconfig'
-            property "sonar.links.ci", 'https://build.springsource.org/browse/https://build.springsource.org/browse/SEC-JAVACONFIG'
+            property "sonar.links.ci", 'https://build.springsource.org/browse/SEC-JAVACONFIG'
             property "sonar.links.issue", 'https://github.com/SpringSource/spring-security-javaconfig/issues'
             property "sonar.links.scm", 'https://github.com/SpringSource/spring-security-javaconfig'
             property "sonar.links.scm_dev", 'https://github.com/SpringSource/spring-security-javaconfig.git'
