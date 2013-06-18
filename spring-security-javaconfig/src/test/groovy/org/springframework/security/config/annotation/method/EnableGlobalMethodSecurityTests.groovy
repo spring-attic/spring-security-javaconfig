@@ -49,7 +49,7 @@ import org.springframework.security.config.annotation.BaseAuthenticationConfig;
 import org.springframework.security.config.annotation.BaseSpringSpec;
 import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.method.GlobalMethodSecurityConfiguration
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityConfigurator
+import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerConfigurer
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 

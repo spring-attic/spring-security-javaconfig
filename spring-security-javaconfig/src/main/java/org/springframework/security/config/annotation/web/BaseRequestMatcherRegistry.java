@@ -24,7 +24,7 @@ import java.util.List;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
@@ -41,11 +41,11 @@ import org.springframework.security.web.util.RequestMatcher;
  * @param <O> The Object being built by Builder B
  * @param <B> The Builder that is building Object O and is configured by this {@link BaseRequestMatcherRegistry}
  *
- * @see ChannelSecurityConfigurator
+ * @see ChannelSecurityConfigurer
  * @see UrlAuthorizations
  * @see ExpressionUrlAuthorizations
  */
-abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> extends SecurityConfiguratorAdapter<O,B> {
+abstract class BaseRequestMatcherRegistry<C,O,B extends SecurityBuilder<O>> extends SecurityConfigurerAdapter<O,B> {
     private static final RequestMatcher ANY_REQUEST = new AnyRequestMatcher();
 
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();

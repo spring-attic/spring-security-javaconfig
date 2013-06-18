@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
 /**
  * Adds URL based authorization using {@link DefaultFilterInvocationSecurityMetadataSource}. At least one
  * {@link org.springframework.web.bind.annotation.RequestMapping} needs to be mapped to {@link ConfigAttribute}'s for
- * this {@link SecurityContextConfigurator} to have meaning.
+ * this {@link SecurityContextConfigurer} to have meaning.
  * <h2>Security Filters</h2>
  *
  * The following Filters are populated
@@ -45,7 +45,7 @@ import org.springframework.util.Assert;
  *
  * <h2>Shared Objects Created</h2>
  *
- * The following shared objects are populated to allow other {@link org.springframework.security.config.annotation.SecurityConfigurator}'s to customize:
+ * The following shared objects are populated to allow other {@link org.springframework.security.config.annotation.SecurityConfigurer}'s to customize:
  * <ul>
  *     <li>{@link org.springframework.security.web.access.intercept.FilterSecurityInterceptor}</li>
  * </ul>
@@ -62,7 +62,7 @@ import org.springframework.util.Assert;
  * @since 3.2
  * @see ExpressionUrlAuthorizations
  */
-public final class UrlAuthorizations extends BaseInterceptUrlConfigurator<UrlAuthorizations.AuthorizedUrl> {
+public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAuthorizations.AuthorizedUrl> {
 
     /**
      * Creates the default {@link AccessDecisionVoter} instances used if an

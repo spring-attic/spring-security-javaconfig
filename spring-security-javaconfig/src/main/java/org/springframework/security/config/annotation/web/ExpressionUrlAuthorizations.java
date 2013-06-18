@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
 /**
  * Adds URL based authorization based upon SpEL expressions to an application. At least one
  * {@link org.springframework.web.bind.annotation.RequestMapping} needs to be mapped to {@link ConfigAttribute}'s for
- * this {@link SecurityContextConfigurator} to have meaning.
+ * this {@link SecurityContextConfigurer} to have meaning.
  * <h2>Security Filters</h2>
  *
  * The following Filters are populated
@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
  *
  * <h2>Shared Objects Created</h2>
  *
- * The following shared objects are populated to allow other {@link org.springframework.security.config.annotation.SecurityConfigurator}'s to customize:
+ * The following shared objects are populated to allow other {@link org.springframework.security.config.annotation.SecurityConfigurer}'s to customize:
  * <ul>
  *     <li>{@link org.springframework.security.web.access.intercept.FilterSecurityInterceptor}</li>
  * </ul>
@@ -63,7 +63,7 @@ import org.springframework.util.StringUtils;
  * @since 3.2
  * @see {@link org.springframework.security.config.annotation.web.HttpConfiguration#authorizeUrls()}
  */
-public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurator<ExpressionUrlAuthorizations.AuthorizedUrl> {
+public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurer<ExpressionUrlAuthorizations.AuthorizedUrl> {
     static final String permitAll = "permitAll";
     private static final String denyAll = "denyAll";
     private static final String anonymous = "anonymous";
@@ -224,7 +224,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigura
          * Specify that URLs are allowed by users that have been remembered.
          *
          * @return the {@link ExpressionUrlAuthorizations} for further customization
-         * @see {@link RememberMeConfigurator}
+         * @see {@link RememberMeConfigurer}
          */
         public ExpressionUrlAuthorizations rememberMe() {
             return access(rememberMe);
@@ -252,7 +252,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigura
          * Specify that URLs are allowed by users who have authenticated and were not "remembered".
          *
          * @return the {@link ExpressionUrlAuthorizations} for further customization
-         * @see {@link RememberMeConfigurator}
+         * @see {@link RememberMeConfigurer}
          */
         public ExpressionUrlAuthorizations fullyAuthenticated() {
             return access(fullyAuthenticated);

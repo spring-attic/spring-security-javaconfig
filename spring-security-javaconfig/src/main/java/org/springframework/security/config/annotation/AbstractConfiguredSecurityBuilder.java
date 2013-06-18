@@ -23,14 +23,14 @@ import org.springframework.security.config.annotation.web.WebSecurityBuilder;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 /**
- * <p>A base {@link SecurityBuilder} that allows {@link SecurityConfigurator} to be
+ * <p>A base {@link SecurityBuilder} that allows {@link SecurityConfigurer} to be
  * applied to it. This makes modifying the {@link SecurityBuilder} a strategy
  * that can be customized and broken up into a number of
- * {@link SecurityConfigurator} objects that have more specific goals than that
+ * {@link SecurityConfigurer} objects that have more specific goals than that
  * of the {@link SecurityBuilder}.</p>
  *
  * <p>For example, a {@link SecurityBuilder} may build an
- * {@link DelegatingFilterProxy}, but a {@link SecurityConfigurator} might
+ * {@link DelegatingFilterProxy}, but a {@link SecurityConfigurer} might
  * populate the {@link SecurityBuilder} with the filters necessary for session
  * management, form based login, authorization, etc.</p>
  *
@@ -45,22 +45,22 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  */
 public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBuilder<T>> extends AbstractSecurityBuilder<T> {
 
-    private final LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>> configurators =
-            new LinkedHashMap<Class<? extends SecurityConfigurator<T, B>>, SecurityConfigurator<T, B>>();
+    private final LinkedHashMap<Class<? extends SecurityConfigurer<T, B>>, SecurityConfigurer<T, B>> configurers =
+            new LinkedHashMap<Class<? extends SecurityConfigurer<T, B>>, SecurityConfigurer<T, B>>();
 
     private BuildState buildState = BuildState.UNBUILT;
 
     /**
-     * Applies a {@link SecurityConfiguratorAdapter} to this
+     * Applies a {@link SecurityConfigurerAdapter} to this
      * {@link SecurityBuilder} and invokes
-     * {@link SecurityConfiguratorAdapter#setBuilder(SecurityBuilder)}.
+     * {@link SecurityConfigurerAdapter#setBuilder(SecurityBuilder)}.
      *
      * @param configurer
      * @return
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public <C extends SecurityConfiguratorAdapter<T, B>> C apply(C configurer)
+    public <C extends SecurityConfigurerAdapter<T, B>> C apply(C configurer)
             throws Exception {
         add(configurer);
         configurer.setBuilder((B) this);
@@ -68,37 +68,37 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     }
 
     /**
-     * Applies a {@link SecurityConfigurator} to this {@link SecurityBuilder}
-     * overriding any {@link SecurityConfigurator} of the exact same class. Note
+     * Applies a {@link SecurityConfigurer} to this {@link SecurityBuilder}
+     * overriding any {@link SecurityConfigurer} of the exact same class. Note
      * that object hierarchies are not considered.
      *
      * @param configurer
      * @return
      * @throws Exception
      */
-    public <C extends SecurityConfigurator<T, B>> C apply(C configurer)
+    public <C extends SecurityConfigurer<T, B>> C apply(C configurer)
             throws Exception {
         add(configurer);
         return configurer;
     }
 
     /**
-     * Adds {@link SecurityConfigurator} ensuring that it is allowed and
-     * invoking {@link SecurityConfigurator#init(SecurityBuilder)} immediately
+     * Adds {@link SecurityConfigurer} ensuring that it is allowed and
+     * invoking {@link SecurityConfigurer#init(SecurityBuilder)} immediately
      * if necessary.
      *
-     * @param configurer the {@link SecurityConfigurator} to add
+     * @param configurer the {@link SecurityConfigurer} to add
      * @throws Exception if an error occurs
      */
     @SuppressWarnings("unchecked")
-    private <C extends SecurityConfigurator<T, B>> void add(C configurer) throws Exception {
-        Class<? extends SecurityConfigurator<T, B>> clazz = (Class<? extends SecurityConfigurator<T, B>>) configurer
+    private <C extends SecurityConfigurer<T, B>> void add(C configurer) throws Exception {
+        Class<? extends SecurityConfigurer<T, B>> clazz = (Class<? extends SecurityConfigurer<T, B>>) configurer
                 .getClass();
-        synchronized(configurators) {
+        synchronized(configurers) {
             if(buildState.isConfigured()) {
                 throw new IllegalStateException("Cannot apply "+configurer+" to already built object");
             }
-            this.configurators.put(clazz, configurer);
+            this.configurers.put(clazz, configurer);
             if(buildState.isInitializing()) {
                 configurer.init((B)this);
             }
@@ -106,7 +106,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     }
 
     /**
-     * Gets the {@link SecurityConfigurator} by its class name or
+     * Gets the {@link SecurityConfigurer} by its class name or
      * <code>null</code> if not found. Note that object hierarchies are not
      * considered.
      *
@@ -114,13 +114,13 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected <C extends SecurityConfigurator<T, B>> C getConfigurator(
+    protected <C extends SecurityConfigurer<T, B>> C getConfigurer(
             Class<C> clazz) {
-        return (C) configurators.get(clazz);
+        return (C) configurers.get(clazz);
     }
 
     /**
-     * Removes and returns the {@link SecurityConfigurator} by its class name or
+     * Removes and returns the {@link SecurityConfigurer} by its class name or
      * <code>null</code> if not found. Note that object hierarchies are not
      * considered.
      *
@@ -128,23 +128,23 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <C extends SecurityConfigurator<T,B>> C removeConfigurator(Class<C> clazz) {
-        return (C) configurators.remove(clazz);
+    public <C extends SecurityConfigurer<T,B>> C removeConfigurer(Class<C> clazz) {
+        return (C) configurers.remove(clazz);
     }
 
     /**
-     * Executes the build using the {@link SecurityConfigurator}'s that have been applied using the following steps:
+     * Executes the build using the {@link SecurityConfigurer}'s that have been applied using the following steps:
      *
      * <ul>
      * <li>Invokes {@link #beforeInit()} for any subclass to hook into</li>
-     * <li>Invokes {@link SecurityConfigurator#init(SecurityBuilder)} for any {@link SecurityConfigurator} that was applied to this builder.</li>
+     * <li>Invokes {@link SecurityConfigurer#init(SecurityBuilder)} for any {@link SecurityConfigurer} that was applied to this builder.</li>
      * <li>Invokes {@link #beforeConfigure()} for any subclass to hook into</li>
      * <li>Invokes {@link #performBuild()} which actually builds the Object</li>
      * </ul>
      */
     @Override
     protected final T doBuild() throws Exception {
-        synchronized(configurators) {
+        synchronized(configurers) {
             buildState = BuildState.INITIALIZING;
 
             beforeInit();
@@ -167,18 +167,18 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
 
     /**
      * Invoked prior to invoking each
-     * {@link SecurityConfigurator#init(SecurityBuilder)} method. Subclasses may
+     * {@link SecurityConfigurer#init(SecurityBuilder)} method. Subclasses may
      * override this method to hook into the lifecycle without using a
-     * {@link SecurityConfigurator}.
+     * {@link SecurityConfigurer}.
      */
     protected void beforeInit() throws Exception {
     }
 
     /**
      * Invoked prior to invoking each
-     * {@link SecurityConfigurator#configure(SecurityBuilder)} method.
+     * {@link SecurityConfigurer#configure(SecurityBuilder)} method.
      * Subclasses may override this method to hook into the lifecycle without
-     * using a {@link SecurityConfigurator}.
+     * using a {@link SecurityConfigurer}.
      */
     protected void beforeConfigure() throws Exception {
     }
@@ -192,24 +192,24 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
 
     @SuppressWarnings("unchecked")
     private void init() throws Exception {
-        Collection<SecurityConfigurator<T,B>> configurators = getConfigurators();
+        Collection<SecurityConfigurer<T,B>> configurers = getConfigurers();
 
-        for(SecurityConfigurator<T,B> configurer : configurators ) {
+        for(SecurityConfigurer<T,B> configurer : configurers ) {
             configurer.init((B) this);
         }
     }
 
     @SuppressWarnings("unchecked")
     private void configure() throws Exception {
-        Collection<SecurityConfigurator<T,B>> configurators = getConfigurators();
+        Collection<SecurityConfigurer<T,B>> configurers = getConfigurers();
 
-        for(SecurityConfigurator<T,B> configurer : configurators ) {
+        for(SecurityConfigurer<T,B> configurer : configurers ) {
             configurer.configure((B) this);
         }
     }
 
-    private Collection<SecurityConfigurator<T, B>> getConfigurators() {
-        return new ArrayList<SecurityConfigurator<T,B>>(this.configurators.values());
+    private Collection<SecurityConfigurer<T, B>> getConfigurers() {
+        return new ArrayList<SecurityConfigurer<T,B>>(this.configurers.values());
     }
 
     /**
@@ -226,23 +226,23 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
 
         /**
          * The state from when {@link Builder#build()} is first invoked until
-         * all the {@link SecurityConfigurator#init(SecurityBuilder)} methods
+         * all the {@link SecurityConfigurer#init(SecurityBuilder)} methods
          * have been invoked.
          */
         INITIALIZING(1),
 
         /**
          * The state from after all
-         * {@link SecurityConfigurator#init(SecurityBuilder)} have been invoked
+         * {@link SecurityConfigurer#init(SecurityBuilder)} have been invoked
          * until after all the
-         * {@link SecurityConfigurator#configure(SecurityBuilder)} methods have
+         * {@link SecurityConfigurer#configure(SecurityBuilder)} methods have
          * been invoked.
          */
         CONFIGURING(2),
 
         /**
          * From the point after all the
-         * {@link SecurityConfigurator#configure(SecurityBuilder)} have
+         * {@link SecurityConfigurer#configure(SecurityBuilder)} have
          * completed to just after
          * {@link AbstractConfiguredSecurityBuilder#performBuild()}.
          */

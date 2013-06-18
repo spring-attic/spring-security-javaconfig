@@ -24,9 +24,9 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurator;
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityConfigurator;
-import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurator;
+import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurer;
+import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerConfigurer;
+import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -77,7 +77,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
 
     /**
      * Add in memory authentication to the {@link AuthenticationManagerBuilder}
-     * and return a {@link InMemoryUserDetailsManagerSecurityConfigurator} to
+     * and return a {@link InMemoryUserDetailsManagerConfigurer} to
      * allow customization of the in memory authentication.
      *
      * <p>
@@ -87,19 +87,19 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @return a {@link InMemoryUserDetailsManagerSecurityConfigurator} to allow
+     * @return a {@link InMemoryUserDetailsManagerConfigurer} to allow
      *         customization of the in memory authentication
      * @throws Exception
      *             if an error occurs when adding the in memory authentication
      */
-    public InMemoryUserDetailsManagerSecurityConfigurator inMemoryAuthentication()
+    public InMemoryUserDetailsManagerConfigurer inMemoryAuthentication()
             throws Exception {
-        return apply(new InMemoryUserDetailsManagerSecurityConfigurator());
+        return apply(new InMemoryUserDetailsManagerConfigurer());
     }
 
     /**
      * Add LDAP authentication to the {@link AuthenticationManagerBuilder} and
-     * return a {@link LdapAuthenticationProviderConfigurator} to allow
+     * return a {@link LdapAuthenticationProviderConfigurer} to allow
      * customization of the LDAP authentication.
      *
      * <p>
@@ -107,19 +107,19 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * available for the {@link #getDefaultUserDetailsService()} method.
      * </p>
      *
-     * @return a {@link LdapAuthenticationProviderConfigurator} to allow
+     * @return a {@link LdapAuthenticationProviderConfigurer} to allow
      *         customization of the LDAP authentication
      * @throws Exception
      *             if an error occurs when adding the LDAP authentication
      */
-    public LdapAuthenticationProviderConfigurator ldapAuthenticationProvider()
+    public LdapAuthenticationProviderConfigurer ldapAuthenticationProvider()
             throws Exception {
-        return apply(new LdapAuthenticationProviderConfigurator());
+        return apply(new LdapAuthenticationProviderConfigurer());
     }
 
     /**
      * Add JDBC authentication to the {@link AuthenticationManagerBuilder} and
-     * return a {@link JdbcUserDetailsManagerConfigurator} to allow customization of the
+     * return a {@link JdbcUserDetailsManagerConfigurer} to allow customization of the
      * JDBC authentication.
      *
      * <p>
@@ -129,18 +129,18 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @return a {@link JdbcUserDetailsManagerConfigurator} to allow customization of the
+     * @return a {@link JdbcUserDetailsManagerConfigurer} to allow customization of the
      * JDBC authentication
      * @throws Exception if an error occurs when adding the JDBC authentication
      */
-    public JdbcUserDetailsManagerConfigurator jdbcUserDetailsManager()
+    public JdbcUserDetailsManagerConfigurer jdbcUserDetailsManager()
             throws Exception {
-        return apply(new JdbcUserDetailsManagerConfigurator());
+        return apply(new JdbcUserDetailsManagerConfigurer());
     }
 
     /**
      * Add authentication based upon the custom {@link UserDetailsService} that
-     * is passed in. It then returns a {@link DaoAuthenticationConfigurator} to
+     * is passed in. It then returns a {@link DaoAuthenticationConfigurer} to
      * allow customization of the authentication.
      *
      * <p>
@@ -150,16 +150,16 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link UserDetailsService} as the default.
      * </p>
      *
-     * @return a {@link DaoAuthenticationConfigurator} to allow customization
+     * @return a {@link DaoAuthenticationConfigurer} to allow customization
      *         of the DAO authentication
      * @throws Exception
      *             if an error occurs when adding the {@link UserDetailsService}
      *             based authentication
      */
-    public <T extends UserDetailsService> DaoAuthenticationConfigurator<T> userDetailsService(
+    public <T extends UserDetailsService> DaoAuthenticationConfigurer<T> userDetailsService(
             T userDetailsService) throws Exception {
         this.defaultUserDetailsService = userDetailsService;
-        return apply(new DaoAuthenticationConfigurator<T>(userDetailsService));
+        return apply(new DaoAuthenticationConfigurer<T>(userDetailsService));
     }
 
     /**
@@ -206,7 +206,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         return this.defaultUserDetailsService;
     }
 
-    private <C extends UserDetailsAwareConfigurator<? extends UserDetailsService>> C apply(C configurer) throws Exception {
+    private <C extends UserDetailsAwareConfigurer<? extends UserDetailsService>> C apply(C configurer) throws Exception {
         this.defaultUserDetailsService = configurer.getUserDetailsService();
         return (C) super.apply(configurer);
     }

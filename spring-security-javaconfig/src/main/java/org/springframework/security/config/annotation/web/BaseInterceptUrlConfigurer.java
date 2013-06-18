@@ -1,0 +1,164 @@
+/*
+ * Copyright 2002-2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.security.config.annotation.web;
+
+import java.util.List;
+
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.SecurityConfigurer;
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+
+/**
+ * A base class for configuring the {@link FilterSecurityInterceptor}.
+ *
+ * <h2>Security Filters</h2>
+ *
+ * The following Filters are populated
+ *
+ * <ul>
+ *     <li>{@link FilterSecurityInterceptor}</li>
+ * </ul>
+  *
+ * <h2>Shared Objects Created</h2>
+ *
+ * The following shared objects are populated to allow other {@link SecurityConfigurer}'s to customize:
+ * <ul>
+ *     <li>{@link FilterSecurityInterceptor}</li>
+ * </ul>
+ *
+ * <h2>Shared Objects Used</h2>
+ *
+ * The following shared objects are used:
+ *
+ * <ul>
+ *     <li>{@link org.springframework.security.config.annotation.web.HttpConfiguration#authenticationManager()}</li>
+ * </ul>
+ *
+ * @author Rob Winch
+ * @since 3.2
+ * @see ExpressionUrlAuthorizations
+ * @see UrlAuthorizations
+ */
+abstract class BaseInterceptUrlConfigurer<T> extends
+        BaseRequestMatcherRegistry<T,DefaultSecurityFilterChain,HttpConfiguration> implements
+        SecurityConfigurer<DefaultSecurityFilterChain,HttpConfiguration> {
+    private Boolean filterSecurityInterceptorOncePerRequest;
+
+    private AccessDecisionManager accessDecisionManager;
+
+    /**
+     * Allows setting the {@link AccessDecisionManager}. If none is provided, a default {@l AccessDecisionManager} is
+     * created.
+     *
+     * @param accessDecisionManager the {@link AccessDecisionManager} to use
+     * @return  the {@link BaseInterceptUrlConfigurer} for further customization
+     */
+    public T accessDecisionManager(
+            AccessDecisionManager accessDecisionManager) {
+        this.accessDecisionManager = accessDecisionManager;
+        return (T) this;
+    }
+
+    /**
+     * Allows setting if the {@link FilterSecurityInterceptor} should be only applied once per request (i.e. if the
+     * filter intercepts on a forward, should it be applied again).
+     *
+     * @param filterSecurityInterceptorOncePerRequest if the {@link FilterSecurityInterceptor} should be only applied
+     *                                                once per request
+     * @return  the {@link BaseInterceptUrlConfigurer} for further customization
+     */
+    public T filterSecurityInterceptorOncePerRequest(
+            boolean filterSecurityInterceptorOncePerRequest) {
+        this.filterSecurityInterceptorOncePerRequest = filterSecurityInterceptorOncePerRequest;
+        return (T) this;
+    }
+
+    @Override
+    public void configure(HttpConfiguration http) throws Exception {
+        FilterInvocationSecurityMetadataSource metadataSource = createMetadataSource();
+        if(metadataSource == null) {
+            return;
+        }
+        FilterSecurityInterceptor securityInterceptor = createFilterSecurityInterceptor(metadataSource, http.authenticationManager());
+        if(filterSecurityInterceptorOncePerRequest != null) {
+            securityInterceptor.setObserveOncePerRequest(filterSecurityInterceptorOncePerRequest);
+        }
+        http.addFilter(securityInterceptor);
+        http.setSharedObject(FilterSecurityInterceptor.class, securityInterceptor);
+    }
+
+    /**
+     * Subclasses should implement this method to provide a {@link FilterInvocationSecurityMetadataSource} for the
+     * {@link FilterSecurityInterceptor}.
+     *
+     * @return the {@link FilterInvocationSecurityMetadataSource} to set on the {@link FilterSecurityInterceptor}.
+     *         Cannot be null.
+     */
+    abstract FilterInvocationSecurityMetadataSource createMetadataSource();
+
+    /**
+     * Subclasses should implement this method to provide the {@link AccessDecisionVoter} instances used to create the
+     * default {@link AccessDecisionManager}
+     *
+     * @return the {@link AccessDecisionVoter} instances used to create the
+     *         default {@link AccessDecisionManager}
+     */
+    abstract List<AccessDecisionVoter> decisionVoters();
+
+    /**
+     * Creates the default {@code AccessDecisionManager}
+     * @return the default {@code AccessDecisionManager}
+     */
+    private AccessDecisionManager createDefaultAccessDecisionManager() {
+        return new AffirmativeBased(decisionVoters());
+    }
+
+    /**
+     * If currently null, creates a default {@link AccessDecisionManager} using
+     * {@link #createDefaultAccessDecisionManager()}. Otherwise returns the {@link AccessDecisionManager}.
+     *
+     * @return the {@link AccessDecisionManager} to use
+     */
+    private AccessDecisionManager getAccessDecisionManager() {
+        if (accessDecisionManager == null) {
+            accessDecisionManager = createDefaultAccessDecisionManager();
+        }
+        return accessDecisionManager;
+    }
+
+    /**
+     * Creates the {@link FilterSecurityInterceptor}
+     *
+     * @param metadataSource the {@link FilterInvocationSecurityMetadataSource} to use
+     * @param authenticationManager the {@link AuthenticationManager} to use
+     * @return the {@link FilterSecurityInterceptor}
+     * @throws Exception
+     */
+    private FilterSecurityInterceptor createFilterSecurityInterceptor(FilterInvocationSecurityMetadataSource metadataSource,
+                                                                      AuthenticationManager authenticationManager) throws Exception {
+        FilterSecurityInterceptor securityInterceptor = new FilterSecurityInterceptor();
+        securityInterceptor.setSecurityMetadataSource(metadataSource);
+        securityInterceptor.setAccessDecisionManager(getAccessDecisionManager());
+        securityInterceptor.setAuthenticationManager(authenticationManager);
+        securityInterceptor.afterPropertiesSet();
+        return securityInterceptor;
+    }
+}

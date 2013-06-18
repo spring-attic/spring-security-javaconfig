@@ -29,7 +29,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -129,18 +129,18 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     }
 
     /**
-     * Gets the {@link SecurityConfigurator} by its class name or
+     * Gets the {@link SecurityConfigurer} by its class name or
      * <code>null</code> if not found. Note that object hierarchies are not
      * considered.
      *
-     * @param clazz the Class of the {@link SecurityConfigurator} to attempt to get.
+     * @param clazz the Class of the {@link SecurityConfigurer} to attempt to get.
      *
-     * @see org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder#getConfigurator(java.lang.Class)
+     * @see org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder#getConfigurer(java.lang.Class)
      */
     @Override
-    public <C extends SecurityConfigurator<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurator(
+    public <C extends SecurityConfigurer<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurer(
             Class<C> clazz) {
-        return super.getConfigurator(clazz);
+        return super.getConfigurer(clazz);
     }
 
     /**
@@ -241,13 +241,13 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @return the {@link OpenIDLoginConfigurator} for further customizations.
+     * @return the {@link OpenIDLoginConfigurer} for further customizations.
      *
      * @throws Exception
-     * @see OpenIDLoginConfigurator
+     * @see OpenIDLoginConfigurer
      */
-    public OpenIDLoginConfigurator openidLogin() throws Exception {
-        return apply(new OpenIDLoginConfigurator());
+    public OpenIDLoginConfigurer openidLogin() throws Exception {
+        return apply(new OpenIDLoginConfigurer());
     }
 
     /**
@@ -305,17 +305,17 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * </pre>
      *
      *
-     * @return the {@link SessionManagementConfigurator} for further customizations
+     * @return the {@link SessionManagementConfigurer} for further customizations
      * @throws Exception
      */
-    public SessionManagementConfigurator sessionManagement() throws Exception {
-        return apply(new SessionManagementConfigurator());
+    public SessionManagementConfigurer sessionManagement() throws Exception {
+        return apply(new SessionManagementConfigurer());
     }
 
     /**
      * Allows configuring a {@link PortMapper} that is available from
      * {@link HttpConfiguration#getSharedObject(Class)}. Other provided
-     * {@link SecurityConfigurator} objects use this configured
+     * {@link SecurityConfigurer} objects use this configured
      * {@link PortMapper} as a default {@link PortMapper} when redirecting from
      * HTTP to HTTPS or from HTTPS to HTTP (for example when used in combination
      * with {@link #requiresChannel()}. By default Spring Security uses a
@@ -359,12 +359,12 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @return the {@link PortMapperConfigurator} for further customizations
+     * @return the {@link PortMapperConfigurer} for further customizations
      * @throws Exception
      * @see {@link #requiresChannel()}
      */
-    public PortMapperConfigurator portMapper() throws Exception {
-        return apply(new PortMapperConfigurator());
+    public PortMapperConfigurer portMapper() throws Exception {
+        return apply(new PortMapperConfigurer());
     }
 
     /**
@@ -436,11 +436,11 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * correct roles. This configuration is specific to the Servlet Container, so consult
      * your Servlet Container's documentation.
      *
-     * @return the {@link JeeConfigurator} for further customizations
+     * @return the {@link JeeConfigurer} for further customizations
      * @throws Exception
      */
-    public JeeConfigurator jee() throws Exception {
-        return apply(new JeeConfigurator());
+    public JeeConfigurer jee() throws Exception {
+        return apply(new JeeConfigurer());
     }
 
     /**
@@ -469,11 +469,11 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @return the {@link X509Configurator} for further customizations
+     * @return the {@link X509Configurer} for further customizations
      * @throws Exception
      */
-    public X509Configurator x509() throws Exception {
-        return apply(new X509Configurator());
+    public X509Configurer x509() throws Exception {
+        return apply(new X509Configurer());
     }
 
     /**
@@ -516,11 +516,11 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @return the {@link RememberMeConfigurator} for further customizations
+     * @return the {@link RememberMeConfigurer} for further customizations
      * @throws Exception
      */
-    public RememberMeConfigurator rememberMe() throws Exception {
-        return apply(new RememberMeConfigurator());
+    public RememberMeConfigurer rememberMe() throws Exception {
+        return apply(new RememberMeConfigurer());
     }
 
     /**
@@ -625,22 +625,22 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * Security will redirect the user to the originally requested protected page (/protected). This is
      * automatically applied when using {@link WebSecurityConfigurerAdapter}.
      *
-     * @return the {@link RequestCacheConfigurator} for further customizations
+     * @return the {@link RequestCacheConfigurer} for further customizations
      * @throws Exception
      */
-    public RequestCacheConfigurator requestCache() throws Exception {
-        return apply(new RequestCacheConfigurator());
+    public RequestCacheConfigurer requestCache() throws Exception {
+        return apply(new RequestCacheConfigurer());
     }
 
     /**
      * Allows configuring exception handling. This is automatically applied when using
      * {@link WebSecurityConfigurerAdapter}.
      *
-     * @return the {@link ExceptionHandlingConfigurator} for further customizations
+     * @return the {@link ExceptionHandlingConfigurer} for further customizations
      * @throws Exception
      */
-    public ExceptionHandlingConfigurator exceptionHandling() throws Exception {
-        return apply(new ExceptionHandlingConfigurator());
+    public ExceptionHandlingConfigurer exceptionHandling() throws Exception {
+        return apply(new ExceptionHandlingConfigurer());
     }
 
     /**
@@ -648,11 +648,11 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * {@link SecurityContextHolder} between {@link HttpServletRequest}'s. This is automatically
      * applied when using {@link WebSecurityConfigurerAdapter}.
      *
-     * @return the {@link SecurityContextConfigurator} for further customizations
+     * @return the {@link SecurityContextConfigurer} for further customizations
      * @throws Exception
      */
-    public SecurityContextConfigurator securityContext() throws Exception {
-        return apply(new SecurityContextConfigurator());
+    public SecurityContextConfigurer securityContext() throws Exception {
+        return apply(new SecurityContextConfigurer());
     }
 
     /**
@@ -660,11 +660,11 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * on the {@link SecurityContext}. This is automatically applied when using
      * {@link WebSecurityConfigurerAdapter}.
      *
-     * @return the {@link ServletApiConfigurator} for further customizations
+     * @return the {@link ServletApiConfigurer} for further customizations
      * @throws Exception
      */
-    public ServletApiConfigurator servletApi() throws Exception {
-        return apply(new ServletApiConfigurator());
+    public ServletApiConfigurer servletApi() throws Exception {
+        return apply(new ServletApiConfigurer());
     }
 
     /**
@@ -719,8 +719,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public LogoutConfigurator logout() throws Exception {
-        return apply(new LogoutConfigurator());
+    public LogoutConfigurer logout() throws Exception {
+        return apply(new LogoutConfigurer());
     }
 
     /**
@@ -800,13 +800,13 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public AnonymousConfigurator anonymous() throws Exception {
-        return apply(new AnonymousConfigurator());
+    public AnonymousConfigurer anonymous() throws Exception {
+        return apply(new AnonymousConfigurer());
     }
 
     /**
      * Specifies to support form based authentication. If
-     * {@link FormLoginConfigurator#loginPage(String)} is not specified a
+     * {@link FormLoginConfigurer#loginPage(String)} is not specified a
      * default login page will be generated.
      *
      * <h2>Example Configurations</h2>
@@ -814,7 +814,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * The most basic configuration defaults to automatically generating a login
      * page at the URL "/login", redirecting to "/login?error" for
      * authentication failure. The details of the login page can be found on
-     * {@link FormLoginConfigurator#loginPage(String)}
+     * {@link FormLoginConfigurer#loginPage(String)}
      *
      * <pre>
      * &#064;Configuration
@@ -875,13 +875,13 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @see FormLoginConfigurator#loginPage(String)
+     * @see FormLoginConfigurer#loginPage(String)
      *
      * @return
      * @throws Exception
      */
-    public FormLoginConfigurator formLogin() throws Exception {
-        return apply(new FormLoginConfigurator());
+    public FormLoginConfigurer formLogin() throws Exception {
+        return apply(new FormLoginConfigurer());
     }
 
     /**
@@ -926,11 +926,11 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * </pre>
      *
      *
-     * @return the {@link ChannelSecurityConfigurator} for further customizations
+     * @return the {@link ChannelSecurityConfigurer} for further customizations
      * @throws Exception
      */
-    public ChannelSecurityConfigurator requiresChannel() throws Exception {
-        return apply(new ChannelSecurityConfigurator());
+    public ChannelSecurityConfigurer requiresChannel() throws Exception {
+        return apply(new ChannelSecurityConfigurer());
     }
 
     /**
@@ -942,7 +942,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * The example below demonstrates how to configure HTTP Basic authentication
      * for an application. The default realm is "Spring Security Application",
      * but can be customized using
-     * {@link HttpBasicConfigurator#realmName(String)}.
+     * {@link HttpBasicConfigurer#realmName(String)}.
      *
      * <pre>
      * &#064;Configuration
@@ -969,11 +969,11 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @return the {@link HttpBasicConfigurator} for further customizations
+     * @return the {@link HttpBasicConfigurer} for further customizations
      * @throws Exception
      */
-    public HttpBasicConfigurator httpBasic() throws Exception {
-        return apply(new HttpBasicConfigurator());
+    public HttpBasicConfigurer httpBasic() throws Exception {
+        return apply(new HttpBasicConfigurer());
     }
 
     public void defaultSharedObject(Class<Object> sharedType, Object object) {
@@ -983,7 +983,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     }
 
     /**
-     * Sets an object that is shared by multiple {@link SecurityConfigurator}.
+     * Sets an object that is shared by multiple {@link SecurityConfigurer}.
      *
      * @param sharedType the Class to key the shared object by.
      * @param object the Object to store

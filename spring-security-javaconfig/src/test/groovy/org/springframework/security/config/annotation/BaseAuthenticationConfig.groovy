@@ -22,8 +22,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.UserDetailsServiceConfigurator;
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerSecurityConfigurator
+import org.springframework.security.config.annotation.authentication.UserDetailsServiceConfigurer;
+import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerConfigurer
 import org.springframework.security.config.annotation.web.UrlAuthorizations
 import org.springframework.security.core.userdetails.UserDetailsService;
 

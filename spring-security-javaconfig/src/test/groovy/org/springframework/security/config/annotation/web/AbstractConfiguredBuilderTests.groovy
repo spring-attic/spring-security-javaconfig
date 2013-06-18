@@ -16,8 +16,8 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder
-import org.springframework.security.config.annotation.SecurityConfigurator
-import org.springframework.security.config.annotation.SecurityConfiguratorAdapter
+import org.springframework.security.config.annotation.SecurityConfigurer
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter
 import org.springframework.test.util.ReflectionTestUtils
 
 import spock.lang.Specification
@@ -30,28 +30,28 @@ class AbstractConfiguredBuilderTests extends Specification {
 
     ConcreteAbstractConfiguredBuilder builder = new ConcreteAbstractConfiguredBuilder()
 
-    def "Duplicate configurator is removed"() {
+    def "Duplicate configurer is removed"() {
         when:
-            builder.apply(new ConcreteConfigurator())
-            builder.apply(new ConcreteConfigurator())
+            builder.apply(new ConcreteConfigurer())
+            builder.apply(new ConcreteConfigurer())
         then:
-            ReflectionTestUtils.getField(builder,"configurators").size() == 1
+            ReflectionTestUtils.getField(builder,"configurers").size() == 1
     }
 
 
-    def "Configurator.init can apply another configurator"() {
+    def "Configurer.init can apply another configurer"() {
         setup:
-            DelegateConfigurator.CONF = Mock(SecurityConfiguratorAdapter)
+            DelegateConfigurer.CONF = Mock(SecurityConfigurerAdapter)
         when:
-            builder.apply(new DelegateConfigurator())
+            builder.apply(new DelegateConfigurer())
             builder.build()
         then:
-            1 * DelegateConfigurator.CONF.init(builder)
-            1 * DelegateConfigurator.CONF.configure(builder)
+            1 * DelegateConfigurer.CONF.init(builder)
+            1 * DelegateConfigurer.CONF.configure(builder)
     }
 
-    private static class DelegateConfigurator extends SecurityConfiguratorAdapter<Object, ConcreteAbstractConfiguredBuilder> {
-        private static SecurityConfigurator<Object, ConcreteAbstractConfiguredBuilder> CONF;
+    private static class DelegateConfigurer extends SecurityConfigurerAdapter<Object, ConcreteAbstractConfiguredBuilder> {
+        private static SecurityConfigurer<Object, ConcreteAbstractConfiguredBuilder> CONF;
 
         @Override
         public void init(ConcreteAbstractConfiguredBuilder builder)
@@ -60,7 +60,7 @@ class AbstractConfiguredBuilderTests extends Specification {
         }
     }
 
-    private static class ConcreteConfigurator extends SecurityConfiguratorAdapter<Object, ConcreteAbstractConfiguredBuilder> { }
+    private static class ConcreteConfigurer extends SecurityConfigurerAdapter<Object, ConcreteAbstractConfiguredBuilder> { }
 
     private static class ConcreteAbstractConfiguredBuilder extends AbstractConfiguredSecurityBuilder<Object, ConcreteAbstractConfiguredBuilder> {
         public Object performBuild() throws Exception {

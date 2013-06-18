@@ -31,15 +31,15 @@ import org.springframework.security.web.util.RequestMatcher;
 final class PermitAllSupport {
 
     public static void permitAll(HttpConfiguration http, String... urls) {
-        ExpressionUrlAuthorizations configurator = http.getConfigurator(ExpressionUrlAuthorizations.class);
+        ExpressionUrlAuthorizations configurer = http.getConfigurer(ExpressionUrlAuthorizations.class);
 
-        if(configurator == null) {
+        if(configurer == null) {
             throw new IllegalStateException("permitAll only works with HttpConfiguration.authorizeUrls()");
         }
 
         for(String url : urls) {
             if(url != null) {
-                configurator.addMapping(0, new UrlMapping(new ExactUrlRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizations.permitAll)));
+                configurer.addMapping(0, new UrlMapping(new ExactUrlRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizations.permitAll)));
             }
         }
     }

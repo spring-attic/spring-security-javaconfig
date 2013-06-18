@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.web.FilterChainProxy;
 
 /**
@@ -31,6 +31,6 @@ import org.springframework.security.web.FilterChainProxy;
  * @author Rob Winch
  * @since 3.2
  */
-public interface WebSecurityConfigurer extends SecurityConfigurator<FilterChainProxy, WebSecurityBuilder> {
+public interface WebSecurityConfigurer extends SecurityConfigurer<FilterChainProxy, WebSecurityBuilder> {
 
 }

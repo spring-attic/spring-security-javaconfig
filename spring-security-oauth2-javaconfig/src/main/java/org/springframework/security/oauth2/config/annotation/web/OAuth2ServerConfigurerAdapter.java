@@ -46,25 +46,25 @@ public abstract class OAuth2ServerConfigurerAdapter extends WebSecurityConfigure
 
     @Bean
     public ConsumerTokenServices consumerTokenServices() throws Exception {
-        return oauthConfigurator().getConsumerTokenServices();
+        return oauthConfigurer().getConsumerTokenServices();
     }
 
     /**
      * @return
      */
     private AuthorizationCodeServices authorizationCodeServices() throws Exception {
-        return oauthConfigurator().getAuthorizationCodeServices();
+        return oauthConfigurer().getAuthorizationCodeServices();
     }
 
     /**
      * @return
      */
     private TokenGranter tokenGranter() throws Exception {
-        return oauthConfigurator().getTokenGranter();
+        return oauthConfigurer().getTokenGranter();
     }
 
-    private OAuth2ServerConfigurator oauthConfigurator() throws Exception {
-        return getHttp().getConfigurator(OAuth2ServerConfigurator.class);
+    private OAuth2ServerConfigurer oauthConfigurer() throws Exception {
+        return getHttp().getConfigurer(OAuth2ServerConfigurer.class);
     }
 
     @Bean
@@ -85,7 +85,7 @@ public abstract class OAuth2ServerConfigurerAdapter extends WebSecurityConfigure
      * @throws Exception
      */
     protected AuthorizationServerTokenServices tokenServices() throws Exception {
-        return oauthConfigurator().getTokenServices();
+        return oauthConfigurer().getTokenServices();
     }
 
     @Bean

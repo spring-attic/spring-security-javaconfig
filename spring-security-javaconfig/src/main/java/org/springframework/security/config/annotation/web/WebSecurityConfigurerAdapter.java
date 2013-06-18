@@ -88,8 +88,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      * the {@link AuthenticationManager}. The resulting {@link AuthenticationManager}
      * will be exposed as a Bean as will the last populated {@link UserDetailsService} that is created with the
      * {@link AuthenticationManagerBuilder}. The {@link UserDetailsService} will also automatically be populated on
-     * {@link HttpConfiguration#getSharedObject(Class)} for use with other {@link SecurityContextConfigurator}
-     * (i.e. RememberMeConfigurator )
+     * {@link HttpConfiguration#getSharedObject(Class)} for use with other {@link SecurityContextConfigurer}
+     * (i.e. RememberMeConfigurer )
      *
      * <p>For example, the following configuration could be used to register
      * in memory authentication that exposes an in memory {@link UserDetailsService}:</p>
@@ -136,7 +136,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
                 .requestCache().and()
                 .anonymous().and()
                 .servletApi().and()
-                .apply(new DefaultLoginPageConfigurator()).and()
+                .apply(new DefaultLoginPageConfigurer()).and()
                 .logout();
         }
         configure(http);

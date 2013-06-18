@@ -30,7 +30,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * The following Filters are conditionally populated
  *
  * <ul>
- *     <li>{@link DefaultLoginPageGeneratingFilter} if the {@link FormLoginConfigurator} did not have a login page specified</li>
+ *     <li>{@link DefaultLoginPageGeneratingFilter} if the {@link FormLoginConfigurer} did not have a login page specified</li>
  * </ul>
  *
  * <h2>Shared Objects Created</h2>
@@ -43,7 +43,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  *
  * <ul>
  *     <li>{@link org.springframework.security.web.PortMapper} is used to create the default {@link org.springframework.security.web.access.channel.ChannelProcessor} instances</li>
- *     <li>{@link FormLoginConfigurator} is used to determine if the {@link DefaultLoginPageConfigurator} should be added and how to configure it.</li>
+ *     <li>{@link FormLoginConfigurer} is used to determine if the {@link DefaultLoginPageConfigurer} should be added and how to configure it.</li>
  * </ul>
  *
  * @see WebSecurityConfigurerAdapter
@@ -51,15 +51,15 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * @author Rob Winch
  * @since 3.2
  */
-final class DefaultLoginPageConfigurator extends
-        BaseHttpConfigurator {
+final class DefaultLoginPageConfigurer extends
+        BaseHttpConfigurer {
 
     private DefaultLoginPageGeneratingFilter loginPageGeneratingFilter = new DefaultLoginPageGeneratingFilter();
-    DefaultLoginPageConfigurator(){}
+    DefaultLoginPageConfigurer(){}
 
     @Override
     public void init(HttpConfiguration http) throws Exception {
-        FormLoginConfigurator formLogin = http.getConfigurator(FormLoginConfigurator.class);
+        FormLoginConfigurer formLogin = http.getConfigurer(FormLoginConfigurer.class);
         if(formLogin != null && !formLogin.isCustomLoginPage()) {
 
             loginPageGeneratingFilter.setFormLoginEnabled(true);
@@ -70,12 +70,12 @@ final class DefaultLoginPageConfigurator extends
             loginPageGeneratingFilter.setAuthenticationUrl(formLogin.getLoginProcessingUrl());
         }
 
-        RememberMeConfigurator rememberme= http.getConfigurator(RememberMeConfigurator.class);
+        RememberMeConfigurer rememberme= http.getConfigurer(RememberMeConfigurer.class);
         if(rememberme != null) {
             loginPageGeneratingFilter.setRememberMeParameter(rememberme.getRememberMeParameter());
         }
 
-        OpenIDLoginConfigurator openidLogin = http.getConfigurator(OpenIDLoginConfigurator.class);
+        OpenIDLoginConfigurer openidLogin = http.getConfigurer(OpenIDLoginConfigurer.class);
         if(openidLogin != null && !openidLogin.isCustomLoginPage()) {
             loginPageGeneratingFilter.setOpenIdEnabled(true);
             loginPageGeneratingFilter.setOpenIDauthenticationUrl(openidLogin.getLoginProcessingUrl());
@@ -86,7 +86,7 @@ final class DefaultLoginPageConfigurator extends
             loginPageGeneratingFilter.setOpenIDusernameParameter(OpenIDAuthenticationFilter.DEFAULT_CLAIMED_IDENTITY_FIELD);
         }
 
-        LogoutConfigurator logout = http.getConfigurator(LogoutConfigurator.class);
+        LogoutConfigurer logout = http.getConfigurer(LogoutConfigurer.class);
         if(logout != null && !logout.isCustomLogoutSuccess()) {
             loginPageGeneratingFilter.setLogoutSuccessUrl(logout.getLogoutSuccessUrl());
         }
@@ -95,7 +95,7 @@ final class DefaultLoginPageConfigurator extends
     @Override
     public void configure(HttpConfiguration http) throws Exception {
         AuthenticationEntryPoint authenticationEntryPoint = null;
-        ExceptionHandlingConfigurator exceptionConf = http.getConfigurator(ExceptionHandlingConfigurator.class);
+        ExceptionHandlingConfigurer exceptionConf = http.getConfigurer(ExceptionHandlingConfigurer.class);
         if(exceptionConf != null) {
             authenticationEntryPoint = exceptionConf.getAuthenticationEntryPoint();
         }

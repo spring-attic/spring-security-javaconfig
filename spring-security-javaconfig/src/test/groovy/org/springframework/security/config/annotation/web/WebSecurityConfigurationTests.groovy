@@ -33,7 +33,7 @@ import org.springframework.security.web.util.AnyRequestMatcher
  */
 class WebSecurityConfigurationTests extends BaseSpringSpec {
 
-    def "WebSecurityConfigurators are sorted"() {
+    def "WebSecurityConfigurers are sorted"() {
         when:
             loadConfig(SortedWebSecurityConfigurerAdaptersConfig);
             List<SecurityFilterChain> filterChains = context.getBean(FilterChainProxy).filterChains
@@ -117,12 +117,12 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         }
     }
 
-    def "WebSecurityConfigurators fails with duplicate order"() {
+    def "WebSecurityConfigurers fails with duplicate order"() {
         when:
             loadConfig(DuplicateOrderConfig);
         then:
             BeanCreationException e = thrown()
-            e.message.contains "@Order on WebSecurityConfigurators must be unique"
+            e.message.contains "@Order on WebSecurityConfigurers must be unique"
     }
 
 

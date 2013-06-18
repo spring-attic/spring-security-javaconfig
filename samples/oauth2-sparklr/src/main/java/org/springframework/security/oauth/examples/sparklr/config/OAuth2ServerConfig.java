@@ -24,7 +24,7 @@ import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityBuilder;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
 import org.springframework.security.oauth2.config.annotation.authentication.InMemoryClientDetailsServiceBuilder;
-import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurator;
+import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurerAdapter;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 
@@ -85,7 +85,7 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
                 .and()
             .requestMatchers()
                 .antMatchers("/photos/**","/oauth/token","/oauth/clients/**","/oauth/users/**")
-            .apply(new OAuth2ServerConfigurator())
+            .apply(new OAuth2ServerConfigurer())
                 .clientDetails(clientDetails())
                 .resourceId(SPARKLR_RESOURCE_ID);
     }

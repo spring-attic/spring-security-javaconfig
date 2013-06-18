@@ -28,7 +28,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.config.annotation.LifecycleManager;
-import org.springframework.security.config.annotation.SecurityConfigurator;
+import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator;
@@ -58,7 +58,7 @@ public class WebSecurityConfiguration {
 
     private final WebSecurityBuilder webSecurityBuilder = new WebSecurityBuilder();
 
-    private List<SecurityConfigurator<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers;
+    private List<SecurityConfigurer<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers;
 
     @Bean
     public LifecycleManager lifecycleManager() {
@@ -77,8 +77,8 @@ public class WebSecurityConfiguration {
      */
     @Bean(name="springSecurityFilterChain")
     public FilterChainProxy springSecurityFilterChain() throws Exception {
-        boolean hasConfigurators = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
-        if(!hasConfigurators) {
+        boolean hasConfigurers = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
+        if(!hasConfigurers) {
             throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
         }
         return webSecurityBuilder.build();
@@ -96,25 +96,25 @@ public class WebSecurityConfiguration {
     }
 
     /**
-     * Sets the {@code <SecurityConfigurator<FilterChainProxy, WebSecurityBuilder>} instances used to create the web configuration.
+     * Sets the {@code <SecurityConfigurer<FilterChainProxy, WebSecurityBuilder>} instances used to create the web configuration.
      *
-     * @param webSecurityConfigurers the {@code <SecurityConfigurator<FilterChainProxy, WebSecurityBuilder>} instances used to create the web configuration
+     * @param webSecurityConfigurers the {@code <SecurityConfigurer<FilterChainProxy, WebSecurityBuilder>} instances used to create the web configuration
      * @throws Exception
      */
     @Autowired(required = false)
-    public void setFilterChainProxySecurityConfigurator(
-            List<SecurityConfigurator<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers) throws Exception {
+    public void setFilterChainProxySecurityConfigurer(
+            List<SecurityConfigurer<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers) throws Exception {
         Collections.sort(webSecurityConfigurers, AnnotationAwareOrderComparator.INSTANCE);
 
         Integer previousOrder = null;
-        for(SecurityConfigurator<FilterChainProxy, WebSecurityBuilder> config : webSecurityConfigurers) {
+        for(SecurityConfigurer<FilterChainProxy, WebSecurityBuilder> config : webSecurityConfigurers) {
             Integer order = AnnotationAwareOrderComparator.lookupOrder(config);
             if(previousOrder != null && previousOrder.equals(order)) {
-                throw new IllegalStateException("@Order on WebSecurityConfigurators must be unique. Order of " + order + " was already used, so it cannot be used on " + config + " too.");
+                throw new IllegalStateException("@Order on WebSecurityConfigurers must be unique. Order of " + order + " was already used, so it cannot be used on " + config + " too.");
             }
             previousOrder = order;
         }
-        for(SecurityConfigurator<FilterChainProxy, WebSecurityBuilder> webSecurityConfigurer : webSecurityConfigurers) {
+        for(SecurityConfigurer<FilterChainProxy, WebSecurityBuilder> webSecurityConfigurer : webSecurityConfigurers) {
             webSecurityBuilder.apply(webSecurityConfigurer);
         }
         this.webSecurityConfigurers = webSecurityConfigurers;
