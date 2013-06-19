@@ -141,7 +141,7 @@ configure(rootProject) {
         description = "Builds -${classifier} archive containing api and reference " +
             "for deployment at http://static.springframework.org/spring-security-javaconfig/docs."
 
-        from (javadoc) {
+        from (project(":spring-security-javaconfig").javadoc) {
             into "api-reference"
         }
     }
@@ -159,7 +159,7 @@ configure(rootProject) {
             into "${baseDir}/docs"
         }
 
-        [project].each { subproject ->
+        [project(":spring-security-javaconfig")].each { subproject ->
             into ("${baseDir}/libs") {
                 from subproject.jar
                 if (subproject.tasks.findByPath("sourcesJar")) {
