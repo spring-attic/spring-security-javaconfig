@@ -24,8 +24,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerConfigurer;
-import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 

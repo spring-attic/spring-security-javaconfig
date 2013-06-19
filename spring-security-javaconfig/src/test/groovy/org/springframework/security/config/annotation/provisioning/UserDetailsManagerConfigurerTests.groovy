@@ -15,6 +15,7 @@
  */
 package org.springframework.security.config.annotation.provisioning
 
+import org.springframework.security.config.annotation.authentication.UserDetailsManagerConfigurer;
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.provisioning.InMemoryUserDetailsManager

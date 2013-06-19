@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.config.annotation.provisioning;
+package org.springframework.security.config.annotation.authentication;
 
 import java.util.ArrayList;
 
