@@ -36,7 +36,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * @author Rob Winch
  * @since 3.2
  */
-public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder> {
+public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder> implements ProviderManagerBuilder<AuthenticationManagerBuilder> {
 
     private LifecycleManager lifecycleManager;
 
@@ -89,9 +89,9 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * @throws Exception
      *             if an error occurs when adding the in memory authentication
      */
-    public InMemoryUserDetailsManagerConfigurer inMemoryAuthentication()
+    public InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemoryAuthentication()
             throws Exception {
-        return apply(new InMemoryUserDetailsManagerConfigurer());
+        return apply(new InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder>());
     }
 
     /**
@@ -110,9 +110,9 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * JDBC authentication
      * @throws Exception if an error occurs when adding the JDBC authentication
      */
-    public JdbcUserDetailsManagerConfigurer jdbcUserDetailsManager()
+    public JdbcUserDetailsManagerConfigurer<AuthenticationManagerBuilder> jdbcUserDetailsManager()
             throws Exception {
-        return apply(new JdbcUserDetailsManagerConfigurer());
+        return apply(new JdbcUserDetailsManagerConfigurer<AuthenticationManagerBuilder>());
     }
 
     /**
@@ -133,10 +133,10 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      *             if an error occurs when adding the {@link UserDetailsService}
      *             based authentication
      */
-    public <T extends UserDetailsService> DaoAuthenticationConfigurer<T> userDetailsService(
+    public <T extends UserDetailsService> DaoAuthenticationConfigurer<AuthenticationManagerBuilder,T> userDetailsService(
             T userDetailsService) throws Exception {
         this.defaultUserDetailsService = userDetailsService;
-        return apply(new DaoAuthenticationConfigurer<T>(userDetailsService));
+        return apply(new DaoAuthenticationConfigurer<AuthenticationManagerBuilder,T>(userDetailsService));
     }
 
     /**
@@ -183,7 +183,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         return this.defaultUserDetailsService;
     }
 
-    private <C extends UserDetailsAwareConfigurer<? extends UserDetailsService>> C apply(C configurer) throws Exception {
+    private <C extends UserDetailsAwareConfigurer<AuthenticationManagerBuilder,? extends UserDetailsService>> C apply(C configurer) throws Exception {
         this.defaultUserDetailsService = configurer.getUserDetailsService();
         return (C) super.apply(configurer);
     }

@@ -35,10 +35,10 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer<T>> extends
-        UserDetailsServiceConfigurer<T,UserDetailsManager> {
+public class UserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B>, T extends UserDetailsManagerConfigurer<B,T>> extends
+        UserDetailsServiceConfigurer<B,T,UserDetailsManager> {
 
-    private final List<UserDetailsBuilder<T>> userBuilders = new ArrayList<UserDetailsBuilder<T>>();
+    private final List<UserDetailsBuilder> userBuilders = new ArrayList<UserDetailsBuilder>();
 
     UserDetailsManagerConfigurer(UserDetailsManager userDetailsManager) {
         super(userDetailsManager);
@@ -51,7 +51,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
      */
     @Override
     protected void initUserDetailsService() throws Exception {
-        for(UserDetailsBuilder<T> userBuilder : userBuilders) {
+        for(UserDetailsBuilder userBuilder : userBuilders) {
             getUserDetailsService().createUser(userBuilder.build());
         }
     }
@@ -64,8 +64,8 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
      * @return
      */
     @SuppressWarnings("unchecked")
-    public final UserDetailsBuilder<T> withUser(String username) {
-        UserDetailsBuilder<T> userBuilder = new UserDetailsBuilder<T>((T)this);
+    public final UserDetailsBuilder withUser(String username) {
+        UserDetailsBuilder userBuilder = new UserDetailsBuilder((T)this);
         userBuilder.username(username);
         this.userBuilders.add(userBuilder);
         return userBuilder;
@@ -77,7 +77,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
      *
      * @param <T> the type of {@link UserDetailsManagerConfigurer} to return for chaining methods.
      */
-    public static class UserDetailsBuilder<T extends UserDetailsManagerConfigurer<T>> {
+    public class UserDetailsBuilder {
         private String username;
         private String password;
         private List<GrantedAuthority> authorities;
@@ -111,7 +111,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
          *         user)
          */
-        private UserDetailsBuilder<T> username(String username) {
+        private UserDetailsBuilder username(String username) {
             Assert.notNull(username, "username cannot be null");
             this.username = username;
             return this;
@@ -124,7 +124,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
          *         user)
          */
-        public UserDetailsBuilder<T> password(String password) {
+        public UserDetailsBuilder password(String password) {
             Assert.notNull(password, "password cannot be null");
             this.password = password;
             return this;
@@ -151,7 +151,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
          *         user)
          */
-        public UserDetailsBuilder<T> roles(String... roles) {
+        public UserDetailsBuilder roles(String... roles) {
             List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(roles.length);
             for(String role : roles) {
                 Assert.isTrue(!role.startsWith("ROLE_"), role + " cannot start with ROLE_ (it is automatically added)");
@@ -169,7 +169,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          *         user)
          * @see #roles(String...)
          */
-        public UserDetailsBuilder<T> authorities(GrantedAuthority...authorities) {
+        public UserDetailsBuilder authorities(GrantedAuthority...authorities) {
             return authorities(Arrays.asList(authorities));
         }
 
@@ -182,7 +182,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          *         user)
          * @see #roles(String...)
          */
-        public UserDetailsBuilder<T> authorities(List<? extends GrantedAuthority> authorities) {
+        public UserDetailsBuilder authorities(List<? extends GrantedAuthority> authorities) {
             this.authorities = new ArrayList<GrantedAuthority>(authorities);
             return this;
         }
@@ -196,7 +196,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          *         user)
          * @see #roles(String...)
          */
-        public UserDetailsBuilder<T> authorities(String... authorities) {
+        public UserDetailsBuilder authorities(String... authorities) {
             return authorities(AuthorityUtils.createAuthorityList(authorities));
         }
 
@@ -207,7 +207,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
          *         user)
          */
-        public UserDetailsBuilder<T> accountExpired(boolean accountExpired) {
+        public UserDetailsBuilder accountExpired(boolean accountExpired) {
             this.accountExpired = accountExpired;
             return this;
         }
@@ -219,7 +219,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
          *         user)
          */
-        public UserDetailsBuilder<T> accountLocked(boolean accountLocked) {
+        public UserDetailsBuilder accountLocked(boolean accountLocked) {
             this.accountLocked = accountLocked;
             return this;
         }
@@ -231,7 +231,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
          *         user)
          */
-        public UserDetailsBuilder<T> credentialsExpired(boolean credentialsExpired) {
+        public UserDetailsBuilder credentialsExpired(boolean credentialsExpired) {
             this.credentialsExpired = credentialsExpired;
             return this;
         }
@@ -244,7 +244,7 @@ public class UserDetailsManagerConfigurer<T extends UserDetailsManagerConfigurer
          * @return the {@link UserDetailsBuilder} for method chaining (i.e. to populate additional attributes for this
          *         user)
          */
-        public UserDetailsBuilder<T> disabled(boolean disabled) {
+        public UserDetailsBuilder disabled(boolean disabled) {
             this.disabled = disabled;
             return this;
         }

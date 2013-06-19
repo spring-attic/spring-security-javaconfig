@@ -36,11 +36,13 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
  * The only required method is the {@link #dataSource(javax.sql.DataSource)} all other methods have reasonable defaults.
  * </p>
  *
+ * @param <B> the type of the {@link SecurityBuilder}
+ *
  * @author Rob Winch
  * @since 3.2
  */
-public class JdbcUserDetailsManagerConfigurer extends
-        UserDetailsManagerConfigurer<JdbcUserDetailsManagerConfigurer> {
+public class JdbcUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B>> extends
+        UserDetailsManagerConfigurer<B,JdbcUserDetailsManagerConfigurer<B>> {
 
     private DataSource dataSource;
 
@@ -58,7 +60,7 @@ public class JdbcUserDetailsManagerConfigurer extends
      * @return
      * @throws Exception
      */
-    public JdbcUserDetailsManagerConfigurer dataSource(DataSource dataSource) throws Exception {
+    public JdbcUserDetailsManagerConfigurer<B> dataSource(DataSource dataSource) throws Exception {
         this.dataSource = dataSource;
         getUserDetailsService().setDataSource(dataSource);
         return this;
@@ -75,7 +77,7 @@ public class JdbcUserDetailsManagerConfigurer extends
     * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
     * @throws Exception
     */
-    public JdbcUserDetailsManagerConfigurer usersByUsernameQuery(String query) throws Exception {
+    public JdbcUserDetailsManagerConfigurer<B> usersByUsernameQuery(String query) throws Exception {
         getUserDetailsService().setUsersByUsernameQuery(query);
         return this;
     }
@@ -92,7 +94,7 @@ public class JdbcUserDetailsManagerConfigurer extends
      * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
      * @throws Exception
      */
-    public JdbcUserDetailsManagerConfigurer authoritiesByUsernameQuery(String query) throws Exception {
+    public JdbcUserDetailsManagerConfigurer<B> authoritiesByUsernameQuery(String query) throws Exception {
         getUserDetailsService().setAuthoritiesByUsernameQuery(query);
         return this;
     }
@@ -115,7 +117,7 @@ public class JdbcUserDetailsManagerConfigurer extends
      *
      * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
      */
-    public JdbcUserDetailsManagerConfigurer withDefaultSchema() {
+    public JdbcUserDetailsManagerConfigurer<B> withDefaultSchema() {
         this.initScripts.add(new ClassPathResource("org/springframework/security/core/userdetails/jdbc/users.ddl"));
         return this;
     }

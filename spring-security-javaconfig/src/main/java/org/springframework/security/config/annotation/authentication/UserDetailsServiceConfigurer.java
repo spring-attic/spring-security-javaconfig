@@ -24,10 +24,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * @author Rob Winch
  * @since 3.2
  *
+ * @param <B> the type of the {@link SecurityBuilder}
  * @param <C> the {@link SecurityConfigurer} (or this)
  * @param <T> the type of UserDetailsService being used to allow for returning the concrete UserDetailsService.
  */
-public class UserDetailsServiceConfigurer<C extends UserDetailsServiceConfigurer<C, T>,T extends UserDetailsService> extends BaseDaoAuthenticationConfigurer<C,T> {
+public class UserDetailsServiceConfigurer<B extends ProviderManagerBuilder<B>, C extends UserDetailsServiceConfigurer<B, C, T>,T extends UserDetailsService> extends BaseDaoAuthenticationConfigurer<B, C,T> {
 
     /**
      * Creates a new instance
@@ -38,7 +39,7 @@ public class UserDetailsServiceConfigurer<C extends UserDetailsServiceConfigurer
     }
 
     @Override
-    public void configure(AuthenticationManagerBuilder builder) throws Exception {
+    public void configure(B builder) throws Exception {
         initUserDetailsService();
 
         super.configure(builder);

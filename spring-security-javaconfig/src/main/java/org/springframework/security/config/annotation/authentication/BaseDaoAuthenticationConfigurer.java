@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation.authentication;
 
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -25,11 +26,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author Rob Winch
  * @since 3.2
  *
+ * @param <B> the type of the {@link SecurityBuilder}
  * @param <T> This
  * @param <U> The type of {@link UserDetailsService} that is being used
  *
  */
-abstract class BaseDaoAuthenticationConfigurer<C extends BaseDaoAuthenticationConfigurer<C,U>,U extends UserDetailsService> extends UserDetailsAwareConfigurer<U> {
+abstract class BaseDaoAuthenticationConfigurer<B extends ProviderManagerBuilder<B>, C extends BaseDaoAuthenticationConfigurer<B,C,U>,U extends UserDetailsService> extends UserDetailsAwareConfigurer<B,U> {
     private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     private final U userDetailsService;
 
@@ -57,7 +59,7 @@ abstract class BaseDaoAuthenticationConfigurer<C extends BaseDaoAuthenticationCo
     }
 
     @Override
-    public void configure(AuthenticationManagerBuilder builder) throws Exception {
+    public void configure(B builder) throws Exception {
         builder.add(provider);
     }
 

@@ -28,7 +28,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 * @param <U> The type of {@link UserDetailsService} that is being used
 *
 */
-public class DaoAuthenticationConfigurer<U extends UserDetailsService> extends BaseDaoAuthenticationConfigurer<DaoAuthenticationConfigurer<U>, U>{
+public class DaoAuthenticationConfigurer<B extends ProviderManagerBuilder<B>, U extends UserDetailsService> extends BaseDaoAuthenticationConfigurer<B,DaoAuthenticationConfigurer<B,U>, U>{
 
     /**
      * Creates a new instance

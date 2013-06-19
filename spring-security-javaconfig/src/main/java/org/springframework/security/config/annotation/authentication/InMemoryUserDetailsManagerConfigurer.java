@@ -24,12 +24,13 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
  * Configures an {@link org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder} to
  * have in memory authentication. It also allows easily adding users to the in memory authentication.
  *
+ * @param <B> the type of the {@link SecurityBuilder}
+ *
  * @author Rob Winch
  * @since 3.2
  */
-
-public class InMemoryUserDetailsManagerConfigurer extends
-        UserDetailsManagerConfigurer<InMemoryUserDetailsManagerConfigurer> {
+public class InMemoryUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B>> extends
+        UserDetailsManagerConfigurer<B,InMemoryUserDetailsManagerConfigurer<B>> {
 
     /**
      * Creates a new instance
