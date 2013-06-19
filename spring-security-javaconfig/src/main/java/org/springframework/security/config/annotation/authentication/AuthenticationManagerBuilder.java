@@ -24,7 +24,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
-import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurer;
 import org.springframework.security.config.annotation.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.provisioning.JdbcUserDetailsManagerConfigurer;
 import org.springframework.security.core.Authentication;
@@ -95,26 +94,6 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     public InMemoryUserDetailsManagerConfigurer inMemoryAuthentication()
             throws Exception {
         return apply(new InMemoryUserDetailsManagerConfigurer());
-    }
-
-    /**
-     * Add LDAP authentication to the {@link AuthenticationManagerBuilder} and
-     * return a {@link LdapAuthenticationProviderConfigurer} to allow
-     * customization of the LDAP authentication.
-     *
-     * <p>
-     * This method <b>does NOT</b> ensure that a {@link UserDetailsService} is
-     * available for the {@link #getDefaultUserDetailsService()} method.
-     * </p>
-     *
-     * @return a {@link LdapAuthenticationProviderConfigurer} to allow
-     *         customization of the LDAP authentication
-     * @throws Exception
-     *             if an error occurs when adding the LDAP authentication
-     */
-    public LdapAuthenticationProviderConfigurer ldapAuthenticationProvider()
-            throws Exception {
-        return apply(new LdapAuthenticationProviderConfigurer());
     }
 
     /**

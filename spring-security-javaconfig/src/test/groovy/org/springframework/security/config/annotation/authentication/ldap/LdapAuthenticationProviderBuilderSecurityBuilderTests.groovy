@@ -56,7 +56,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
         protected void registerAuthentication(
                 AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .ldapAuthenticationProvider()
+                .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
         }
     }
@@ -73,7 +73,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
     static class GroupRolesConfig extends BaseLdapProviderConfig {
         protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .ldapAuthenticationProvider()
+                .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
                     .groupRoleAttribute("group")
         }
@@ -92,7 +92,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
         protected void registerAuthentication(
             AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .ldapAuthenticationProvider()
+                .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
                     .groupSearchFilter("ou=groupName");
         }
@@ -111,7 +111,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
         protected void registerAuthentication(
             AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .ldapAuthenticationProvider()
+                .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
                     .rolePrefix("role_")
         }
@@ -131,7 +131,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
         protected void registerAuthentication(
             AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .ldapAuthenticationProvider()
+                .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
                     .userDnPatterns("uid={0},ou=people")
                     .groupSearchFilter("(member={0})");

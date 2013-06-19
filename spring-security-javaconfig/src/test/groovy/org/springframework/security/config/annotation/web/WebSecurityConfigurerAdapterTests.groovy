@@ -25,9 +25,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
 import org.springframework.ldap.core.support.BaseLdapPathContextSource
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurer
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource
 
 /**
@@ -94,7 +95,7 @@ class WebSecurityConfigurerAdapterTests extends BaseSpringSpec {
                 .jdbcUserDetailsManager()
                     .dataSource(dataSource())
                     .and()
-                .ldapAuthenticationProvider()
+                .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
         }
     }
