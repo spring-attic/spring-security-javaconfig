@@ -1,3 +1,4 @@
 dependencies {
     compile "org.springframework.security:spring-security-openid:$springSecurityVersion"
+    runtime "net.sourceforge.nekohtml:nekohtml:1.9.10"
 }

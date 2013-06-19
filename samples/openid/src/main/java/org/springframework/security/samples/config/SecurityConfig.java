@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                 .attributeExchange(".*yahoo.com.*")
                     .attribute("email")
-                        .type("http://schema.openid.net/contact/email")
+                        .type("http://axschema.org/contact/email")
                         .required(true)
                         .and()
                     .attribute("fullname")
