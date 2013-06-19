@@ -51,15 +51,16 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * @author Rob Winch
  * @since 3.2
  */
-final class DefaultLoginPageConfigurer extends
-        BaseHttpConfigurer {
+final class DefaultLoginPageConfigurer<H extends HttpBuilder<H>> extends
+        BaseHttpConfigurer<H> {
 
     private DefaultLoginPageGeneratingFilter loginPageGeneratingFilter = new DefaultLoginPageGeneratingFilter();
+
     DefaultLoginPageConfigurer(){}
 
     @Override
-    public void init(HttpConfiguration http) throws Exception {
-        FormLoginConfigurer formLogin = http.getConfigurer(FormLoginConfigurer.class);
+    public void init(H http) throws Exception {
+        FormLoginConfigurer<H> formLogin = http.getConfigurer(FormLoginConfigurer.class);
         if(formLogin != null && !formLogin.isCustomLoginPage()) {
 
             loginPageGeneratingFilter.setFormLoginEnabled(true);
@@ -70,12 +71,12 @@ final class DefaultLoginPageConfigurer extends
             loginPageGeneratingFilter.setAuthenticationUrl(formLogin.getLoginProcessingUrl());
         }
 
-        RememberMeConfigurer rememberme= http.getConfigurer(RememberMeConfigurer.class);
+        RememberMeConfigurer<H> rememberme= http.getConfigurer(RememberMeConfigurer.class);
         if(rememberme != null) {
             loginPageGeneratingFilter.setRememberMeParameter(rememberme.getRememberMeParameter());
         }
 
-        OpenIDLoginConfigurer openidLogin = http.getConfigurer(OpenIDLoginConfigurer.class);
+        OpenIDLoginConfigurer<H> openidLogin = http.getConfigurer(OpenIDLoginConfigurer.class);
         if(openidLogin != null && !openidLogin.isCustomLoginPage()) {
             loginPageGeneratingFilter.setOpenIdEnabled(true);
             loginPageGeneratingFilter.setOpenIDauthenticationUrl(openidLogin.getLoginProcessingUrl());
@@ -93,7 +94,7 @@ final class DefaultLoginPageConfigurer extends
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         AuthenticationEntryPoint authenticationEntryPoint = null;
         ExceptionHandlingConfigurer exceptionConf = http.getConfigurer(ExceptionHandlingConfigurer.class);
         if(exceptionConf != null) {

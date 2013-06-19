@@ -35,29 +35,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.openid.OpenIDAuthenticationFilter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.PortMapperImpl;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.security.web.authentication.preauth.x509.X509AuthenticationFilter;
-import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
-import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter;
-import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
-import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
@@ -106,7 +87,7 @@ import org.springframework.util.Assert;
  * @since 3.2
  * @see EnableWebSecurity
  */
-public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain> {
+public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain>, HttpBuilder<HttpConfiguration> {
     private final LifecycleManager lifecycleManager;
     private AuthenticationManager authenticationManager;
 
@@ -128,14 +109,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
     }
 
-    /**
-     * Gets the {@link SecurityConfigurer} by its class name or
-     * <code>null</code> if not found. Note that object hierarchies are not
-     * considered.
-     *
-     * @param clazz the Class of the {@link SecurityConfigurer} to attempt to get.
-     *
-     * @see org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder#getConfigurer(java.lang.Class)
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#getConfigurer(java.lang.Class)
      */
     @Override
     public <C extends SecurityConfigurer<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurer(
@@ -246,8 +221,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @throws Exception
      * @see OpenIDLoginConfigurer
      */
-    public OpenIDLoginConfigurer openidLogin() throws Exception {
-        return apply(new OpenIDLoginConfigurer());
+    public OpenIDLoginConfigurer<HttpConfiguration> openidLogin() throws Exception {
+        return apply(new OpenIDLoginConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -308,8 +283,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link SessionManagementConfigurer} for further customizations
      * @throws Exception
      */
-    public SessionManagementConfigurer sessionManagement() throws Exception {
-        return apply(new SessionManagementConfigurer());
+    public SessionManagementConfigurer<HttpConfiguration> sessionManagement() throws Exception {
+        return apply(new SessionManagementConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -363,8 +338,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @throws Exception
      * @see {@link #requiresChannel()}
      */
-    public PortMapperConfigurer portMapper() throws Exception {
-        return apply(new PortMapperConfigurer());
+    public PortMapperConfigurer<HttpConfiguration> portMapper() throws Exception {
+        return apply(new PortMapperConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -439,8 +414,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link JeeConfigurer} for further customizations
      * @throws Exception
      */
-    public JeeConfigurer jee() throws Exception {
-        return apply(new JeeConfigurer());
+    public JeeConfigurer<HttpConfiguration> jee() throws Exception {
+        return apply(new JeeConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -472,8 +447,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link X509Configurer} for further customizations
      * @throws Exception
      */
-    public X509Configurer x509() throws Exception {
-        return apply(new X509Configurer());
+    public X509Configurer<HttpConfiguration> x509() throws Exception {
+        return apply(new X509Configurer<HttpConfiguration>());
     }
 
     /**
@@ -519,9 +494,10 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link RememberMeConfigurer} for further customizations
      * @throws Exception
      */
-    public RememberMeConfigurer rememberMe() throws Exception {
-        return apply(new RememberMeConfigurer());
+    public RememberMeConfigurer<HttpConfiguration> rememberMe() throws Exception {
+        return apply(new RememberMeConfigurer<HttpConfiguration>());
     }
+
 
     /**
      * Allows restricting access based upon the {@link HttpServletRequest} using
@@ -615,8 +591,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public ExpressionUrlAuthorizations authorizeUrls() throws Exception {
-        return apply(new ExpressionUrlAuthorizations());
+    public ExpressionUrlAuthorizations<HttpConfiguration> authorizeUrls() throws Exception {
+        return apply(new ExpressionUrlAuthorizations<HttpConfiguration>());
     }
 
     /**
@@ -628,8 +604,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link RequestCacheConfigurer} for further customizations
      * @throws Exception
      */
-    public RequestCacheConfigurer requestCache() throws Exception {
-        return apply(new RequestCacheConfigurer());
+    public RequestCacheConfigurer<HttpConfiguration> requestCache() throws Exception {
+        return apply(new RequestCacheConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -639,8 +615,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link ExceptionHandlingConfigurer} for further customizations
      * @throws Exception
      */
-    public ExceptionHandlingConfigurer exceptionHandling() throws Exception {
-        return apply(new ExceptionHandlingConfigurer());
+    public ExceptionHandlingConfigurer<HttpConfiguration> exceptionHandling() throws Exception {
+        return apply(new ExceptionHandlingConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -651,8 +627,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link SecurityContextConfigurer} for further customizations
      * @throws Exception
      */
-    public SecurityContextConfigurer securityContext() throws Exception {
-        return apply(new SecurityContextConfigurer());
+    public SecurityContextConfigurer<HttpConfiguration> securityContext() throws Exception {
+        return apply(new SecurityContextConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -663,8 +639,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link ServletApiConfigurer} for further customizations
      * @throws Exception
      */
-    public ServletApiConfigurer servletApi() throws Exception {
-        return apply(new ServletApiConfigurer());
+    public ServletApiConfigurer<HttpConfiguration> servletApi() throws Exception {
+        return apply(new ServletApiConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -719,8 +695,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public LogoutConfigurer logout() throws Exception {
-        return apply(new LogoutConfigurer());
+    public LogoutConfigurer<HttpConfiguration> logout() throws Exception {
+        return apply(new LogoutConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -800,8 +776,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public AnonymousConfigurer anonymous() throws Exception {
-        return apply(new AnonymousConfigurer());
+    public AnonymousConfigurer<HttpConfiguration> anonymous() throws Exception {
+        return apply(new AnonymousConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -880,8 +856,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public FormLoginConfigurer formLogin() throws Exception {
-        return apply(new FormLoginConfigurer());
+    public FormLoginConfigurer<HttpConfiguration> formLogin() throws Exception {
+        return apply(new FormLoginConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -929,8 +905,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link ChannelSecurityConfigurer} for further customizations
      * @throws Exception
      */
-    public ChannelSecurityConfigurer requiresChannel() throws Exception {
-        return apply(new ChannelSecurityConfigurer());
+    public ChannelSecurityConfigurer<HttpConfiguration> requiresChannel() throws Exception {
+        return apply(new ChannelSecurityConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -972,8 +948,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link HttpBasicConfigurer} for further customizations
      * @throws Exception
      */
-    public HttpBasicConfigurer httpBasic() throws Exception {
-        return apply(new HttpBasicConfigurer());
+    public HttpBasicConfigurer<HttpConfiguration> httpBasic() throws Exception {
+        return apply(new HttpBasicConfigurer<HttpConfiguration>());
     }
 
     public void defaultSharedObject(Class<Object> sharedType, Object object) {
@@ -982,23 +958,19 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         }
     }
 
-    /**
-     * Sets an object that is shared by multiple {@link SecurityConfigurer}.
-     *
-     * @param sharedType the Class to key the shared object by.
-     * @param object the Object to store
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#setSharedObject(java.lang.Class, C)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <C> void setSharedObject(Class<C> sharedType, C object) {
         this.sharedObjects.put((Class<Object>) sharedType, object);
     }
 
-    /**
-     * Gets a shared Object. Note that object heirarchies are not considered.
-     *
-     * @param sharedType the type of the shared Object
-     * @return the shared Object or null if it is not found
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#getSharedObject(java.lang.Class)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <C> C getSharedObject(Class<C> sharedType) {
         return (C) this.sharedObjects.get(sharedType);
@@ -1015,29 +987,25 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return new DefaultSecurityFilterChain(requestMatcher, filters);
     }
 
-    /**
-     * Allows adding an additional {@link AuthenticationProvider} to be used
-     *
-     * @param authenticationProvider the {@link AuthenticationProvider} to be added
-     * @return the {@link HttpConfiguration} for further customizations
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)
      */
+    @Override
     public HttpConfiguration authenticationProvider(AuthenticationProvider authenticationProvider) {
         getAuthenticationRegistry().add(authenticationProvider);
         return this;
     }
 
-    /**
-     * Allows adding an additional {@link UserDetailsService} to be used
-     *
-     * @param userDetailsService the {@link UserDetailsService} to be added
-     * @return the {@link HttpConfiguration} for further customizations
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#userDetailsService(org.springframework.security.core.userdetails.UserDetailsService)
      */
+    @Override
     public HttpConfiguration userDetailsService(UserDetailsService userDetailsService) throws Exception {
         getAuthenticationRegistry().userDetailsService(userDetailsService);
         return this;
     }
 
-    final <T> T registerLifecycle(T object) {
+    public final <T> T registerLifecycle(T object) {
         return lifecycleManager.registerLifecycle(object);
     }
 
@@ -1045,74 +1013,28 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return getSharedObject(AuthenticationManagerBuilder.class);
     }
 
-    /**
-     * Allows adding a {@link Filter} after one of the known {@link Filter}
-     * classes. The known {@link Filter} instances are either a {@link Filter}
-     * listed in {@link #addFilter(Filter)} or a {@link Filter} that has already
-     * been added using {@link #addFilterAfter(Filter, Class)} or
-     * {@link #addFilterBefore(Filter, Class)}.
-     *
-     * @param filter the {@link Filter} to register before the type {@code afterFilter}
-     * @param afterFilter the Class of the known {@link Filter}.
-     * @return the {@link HttpConfiguration} for further customizations
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#addFilterAfter(javax.servlet.Filter, java.lang.Class)
      */
+    @Override
     public HttpConfiguration addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerAfter(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
 
-    /**
-     * Allows adding a {@link Filter} before one of the known {@link Filter}
-     * classes. The known {@link Filter} instances are either a {@link Filter}
-     * listed in {@link #addFilter(Filter)} or a {@link Filter} that has already
-     * been added using {@link #addFilterAfter(Filter, Class)} or
-     * {@link #addFilterBefore(Filter, Class)}.
-     *
-     * @param filter the {@link Filter} to register before the type {@code beforeFilter}
-     * @param beforeFilter the Class of the known {@link Filter}.
-     * @return the {@link HttpConfiguration} for further customizations
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#addFilterBefore(javax.servlet.Filter, java.lang.Class)
      */
+    @Override
     public HttpConfiguration addFilterBefore(Filter filter, Class<? extends Filter> beforeFilter) {
         comparitor.registerBefore(filter.getClass(), beforeFilter);
         return addFilter(filter);
     }
 
-    /**
-     * Adds a {@link Filter} that must be an instance of or extend one of the
-     * Filters provided within the Security framework. The method ensures that
-     * the ordering of the Filters is automatically taken care of.
-     *
-     * The ordering of the Filters is:
-     *
-     * <ul>
-     * <li>{@link ChannelProcessingFilter}</li>
-     * <li>{@link ConcurrentSessionFilter}</li>
-     * <li>{@link SecurityContextPersistenceFilter}</li>
-     * <li>{@link LogoutFilter}</li>
-     * <li>{@link X509AuthenticationFilter}</li>
-     * <li>{@link AbstractPreAuthenticatedProcessingFilter}</li>
-     * <li>{@link org.springframework.security.cas.web.CasAuthenticationFilter}</li>
-     * <li>{@link UsernamePasswordAuthenticationFilter}</li>
-     * <li>{@link ConcurrentSessionFilter}</li>
-     * <li>{@link OpenIDAuthenticationFilter}</li>
-     * <li>{@link DefaultLoginPageGeneratingFilter}</li>
-     * <li>{@link ConcurrentSessionFilter}</li>
-     * <li>{@link DigestAuthenticationFilter}</li>
-     * <li>{@link BasicAuthenticationFilter}</li>
-     * <li>{@link RequestCacheAwareFilter}</li>
-     * <li>{@link SecurityContextHolderAwareRequestFilter}</li>
-     * <li>{@link JaasApiIntegrationFilter}</li>
-     * <li>{@link RememberMeAuthenticationFilter}</li>
-     * <li>{@link AnonymousAuthenticationFilter}</li>
-     * <li>{@link SessionManagementFilter}</li>
-     * <li>{@link ExceptionTranslationFilter}</li>
-     * <li>{@link FilterSecurityInterceptor}</li>
-     * <li>{@link SwitchUserFilter}</li>
-     * </ul>
-     *
-     * @param filter the {@link Filter} to add
-     * @return the {@link HttpConfiguration} for further customizations
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#addFilter(javax.servlet.Filter)
      */
+    @Override
     public HttpConfiguration addFilter(Filter filter) {
         Class<? extends Filter> filterClass = filter.getClass();
         if(!comparitor.isRegistered(filterClass)) {
@@ -1237,7 +1159,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @return the {@link RequestMatcherRegistry} for further customizations
+     * @return the {@link IgnoredRequestRegistry} for further customizations
      */
     public RequestMatcherRegistry requestMatchers() {
         return new RequestMatcherRegistry();
@@ -1306,6 +1228,10 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     }
 
     // FIXME shared object or explicit?
+    /* (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#authenticationManager()
+     */
+    @Override
     public AuthenticationManager authenticationManager() {
         return authenticationManager;
     }
@@ -1318,7 +1244,6 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      */
     public final class RequestMatcherRegistry extends BaseRequestMatcherRegistry<HttpConfiguration,DefaultSecurityFilterChain,HttpConfiguration> {
 
-        @Override
         HttpConfiguration chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             requestMatcher(new OrRequestMatcher(requestMatchers));
             return HttpConfiguration.this;

@@ -66,7 +66,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  * @author Rob Winch
  * @since 3.2
  */
-public final class JeeConfigurer extends BaseHttpConfigurer {
+public final class JeeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
     private J2eePreAuthenticatedProcessingFilter j2eePreAuthenticatedProcessingFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService;
     private Set<String> mappableRoles = new HashSet<String>();
@@ -96,7 +96,7 @@ public final class JeeConfigurer extends BaseHttpConfigurer {
      * @return the {@link JeeConfigurer} for further customizations
      * @see SimpleMappableAttributesRetriever
      */
-    public JeeConfigurer mappableRoles(String... mappableRoles) {
+    public JeeConfigurer<H> mappableRoles(String... mappableRoles) {
         this.mappableRoles.clear();
         for(String role : mappableRoles) {
             this.mappableRoles.add(role);
@@ -120,7 +120,7 @@ public final class JeeConfigurer extends BaseHttpConfigurer {
      * @return the {@link JeeConfigurer} for further customizations
      * @see SimpleMappableAttributesRetriever
      */
-    public JeeConfigurer mappableRoles(Set<String> mappableRoles) {
+    public JeeConfigurer<H> mappableRoles(Set<String> mappableRoles) {
         this.mappableRoles = mappableRoles;
         return this;
     }
@@ -133,7 +133,7 @@ public final class JeeConfigurer extends BaseHttpConfigurer {
      * @param authenticatedUserDetailsService the {@link AuthenticationUserDetailsService} to use.
      * @return the {@link JeeConfigurer} for further configuration
      */
-    public JeeConfigurer authenticatedUserDetailsService(
+    public JeeConfigurer<H> authenticatedUserDetailsService(
             AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticatedUserDetailsService) {
         this.authenticationUserDetailsService = authenticatedUserDetailsService;
         return this;
@@ -147,7 +147,7 @@ public final class JeeConfigurer extends BaseHttpConfigurer {
      * @param j2eePreAuthenticatedProcessingFilter the {@link J2eePreAuthenticatedProcessingFilter} to use.
      * @return the {@link JeeConfigurer} for further configuration
      */
-    public JeeConfigurer j2eePreAuthenticatedProcessingFilter(
+    public JeeConfigurer<H> j2eePreAuthenticatedProcessingFilter(
             J2eePreAuthenticatedProcessingFilter j2eePreAuthenticatedProcessingFilter) {
         this.j2eePreAuthenticatedProcessingFilter = j2eePreAuthenticatedProcessingFilter;
         return this;
@@ -162,7 +162,7 @@ public final class JeeConfigurer extends BaseHttpConfigurer {
      * @see org.springframework.security.config.annotation.SecurityConfigurerAdapter#init(org.springframework.security.config.annotation.SecurityBuilder)
      */
     @Override
-    public void init(HttpConfiguration http) throws Exception {
+    public void init(H http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getUserDetailsService());
         authenticationProvider = registerLifecycle(authenticationProvider);
@@ -173,7 +173,7 @@ public final class JeeConfigurer extends BaseHttpConfigurer {
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         J2eePreAuthenticatedProcessingFilter filter = getFilter(http
                 .authenticationManager());
         http.addFilter(filter);

@@ -63,7 +63,7 @@ import org.springframework.util.StringUtils;
  * @since 3.2
  * @see {@link org.springframework.security.config.annotation.web.HttpConfiguration#authorizeUrls()}
  */
-public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigurer<ExpressionUrlAuthorizations.AuthorizedUrl> {
+public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends BaseInterceptUrlConfigurer<ExpressionUrlAuthorizations<H>.AuthorizedUrl,H> {
     static final String permitAll = "permitAll";
     private static final String denyAll = "denyAll";
     private static final String anonymous = "anonymous";
@@ -75,7 +75,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#exceptionHandling()
+     * @see HttpConfiguration#authorizeUrls()
      */
     ExpressionUrlAuthorizations() {
     }
@@ -86,7 +86,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
      * @param expressionHandler the {@link SecurityExpressionHandler} to be used
      * @return the {@link ExpressionUrlAuthorizations} for further customization.
      */
-    public ExpressionUrlAuthorizations expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
+    public ExpressionUrlAuthorizations<H> expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
         this.expressionHandler = expressionHandler;
         return this;
     }
@@ -118,7 +118,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
      * @param configAttributes the {@link ConfigAttribute} to be mapped by the {@link RequestMatcher} instances
      * @return the {@link ExpressionUrlAuthorizations} for further customization.
      */
-    private ExpressionUrlAuthorizations interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+    private ExpressionUrlAuthorizations<H> interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
         for(RequestMatcher requestMatcher : requestMatchers) {
             addMapping(new UrlMapping(requestMatcher, configAttributes));
         }
@@ -166,7 +166,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          *             this is automatically inserted.
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations hasRole(String role) {
+        public ExpressionUrlAuthorizations<H> hasRole(String role) {
             return access(ExpressionUrlAuthorizations.hasRole(role));
         }
 
@@ -176,7 +176,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          * @param authority the authority to require (i.e. ROLE_USER, ROLE_ADMIN, etc).
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations hasAuthority(String authority) {
+        public ExpressionUrlAuthorizations<H> hasAuthority(String authority) {
             return access(ExpressionUrlAuthorizations.hasAuthority(authority));
         }
 
@@ -187,7 +187,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          *                    mean either "ROLE_USER" or "ROLE_ADMIN" is required).
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations hasAnyAuthority(String... authorities) {
+        public ExpressionUrlAuthorizations<H> hasAnyAuthority(String... authorities) {
             return access(ExpressionUrlAuthorizations.hasAnyAuthority(authorities));
         }
 
@@ -198,7 +198,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          * @param ipaddressExpression the ipaddress (i.e. 192.168.1.79) or local subnet (i.e. 192.168.0/24)
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations hasIpAddress(String ipaddressExpression) {
+        public ExpressionUrlAuthorizations<H> hasIpAddress(String ipaddressExpression) {
             return access(ExpressionUrlAuthorizations.hasIpAddress(ipaddressExpression));
         }
 
@@ -207,7 +207,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          *
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations permitAll() {
+        public ExpressionUrlAuthorizations<H> permitAll() {
             return access(permitAll);
         }
 
@@ -216,7 +216,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          *
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations anonymous() {
+        public ExpressionUrlAuthorizations<H> anonymous() {
             return access(anonymous);
         }
 
@@ -226,7 +226,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          * @see {@link RememberMeConfigurer}
          */
-        public ExpressionUrlAuthorizations rememberMe() {
+        public ExpressionUrlAuthorizations<H> rememberMe() {
             return access(rememberMe);
         }
 
@@ -235,7 +235,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          *
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations denyAll() {
+        public ExpressionUrlAuthorizations<H> denyAll() {
             return access(denyAll);
         }
 
@@ -244,7 +244,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          *
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations authenticated() {
+        public ExpressionUrlAuthorizations<H> authenticated() {
             return access(authenticated);
         }
 
@@ -254,7 +254,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          * @see {@link RememberMeConfigurer}
          */
-        public ExpressionUrlAuthorizations fullyAuthenticated() {
+        public ExpressionUrlAuthorizations<H> fullyAuthenticated() {
             return access(fullyAuthenticated);
         }
 
@@ -264,7 +264,7 @@ public final class ExpressionUrlAuthorizations extends BaseInterceptUrlConfigure
          * @param attribute the expression to secure the URLs (i.e. "hasRole('ROLE_USER') and hasRole('ROLE_SUPER')")
          * @return the {@link ExpressionUrlAuthorizations} for further customization
          */
-        public ExpressionUrlAuthorizations access(String attribute) {
+        public ExpressionUrlAuthorizations<H> access(String attribute) {
             interceptUrl(requestMatchers, SecurityConfig.createList(attribute));
             return ExpressionUrlAuthorizations.this;
         }

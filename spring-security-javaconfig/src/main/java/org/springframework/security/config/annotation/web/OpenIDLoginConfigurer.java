@@ -109,7 +109,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterConfigurer<OpenIDLoginConfigurer,OpenIDAuthenticationFilter> {
+public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends AbstractAuthenticationFilterConfigurer<H,OpenIDLoginConfigurer<H>,OpenIDAuthenticationFilter> {
     private OpenIDConsumer openIDConsumer;
     private ConsumerManager consumerManager;
     private AuthenticationUserDetailsService<OpenIDAuthenticationToken> authenticationUserDetailsService;
@@ -145,7 +145,7 @@ public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterCon
      *            the {@link OpenIDConsumer} to be used
      * @return the {@link OpenIDLoginConfigurer} for further customizations
      */
-    public OpenIDLoginConfigurer consumer(OpenIDConsumer consumer) {
+    public OpenIDLoginConfigurer<H> consumer(OpenIDConsumer consumer) {
         this.openIDConsumer = consumer;
         return this;
     }
@@ -162,7 +162,7 @@ public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterCon
      * @param consumerManager the {@link ConsumerManager} to use. Cannot be null.
      * @return the {@link OpenIDLoginConfigurer} for further customizations
      */
-    public OpenIDLoginConfigurer consumerManager(ConsumerManager consumerManager) {
+    public OpenIDLoginConfigurer<H> consumerManager(ConsumerManager consumerManager) {
         this.consumerManager = consumerManager;
         return this;
     }
@@ -176,7 +176,7 @@ public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterCon
      * @param authenticationUserDetailsService the {@link AuthenticationDetailsSource} to use
      * @return the {@link OpenIDLoginConfigurer} for further customizations
      */
-    public OpenIDLoginConfigurer authenticationUserDetailsService(AuthenticationUserDetailsService<OpenIDAuthenticationToken> authenticationUserDetailsService) {
+    public OpenIDLoginConfigurer<H> authenticationUserDetailsService(AuthenticationUserDetailsService<OpenIDAuthenticationToken> authenticationUserDetailsService) {
         this.authenticationUserDetailsService = authenticationUserDetailsService;
         return this;
     }
@@ -190,7 +190,7 @@ public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterCon
      *            the URL used to perform authentication
      * @return the {@link OpenIDLoginConfigurer} for additional customization
      */
-    public OpenIDLoginConfigurer loginProcessingUrl(String loginProcessingUrl) {
+    public OpenIDLoginConfigurer<H> loginProcessingUrl(String loginProcessingUrl) {
         return super.loginProcessingUrl(loginProcessingUrl);
     }
 
@@ -217,12 +217,12 @@ public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterCon
      * @param loginPage the login page to redirect to if authentication is required (i.e. "/login")
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public OpenIDLoginConfigurer loginPage(String loginPage) {
+    public OpenIDLoginConfigurer<H> loginPage(String loginPage) {
         return super.loginPage(loginPage);
     }
 
     @Override
-    public void init(HttpConfiguration http) throws Exception {
+    public void init(H http) throws Exception {
         super.init(http);
 
         OpenIDAuthenticationProvider authenticationProvider = new OpenIDAuthenticationProvider();
@@ -232,7 +232,7 @@ public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterCon
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         authFilter.setConsumer(getConsumer());
         super.configure(http);
     }
@@ -284,7 +284,7 @@ public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterCon
      * @return the {@link AuthenticationUserDetailsService}.
      */
     private AuthenticationUserDetailsService<OpenIDAuthenticationToken> getAuthenticationUserDetailsService(
-            HttpConfiguration http) {
+            H http) {
         if(authenticationUserDetailsService != null) {
             return authenticationUserDetailsService;
         }
@@ -314,7 +314,7 @@ public final class OpenIDLoginConfigurer extends AbstractAuthenticationFilterCon
          * Get the {@link OpenIDLoginConfigurer} to customize the OpenID configuration further
          * @return the {@link OpenIDLoginConfigurer}
          */
-        public OpenIDLoginConfigurer and() {
+        public OpenIDLoginConfigurer<H> and() {
             return OpenIDLoginConfigurer.this;
         }
 

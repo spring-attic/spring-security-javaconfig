@@ -136,7 +136,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
                 .requestCache().and()
                 .anonymous().and()
                 .servletApi().and()
-                .apply(new DefaultLoginPageConfigurer()).and()
+                .apply(new DefaultLoginPageConfigurer<HttpConfiguration>()).and()
                 .logout();
         }
         configure(http);

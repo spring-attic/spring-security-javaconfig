@@ -33,8 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(
-            HttpConfiguration http) throws Exception {
+    protected void configure(HttpConfiguration http) throws Exception {
         http
             .authorizeUrls()
                 .antMatchers("/sparklr/**","/facebook/**").hasRole("USER")

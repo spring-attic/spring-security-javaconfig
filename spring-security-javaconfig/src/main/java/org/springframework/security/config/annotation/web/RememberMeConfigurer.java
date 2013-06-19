@@ -67,7 +67,7 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
  * @author Rob Winch
  * @since 3.2
  */
-public final class RememberMeConfigurer extends BaseHttpConfigurer {
+public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private String key;
     private RememberMeServices rememberMeServices;
@@ -92,7 +92,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @return {@link RememberMeConfigurer} for further customization
      * @see AbstractRememberMeServices#setTokenValiditySeconds(int)
      */
-    public RememberMeConfigurer tokenValiditySeconds(int tokenValiditySeconds) {
+    public RememberMeConfigurer<H> tokenValiditySeconds(int tokenValiditySeconds) {
         this.tokenValiditySeconds = tokenValiditySeconds;
         return this;
     }
@@ -108,7 +108,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @return the {@link RememberMeConfigurer} for further customization
      * @see AbstractRememberMeServices#setUseSecureCookie(boolean)
      */
-    public RememberMeConfigurer useSecureCookie(boolean useSecureCookie) {
+    public RememberMeConfigurer<H> useSecureCookie(boolean useSecureCookie) {
         this.useSecureCookie = useSecureCookie;
         return this;
     }
@@ -126,7 +126,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @return the {@link RememberMeConfigurer} for further customization
      * @see AbstractRememberMeServices
      */
-    public RememberMeConfigurer userDetailsService(UserDetailsService userDetailsService) {
+    public RememberMeConfigurer<H> userDetailsService(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
         return this;
     }
@@ -139,7 +139,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      *            the {@link PersistentTokenRepository} to use
      * @return the {@link RememberMeConfigurer} for further customization
      */
-    public RememberMeConfigurer tokenRepository(PersistentTokenRepository tokenRepository) {
+    public RememberMeConfigurer<H> tokenRepository(PersistentTokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
         return this;
     }
@@ -151,7 +151,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @param key the key to identify tokens created for remember me authentication
      * @return  the {@link RememberMeConfigurer} for further customization
      */
-    public RememberMeConfigurer key(String key) {
+    public RememberMeConfigurer<H> key(String key) {
         this.key = key;
         return this;
     }
@@ -167,7 +167,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @return {@link RememberMeConfigurer} for further customization
      * @see RememberMeAuthenticationFilter#setAuthenticationSuccessHandler(AuthenticationSuccessHandler)
      */
-    public RememberMeConfigurer authenticationSuccessHandler(AuthenticationSuccessHandler authenticationSuccessHandler) {
+    public RememberMeConfigurer<H> authenticationSuccessHandler(AuthenticationSuccessHandler authenticationSuccessHandler) {
         this.authenticationSuccessHandler = authenticationSuccessHandler;
         return this;
     }
@@ -178,17 +178,17 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @return the {@link RememberMeConfigurer} for further customizations
      * @see RememberMeServices
      */
-    public RememberMeConfigurer rememberMeServices(RememberMeServices rememberMeServices) {
+    public RememberMeConfigurer<H> rememberMeServices(RememberMeServices rememberMeServices) {
         this.rememberMeServices = rememberMeServices;
         return this;
     }
 
     @Override
-    public void init(HttpConfiguration http) throws Exception {
+    public void init(H http) throws Exception {
         String key = getKey();
         RememberMeServices rememberMeServices = getRememberMeServices(http, key);
         http.setSharedObject(RememberMeServices.class, rememberMeServices);
-        LogoutConfigurer logoutConfigurer = http.getConfigurer(LogoutConfigurer.class);
+        LogoutConfigurer<H> logoutConfigurer = http.getConfigurer(LogoutConfigurer.class);
         if(logoutConfigurer != null) {
             logoutConfigurer.addLogoutHandler(logoutHandler);
         }
@@ -200,7 +200,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(
                 http.authenticationManager(), rememberMeServices);
         if (authenticationSuccessHandler != null) {
@@ -226,7 +226,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @return the {@link RememberMeServices} to use
      * @throws Exception
      */
-    private RememberMeServices getRememberMeServices(HttpConfiguration http,
+    private RememberMeServices getRememberMeServices(H http,
             String key) throws Exception {
         if (rememberMeServices != null) {
             if (rememberMeServices instanceof LogoutHandler
@@ -264,7 +264,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @throws Exception
      */
     private AbstractRememberMeServices createRememberMeServices(
-            HttpConfiguration http, String key) throws Exception {
+            H http, String key) throws Exception {
         return tokenRepository == null ? createTokenBasedRememberMeServices(
                 http, key) : createPersistentRememberMeServices(http, key);
     }
@@ -277,7 +277,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @return the {@link TokenBasedRememberMeServices}
      */
     private AbstractRememberMeServices createTokenBasedRememberMeServices(
-            HttpConfiguration http, String key) {
+            H http, String key) {
         UserDetailsService userDetailsService = getUserDetailsService(http);
         return new TokenBasedRememberMeServices(key, userDetailsService);
     }
@@ -290,7 +290,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @return the {@link PersistentTokenBasedRememberMeServices}
      */
     private AbstractRememberMeServices createPersistentRememberMeServices(
-            HttpConfiguration http, String key) {
+            H http, String key) {
         UserDetailsService userDetailsService = getUserDetailsService(http);
         return new PersistentTokenBasedRememberMeServices(key,
                 userDetailsService, tokenRepository);
@@ -305,7 +305,7 @@ public final class RememberMeConfigurer extends BaseHttpConfigurer {
      * @param http {@link HttpConfiguration} to get the shared {@link UserDetailsService}
      * @return the {@link UserDetailsService} to use
      */
-    private UserDetailsService getUserDetailsService(HttpConfiguration http) {
+    private UserDetailsService getUserDetailsService(H http) {
         if(userDetailsService == null) {
             userDetailsService = http.getSharedObject(UserDetailsService.class);
         }

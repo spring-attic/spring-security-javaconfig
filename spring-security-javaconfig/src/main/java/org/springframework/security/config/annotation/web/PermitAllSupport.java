@@ -30,7 +30,7 @@ import org.springframework.security.web.util.RequestMatcher;
  */
 final class PermitAllSupport {
 
-    public static void permitAll(HttpConfiguration http, String... urls) {
+    public static void permitAll(HttpBuilder<? extends HttpBuilder<?>> http, String... urls) {
         ExpressionUrlAuthorizations configurer = http.getConfigurer(ExpressionUrlAuthorizations.class);
 
         if(configurer == null) {

@@ -59,7 +59,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public final class FormLoginConfigurer extends AbstractAuthenticationFilterConfigurer<FormLoginConfigurer,UsernamePasswordAuthenticationFilter> {
+public final class FormLoginConfigurer<H extends HttpBuilder<H>> extends AbstractAuthenticationFilterConfigurer<H,FormLoginConfigurer<H>,UsernamePasswordAuthenticationFilter> {
     /**
      * Creates a new instance
      * @see HttpConfiguration#formLogin()
@@ -147,7 +147,7 @@ public final class FormLoginConfigurer extends AbstractAuthenticationFilterConfi
      *            (i.e. "/login")
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public FormLoginConfigurer loginPage(String loginPage) {
+    public FormLoginConfigurer<H> loginPage(String loginPage) {
         return super.loginPage(loginPage);
     }
 
@@ -162,7 +162,7 @@ public final class FormLoginConfigurer extends AbstractAuthenticationFilterConfi
      *            authentication
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public FormLoginConfigurer usernameParameter(String usernameParameter) {
+    public FormLoginConfigurer<H> usernameParameter(String usernameParameter) {
         authFilter.setUsernameParameter(usernameParameter);
         return this;
     }
@@ -176,7 +176,7 @@ public final class FormLoginConfigurer extends AbstractAuthenticationFilterConfi
      *            authentication
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public FormLoginConfigurer passwordParameter(String passwordParameter) {
+    public FormLoginConfigurer<H> passwordParameter(String passwordParameter) {
         authFilter.setPasswordParameter(passwordParameter);
         return this;
     }

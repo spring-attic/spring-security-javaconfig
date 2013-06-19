@@ -62,7 +62,7 @@ import org.springframework.util.Assert;
  * @since 3.2
  * @see ExpressionUrlAuthorizations
  */
-public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAuthorizations.AuthorizedUrl> {
+public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInterceptUrlConfigurer<UrlAuthorizations<H>.AuthorizedUrl,H> {
 
     /**
      * Creates the default {@link AccessDecisionVoter} instances used if an
@@ -101,7 +101,7 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAutho
      * @param configAttributes the {@link ConfigAttribute} instances that should be mapped by the {@link RequestMatcher} instances
      * @return the {@link UrlAuthorizations} for further customizations
      */
-    private UrlAuthorizations addMapping(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+    private UrlAuthorizations<H> addMapping(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
         for(RequestMatcher requestMatcher : requestMatchers) {
             addMapping(new UrlMapping(requestMatcher, configAttributes));
         }
@@ -178,7 +178,7 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAutho
          *            with ROLE_
          * the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations hasRole(String role) {
+        public UrlAuthorizations<H> hasRole(String role) {
             return access(UrlAuthorizations.hasRole(role));
         }
 
@@ -191,7 +191,7 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAutho
          *            it is automatically prepended already.
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations hasAnyRole(String... roles) {
+        public UrlAuthorizations<H> hasAnyRole(String... roles) {
             return access(UrlAuthorizations.hasAnyRole(roles));
         }
 
@@ -202,7 +202,7 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAutho
          *            the authority that should be required
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations hasAuthority(String authority) {
+        public UrlAuthorizations<H> hasAuthority(String authority) {
             return access(authority);
         }
 
@@ -211,7 +211,7 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAutho
          * @param authorities the authorities that the user should have at least one of (i.e. ROLE_USER, ROLE_ADMIN, etc).
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations hasAnyAuthority(String... authorities) {
+        public UrlAuthorizations<H> hasAnyAuthority(String... authorities) {
             return access(UrlAuthorizations.hasAnyAuthority(authorities));
         }
 
@@ -219,7 +219,7 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAutho
          * Specifies that an anonymous user is allowed access
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations anonymous() {
+        public UrlAuthorizations<H> anonymous() {
             return hasRole("ROLE_ANONYMOUS");
         }
 
@@ -228,7 +228,7 @@ public final class UrlAuthorizations extends BaseInterceptUrlConfigurer<UrlAutho
          * @param attributes the {@link ConfigAttribute}'s that restrict access to a URL
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations access(String... attributes) {
+        public UrlAuthorizations<H> access(String... attributes) {
             addMapping(requestMatchers, SecurityConfig.createList(attributes));
             return UrlAuthorizations.this;
         }

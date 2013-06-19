@@ -55,7 +55,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
  * @author Rob Winch
  * @since 3.2
  */
-public final class ExceptionHandlingConfigurer extends BaseHttpConfigurer {
+public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
 
     private AuthenticationEntryPoint authenticationEntryPoint;
 
@@ -76,7 +76,7 @@ public final class ExceptionHandlingConfigurer extends BaseHttpConfigurer {
      * @see AccessDeniedHandlerImpl
      * @see {@link #accessDeniedHandler(org.springframework.security.web.access.AccessDeniedHandler)}
      */
-    public ExceptionHandlingConfigurer accessDeniedPage(String accessDeniedUrl) {
+    public ExceptionHandlingConfigurer<H> accessDeniedPage(String accessDeniedUrl) {
         AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
         accessDeniedHandler.setErrorPage(accessDeniedUrl);
         return accessDeniedHandler(accessDeniedHandler);
@@ -88,7 +88,7 @@ public final class ExceptionHandlingConfigurer extends BaseHttpConfigurer {
      * @param accessDeniedHandler the {@link AccessDeniedHandler} to be used
      * @return the {@link ExceptionHandlingConfigurer} for further customization
      */
-    public ExceptionHandlingConfigurer accessDeniedHandler(AccessDeniedHandler accessDeniedHandler) {
+    public ExceptionHandlingConfigurer<H> accessDeniedHandler(AccessDeniedHandler accessDeniedHandler) {
         this.accessDeniedHandler = accessDeniedHandler;
         return this;
     }
@@ -101,7 +101,7 @@ public final class ExceptionHandlingConfigurer extends BaseHttpConfigurer {
      * @param authenticationEntryPoint the {@link AuthenticationEntryPoint} to use
      * @return the {@link ExceptionHandlingConfigurer} for further customizations
      */
-    public ExceptionHandlingConfigurer authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+    public ExceptionHandlingConfigurer<H> authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         return this;
     }
@@ -115,7 +115,7 @@ public final class ExceptionHandlingConfigurer extends BaseHttpConfigurer {
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         AuthenticationEntryPoint entryPoint = getEntryPoint(http);
         ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(entryPoint, getRequestCache(http));
         if(accessDeniedHandler != null) {
@@ -130,7 +130,7 @@ public final class ExceptionHandlingConfigurer extends BaseHttpConfigurer {
      * @param http the {@link HttpConfiguration} used to look up shared {@link AuthenticationEntryPoint}
      * @return the {@link AuthenticationEntryPoint} to use
      */
-    private AuthenticationEntryPoint getEntryPoint(HttpConfiguration http) {
+    private AuthenticationEntryPoint getEntryPoint(H http) {
         AuthenticationEntryPoint entryPoint = this.authenticationEntryPoint;
         if(entryPoint == null) {
             AuthenticationEntryPoint sharedEntryPoint = http.getSharedObject(AuthenticationEntryPoint.class);
@@ -152,7 +152,7 @@ public final class ExceptionHandlingConfigurer extends BaseHttpConfigurer {
      * @param http the {@link HttpConfiguration} to attempt to fined the shared object
      * @return the {@link RequestCache} to use
      */
-    private RequestCache getRequestCache(HttpConfiguration http) {
+    private RequestCache getRequestCache(H http) {
         RequestCache result = http.getSharedObject(RequestCache.class);
         if(result != null) {
             return result;

@@ -37,7 +37,7 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
  * @author  Rob Winch
  * @since  3.2
  */
-public final class AnonymousConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class AnonymousConfigurer<H extends HttpBuilder<H>> extends SecurityConfigurerAdapter<DefaultSecurityFilterChain,H> {
     private String key;
     private AuthenticationProvider authenticationProvider;
     private AnonymousAuthenticationFilter authenticationFilter;
@@ -57,8 +57,9 @@ public final class AnonymousConfigurer extends SecurityConfigurerAdapter<Default
      * @return the {@link HttpConfiguration} since no further customization of anonymous authentication would be
      *         meaningful.
      */
-    public HttpConfiguration disable() {
-        return getBuilder().removeConfigurer(getClass()).getBuilder();
+    public H disable() {
+        getBuilder().removeConfigurer(getClass());
+        return getBuilder();
     }
 
     /**
@@ -69,7 +70,7 @@ public final class AnonymousConfigurer extends SecurityConfigurerAdapter<Default
      *            key.
      * @return  the {@link AnonymousConfigurer} for further customization of anonymous authentication
      */
-    public AnonymousConfigurer key(String key) {
+    public AnonymousConfigurer<H> key(String key) {
         this.key = key;
         return this;
     }
@@ -80,7 +81,7 @@ public final class AnonymousConfigurer extends SecurityConfigurerAdapter<Default
      * @param principal used for the {@link Authentication} object of anonymous users
      * @return  the {@link AnonymousConfigurer} for further customization of anonymous authentication
      */
-    public AnonymousConfigurer principal(Object principal) {
+    public AnonymousConfigurer<H> principal(Object principal) {
         this.principal = principal;
         return this;
     }
@@ -91,7 +92,7 @@ public final class AnonymousConfigurer extends SecurityConfigurerAdapter<Default
      * @param authorities Sets the {@link org.springframework.security.core.Authentication#getAuthorities()} for anonymous users
      * @return the {@link AnonymousConfigurer} for further customization of anonymous authentication
      */
-    public AnonymousConfigurer authorities(List<GrantedAuthority> authorities) {
+    public AnonymousConfigurer<H> authorities(List<GrantedAuthority> authorities) {
         this.authorities = authorities;
         return this;
     }
@@ -103,7 +104,7 @@ public final class AnonymousConfigurer extends SecurityConfigurerAdapter<Default
      *                    anonymous users (i.e. "ROLE_ANONYMOUS")
      * @return the {@link AnonymousConfigurer} for further customization of anonymous authentication
      */
-    public AnonymousConfigurer authorities(String... authorities) {
+    public AnonymousConfigurer<H> authorities(String... authorities) {
         return authorities(AuthorityUtils.createAuthorityList(authorities));
     }
 
@@ -116,7 +117,7 @@ public final class AnonymousConfigurer extends SecurityConfigurerAdapter<Default
      *
      * @return the {@link AnonymousConfigurer} for further customization of anonymous authentication
      */
-    public AnonymousConfigurer authenticationProvider(AuthenticationProvider authenticationProvider) {
+    public AnonymousConfigurer<H> authenticationProvider(AuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
         return this;
     }
@@ -129,14 +130,13 @@ public final class AnonymousConfigurer extends SecurityConfigurerAdapter<Default
      *
      * @return the {@link AnonymousConfigurer} for further customization of anonymous authentication
      */
-    public AnonymousConfigurer authenticationFilter(AnonymousAuthenticationFilter authenticationFilter) {
+    public AnonymousConfigurer<H> authenticationFilter(AnonymousAuthenticationFilter authenticationFilter) {
         this.authenticationFilter = authenticationFilter;
         return this;
     }
 
     @Override
-    public void init(HttpConfiguration http)
-            throws Exception {
+    public void init(H http) throws Exception {
         if(authenticationProvider == null) {
             authenticationProvider = new AnonymousAuthenticationProvider(getKey());
         }
@@ -147,7 +147,7 @@ public final class AnonymousConfigurer extends SecurityConfigurerAdapter<Default
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         authenticationFilter.afterPropertiesSet();
         http.addFilter(authenticationFilter);
     }

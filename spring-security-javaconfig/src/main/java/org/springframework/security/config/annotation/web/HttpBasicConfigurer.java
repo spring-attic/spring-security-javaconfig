@@ -53,7 +53,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public final class HttpBasicConfigurer extends BaseHttpConfigurer {
+public final class HttpBasicConfigurer<B extends HttpBuilder<B>> extends BaseHttpConfigurer<B> {
     private static final String DEFAULT_REALM = "Spring Security Application";
 
     private AuthenticationEntryPoint authenticationEntryPoint;
@@ -78,7 +78,7 @@ public final class HttpBasicConfigurer extends BaseHttpConfigurer {
      * @return {@link HttpBasicConfigurer} for additional customization
      * @throws Exception
      */
-    public HttpBasicConfigurer realmName(String realmName) throws Exception {
+    public HttpBasicConfigurer<B> realmName(String realmName) throws Exception {
         BasicAuthenticationEntryPoint basicAuthEntryPoint = new BasicAuthenticationEntryPoint();
         basicAuthEntryPoint.setRealmName(realmName);
         basicAuthEntryPoint.afterPropertiesSet();
@@ -94,7 +94,7 @@ public final class HttpBasicConfigurer extends BaseHttpConfigurer {
      * @param authenticationEntryPoint the {@link AuthenticationEntryPoint} to use
      * @return {@link HttpBasicConfigurer} for additional customization
      */
-    public HttpBasicConfigurer authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
+    public HttpBasicConfigurer<B> authenticationEntryPoint(AuthenticationEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
         return this;
     }
@@ -107,13 +107,13 @@ public final class HttpBasicConfigurer extends BaseHttpConfigurer {
      *            the custom {@link AuthenticationDetailsSource} to use
      * @return {@link HttpBasicConfigurer} for additional customization
      */
-    public HttpBasicConfigurer authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
+    public HttpBasicConfigurer<B> authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
         return this;
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(B http) throws Exception {
         AuthenticationManager authenticationManager = http.authenticationManager();
         BasicAuthenticationFilter basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {

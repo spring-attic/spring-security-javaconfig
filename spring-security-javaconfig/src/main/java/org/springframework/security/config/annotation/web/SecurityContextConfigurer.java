@@ -55,7 +55,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
  * @author Rob Winch
  * @since 3.2
  */
-public final class SecurityContextConfigurer extends BaseHttpConfigurer {
+public final class SecurityContextConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
 
     /**
      * Creates a new instance
@@ -69,13 +69,13 @@ public final class SecurityContextConfigurer extends BaseHttpConfigurer {
      * @param securityContextRepository the {@link SecurityContextRepository} to use
      * @return the {@link HttpConfiguration} for further customizations
      */
-    public SecurityContextConfigurer securityContextRepository(SecurityContextRepository securityContextRepository) {
+    public SecurityContextConfigurer<H> securityContextRepository(SecurityContextRepository securityContextRepository) {
         getBuilder().setSharedObject(SecurityContextRepository.class, securityContextRepository);
         return this;
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
 
         SecurityContextRepository securityContextRepository = http.getSharedObject(SecurityContextRepository.class);
         SecurityContextPersistenceFilter securityContextFilter = new SecurityContextPersistenceFilter(

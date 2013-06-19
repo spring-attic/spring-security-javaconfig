@@ -69,7 +69,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
  * @author Rob Winch
  * @since 3.2
  */
-public final class X509Configurer extends BaseHttpConfigurer {
+public final class X509Configurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
     private X509AuthenticationFilter x509AuthenticationFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService;
     private String subjectPrincipalRegex;
@@ -90,7 +90,7 @@ public final class X509Configurer extends BaseHttpConfigurer {
      * @param x509AuthenticationFilter the {@link X509AuthenticationFilter} to use
      * @return the {@link X509Configurer} for further customizations
      */
-    public X509Configurer x509AuthenticationFilter(
+    public X509Configurer<H> x509AuthenticationFilter(
             X509AuthenticationFilter x509AuthenticationFilter) {
         this.x509AuthenticationFilter = x509AuthenticationFilter;
         return this;
@@ -102,7 +102,7 @@ public final class X509Configurer extends BaseHttpConfigurer {
      * @param authenticationDetailsSource the {@link AuthenticationDetailsSource} to use
      * @return the {@link X509Configurer} to use
      */
-    public X509Configurer authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> authenticationDetailsSource) {
+    public X509Configurer<H> authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
         return this;
     }
@@ -113,7 +113,7 @@ public final class X509Configurer extends BaseHttpConfigurer {
      * @param userDetailsService the {@link UserDetailsService} to use
      * @return the {@link X509Configurer} for further customizations
      */
-    public X509Configurer userDetailsService(
+    public X509Configurer<H> userDetailsService(
             UserDetailsService userDetailsService) {
         UserDetailsByNameServiceWrapper<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService = new UserDetailsByNameServiceWrapper<PreAuthenticatedAuthenticationToken>();
         authenticationUserDetailsService.setUserDetailsService(userDetailsService);
@@ -128,7 +128,7 @@ public final class X509Configurer extends BaseHttpConfigurer {
      * @param authenticationUserDetailsService the {@link AuthenticationUserDetailsService} to use
      * @return the {@link X509Configurer} for further customizations
      */
-    public X509Configurer authenticationUserDetailsService(
+    public X509Configurer<H> authenticationUserDetailsService(
             AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService) {
         this.authenticationUserDetailsService = authenticationUserDetailsService;
         return this;
@@ -144,13 +144,13 @@ public final class X509Configurer extends BaseHttpConfigurer {
      *            (i.e. "CN=(.*?)(?:,|$)").
      * @return the {@link X509Configurer} for further customizations
      */
-    public X509Configurer subjectPrincipalRegex(String subjectPrincipalRegex) {
+    public X509Configurer<H> subjectPrincipalRegex(String subjectPrincipalRegex) {
         this.subjectPrincipalRegex = subjectPrincipalRegex;
         return this;
     }
 
     @Override
-    public void init(HttpConfiguration http) throws Exception {
+    public void init(H http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getAuthenticationUserDetailsService(http));
 
@@ -160,7 +160,7 @@ public final class X509Configurer extends BaseHttpConfigurer {
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         X509AuthenticationFilter filter = getFilter(http.authenticationManager());
         http.addFilter(filter);
     }
@@ -184,8 +184,7 @@ public final class X509Configurer extends BaseHttpConfigurer {
         return x509AuthenticationFilter;
     }
 
-    private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> getAuthenticationUserDetailsService(
-            HttpConfiguration http) {
+    private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> getAuthenticationUserDetailsService(H http) {
         if(authenticationUserDetailsService == null) {
             userDetailsService(http.getSharedObject(UserDetailsService.class));
         }

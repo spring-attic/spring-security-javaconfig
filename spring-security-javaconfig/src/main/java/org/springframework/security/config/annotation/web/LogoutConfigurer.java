@@ -54,7 +54,7 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
  * @since 3.2
  * @see RememberMeConfigurer
  */
-public final class LogoutConfigurer extends BaseHttpConfigurer {
+public final class LogoutConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";
@@ -77,7 +77,7 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
      * @param logoutHandler the {@link LogoutHandler} to add
      * @return the {@link LogoutConfigurer} for further customization
      */
-    public LogoutConfigurer addLogoutHandler(LogoutHandler logoutHandler) {
+    public LogoutConfigurer<H> addLogoutHandler(LogoutHandler logoutHandler) {
         this.logoutHandlers.add(logoutHandler);
         return this;
     }
@@ -87,7 +87,7 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
      * @param invalidateHttpSession true if the {@link HttpSession} should be invalidated (default), or false otherwise.
      * @return the {@link LogoutConfigurer} for further customization
      */
-    public LogoutConfigurer invalidateHttpSession(boolean invalidateHttpSession) {
+    public LogoutConfigurer<H> invalidateHttpSession(boolean invalidateHttpSession) {
         contextLogoutHandler.setInvalidateHttpSession(invalidateHttpSession);
         return this;
     }
@@ -97,7 +97,7 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
      * @param logoutUrl the URL that will invoke logout.
      * @return the {@link LogoutConfigurer} for further customization
      */
-    public LogoutConfigurer logoutUrl(String logoutUrl) {
+    public LogoutConfigurer<H> logoutUrl(String logoutUrl) {
         this.logoutUrl = logoutUrl;
         return this;
     }
@@ -112,7 +112,7 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
      *            the URL to redirect to after logout occurred
      * @return the {@link LogoutConfigurer} for further customization
      */
-    public LogoutConfigurer logoutSuccessUrl(String logoutSuccessUrl) {
+    public LogoutConfigurer<H> logoutSuccessUrl(String logoutSuccessUrl) {
         this.customLogoutSuccess = true;
         this.logoutSuccessUrl = logoutSuccessUrl;
         return this;
@@ -122,7 +122,7 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
      * A shortcut for {@link #permitAll(boolean)} with <code>true</code> as an argument.
      * @return the {@link LogoutConfigurer} for further customizations
      */
-    public LogoutConfigurer permitAll() {
+    public LogoutConfigurer<H> permitAll() {
         return permitAll(true);
     }
 
@@ -135,7 +135,7 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
      * @param cookieNamesToClear the names of cookies to be removed on logout success.
      * @return the {@link LogoutConfigurer} for further customization
      */
-    public LogoutConfigurer deleteCookies(String... cookieNamesToClear) {
+    public LogoutConfigurer<H> deleteCookies(String... cookieNamesToClear) {
         return addLogoutHandler(new CookieClearingLogoutHandler(cookieNamesToClear));
     }
 
@@ -148,7 +148,7 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
      *            logged out.
      * @return the {@link LogoutConfigurer} for further customizations
      */
-    public LogoutConfigurer logoutSuccessHandler(LogoutSuccessHandler logoutSuccessHandler) {
+    public LogoutConfigurer<H> logoutSuccessHandler(LogoutSuccessHandler logoutSuccessHandler) {
         this.logoutSuccessUrl = null;
         this.customLogoutSuccess = true;
         this.logoutSuccessHandler = logoutSuccessHandler;
@@ -161,7 +161,7 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
      * @param permitAll if true grants access, else nothing is done
      * @return the {@link LogoutConfigurer} for further customization.
      */
-    public LogoutConfigurer permitAll(boolean permitAll) {
+    public LogoutConfigurer<H> permitAll(boolean permitAll) {
         this.permitAll = permitAll;
         return this;
     }
@@ -183,14 +183,14 @@ public final class LogoutConfigurer extends BaseHttpConfigurer {
     }
 
     @Override
-    public void init(HttpConfiguration http) throws Exception {
+    public void init(H http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, this.logoutUrl, this.logoutSuccessUrl);
         }
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         LogoutFilter logoutFilter = createLogoutFilter();
         http.addFilter(logoutFilter);
     }

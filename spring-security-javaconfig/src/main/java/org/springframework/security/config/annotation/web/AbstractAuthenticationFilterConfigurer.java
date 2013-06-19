@@ -43,7 +43,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-abstract class AbstractAuthenticationFilterConfigurer<T extends AbstractAuthenticationFilterConfigurer<T, F>, F extends AbstractAuthenticationProcessingFilter> extends BaseHttpConfigurer {
+abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuilder<B>,T extends AbstractAuthenticationFilterConfigurer<B,T, F>, F extends AbstractAuthenticationProcessingFilter> extends BaseHttpConfigurer<B> {
 
     protected final F authFilter;
 
@@ -214,7 +214,7 @@ abstract class AbstractAuthenticationFilterConfigurer<T extends AbstractAuthenti
     }
 
     @Override
-    public void init(HttpConfiguration http) throws Exception {
+    public void init(B http) throws Exception {
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
@@ -222,7 +222,7 @@ abstract class AbstractAuthenticationFilterConfigurer<T extends AbstractAuthenti
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(B http) throws Exception {
         PortMapper portMapper = http.getSharedObject(PortMapper.class);
         if(portMapper != null) {
             authenticationEntryPoint.setPortMapper(portMapper);

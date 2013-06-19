@@ -57,9 +57,9 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  * @see ExpressionUrlAuthorizations
  * @see UrlAuthorizations
  */
-abstract class BaseInterceptUrlConfigurer<T> extends
-        BaseRequestMatcherRegistry<T,DefaultSecurityFilterChain,HttpConfiguration> implements
-        SecurityConfigurer<DefaultSecurityFilterChain,HttpConfiguration> {
+abstract class BaseInterceptUrlConfigurer<T,H extends HttpBuilder<H>> extends
+        BaseRequestMatcherRegistry<T,DefaultSecurityFilterChain,H> implements
+        SecurityConfigurer<DefaultSecurityFilterChain,H> {
     private Boolean filterSecurityInterceptorOncePerRequest;
 
     private AccessDecisionManager accessDecisionManager;
@@ -92,7 +92,7 @@ abstract class BaseInterceptUrlConfigurer<T> extends
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         FilterInvocationSecurityMetadataSource metadataSource = createMetadataSource();
         if(metadataSource == null) {
             return;

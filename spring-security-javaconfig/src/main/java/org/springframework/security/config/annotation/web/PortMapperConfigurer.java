@@ -31,7 +31,7 @@ import org.springframework.security.web.PortMapperImpl;
  * @author Rob Winch
  * @since 3.2
  */
-public final class PortMapperConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain,HttpConfiguration> {
+public final class PortMapperConfigurer<H extends HttpBuilder<H>> extends SecurityConfigurerAdapter<DefaultSecurityFilterChain,H> {
     private PortMapper portMapper;
     private Map<String, String> httpsPortMappings = new HashMap<String,String>();
 
@@ -46,7 +46,7 @@ public final class PortMapperConfigurer extends SecurityConfigurerAdapter<Defaul
      * @param portMapper
      * @return
      */
-    public PortMapperConfigurer portMapper(PortMapper portMapper) {
+    public PortMapperConfigurer<H> portMapper(PortMapper portMapper) {
         this.portMapper = portMapper;
         return this;
     }
@@ -61,7 +61,7 @@ public final class PortMapperConfigurer extends SecurityConfigurerAdapter<Defaul
     }
 
     @Override
-    public void init(HttpConfiguration http) throws Exception {
+    public void init(H http) throws Exception {
         http.setSharedObject(PortMapper.class, getPortMapper());
     }
 
@@ -105,7 +105,7 @@ public final class PortMapperConfigurer extends SecurityConfigurerAdapter<Defaul
          * @param httpsPort the HTTPS port to map to
          * @return the {@link PortMapperConfigurer} for further customization
          */
-        public PortMapperConfigurer mapsTo(int httpsPort) {
+        public PortMapperConfigurer<H> mapsTo(int httpsPort) {
             httpsPortMappings.put(String.valueOf(httpPort), String.valueOf(httpsPort));
             return PortMapperConfigurer.this;
         }

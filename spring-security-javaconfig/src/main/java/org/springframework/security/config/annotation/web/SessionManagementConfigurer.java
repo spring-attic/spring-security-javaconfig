@@ -64,7 +64,7 @@ import org.springframework.util.Assert;
  * @see SessionManagementFilter
  * @see ConcurrentSessionFilter
  */
-public final class SessionManagementConfigurer extends BaseHttpConfigurer {
+public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
     private Integer maximumSessions;
@@ -91,7 +91,7 @@ public final class SessionManagementConfigurer extends BaseHttpConfigurer {
      * @return the {@link SessionManagementConfigurer} for further customization
      * @see HttpSessionSecurityContextRepository#setDisableUrlRewriting(boolean)
      */
-    public SessionManagementConfigurer enableSessionUrlRewriting(boolean enableSessionUrlRewriting) {
+    public SessionManagementConfigurer<H> enableSessionUrlRewriting(boolean enableSessionUrlRewriting) {
         this.enableSessionUrlRewriting = enableSessionUrlRewriting;
         return this;
     }
@@ -103,7 +103,7 @@ public final class SessionManagementConfigurer extends BaseHttpConfigurer {
      * @see SessionCreationPolicy
      * @throws IllegalArgumentException if {@link SessionCreationPolicy} is null.
      */
-    public SessionManagementConfigurer sessionCreationPolicy(SessionCreationPolicy sessionCreationPolicy) {
+    public SessionManagementConfigurer<H> sessionCreationPolicy(SessionCreationPolicy sessionCreationPolicy) {
         Assert.notNull(sessionCreationPolicy, "sessionCreationPolicy cannot be null");
         this.sessionPolicy = sessionCreationPolicy;
         return this;
@@ -118,7 +118,7 @@ public final class SessionManagementConfigurer extends BaseHttpConfigurer {
      * @param sessionAuthenticationStrategy
      * @return the {@link SessionManagementConfigurer} for further customizations
      */
-    public SessionManagementConfigurer sessionAuthenticationStrategy(SessionAuthenticationStrategy sessionAuthenticationStrategy) {
+    public SessionManagementConfigurer<H> sessionAuthenticationStrategy(SessionAuthenticationStrategy sessionAuthenticationStrategy) {
         this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
         return this;
     }
@@ -128,7 +128,7 @@ public final class SessionManagementConfigurer extends BaseHttpConfigurer {
      * @param maximumSessions the maximum number of sessions for a user
      * @return the {@link SessionManagementConfigurer} for further customizations
      */
-    public SessionManagementConfigurer maximumSessions(int maximumSessions) {
+    public SessionManagementConfigurer<H> maximumSessions(int maximumSessions) {
         this.maximumSessions = maximumSessions;
         this.sessionAuthenticationStrategy = null;
         return this;
@@ -142,7 +142,7 @@ public final class SessionManagementConfigurer extends BaseHttpConfigurer {
      * @param expiredUrl the URL to redirect to
      * @return the {@link SessionManagementConfigurer} for further customizations
      */
-    public SessionManagementConfigurer expiredUrl(String expiredUrl) {
+    public SessionManagementConfigurer<H> expiredUrl(String expiredUrl) {
         this.expiredUrl = expiredUrl;
         return this;
     }
@@ -159,14 +159,13 @@ public final class SessionManagementConfigurer extends BaseHttpConfigurer {
      * @param exceptionIfMaximumExceeded true to have an error at time of authentication, else false (default)
      * @return the {@link SessionManagementConfigurer} for further customizations
      */
-    public SessionManagementConfigurer exceptionIfMaximumExceeded(boolean exceptionIfMaximumExceeded) {
+    public SessionManagementConfigurer<H> exceptionIfMaximumExceeded(boolean exceptionIfMaximumExceeded) {
         this.exceptionIfMaximumExceeded = exceptionIfMaximumExceeded;
         return this;
     }
 
     @Override
-    public void init(HttpConfiguration builder)
-            throws Exception {
+    public void init(H builder) throws Exception {
         SecurityContextRepository securityContextRepository = builder.getSharedObject(SecurityContextRepository.class);
         boolean stateless = isStateless();
 
@@ -191,8 +190,7 @@ public final class SessionManagementConfigurer extends BaseHttpConfigurer {
     }
 
     @Override
-    public void configure(HttpConfiguration http)
-            throws Exception {
+    public void configure(H http) throws Exception {
         SecurityContextRepository securityContextRepository = http.getSharedObject(SecurityContextRepository.class);
         SessionManagementFilter sessionManagementFilter = new SessionManagementFilter(securityContextRepository, getSessionAuthenticationStrategy());
         sessionManagementFilter = registerLifecycle(sessionManagementFilter);

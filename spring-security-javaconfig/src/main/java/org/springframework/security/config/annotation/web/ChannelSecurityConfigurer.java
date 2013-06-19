@@ -66,8 +66,8 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  */
-public final class ChannelSecurityConfigurer extends
-        BaseRequestMatcherRegistry<ChannelSecurityConfigurer.AuthorizedUrl,DefaultSecurityFilterChain,HttpConfiguration> {
+public final class ChannelSecurityConfigurer<H extends HttpBuilder<H>> extends
+        BaseRequestMatcherRegistry<ChannelSecurityConfigurer<H>.AuthorizedUrl,DefaultSecurityFilterChain,H> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private List<ChannelProcessor> channelProcessors;
@@ -80,7 +80,7 @@ public final class ChannelSecurityConfigurer extends
     }
 
     @Override
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(H http) throws Exception {
         ChannelDecisionManagerImpl channelDecisionManager = new ChannelDecisionManagerImpl();
         channelDecisionManager.setChannelProcessors(getChannelProcessors(http));
         channelDecisionManager = registerLifecycle(channelDecisionManager);
@@ -100,7 +100,7 @@ public final class ChannelSecurityConfigurer extends
      * @param channelProcessors
      * @return
      */
-    public ChannelSecurityConfigurer channelProcessors(List<ChannelProcessor> channelProcessors) {
+    public ChannelSecurityConfigurer<H> channelProcessors(List<ChannelProcessor> channelProcessors) {
         this.channelProcessors = channelProcessors;
         return this;
     }
@@ -109,7 +109,7 @@ public final class ChannelSecurityConfigurer extends
         return getBuilder().registerLifecycle(object);
     }
 
-    private List<ChannelProcessor> getChannelProcessors(HttpConfiguration http) {
+    private List<ChannelProcessor> getChannelProcessors(H http) {
         if(channelProcessors != null) {
             return channelProcessors;
         }
@@ -133,7 +133,7 @@ public final class ChannelSecurityConfigurer extends
     }
 
 
-    private ChannelSecurityConfigurer addAttribute(String attribute, List<RequestMatcher> matchers) {
+    private ChannelSecurityConfigurer<H> addAttribute(String attribute, List<RequestMatcher> matchers) {
         for(RequestMatcher matcher : matchers) {
             Collection<ConfigAttribute> attrs = Arrays.<ConfigAttribute>asList(new SecurityConfig(attribute));
             requestMap.put(matcher, attrs);
@@ -153,15 +153,15 @@ public final class ChannelSecurityConfigurer extends
             this.requestMatchers = requestMatchers;
         }
 
-        public ChannelSecurityConfigurer requiresSecure() {
+        public ChannelSecurityConfigurer<H> requiresSecure() {
             return requires("REQUIRES_SECURE_CHANNEL");
         }
 
-        public ChannelSecurityConfigurer requiresInsecure() {
+        public ChannelSecurityConfigurer<H> requiresInsecure() {
             return requires("REQUIRES_INSECURE_CHANNEL");
         }
 
-        public ChannelSecurityConfigurer requires(String attribute) {
+        public ChannelSecurityConfigurer<H> requires(String attribute) {
             return addAttribute(attribute, requestMatchers);
         }
     }
