@@ -55,7 +55,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "ldap://127.0.0.1:33389/dc=springframework,dc=org");
         contextSource.setUserDn(userDn);
         contextSource.setPassword(password);
-        contextSource.afterPropertiesSet();
         return contextSource;
     }
 
