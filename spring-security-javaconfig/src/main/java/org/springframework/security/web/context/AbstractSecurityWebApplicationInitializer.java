@@ -23,10 +23,12 @@ import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.AbstractContextLoaderInitializer;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 /**
@@ -63,6 +65,8 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  */
 public abstract class AbstractSecurityWebApplicationInitializer implements WebApplicationInitializer {
 
+    private static final String SERVLET_CONTEXT_PREFIX = "org.springframework.web.servlet.FrameworkServlet.CONTEXT.";
+
     /* (non-Javadoc)
      * @see org.springframework.web.WebApplicationInitializer#onStartup(javax.servlet.ServletContext)
      */
@@ -87,10 +91,58 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
      * @param servletContext the {@link ServletContext}
      */
     private void registerSpringSecurityFilterChain(ServletContext servletContext) {
-        Dynamic registration = servletContext.addFilter("springSecurityFilterChain", new DelegatingFilterProxy("springSecurityFilterChain"));
+        DelegatingFilterProxy springSecurityFilterChain = new DelegatingFilterProxy("springSecurityFilterChain");
+        String contextAttribute = getWebApplicationContextAttribute();
+        if(contextAttribute != null) {
+            springSecurityFilterChain.setContextAttribute(contextAttribute);
+        }
+        Dynamic registration = servletContext.addFilter("springSecurityFilterChain", springSecurityFilterChain);
         registration.setAsyncSupported(isAsyncSecuritySupported());
         EnumSet<DispatcherType> dispatcherTypes = getSecurityDispatcherTypes();
         registration.addMappingForUrlPatterns(dispatcherTypes, false, "/*");
+    }
+
+    /**
+     * Returns the {@link DelegatingFilterProxy#getContextAttribute()} or null
+     * if the parent {@link ApplicationContext} should be used. The default
+     * behavior is to use the parent {@link ApplicationContext}.
+     *
+     * <p>
+     * If {@link #getDispatcherWebApplicationContextSuffix()} is non-null the
+     * {@link WebApplicationContext} for the Dispatcher will be used. This means
+     * the child {@link ApplicationContext} is used to look up the
+     * springSecurityFilterChain bean.
+     * </p>
+     *
+     * @return the {@link DelegatingFilterProxy#getContextAttribute()} or null
+     * if the parent {@link ApplicationContext} should be used
+     */
+    protected String getWebApplicationContextAttribute() {
+        String dispatcherServletName = getDispatcherWebApplicationContextSuffix();
+        if(dispatcherServletName == null) {
+            return null;
+        }
+        return SERVLET_CONTEXT_PREFIX + dispatcherServletName;
+    }
+
+    /**
+     * Return the <servlet-name> to use the DispatcherServlet's
+     * {@link WebApplicationContext} to find the {@link DelegatingFilterProxy}
+     * or null to use the parent {@link ApplicationContext}.
+     *
+     * <p>
+     * For example, if you are using AbstractDispatcherServletInitializer or
+     * AbstractAnnotationConfigDispatcherServletInitializer and using the
+     * provided Servlet name, you can return "dispatcher" from this method to
+     * use the DispatcherServlet's {@link WebApplicationContext}.
+     * </p>
+     *
+     * @return the <servlet-name> of the DispatcherServlet to use its
+     *         {@link WebApplicationContext} or null (default) to use the parent
+     *         {@link ApplicationContext}.
+     */
+    protected String getDispatcherWebApplicationContextSuffix() {
+        return null;
     }
 
     /**
