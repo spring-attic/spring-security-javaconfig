@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,7 @@ import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEval
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.util.ClassUtils;
 
 /**
  * Uses a {@link WebSecurityBuilder} to create the {@link FilterChainProxy} that
@@ -58,13 +60,15 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  * @since 3.2
  */
 @Configuration
-public class WebSecurityConfiguration implements ImportAware {
+public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAware {
     @Autowired
     private AutowireCapableBeanFactory beanFactory;
 
     private final WebSecurityBuilder webSecurityBuilder = new WebSecurityBuilder();
 
     private List<SecurityConfigurer<Filter, WebSecurityBuilder>> webSecurityConfigurers;
+
+    private ClassLoader beanClassLoader;
 
     @Bean
     public LifecycleManager lifecycleManager() {
@@ -158,7 +162,6 @@ public class WebSecurityConfiguration implements ImportAware {
         }
     }
 
-
     /* (non-Javadoc)
      * @see org.springframework.context.annotation.ImportAware#setImportMetadata(org.springframework.core.type.AnnotationMetadata)
      */
@@ -166,7 +169,28 @@ public class WebSecurityConfiguration implements ImportAware {
     public void setImportMetadata(AnnotationMetadata importMetadata) {
         Map<String, Object> enableWebSecurityAttrMap = importMetadata.getAnnotationAttributes(EnableWebSecurity.class.getName());
         AnnotationAttributes enableWebSecurityAttrs = AnnotationAttributes.fromMap(enableWebSecurityAttrMap);
+        if(enableWebSecurityAttrs == null) {
+            // search parent classes
+            Class<?> currentClass = ClassUtils.resolveClassName(importMetadata.getClassName(), beanClassLoader);
+            for(Class<?> classToInspect = currentClass ;classToInspect != null; classToInspect = classToInspect.getSuperclass()) {
+                EnableWebSecurity enableWebSecurityAnnotation = AnnotationUtils.findAnnotation(classToInspect, EnableWebSecurity.class);
+                if(enableWebSecurityAnnotation == null) {
+                    continue;
+                }
+                enableWebSecurityAttrMap = AnnotationUtils
+                        .getAnnotationAttributes(enableWebSecurityAnnotation);
+                enableWebSecurityAttrs = AnnotationAttributes.fromMap(enableWebSecurityAttrMap);
+            }
+        }
         boolean debugEnabled = enableWebSecurityAttrs.getBoolean("debug");
         this.webSecurityBuilder.debug(debugEnabled);
+    }
+
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.BeanClassLoaderAware#setBeanClassLoader(java.lang.ClassLoader)
+     */
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        this.beanClassLoader = classLoader;
     }
 }

@@ -66,4 +66,21 @@ class EnableWebSecurityTests extends BaseSpringSpec {
                 .formLogin();
         }
     }
+
+    def "@EnableWebSecurity on superclass"() {
+        when:
+            loadConfig(ChildSecurityConfig)
+        then:
+            context.getBean("springSecurityFilterChain", DebugFilter)
+    }
+
+    @Configuration
+    static class ChildSecurityConfig extends DebugSecurityConfig {
+    }
+
+    @Configuration
+    @EnableWebSecurity(debug=true)
+    static class DebugSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    }
 }

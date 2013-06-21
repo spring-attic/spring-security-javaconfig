@@ -71,6 +71,5 @@ public class NamespaceDebugTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity(debug=true)
     static class DebugWebSecurity extends WebSecurityConfigurerAdapter {
-
     }
 }
