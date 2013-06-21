@@ -63,7 +63,7 @@ import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher
 
 /**
- * Tests to verify that all the functionality of <anonymous> attributes is present
+ * Tests to verify that all the functionality of <http-firewall> attributes is present
  *
  * @author Rob Winch
  *
@@ -82,13 +82,13 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
 
     def "http-firewall"() {
         setup:
-        loadConfig(HttpFirewallConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        request.setPathInfo("/public/../private/")
+            loadConfig(HttpFirewallConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            request.setPathInfo("/public/../private/")
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "the default firewall is used"
-        thrown(RequestRejectedException)
+            thrown(RequestRejectedException)
     }
 
     @Configuration
@@ -99,13 +99,13 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
 
     def "http-firewall@ref"() {
         setup:
-        loadConfig(CustomHttpFirewallConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        request.setParameter("deny", "true")
+            loadConfig(CustomHttpFirewallConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            request.setParameter("deny", "true")
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "the custom firewall is used"
-        thrown(RequestRejectedException)
+            thrown(RequestRejectedException)
     }
 
     @Configuration
