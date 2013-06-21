@@ -52,96 +52,96 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
 
     def "http/intercept-url denied when not logged in"() {
         setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        request.servletPath == "/users"
+            loadConfig(HttpInterceptUrlConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            request.servletPath == "/users"
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_FORBIDDEN
+            response.status == HttpServletResponse.SC_FORBIDDEN
     }
 
     def "http/intercept-url denied when logged in"() {
         setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        login()
-        request.setServletPath("/users")
+            loadConfig(HttpInterceptUrlConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            login()
+            request.setServletPath("/users")
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_FORBIDDEN
+            response.status == HttpServletResponse.SC_FORBIDDEN
     }
 
     def "http/intercept-url allowed when logged in"() {
         setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        login("admin","ROLE_ADMIN")
-        request.setServletPath("/users")
+            loadConfig(HttpInterceptUrlConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            login("admin","ROLE_ADMIN")
+            request.setServletPath("/users")
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_OK
-        !response.isCommitted()
+            response.status == HttpServletResponse.SC_OK
+            !response.isCommitted()
     }
 
     def "http/intercept-url@method=POST"() {
         setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
+            loadConfig(HttpInterceptUrlConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
         when:
-        login()
-        request.setServletPath("/admin/post")
-        springSecurityFilterChain.doFilter(request,response,chain)
+            login()
+            request.setServletPath("/admin/post")
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_OK
-        !response.isCommitted()
+            response.status == HttpServletResponse.SC_OK
+            !response.isCommitted()
         when:
-        setup()
-        login()
-        request.setServletPath("/admin/post")
-        request.setMethod("POST")
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            login()
+            request.setServletPath("/admin/post")
+            request.setMethod("POST")
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_FORBIDDEN
+            response.status == HttpServletResponse.SC_FORBIDDEN
         when:
-        setup()
-        login("admin","ROLE_ADMIN")
-        request.setServletPath("/admin/post")
-        request.setMethod("POST")
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            login("admin","ROLE_ADMIN")
+            request.setServletPath("/admin/post")
+            request.setMethod("POST")
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.status == HttpServletResponse.SC_OK
-        !response.committed
+            response.status == HttpServletResponse.SC_OK
+            !response.committed
     }
 
     def "http/intercept-url@requires-channel"() {
         setup:
-        loadConfig(HttpInterceptUrlConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
+            loadConfig(HttpInterceptUrlConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
         when:
-        request.setServletPath("/login")
-        request.setRequestURI("/login")
-        springSecurityFilterChain.doFilter(request,response,chain)
+            request.setServletPath("/login")
+            request.setRequestURI("/login")
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.redirectedUrl == "https://localhost/login"
+            response.redirectedUrl == "https://localhost/login"
         when:
-        setup()
-        request.setServletPath("/secured/a")
-        request.setRequestURI("/secured/a")
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            request.setServletPath("/secured/a")
+            request.setRequestURI("/secured/a")
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.redirectedUrl == "https://localhost/secured/a"
+            response.redirectedUrl == "https://localhost/secured/a"
         when:
-        setup()
-        request.setSecure(true)
-        request.setScheme("https")
-        request.setServletPath("/user")
-        request.setRequestURI("/user")
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            request.setSecure(true)
+            request.setScheme("https")
+            request.setServletPath("/user")
+            request.setRequestURI("/user")
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.redirectedUrl == "http://localhost/user"
+            response.redirectedUrl == "http://localhost/user"
     }
 
     @Configuration

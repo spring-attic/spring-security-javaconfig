@@ -82,8 +82,8 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfi
      * Specifies roles to use map from the {@link HttpServletRequest} to the
      * {@link UserDetails}. If {@link HttpServletRequest#isUserInRole(String)}
      * returns true, the role is added to the {@link UserDetails}. This method
-     * is the equivalent of invoking {@link #mappableRoles(Set)}. Multiple
-     * invocations of {@link #mappableRoles(String...)} will override previous
+     * is the equivalent of invoking {@link #mappableAuthorities(Set)}. Multiple
+     * invocations of {@link #mappableAuthorities(String...)} will override previous
      * invocations.
      *
      * <p>
@@ -95,8 +95,9 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfi
      *            "ROLE_USER", "ROLE_ADMIN", etc).
      * @return the {@link JeeConfigurer} for further customizations
      * @see SimpleMappableAttributesRetriever
+     * @see #mappableRoles(String...)
      */
-    public JeeConfigurer<H> mappableRoles(String... mappableRoles) {
+    public JeeConfigurer<H> mappableAuthorities(String... mappableRoles) {
         this.mappableRoles.clear();
         for(String role : mappableRoles) {
             this.mappableRoles.add(role);
@@ -106,10 +107,37 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfi
 
     /**
      * Specifies roles to use map from the {@link HttpServletRequest} to the
+     * {@link UserDetails} and automatically prefixes it with "ROLE_". If
+     * {@link HttpServletRequest#isUserInRole(String)} returns true, the role is
+     * added to the {@link UserDetails}. This method is the equivalent of
+     * invoking {@link #mappableAuthorities(Set)}. Multiple invocations of
+     * {@link #mappableRoles(String...)} will override previous invocations.
+     *
+     * <p>
+     * There are no default roles that are mapped.
+     * </p>
+     *
+     * @param mappableRoles
+     *            the roles to attempt to map to the {@link UserDetails} (i.e.
+     *            "USER", "ADMIN", etc).
+     * @return the {@link JeeConfigurer} for further customizations
+     * @see SimpleMappableAttributesRetriever
+     * @see #mappableAuthorities(String...)
+     */
+    public JeeConfigurer<H> mappableRoles(String... mappableRoles) {
+        this.mappableRoles.clear();
+        for(String role : mappableRoles) {
+            this.mappableRoles.add("ROLE_" + role);
+        }
+        return this;
+    }
+
+    /**
+     * Specifies roles to use map from the {@link HttpServletRequest} to the
      * {@link UserDetails}. If {@link HttpServletRequest#isUserInRole(String)}
      * returns true, the role is added to the {@link UserDetails}. This is the
      * equivalent of {@link #mappableRoles(String...)}. Multiple invocations of
-     * {@link #mappableRoles(Set)} will override previous invocations.
+     * {@link #mappableAuthorities(Set)} will override previous invocations.
      *
      * <p>
      * There are no default roles that are mapped.
@@ -120,7 +148,7 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfi
      * @return the {@link JeeConfigurer} for further customizations
      * @see SimpleMappableAttributesRetriever
      */
-    public JeeConfigurer<H> mappableRoles(Set<String> mappableRoles) {
+    public JeeConfigurer<H> mappableAuthorities(Set<String> mappableRoles) {
         this.mappableRoles = mappableRoles;
         return this;
     }

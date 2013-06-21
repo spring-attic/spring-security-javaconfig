@@ -70,4 +70,8 @@ abstract class BaseSpringSpec extends Specification {
         }
         providers
     }
+
+    AuthenticationProvider findAuthenticationProvider(Class<?> provider) {
+        authenticationProviders().find { provider.isAssignableFrom(it.class) }
+    }
 }

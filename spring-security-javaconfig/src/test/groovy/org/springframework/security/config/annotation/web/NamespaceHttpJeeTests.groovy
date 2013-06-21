@@ -77,7 +77,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  */
 public class NamespaceHttpJeeTests extends BaseSpringSpec {
 
-    def "http/jee"() {
+    def "http/jee@mappable-roles"() {
         when:
             loadConfig(JeeMappableRolesConfig)
             J2eePreAuthenticatedProcessingFilter filter = findFilter(J2eePreAuthenticatedProcessingFilter)
@@ -100,7 +100,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
                     .anyRequest().hasRole("USER")
                     .and()
                 .jee()
-                    .mappableRoles("ROLE_USER","ROLE_ADMIN");
+                    .mappableRoles("USER","ADMIN");
         }
     }
 
@@ -127,7 +127,7 @@ public class NamespaceHttpJeeTests extends BaseSpringSpec {
                     .anyRequest().hasRole("USER")
                     .and()
                 .jee()
-                    .mappableRoles("ROLE_USER","ROLE_ADMIN")
+                    .mappableAuthorities("ROLE_USER","ROLE_ADMIN")
                     .authenticatedUserDetailsService(new CustomUserService());
         }
     }

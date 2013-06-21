@@ -82,17 +82,17 @@ public class NamespaceHttpLogoutTests extends BaseSpringSpec {
 
     def "http/logout"() {
         setup:
-        loadConfig(HttpLogoutConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        login()
-        request.setRequestURI("/logout")
+            loadConfig(HttpLogoutConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            login()
+            request.setRequestURI("/logout")
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        !authenticated()
-        !request.getSession(false)
-        response.redirectedUrl == "/login?logout"
-        !response.getCookies()
+            !authenticated()
+            !request.getSession(false)
+            response.redirectedUrl == "/login?logout"
+            !response.getCookies()
     }
 
     @Configuration
@@ -103,19 +103,19 @@ public class NamespaceHttpLogoutTests extends BaseSpringSpec {
 
     def "http/logout custom"() {
         setup:
-        loadConfig(CustomHttpLogoutConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        login()
-        request.setRequestURI("/custom-logout")
+            loadConfig(CustomHttpLogoutConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            login()
+            request.setRequestURI("/custom-logout")
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        !authenticated()
-        request.getSession(false)
-        response.redirectedUrl == "/logout-success"
-        response.getCookies().length == 1
-        response.getCookies()[0].name == "remove"
-        response.getCookies()[0].maxAge == 0
+            !authenticated()
+            request.getSession(false)
+            response.redirectedUrl == "/logout-success"
+            response.getCookies().length == 1
+            response.getCookies()[0].name == "remove"
+            response.getCookies()[0].maxAge == 0
     }
 
     @Configuration
@@ -123,26 +123,26 @@ public class NamespaceHttpLogoutTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .logout()
-                    .deleteCookies("remove")
-                    .invalidateHttpSession(false)
-                    .logoutUrl("/custom-logout")
-                    .logoutSuccessUrl("/logout-success")
+                    .deleteCookies("remove") // logout@delete-cookies
+                    .invalidateHttpSession(false) // logout@invalidate-session=false (default is true)
+                    .logoutUrl("/custom-logout") // logout@logout-url (default is /logout)
+                    .logoutSuccessUrl("/logout-success") // logout@success-url (default is /login?logout)
         }
     }
 
     def "http/logout@success-handler-ref"() {
         setup:
-        loadConfig(SuccessHandlerRefHttpLogoutConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        login()
-        request.setRequestURI("/logout")
+            loadConfig(SuccessHandlerRefHttpLogoutConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            login()
+            request.setRequestURI("/logout")
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        !authenticated()
-        !request.getSession(false)
-        response.redirectedUrl == "/SuccessHandlerRefHttpLogoutConfig"
-        !response.getCookies()
+            !authenticated()
+            !request.getSession(false)
+            response.redirectedUrl == "/SuccessHandlerRefHttpLogoutConfig"
+            !response.getCookies()
     }
 
     @Configuration

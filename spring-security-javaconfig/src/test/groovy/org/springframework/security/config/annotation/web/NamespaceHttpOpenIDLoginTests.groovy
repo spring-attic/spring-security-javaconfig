@@ -17,13 +17,19 @@
  */
 package org.springframework.security.config.annotation.web
 
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockFilterChain
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.openid.OpenID4JavaConsumer;
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
+import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
+import org.springframework.security.openid.OpenID4JavaConsumer
 import org.springframework.security.openid.OpenIDAuthenticationFilter
+import org.springframework.security.openid.OpenIDAuthenticationProvider
+import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
@@ -125,10 +131,11 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
                     .anyRequest().hasRole("USER")
                     .and()
                 .openidLogin()
-                    .attributeExchange("https://www.google.com/.*")
-                        .attribute("email")
-                            .type("http://axschema.org/contact/email")
-                            .required(true)
+                    .attributeExchange("https://www.google.com/.*") // attribute-exchange@identifier-match
+                        .attribute("email") // openid-attribute@name
+                            .type("http://axschema.org/contact/email") // openid-attribute@type
+                            .required(true) // openid-attribute@required
+                            .count(1) // openid-attribute@count
                             .and()
                         .attribute("firstname")
                             .type("http://axschema.org/namePerson/first")
@@ -183,16 +190,18 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
                     .loginPage("/authentication/login") // openid-login@login-page
                     .failureUrl("/authentication/login?failed") // openid-login@authentication-failure-url
                     .loginProcessingUrl("/authentication/login/process") // openid-login@login-processing-url
-                    .defaultSuccessUrl("/default", alwaysUseDefaultSuccess) // openid-login@default-target-url / form-login@always-use-default-target
+                    .defaultSuccessUrl("/default", alwaysUseDefaultSuccess) // openid-login@default-target-url / openid-login@always-use-default-target
         }
     }
 
     def "http/openid-login custom refs"() {
         when:
+            OpenIDLoginCustomRefsConfig.AUDS = Mock(AuthenticationUserDetailsService)
             loadConfig(OpenIDLoginCustomRefsConfig)
             springSecurityFilterChain = context.getBean(FilterChainProxy)
         then: "CustomWebAuthenticationDetailsSource is used"
             findFilter(OpenIDAuthenticationFilter).authenticationDetailsSource.class == CustomWebAuthenticationDetailsSource
+            findAuthenticationProvider(OpenIDAuthenticationProvider).userDetailsService == OpenIDLoginCustomRefsConfig.AUDS
         when: "fail to log in"
             request.requestURI = "/login/openid"
             request.method = "POST"
@@ -203,16 +212,29 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class OpenIDLoginCustomRefsConfig extends BaseWebConfig {
+        static AuthenticationUserDetailsService AUDS
+
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
                     .and()
                 .openidLogin()
+                    // if using UserDetailsService wrap with new UserDetailsByNameServiceWrapper<OpenIDAuthenticationToken>()
+                    .authenticationUserDetailsService(AUDS) // openid-login@user-service-ref
                     .failureHandler(new SimpleUrlAuthenticationFailureHandler("/custom/failure")) // openid-login@authentication-failure-handler-ref
                     .successHandler(new SavedRequestAwareAuthenticationSuccessHandler( defaultTargetUrl : "/custom/targetUrl" )) // openid-login@authentication-success-handler-ref
                     .authenticationDetailsSource(new CustomWebAuthenticationDetailsSource()); // openid-login@authentication-details-source-ref
         }
+
+        // only necessary to have easy access to the AuthenticationManager for testing/verification
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean()
+                throws Exception {
+            return super.authenticationManagerBean();
+        }
+
     }
 
     static class CustomWebAuthenticationDetailsSource extends WebAuthenticationDetailsSource {}
