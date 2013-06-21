@@ -186,8 +186,7 @@ configure(rootProject) {
 def samples = subprojects.findAll { project -> project.path.contains('samples') }
 
 configure(samples + rootProject) {
-    println project
-    project.tasks.findByPath('artifactoryPublish')?.enabled = false
+//    project.tasks.findByPath('artifactoryPublish')?.enabled = false
 }
 
 def warSamples = subprojects.findAll { project -> project.path.contains('samples') && project.path != ":spring-security-samples-messages" }
