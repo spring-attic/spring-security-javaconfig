@@ -55,7 +55,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * @since 3.2
  */
 public final class WebSecurityBuilder extends
-        AbstractConfiguredSecurityBuilder<FilterChainProxy, WebSecurityBuilder> {
+        AbstractConfiguredSecurityBuilder<Filter, WebSecurityBuilder> {
 
     private final List<RequestMatcher> ignoredRequests = new ArrayList<RequestMatcher>();
 
@@ -68,6 +68,8 @@ public final class WebSecurityBuilder extends
     private FilterSecurityInterceptor filterSecurityInterceptor;
 
     private HttpFirewall httpFirewall;
+
+    private boolean debugEnabled;
 
     /**
      * Creates a new instance
@@ -142,6 +144,21 @@ public final class WebSecurityBuilder extends
     }
 
     /**
+     * Controls debugging support for Spring Security.
+     *
+     * @param debugEnabled
+     *            if true, enables debug support with Spring Security. Default
+     *            is false.
+     *
+     * @return the {@link WebSecurityBuilder} for further customization.
+     * @see EnableWebSecurity#debug()
+     */
+    final WebSecurityBuilder debug(boolean debugEnabled) {
+        this.debugEnabled = debugEnabled;
+        return this;
+    }
+
+    /**
      * <p>
      * Adds builders to create {@link SecurityFilterChain} instances.
      * </p>
@@ -162,7 +179,7 @@ public final class WebSecurityBuilder extends
     }
 
     @Override
-    protected FilterChainProxy performBuild() throws Exception {
+    protected Filter performBuild() throws Exception {
         Assert.state(!securityFilterChainBuilders.isEmpty(), "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains");
         int chainSize = ignoredRequests.size() + securityFilterChainBuilders.size();
         List<SecurityFilterChain> securityFilterChains = new ArrayList<SecurityFilterChain>(chainSize);
@@ -177,7 +194,18 @@ public final class WebSecurityBuilder extends
             filterChainProxy.setFirewall(httpFirewall);
         }
         filterChainProxy.afterPropertiesSet();
-        return filterChainProxy;
+
+        Filter result = filterChainProxy;
+        if(debugEnabled) {
+            Logger.logger.warn("\n\n" +
+                    "********************************************************************\n" +
+                    "**********        Security debugging is enabled.       *************\n" +
+                    "**********    This may include sensitive information.  *************\n" +
+                    "**********      Do not use in a production system!     *************\n" +
+                    "********************************************************************\n\n");
+            result = new DebugFilter(filterChainProxy);
+        }
+        return result;
     }
 
     /**
@@ -203,7 +231,7 @@ public final class WebSecurityBuilder extends
      * @author Rob Winch
      * @since 3.2
      */
-    public final class IgnoredRequestRegistry extends BaseRequestMatcherRegistry<IgnoredRequestRegistry,FilterChainProxy,WebSecurityBuilder> {
+    public final class IgnoredRequestRegistry extends BaseRequestMatcherRegistry<IgnoredRequestRegistry,Filter,WebSecurityBuilder> {
 
         @Override
         IgnoredRequestRegistry chainRequestMatchers(List<RequestMatcher> requestMatchers) {

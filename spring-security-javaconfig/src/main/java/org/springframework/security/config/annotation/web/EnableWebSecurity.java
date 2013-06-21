@@ -77,4 +77,9 @@ import org.springframework.context.annotation.Import;
 @Import(WebSecurityConfiguration.class)
 public @interface EnableWebSecurity {
 
+    /**
+     * Controls debugging support for Spring Security. Default is false.
+     * @return if true, enables debug support with Spring Security
+     */
+    boolean debug() default false;
 }

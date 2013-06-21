@@ -17,15 +17,21 @@ package org.springframework.security.config.annotation.web;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityConfigurer;
@@ -52,13 +58,13 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  * @since 3.2
  */
 @Configuration
-public class WebSecurityConfiguration {
+public class WebSecurityConfiguration implements ImportAware {
     @Autowired
     private AutowireCapableBeanFactory beanFactory;
 
     private final WebSecurityBuilder webSecurityBuilder = new WebSecurityBuilder();
 
-    private List<SecurityConfigurer<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers;
+    private List<SecurityConfigurer<Filter, WebSecurityBuilder>> webSecurityConfigurers;
 
     @Bean
     public LifecycleManager lifecycleManager() {
@@ -76,7 +82,7 @@ public class WebSecurityConfiguration {
      * @throws Exception
      */
     @Bean(name="springSecurityFilterChain")
-    public FilterChainProxy springSecurityFilterChain() throws Exception {
+    public Filter springSecurityFilterChain() throws Exception {
         boolean hasConfigurers = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
         if(!hasConfigurers) {
             throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
@@ -103,18 +109,18 @@ public class WebSecurityConfiguration {
      */
     @Autowired(required = false)
     public void setFilterChainProxySecurityConfigurer(
-            List<SecurityConfigurer<FilterChainProxy, WebSecurityBuilder>> webSecurityConfigurers) throws Exception {
+            List<SecurityConfigurer<Filter, WebSecurityBuilder>> webSecurityConfigurers) throws Exception {
         Collections.sort(webSecurityConfigurers, AnnotationAwareOrderComparator.INSTANCE);
 
         Integer previousOrder = null;
-        for(SecurityConfigurer<FilterChainProxy, WebSecurityBuilder> config : webSecurityConfigurers) {
+        for(SecurityConfigurer<Filter, WebSecurityBuilder> config : webSecurityConfigurers) {
             Integer order = AnnotationAwareOrderComparator.lookupOrder(config);
             if(previousOrder != null && previousOrder.equals(order)) {
                 throw new IllegalStateException("@Order on WebSecurityConfigurers must be unique. Order of " + order + " was already used, so it cannot be used on " + config + " too.");
             }
             previousOrder = order;
         }
-        for(SecurityConfigurer<FilterChainProxy, WebSecurityBuilder> webSecurityConfigurer : webSecurityConfigurers) {
+        for(SecurityConfigurer<Filter, WebSecurityBuilder> webSecurityConfigurer : webSecurityConfigurers) {
             webSecurityBuilder.apply(webSecurityConfigurer);
         }
         this.webSecurityConfigurers = webSecurityConfigurers;
@@ -150,5 +156,17 @@ public class WebSecurityConfiguration {
             }
             return Ordered.LOWEST_PRECEDENCE;
         }
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.springframework.context.annotation.ImportAware#setImportMetadata(org.springframework.core.type.AnnotationMetadata)
+     */
+    @Override
+    public void setImportMetadata(AnnotationMetadata importMetadata) {
+        Map<String, Object> enableWebSecurityAttrMap = importMetadata.getAnnotationAttributes(EnableWebSecurity.class.getName());
+        AnnotationAttributes enableWebSecurityAttrs = AnnotationAttributes.fromMap(enableWebSecurityAttrMap);
+        boolean debugEnabled = enableWebSecurityAttrs.getBoolean("debug");
+        this.webSecurityBuilder.debug(debugEnabled);
     }
 }
