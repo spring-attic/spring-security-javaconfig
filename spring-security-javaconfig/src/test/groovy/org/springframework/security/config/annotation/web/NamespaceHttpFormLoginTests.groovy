@@ -49,27 +49,27 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
     def "http/form-login"() {
         setup:
         loadConfig(FormLoginConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.getRedirectedUrl() == "http://localhost/login"
+            response.getRedirectedUrl() == "http://localhost/login"
         when: "fail to log in"
-        setup()
-        request.requestURI = "/login"
-        request.method = "POST"
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to login error page"
-        response.getRedirectedUrl() == "/login?error"
+            response.getRedirectedUrl() == "/login?error"
         when: "login success"
-        setup()
-        request.requestURI = "/login"
-        request.method = "POST"
-        request.parameters.username = ["user"] as String[]
-        request.parameters.password = ["password"] as String[]
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            request.parameters.username = ["user"] as String[]
+            request.parameters.password = ["password"] as String[]
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to default succes page"
-        response.getRedirectedUrl() == "/"
+            response.getRedirectedUrl() == "/"
     }
 
     @Configuration
@@ -94,28 +94,28 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     def "http/form-login custom"() {
         setup:
-        loadConfig(FormLoginCustomConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
+            loadConfig(FormLoginCustomConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
         when:
-        springSecurityFilterChain.doFilter(request,response,chain)
+            springSecurityFilterChain.doFilter(request,response,chain)
         then:
-        response.getRedirectedUrl() == "http://localhost/authentication/login"
+            response.getRedirectedUrl() == "http://localhost/authentication/login"
         when: "fail to log in"
-        setup()
-        request.requestURI = "/authentication/login/process"
-        request.method = "POST"
-        springSecurityFilterChain.doFilter(request,response,chain)
-        then: "sent to login error page"
-        response.getRedirectedUrl() == "/authentication/login?failed"
+            setup()
+            request.requestURI = "/authentication/login/process"
+            request.method = "POST"
+            springSecurityFilterChain.doFilter(request,response,chain)
+            then: "sent to login error page"
+            response.getRedirectedUrl() == "/authentication/login?failed"
         when: "login success"
-        setup()
-        request.requestURI = "/authentication/login/process"
-        request.method = "POST"
-        request.parameters.j_username = ["user"] as String[]
-        request.parameters.j_password = ["password"] as String[]
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            request.requestURI = "/authentication/login/process"
+            request.method = "POST"
+            request.parameters.j_username = ["user"] as String[]
+            request.parameters.j_password = ["password"] as String[]
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to default succes page"
-        response.getRedirectedUrl() == "/default"
+            response.getRedirectedUrl() == "/default"
     }
 
     @Configuration
@@ -138,25 +138,25 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     def "http/form-login custom refs"() {
         when:
-        loadConfig(FormLoginCustomRefsConfig)
-        springSecurityFilterChain = context.getBean(FilterChainProxy)
-        then: "CustomWebAuthenticationDetailsSource is used"
-        findFilter(UsernamePasswordAuthenticationFilter).authenticationDetailsSource.class == CustomWebAuthenticationDetailsSource
+            loadConfig(FormLoginCustomRefsConfig)
+            springSecurityFilterChain = context.getBean(FilterChainProxy)
+            then: "CustomWebAuthenticationDetailsSource is used"
+            findFilter(UsernamePasswordAuthenticationFilter).authenticationDetailsSource.class == CustomWebAuthenticationDetailsSource
         when: "fail to log in"
-        request.requestURI = "/login"
-        request.method = "POST"
-        springSecurityFilterChain.doFilter(request,response,chain)
+            request.requestURI = "/login"
+            request.method = "POST"
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to login error page"
-        response.getRedirectedUrl() == "/custom/failure"
+            response.getRedirectedUrl() == "/custom/failure"
         when: "login success"
-        setup()
-        request.requestURI = "/login"
-        request.method = "POST"
-        request.parameters.username = ["user"] as String[]
-        request.parameters.password = ["password"] as String[]
-        springSecurityFilterChain.doFilter(request,response,chain)
+            setup()
+            request.requestURI = "/login"
+            request.method = "POST"
+            request.parameters.username = ["user"] as String[]
+            request.parameters.password = ["password"] as String[]
+            springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to default succes page"
-        response.getRedirectedUrl() == "/custom/targetUrl"
+            response.getRedirectedUrl() == "/custom/targetUrl"
     }
 
     @Configuration

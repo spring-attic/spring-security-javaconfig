@@ -27,14 +27,14 @@ import org.springframework.security.config.annotation.BaseSpringSpec
  *
  */
 public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
-    def "http/expression-handler"() {
+    def "http/expression-handler@ref"() {
         when:
-        def parser = new SpelExpressionParser()
-        ExpressionHandlerConfig.EXPRESSION_HANDLER = Mock(SecurityExpressionHandler.class)
-        ExpressionHandlerConfig.EXPRESSION_HANDLER.getExpressionParser() >> parser
-        loadConfig(ExpressionHandlerConfig)
+            def parser = new SpelExpressionParser()
+            ExpressionHandlerConfig.EXPRESSION_HANDLER = Mock(SecurityExpressionHandler.class)
+            ExpressionHandlerConfig.EXPRESSION_HANDLER.getExpressionParser() >> parser
+            loadConfig(ExpressionHandlerConfig)
         then:
-        noExceptionThrown()
+            noExceptionThrown()
     }
 
     @Configuration
