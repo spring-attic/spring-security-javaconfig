@@ -186,6 +186,7 @@ configure(rootProject) {
 def samples = subprojects.findAll { project -> project.path.contains('samples') }
 
 configure(samples + rootProject) {
+    println project
     project.tasks.findByPath('artifactoryPublish')?.enabled = false
 }
 

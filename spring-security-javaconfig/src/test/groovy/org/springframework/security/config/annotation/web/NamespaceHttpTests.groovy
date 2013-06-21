@@ -31,6 +31,8 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.FilterInvocation
 import org.springframework.security.web.access.ExceptionTranslationFilter
+import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource
+import org.springframework.security.web.access.expression.WebExpressionVoter
 import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
@@ -39,9 +41,9 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.NullSecurityContextRepository
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.security.web.jaasapi.JaasApiIntegrationFilter
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 import org.springframework.security.web.savedrequest.NullRequestCache
-import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
+import org.springframework.security.web.savedrequest.RequestCacheAwareFilter
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
 import org.springframework.security.web.session.SessionManagementFilter
 import org.springframework.security.web.util.RegexRequestMatcher
@@ -322,7 +324,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
 
     // http@path-type is not available (instead request matcher instances are used)
 
-    // http@pattern is not available (instead request matcher instances are used)
+    // http@pattern is not available (instead see the tests http@request-matcher-ref ant or http@request-matcher-ref regex)
 
     def "http@realm"() {
         when:
@@ -460,6 +462,26 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     @Configuration
     static class ServletApiProvisionDefaultsConfig extends BaseWebConfig {
         protected void configure(HttpConfiguration http) throws Exception {
+        }
+    }
+
+    def "http@use-expressions=true"() {
+        when:
+            loadConfig(UseExpressionsConfig)
+        then:
+            findFilter(FilterSecurityInterceptor).securityMetadataSource.class == ExpressionBasedFilterInvocationSecurityMetadataSource
+            findFilter(FilterSecurityInterceptor).accessDecisionManager.decisionVoters.collect { it.class } == [WebExpressionVoter]
+    }
+
+    @Configuration
+    @EnableWebSecurity
+    static class UseExpressionsConfig extends BaseWebConfig {
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+                .authorizeUrls()
+                    .antMatchers("/users**","/sessions/**").hasRole("USER")
+                    .antMatchers("/signup").permitAll()
+                    .anyRequest().hasRole("USER")
         }
     }
 

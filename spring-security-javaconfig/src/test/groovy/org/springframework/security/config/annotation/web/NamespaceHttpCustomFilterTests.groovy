@@ -103,8 +103,6 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
         }
     }
 
-    // FIXME addFilter should override
-    @Ignore
     def "http/custom-filter@position"() {
         when:
         loadConfig(CustomFilterPositionConfig)
@@ -121,8 +119,9 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
         protected void configure(HttpConfiguration http) {
             http
-                .addFilter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
-                .formLogin()
+                // this works so long as the CustomFilter extends one of the standard filters
+                // if not, use addFilterBefore or addFilterAfter
+                .addFilter(new CustomFilter())
         }
 
     }
