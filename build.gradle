@@ -23,7 +23,7 @@ ext.apacheDsDependencies = ["org.apache.directory.server:apacheds-core:$apacheDs
             "org.apache.directory.server:apacheds-server-jndi:$apacheDsVersion",
             "org.apache.directory.shared:shared-ldap:0.9.15"]
 
-configure(allprojects) { p->
+configure(subprojects) { p->
     apply plugin: 'propdeps'
     apply plugin: 'propdeps-maven'
     apply plugin: 'propdeps-idea'
@@ -121,6 +121,11 @@ configure(allprojects) { p->
 
 configure(rootProject) {
     apply plugin: 'sonar-runner'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'java'
+
+    configurations.archives.artifacts.clear()
 
     sonarRunner {
         sonarProperties {
@@ -178,7 +183,14 @@ configure(rootProject) {
     }
 }
 
+def samples = subprojects.findAll { project -> project.path.contains('samples') }
+
+configure(samples + rootProject) {
+    project.tasks.findByPath('artifactoryPublish')?.enabled = false
+}
+
 def warSamples = subprojects.findAll { project -> project.path.contains('samples') && project.path != ":spring-security-samples-messages" }
+
 
 configure(warSamples) {
     apply plugin: 'war'
