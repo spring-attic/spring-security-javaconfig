@@ -48,8 +48,12 @@ public class JdbcUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B
 
     private List<Resource> initScripts = new ArrayList<Resource>();
 
+    public JdbcUserDetailsManagerConfigurer(JdbcUserDetailsManager manager) {
+        super(manager);
+    }
+
     public JdbcUserDetailsManagerConfigurer() {
-        super(new JdbcUserDetailsManager());
+        this(new JdbcUserDetailsManager());
     }
 
 
@@ -99,6 +103,18 @@ public class JdbcUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B
         return this;
     }
 
+    /**
+     * A non-empty string prefix that will be added to role strings loaded from persistent storage (default is "").
+     *
+     * @param rolePrefix
+     * @return
+     * @throws Exception
+     */
+    public JdbcUserDetailsManagerConfigurer<B> rolePrefix(String rolePrefix) throws Exception {
+        getUserDetailsService().setRolePrefix(rolePrefix);
+        return this;
+    }
+
     @Override
     protected void initUserDetailsService() throws Exception {
         if(!initScripts.isEmpty()) {
@@ -108,7 +124,7 @@ public class JdbcUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B
     }
 
     @Override
-    protected JdbcUserDetailsManager getUserDetailsService() {
+    public JdbcUserDetailsManager getUserDetailsService() {
         return (JdbcUserDetailsManager) super.getUserDetailsService();
     }
 

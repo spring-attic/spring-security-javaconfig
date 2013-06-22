@@ -69,7 +69,7 @@ abstract class BaseDaoAuthenticationConfigurer<B extends ProviderManagerBuilder<
      *
      * @return the {@link UserDetailsService} that is used with the {@link DaoAuthenticationProvider}
      */
-    protected U getUserDetailsService() {
+    public U getUserDetailsService() {
         return userDetailsService;
     }
 }
