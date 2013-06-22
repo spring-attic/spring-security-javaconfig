@@ -174,7 +174,6 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      */
     public AuthenticationManagerBuilder add(
             AuthenticationProvider authenticationProvider) {
-        authenticationProvider = registerLifecycle(authenticationProvider);
         this.authenticationProviders.add(authenticationProvider);
         return this;
     }
@@ -188,7 +187,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         return providerManager;
     }
 
-    private <T> T registerLifecycle(T object) {
+    public <T> T registerLifecycle(T object) {
         return lifecycleManager == null ? object : lifecycleManager.registerLifecycle(object);
     }
 
