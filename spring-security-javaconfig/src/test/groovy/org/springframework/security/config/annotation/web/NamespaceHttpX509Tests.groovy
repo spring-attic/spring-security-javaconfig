@@ -157,8 +157,6 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     public static class SubjectPrincipalRegexConfig extends WebSecurityConfigurerAdapter {
-        static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
-
         @Override
         protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
             auth.
@@ -193,8 +191,6 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     public static class UserDetailsServiceRefConfig extends WebSecurityConfigurerAdapter {
-        static AuthenticationDetailsSource<HttpServletRequest, PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails> AUTHENTICATION_DETAILS_SOURCE
-
         @Override
         protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
             auth.

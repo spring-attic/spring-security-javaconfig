@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
@@ -29,6 +30,7 @@ import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy;
 import org.springframework.util.Assert;
 
 /**
@@ -69,15 +71,47 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
     private Integer maximumSessions;
     private String expiredUrl;
-    private boolean exceptionIfMaximumExceeded;
+    private boolean maxSessionsPreventsLogin;
     private SessionCreationPolicy sessionPolicy = SessionCreationPolicy.ifRequired;
     private boolean enableSessionUrlRewriting;
+    private String invalidSessionUrl;
+    private String sessionAuthenticationErrorUrl;
 
     /**
      * Creates a new instance
      * @see HttpConfiguration#sessionManagement()
      */
     SessionManagementConfigurer() {
+    }
+
+    /**
+     * Setting this attribute will inject the {@link SessionManagementFilter} with a
+     * {@link SimpleRedirectInvalidSessionStrategy} configured with the attribute value.
+     * When an invalid session ID is submitted, the strategy will be invoked,
+     * redirecting to the configured URL.
+     *
+     * @param invalidSessionUrl the URL to redirect to when an invalid session is detected
+     * @return the {@link SessionManagementConfigurer} for further customization
+     */
+    public SessionManagementConfigurer<H> invalidSessionUrl(String invalidSessionUrl) {
+        this.invalidSessionUrl = invalidSessionUrl;
+        return this;
+    }
+
+    /**
+     * Defines the URL of the error page which should be shown when the
+     * SessionAuthenticationStrategy raises an exception. If not set, an
+     * unauthorized (402) error code will be returned to the client. Note that
+     * this attribute doesn't apply if the error occurs during a form-based
+     * login, where the URL for authentication failure will take precedence.
+     *
+     * @param sessionAuthenticationErrorUrl
+     *            the URL to redirect to
+     * @return the {@link SessionManagementConfigurer} for further customization
+     */
+    public SessionManagementConfigurer<H> sessionAuthenticationErrorUrl(String sessionAuthenticationErrorUrl) {
+        this.sessionAuthenticationErrorUrl = sessionAuthenticationErrorUrl;
+        return this;
     }
 
     /**
@@ -134,6 +168,11 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
         return new ConcurrencyControlConfigurer();
     }
 
+    /**
+     * Allows configuring controlling of multiple sessions.
+     *
+     * @author Rob Winch
+     */
     public class ConcurrencyControlConfigurer {
 
         /**
@@ -158,11 +197,23 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
          * accidentally does not log out, there is no need for an administrator to
          * intervene or wait till their session expires.
          *
-         * @param exceptionIfMaximumExceeded true to have an error at time of authentication, else false (default)
+         * @param maxSessionsPreventsLogin true to have an error at time of authentication, else false (default)
          * @return the {@link ConcurrencyControlConfigurer} for further customizations
          */
-        public ConcurrencyControlConfigurer exceptionIfMaximumExceeded(boolean exceptionIfMaximumExceeded) {
-            SessionManagementConfigurer.this.exceptionIfMaximumExceeded = exceptionIfMaximumExceeded;
+        public ConcurrencyControlConfigurer maxSessionsPreventsLogin(boolean maxSessionsPreventsLogin) {
+            SessionManagementConfigurer.this.maxSessionsPreventsLogin = maxSessionsPreventsLogin;
+            return this;
+        }
+
+        /**
+         * Controls the {@link SessionRegistry} implementation used. The default
+         * is {@link SessionRegistryImpl} which is an in memory implementation.
+         *
+         * @param sessionRegistry the {@link SessionRegistry} to use
+         * @return the {@link ConcurrencyControlConfigurer} for further customizations
+         */
+        public ConcurrencyControlConfigurer sessionRegistry(SessionRegistry sessionRegistry) {
+            SessionManagementConfigurer.this.sessionRegistry = sessionRegistry;
             return this;
         }
 
@@ -207,6 +258,12 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
     public void configure(H http) throws Exception {
         SecurityContextRepository securityContextRepository = http.getSharedObject(SecurityContextRepository.class);
         SessionManagementFilter sessionManagementFilter = new SessionManagementFilter(securityContextRepository, getSessionAuthenticationStrategy());
+        if(sessionAuthenticationErrorUrl != null) {
+            sessionManagementFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(sessionAuthenticationErrorUrl));
+        }
+        if(invalidSessionUrl != null) {
+            sessionManagementFilter.setInvalidSessionStrategy(new SimpleRedirectInvalidSessionStrategy(invalidSessionUrl));
+        }
         sessionManagementFilter = registerLifecycle(sessionManagementFilter);
 
         http.addFilter(sessionManagementFilter);
@@ -256,7 +313,7 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
         if(isConcurrentSessionControlEnabled()) {
             ConcurrentSessionControlStrategy concurrentSessionControlStrategy = new ConcurrentSessionControlStrategy(sessionRegistry);
             concurrentSessionControlStrategy.setMaximumSessions(maximumSessions);
-            concurrentSessionControlStrategy.setExceptionIfMaximumExceeded(exceptionIfMaximumExceeded);
+            concurrentSessionControlStrategy.setExceptionIfMaximumExceeded(maxSessionsPreventsLogin);
             sessionAuthenticationStrategy = concurrentSessionControlStrategy;
         }
         return sessionAuthenticationStrategy;

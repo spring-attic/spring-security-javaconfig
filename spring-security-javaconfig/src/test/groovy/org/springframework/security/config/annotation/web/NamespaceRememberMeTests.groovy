@@ -189,7 +189,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
         }
     }
 
-    // http/remember-me@services-alias is not supported use standard aliasing instead
+    // http/remember-me@services-alias is not supported use standard aliasing instead (i.e. @Bean("alias"))
 
     def "http/remember-me@token-repository-ref"() {
         setup:
