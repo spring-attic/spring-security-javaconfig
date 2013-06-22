@@ -61,9 +61,13 @@ abstract class BaseSpringSpec extends Specification {
         context.getBean(AuthenticationManager)
     }
 
+    AuthenticationManager getAuthenticationManager() {
+        authenticationManager().delegateBuilder.getObject()
+    }
+
     List<AuthenticationProvider> authenticationProviders() {
         List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>()
-        AuthenticationManager authenticationManager = authenticationManager().delegateBuilder.getObject()
+        AuthenticationManager authenticationManager = getAuthenticationManager()
         while(authenticationManager?.providers) {
             providers.addAll(authenticationManager.providers)
             authenticationManager = authenticationManager.parent

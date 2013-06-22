@@ -44,7 +44,15 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private ApplicationContext context;
 
     private final AuthenticationManagerBuilder authenticationBuilder = new AuthenticationManagerBuilder();
-    private AuthenticationManagerBuilder parentAuthenticationBuilder = new AuthenticationManagerBuilder();
+    private final AuthenticationManagerBuilder parentAuthenticationBuilder = new AuthenticationManagerBuilder() {
+
+        @Override
+        public AuthenticationManagerBuilder eraseCredentials(boolean eraseCredentials) {
+            authenticationBuilder.eraseCredentials(eraseCredentials);
+            return super.eraseCredentials(eraseCredentials);
+        }
+
+    };
     private boolean disableAuthenticationRegistration;
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;

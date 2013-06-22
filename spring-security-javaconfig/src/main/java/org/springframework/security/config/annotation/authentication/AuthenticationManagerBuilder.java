@@ -43,6 +43,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     private AuthenticationManager parentAuthenticationManager;
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
     private UserDetailsService defaultUserDetailsService;
+    private Boolean eraseCredentials;
 
     /**
      * Sets the {@link LifecycleManager} to be used on the {@link AuthenticationManagerBuilder}
@@ -69,6 +70,22 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     public AuthenticationManagerBuilder parentAuthenticationManager(
             AuthenticationManager authenticationManager) {
         this.parentAuthenticationManager = authenticationManager;
+        return this;
+    }
+
+    /**
+     * If set to true, the {@link AuthenticationManger} will attempt to clear any
+     * credentials data in the returned {@link Authentication} object, once the user has
+     * been authenticated.
+     *
+     * @param eraseCredentials
+     *            true if {@link AuthenticationManager} should clear the
+     *            credentials from the {@link Authentication} object after
+     *            authenticating
+     * @return the {@link AuthenticationManagerBuilder} for further customizations
+     */
+    public AuthenticationManagerBuilder eraseCredentials(boolean eraseCredentials) {
+        this.eraseCredentials = eraseCredentials;
         return this;
     }
 
@@ -164,8 +181,11 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
 
     @Override
     protected AuthenticationManager performBuild() throws Exception {
-        return new ProviderManager(authenticationProviders,
-                parentAuthenticationManager);
+        ProviderManager providerManager = new ProviderManager(authenticationProviders, parentAuthenticationManager);
+        if(eraseCredentials != null) {
+            providerManager.setEraseCredentialsAfterAuthentication(eraseCredentials);
+        }
+        return providerManager;
     }
 
     private <T> T registerLifecycle(T object) {
