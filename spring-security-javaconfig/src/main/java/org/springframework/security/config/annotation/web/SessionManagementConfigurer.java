@@ -128,40 +128,54 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
      * @param maximumSessions the maximum number of sessions for a user
      * @return the {@link SessionManagementConfigurer} for further customizations
      */
-    public SessionManagementConfigurer<H> maximumSessions(int maximumSessions) {
+    public ConcurrencyControlConfigurer maximumSessions(int maximumSessions) {
         this.maximumSessions = maximumSessions;
         this.sessionAuthenticationStrategy = null;
-        return this;
+        return new ConcurrencyControlConfigurer();
     }
 
-    /**
-     * The URL to redirect to if a user tries to access a resource and their
-     * session has been expired due to too many sessions for the current user.
-     * The default is to write a simple error message to the response.
-     *
-     * @param expiredUrl the URL to redirect to
-     * @return the {@link SessionManagementConfigurer} for further customizations
-     */
-    public SessionManagementConfigurer<H> expiredUrl(String expiredUrl) {
-        this.expiredUrl = expiredUrl;
-        return this;
-    }
+    public class ConcurrencyControlConfigurer {
 
-    /**
-     * If true, prevents a user from authenticating when the
-     * {@link #maximumSessions(int)} has been reached. Otherwise (default), the user who
-     * authenticates is allowed access and an existing user's session is
-     * expired. The user's who's session is forcibly expired is sent to
-     * {@link #expiredUrl(String)}. The advantage of this approach is if a user
-     * accidentally does not log out, there is no need for an administrator to
-     * intervene or wait till their session expires.
-     *
-     * @param exceptionIfMaximumExceeded true to have an error at time of authentication, else false (default)
-     * @return the {@link SessionManagementConfigurer} for further customizations
-     */
-    public SessionManagementConfigurer<H> exceptionIfMaximumExceeded(boolean exceptionIfMaximumExceeded) {
-        this.exceptionIfMaximumExceeded = exceptionIfMaximumExceeded;
-        return this;
+        /**
+         * The URL to redirect to if a user tries to access a resource and their
+         * session has been expired due to too many sessions for the current user.
+         * The default is to write a simple error message to the response.
+         *
+         * @param expiredUrl the URL to redirect to
+         * @return the {@link ConcurrencyControlConfigurer} for further customizations
+         */
+        public ConcurrencyControlConfigurer expiredUrl(String expiredUrl) {
+            SessionManagementConfigurer.this.expiredUrl = expiredUrl;
+            return this;
+        }
+
+        /**
+         * If true, prevents a user from authenticating when the
+         * {@link #maximumSessions(int)} has been reached. Otherwise (default), the user who
+         * authenticates is allowed access and an existing user's session is
+         * expired. The user's who's session is forcibly expired is sent to
+         * {@link #expiredUrl(String)}. The advantage of this approach is if a user
+         * accidentally does not log out, there is no need for an administrator to
+         * intervene or wait till their session expires.
+         *
+         * @param exceptionIfMaximumExceeded true to have an error at time of authentication, else false (default)
+         * @return the {@link ConcurrencyControlConfigurer} for further customizations
+         */
+        public ConcurrencyControlConfigurer exceptionIfMaximumExceeded(boolean exceptionIfMaximumExceeded) {
+            SessionManagementConfigurer.this.exceptionIfMaximumExceeded = exceptionIfMaximumExceeded;
+            return this;
+        }
+
+        /**
+         * Used to chain back to the {@link SessionManagementConfigurer}
+         *
+         * @return the {@link SessionManagementConfigurer} for further customizations
+         */
+        public SessionManagementConfigurer<H> and() {
+            return SessionManagementConfigurer.this;
+        }
+
+        private ConcurrencyControlConfigurer() {}
     }
 
     @Override

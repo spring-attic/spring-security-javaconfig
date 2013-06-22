@@ -92,6 +92,7 @@ class SessionManagementConfigurerTests extends BaseSpringSpec {
             http
                 .sessionManagement()
                     .maximumSessions(1)
+                        .and()
                     .and()
                 .build()
 
