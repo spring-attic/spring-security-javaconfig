@@ -38,6 +38,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.PortMapperImpl;
+import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
@@ -240,18 +241,19 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * <pre>
      * &#064;Configuration
      * &#064;EnableWebSecurity
-     * public class SessionManagementSecurityConfig extends WebSecurityConfigurerAdapter {
+     * public class SessionManagementSecurityConfig extends
+     *         WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
      *     protected void configure(HttpConfiguration http) throws Exception {
      *         http
      *             .authorizeUrls()
-     *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
+     *                 .anyRequest().hasRole(&quot;USER&quot;)
      *                 .and()
-     *             .formLogin()
+     *            .formLogin()
      *                 .permitAll()
      *                 .and()
-     *             .sessionManagement()
+     *            .sessionManagement()
      *                 .maximumSessions(1)
      *                 .expiredUrl(&quot;/login?expired&quot;);
      *     }
@@ -259,16 +261,17 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     &#064;Override
      *     protected void registerAuthentication(AuthenticationManagerBuilder auth)
      *             throws Exception {
-     *         auth
-     *              .inMemoryAuthentication()
-     *                   .withUser(&quot;user&quot;)
-     *                        .password(&quot;password&quot;)
-     *                        .roles(&quot;USER&quot;);
+     *         auth.
+     *             inMemoryAuthentication()
+     *                 .withUser(&quot;user&quot;)
+     *                     .password(&quot;password&quot;)
+     *                     .roles(&quot;USER&quot;);
      *     }
      * }
      * </pre>
      *
-     * Do not forget to configure {@link HttpSessionEventPublisher} for the
+     * When using {@link SessionManagementConfigurer#maximumSessions(int)}, do
+     * not forget to configure {@link HttpSessionEventPublisher} for the
      * application to ensure that expired sessions are cleaned up.
      *
      * In a web.xml this can be configured using the following:
@@ -279,8 +282,12 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * &lt/listener>
      * </pre>
      *
+     * Alternatively,
+     * {@link AbstractSecurityWebApplicationInitializer#enableHttpSessionEventPublisher()}
+     * could return true.
      *
-     * @return the {@link SessionManagementConfigurer} for further customizations
+     * @return the {@link SessionManagementConfigurer} for further
+     *         customizations
      * @throws Exception
      */
     public SessionManagementConfigurer<HttpConfiguration> sessionManagement() throws Exception {
