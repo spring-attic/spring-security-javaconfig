@@ -26,6 +26,7 @@ import javax.servlet.ServletException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.AbstractContextLoaderInitializer;
 import org.springframework.web.context.WebApplicationContext;
@@ -73,9 +74,23 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
     @Override
     public final void onStartup(ServletContext servletContext)
             throws ServletException {
+        if(enableHttpSessionEventPublisher()) {
+            servletContext.addListener(HttpSessionEventPublisher.class);
+        }
         beforeSpringSecurityFilterChain(servletContext);
         registerSpringSecurityFilterChain(servletContext);
         afterSpringSecurityFilterChain(servletContext);
+    }
+
+    /**
+     * Override this if {@link HttpSessionEventPublisher} should be added as a
+     * listener. This should be true, if session management has specified a
+     * maximum number of sessions.
+     *
+     * @return true to add {@link HttpSessionEventPublisher}, else false
+     */
+    protected boolean enableHttpSessionEventPublisher() {
+        return false;
     }
 
     /**
