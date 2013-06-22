@@ -55,7 +55,7 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
         protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
             auth
                 .jdbcUserDetailsManager()
-                    .dataSource(dataSource)
+                    .dataSource(dataSource) // jdbc-user-service@data-source-ref
         }
 
         // Only necessary to have access to verify the AuthenticationManager
@@ -117,7 +117,7 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
             loadConfig(CustomDataSourceConfig,CustomJdbcUserServiceSampleConfig)
         then:
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user", "password"))
-            auth.authorities.collect {it.authority} == ['ROLE_USER']
+            auth.authorities.collect {it.authority}.sort() == ['ROLE_DBA','ROLE_USER']
             auth.name == 'user'
     }
 
@@ -136,6 +136,8 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
                     .usersByUsernameQuery("select principal,credentials,true from users where principal = ?")
                     // jdbc-user-service@authorities-by-username-query
                     .authoritiesByUsernameQuery("select principal,role from roles where principal = ?")
+                    // jdbc-user-service@group-authorities-by-username-query
+                    .groupAuthoritiesByUsername(JdbcUserDetailsManager.DEF_GROUP_AUTHORITIES_BY_USERNAME_QUERY)
                     // jdbc-user-service@role-prefix
                     .rolePrefix("ROLE_")
 

@@ -104,6 +104,30 @@ public class JdbcUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B
     }
 
     /**
+     * An SQL statement to query user's group authorities given a username. For example:
+     *
+     * <code>
+     *     select
+     *         g.id, g.group_name, ga.authority
+     *     from
+     *         groups g, group_members gm, group_authorities ga
+     *     where
+     *         gm.username = ? and g.id = ga.group_id and g.id = gm.group_id
+     * </code>
+     *
+     * @param query  The query to use for selecting the authorities by group.
+     *               Must contain a single parameter for the username.
+     * @return The {@link JdbcUserDetailsManagerRegistry} used for additional customizations
+     * @throws Exception
+     */
+    public JdbcUserDetailsManagerConfigurer<B> groupAuthoritiesByUsername(String query) throws Exception {
+        JdbcUserDetailsManager userDetailsService = getUserDetailsService();
+        userDetailsService.setEnableGroups(true);
+        userDetailsService.setGroupAuthoritiesByUsernameQuery(query);
+        return this;
+    }
+
+    /**
      * A non-empty string prefix that will be added to role strings loaded from persistent storage (default is "").
      *
      * @param rolePrefix
