@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.authentication
 
-import static org.springframework.security.config.annotation.authentication.NamespacePasswordEncoderConfigs.*
+import static org.springframework.security.config.annotation.authentication.PasswordEncoderConfigurerConfigs.*
 
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -43,7 +43,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  * @author Rob Winch
  *
  */
-class NamespacePasswordEncoderTests extends BaseSpringSpec {
+class PasswordEncoderConfigurerTests extends BaseSpringSpec {
     def "password-encoder@ref with No AuthenticationManager Bean"() {
         when:
             loadConfig(PasswordEncoderNoAuthManagerLoadsConfig)
@@ -53,15 +53,7 @@ class NamespacePasswordEncoderTests extends BaseSpringSpec {
 
     def "password-encoder@ref with AuthenticationManagerBuilder"() {
         when:
-            loadConfig(PasswordEncoderNoAuthManagerLoadsConfig)
-            AuthenticationManager authMgr = authenticationManager()
-        then:
-            authMgr.authenticate(new UsernamePasswordAuthenticationToken("user", "password"))
-    }
-
-    def "password-encoder@ref with AuthenticationBuilder"() {
-        when:
-            loadConfig(PasswordEncoderWithBuilderConfig)
+            loadConfig(PasswordEncoderConfig)
             AuthenticationManager authMgr = authenticationManager()
         then:
             authMgr.authenticate(new UsernamePasswordAuthenticationToken("user", "password"))

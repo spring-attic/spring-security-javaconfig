@@ -15,8 +15,6 @@
  */
 package org.springframework.security.config.annotation.authentication
 
-import static org.springframework.security.config.annotation.authentication.NamespacePasswordEncoderConfigs.*
-
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

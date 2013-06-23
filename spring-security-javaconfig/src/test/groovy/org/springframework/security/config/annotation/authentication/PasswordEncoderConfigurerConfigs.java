@@ -25,13 +25,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Class Containing the {@link Configuration} for
- * {@link NamespacePasswordEncoderTests}. Separate to ensure the configuration
+ * {@link PasswordEncoderConfigurerTests}. Separate to ensure the configuration
  * compiles in Java (i.e. we are not using hidden methods).
  *
  * @author Rob Winch
  * @since 3.2
  */
-public class NamespacePasswordEncoderConfigs {
+public class PasswordEncoderConfigurerConfigs {
 
     @EnableWebSecurity
     @Configuration
@@ -72,36 +72,6 @@ public class NamespacePasswordEncoderConfigs {
                 .inMemoryAuthentication()
                     .withUser("user").password(encoder.encode("password")).roles("USER").and()
                     .passwordEncoder(encoder);
-        }
-
-        @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean()
-                throws Exception {
-            return super.authenticationManagerBean();
-        }
-
-        @Override
-        protected void configure(HttpConfiguration http) throws Exception {
-        }
-
-        @Bean
-        public BCryptPasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
-    }
-
-    @Configuration
-    static class PasswordEncoderWithBuilderConfig {
-        @Bean
-        public AuthenticationManager authenticationManager() throws Exception {
-            BCryptPasswordEncoder encoder = passwordEncoder();
-            return new AuthenticationManagerBuilder()
-                .inMemoryAuthentication()
-                    .withUser("user").password(encoder.encode("password")).roles("USER").and()
-                    .passwordEncoder(encoder)
-                    .and()
-                .build();
         }
 
         @Bean

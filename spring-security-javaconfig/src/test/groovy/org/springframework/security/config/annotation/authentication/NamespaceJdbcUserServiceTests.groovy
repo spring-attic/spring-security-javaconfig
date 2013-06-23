@@ -15,8 +15,6 @@
  */
 package org.springframework.security.config.annotation.authentication
 
-import static org.springframework.security.config.annotation.authentication.NamespacePasswordEncoderConfigs.*
-
 import javax.sql.DataSource
 
 import org.springframework.beans.factory.annotation.Autowired
