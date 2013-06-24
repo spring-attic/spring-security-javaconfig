@@ -28,6 +28,7 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilderPostProcessorConfiguration;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -47,8 +48,13 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     @Autowired
     private ApplicationContext context;
 
-    @Autowired
-    private SecurityBuilderPostProcessor builderPostProcessor;
+    @Autowired(required=false)
+    private SecurityBuilderPostProcessor builderPostProcessor = new SecurityBuilderPostProcessor() {
+        @Override
+        public <T> T postProcess(T object) {
+            throw new IllegalStateException(SecurityBuilderPostProcessor.class.getName()+ " is a required bean. Ensure you have used @"+EnableWebSecurity.class.getName()+" and @Configuration");
+        }
+    };
 
     private final AuthenticationManagerBuilder authenticationBuilder = new AuthenticationManagerBuilder();
     private final AuthenticationManagerBuilder parentAuthenticationBuilder = new AuthenticationManagerBuilder() {

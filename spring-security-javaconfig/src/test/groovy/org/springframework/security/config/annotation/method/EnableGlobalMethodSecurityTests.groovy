@@ -401,7 +401,7 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "good error message when no Enable annotation"() {
         when:
-            context = new AnnotationConfigApplicationContext(ExtendsNoEnableAnntoationConfig)
+            context = new AnnotationConfigApplicationContext(ExtendsNoEnableAnntotationConfig)
             MethodSecurityInterceptor interceptor = context.getBean(MethodSecurityInterceptor)
             interceptor.authenticationManager.authenticate(SecurityContextHolder.context.authentication)
         then:
@@ -410,7 +410,7 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
     }
 
     @Configuration
-    public static class ExtendsNoEnableAnntoationConfig extends GlobalMethodSecurityConfiguration {
+    public static class ExtendsNoEnableAnntotationConfig extends GlobalMethodSecurityConfiguration {
         @Override
         protected AuthenticationManager authenticationManager() {
             return new AuthenticationManager() {
@@ -426,7 +426,7 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
             context = new AnnotationConfigApplicationContext(ImportSubclassGMSCConfig)
             MethodSecurityService service = context.getBean(MethodSecurityService)
         then:
-            ervice.secured() == null
+            service.secured() == null
             service.jsr250() == null
 
         when:
