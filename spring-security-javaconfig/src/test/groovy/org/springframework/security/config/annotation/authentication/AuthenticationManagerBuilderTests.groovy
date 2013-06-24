@@ -16,16 +16,21 @@
 package org.springframework.security.config.annotation.authentication
 
 import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationEventPublisher
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityBuilderPostProcessor
 import org.springframework.security.config.annotation.web.EnableWebSecurity
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.AuthorityUtils
 
 /**
  *
@@ -57,11 +62,17 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
             loadConfig(InMemoryAuthWithWebSecurityConfigurerAdapter)
         then:
             authenticationManager.eventPublisher instanceof DefaultAuthenticationEventPublisher
+        when:
+            Authentication auth = new UsernamePasswordAuthenticationToken("user",null,AuthorityUtils.createAuthorityList("ROLE_USER"))
+            authenticationManager.eventPublisher.publishAuthenticationSuccess(auth)
+        then:
+            InMemoryAuthWithWebSecurityConfigurerAdapter.EVENT.authentication == auth
     }
 
     @EnableWebSecurity
     @Configuration
-    static class InMemoryAuthWithWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    static class InMemoryAuthWithWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter implements ApplicationListener<AuthenticationSuccessEvent> {
+        static AuthenticationSuccessEvent EVENT
         @Bean
         @Override
         public AuthenticationManager authenticationManagerBean()
@@ -74,6 +85,11 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
                 throws Exception {
             auth
                 .inMemoryAuthentication()
+        }
+
+        @Override
+        public void onApplicationEvent(AuthenticationSuccessEvent e) {
+            EVENT = e
         }
     }
 

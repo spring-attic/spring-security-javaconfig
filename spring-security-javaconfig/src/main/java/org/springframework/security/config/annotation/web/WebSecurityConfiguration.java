@@ -72,7 +72,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 
     @Bean
     public SecurityBuilderPostProcessor lifecycleManager() {
-        return new AutowireBeanFactoryLifecycleManager(beanFactory);
+        return new AutowireBeanFactoryPostProcessor(beanFactory);
     }
 
     @Bean

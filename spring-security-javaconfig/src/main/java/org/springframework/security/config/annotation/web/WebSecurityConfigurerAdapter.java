@@ -129,17 +129,17 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
             return http;
         }
 
-        AutowireBeanFactoryLifecycleManager lifecycleManager = new AutowireBeanFactoryLifecycleManager(context.getAutowireCapableBeanFactory());
-        authenticationBuilder.builderPostProcessor(lifecycleManager);
-        parentAuthenticationBuilder.builderPostProcessor(lifecycleManager);
+        AutowireBeanFactoryPostProcessor builderPostProcessor = new AutowireBeanFactoryPostProcessor(context.getAutowireCapableBeanFactory());
+        authenticationBuilder.builderPostProcessor(builderPostProcessor);
+        parentAuthenticationBuilder.builderPostProcessor(builderPostProcessor);
 
-        DefaultAuthenticationEventPublisher eventPublisher = new DefaultAuthenticationEventPublisher();
+        DefaultAuthenticationEventPublisher eventPublisher = builderPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
         parentAuthenticationBuilder.authenticationEventPublisher(eventPublisher);
         authenticationBuilder.authenticationEventPublisher(eventPublisher);
 
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
-        http = new HttpConfiguration(lifecycleManager,authenticationBuilder);
+        http = new HttpConfiguration(builderPostProcessor,authenticationBuilder);
         http.setSharedObject(UserDetailsService.class, userDetailsService());
         if(!disableDefaults) {
             http

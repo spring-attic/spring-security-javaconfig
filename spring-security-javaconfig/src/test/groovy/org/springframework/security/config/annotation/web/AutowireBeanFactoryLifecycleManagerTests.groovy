@@ -113,7 +113,7 @@ class AutowireBeanFactoryLifecycleManagerTests extends BaseSpringSpec {
     static class Config {
         @Bean
         public SecurityBuilderPostProcessor lifecycleManager(AutowireCapableBeanFactory beanFactory) {
-            return new AutowireBeanFactoryLifecycleManager(beanFactory);
+            return new AutowireBeanFactoryPostProcessor(beanFactory);
         }
     }
 }
