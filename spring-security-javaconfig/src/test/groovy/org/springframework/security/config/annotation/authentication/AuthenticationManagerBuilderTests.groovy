@@ -15,9 +15,17 @@
  */
 package org.springframework.security.config.annotation.authentication
 
+import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationEventPublisher
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.LifecycleManager
+import org.springframework.security.config.annotation.web.EnableWebSecurity
+import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter
 
 /**
  *
@@ -39,14 +47,21 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
 
     def "messages set when using WebSecurityConfigurerAdapter"() {
         when:
-            loadConfig(AuthenticationProviderMessagesWebSecurityConfigurerAdapterConfig)
+            loadConfig(InMemoryAuthWithWebSecurityConfigurerAdapter)
         then:
             authenticationManager.messages.messageSource instanceof ApplicationContext
     }
 
+    def "AuthenticationEventPublisher is registered for Web registerAuthentication"() {
+        when:
+            loadConfig(InMemoryAuthWithWebSecurityConfigurerAdapter)
+        then:
+            authenticationManager.eventPublisher instanceof DefaultAuthenticationEventPublisher
+    }
+
     @EnableWebSecurity
     @Configuration
-    static class AuthenticationProviderMessagesWebSecurityConfigurerAdapterConfig extends WebSecurityConfigurerAdapter {
+    static class InMemoryAuthWithWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
         @Bean
         @Override
         public AuthenticationManager authenticationManagerBean()
@@ -58,6 +73,36 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
         protected void registerAuthentication(AuthenticationManagerBuilder auth)
                 throws Exception {
             auth
+                .inMemoryAuthentication()
+        }
+    }
+
+    // https://github.com/SpringSource/spring-security-javaconfig/issues/132
+    def "#132 Custom AuthenticationEventPublisher with Web registerAuthentication"() {
+        setup:
+            InMemoryAuthWithWebCustomAEPSecurityConfigurerAdapterConfig.EVENT_PUBLISHER = Mock(AuthenticationEventPublisher)
+        when:
+            loadConfig(InMemoryAuthWithWebCustomAEPSecurityConfigurerAdapterConfig)
+        then:
+            authenticationManager.eventPublisher == InMemoryAuthWithWebCustomAEPSecurityConfigurerAdapterConfig.EVENT_PUBLISHER
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class InMemoryAuthWithWebCustomAEPSecurityConfigurerAdapterConfig extends WebSecurityConfigurerAdapter {
+        static AuthenticationEventPublisher EVENT_PUBLISHER
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean()
+                throws Exception {
+            return super.authenticationManagerBean();
+        }
+
+        @Override
+        protected void registerAuthentication(AuthenticationManagerBuilder auth)
+                throws Exception {
+            auth
+                .authenticationEventPublisher(EVENT_PUBLISHER)
                 .inMemoryAuthentication()
         }
     }

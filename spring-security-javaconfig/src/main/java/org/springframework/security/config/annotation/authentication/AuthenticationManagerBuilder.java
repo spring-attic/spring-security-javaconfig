@@ -18,6 +18,7 @@ package org.springframework.security.config.annotation.authentication;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -26,6 +27,7 @@ import org.springframework.security.config.annotation.LifecycleManager;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.Assert;
 
 /**
  * {@link SecurityBuilder} used to create an {@link AuthenticationManager}.
@@ -44,6 +46,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
     private UserDetailsService defaultUserDetailsService;
     private Boolean eraseCredentials;
+    private AuthenticationEventPublisher eventPublisher;
 
     /**
      * Sets the {@link LifecycleManager} to be used on the {@link AuthenticationManagerBuilder}
@@ -74,9 +77,21 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     }
 
     /**
-     * If set to true, the {@link AuthenticationManger} will attempt to clear any
-     * credentials data in the returned {@link Authentication} object, once the user has
-     * been authenticated.
+     * Sets the {@link AuthenticationEventPublisher}
+     *
+     * @param eventPublisher
+     *            the {@link AuthenticationEventPublisher} to use
+     * @return the {@link AuthenticationManagerBuilder} for further
+     *         customizations
+     */
+    public AuthenticationManagerBuilder authenticationEventPublisher(AuthenticationEventPublisher eventPublisher) {
+        Assert.notNull(eventPublisher, "AuthenticationEventPublisher cannot be null");
+        this.eventPublisher = eventPublisher;
+        return this;
+    }
+
+    /**
+     *
      *
      * @param eraseCredentials
      *            true if {@link AuthenticationManager} should clear the
@@ -88,6 +103,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         this.eraseCredentials = eraseCredentials;
         return this;
     }
+
 
     /**
      * Add in memory authentication to the {@link AuthenticationManagerBuilder}
@@ -179,10 +195,13 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     }
 
     @Override
-    protected AuthenticationManager performBuild() throws Exception {
+    protected ProviderManager performBuild() throws Exception {
         ProviderManager providerManager = new ProviderManager(authenticationProviders, parentAuthenticationManager);
         if(eraseCredentials != null) {
             providerManager.setEraseCredentialsAfterAuthentication(eraseCredentials);
+        }
+        if(eventPublisher != null) {
+            providerManager.setAuthenticationEventPublisher(eventPublisher);
         }
         providerManager = registerLifecycle(providerManager);
         return providerManager;

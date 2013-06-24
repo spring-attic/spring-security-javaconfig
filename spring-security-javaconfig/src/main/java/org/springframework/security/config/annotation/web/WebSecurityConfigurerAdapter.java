@@ -21,8 +21,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -47,6 +48,13 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private final AuthenticationManagerBuilder parentAuthenticationBuilder = new AuthenticationManagerBuilder() {
 
         @Override
+        public AuthenticationManagerBuilder authenticationEventPublisher(
+                AuthenticationEventPublisher eventPublisher) {
+            authenticationBuilder.authenticationEventPublisher(eventPublisher);
+            return super.authenticationEventPublisher(eventPublisher);
+        }
+
+        @Override
         public AuthenticationManagerBuilder eraseCredentials(boolean eraseCredentials) {
             authenticationBuilder.eraseCredentials(eraseCredentials);
             return super.eraseCredentials(eraseCredentials);
@@ -58,16 +66,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private AuthenticationManager authenticationManager;
     private HttpConfiguration http;
     private boolean disableDefaults;
-
-    /**
-     * Sets the {@link LifecycleManager} to be used on the {@link AuthenticationManagerBuilder}
-     *
-     * @param lifecycleManager
-     */
-    private void setLifecycleManager(LifecycleManager lifecycleManager) {
-        authenticationBuilder.lifecycleManager(lifecycleManager);
-        parentAuthenticationBuilder.lifecycleManager(lifecycleManager);
-    }
 
     /**
      * Creates an instance with the default configuration enabled.
@@ -130,8 +128,15 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         if(http != null) {
             return http;
         }
+
         AutowireBeanFactoryLifecycleManager lifecycleManager = new AutowireBeanFactoryLifecycleManager(context.getAutowireCapableBeanFactory());
-        setLifecycleManager(lifecycleManager);
+        authenticationBuilder.lifecycleManager(lifecycleManager);
+        parentAuthenticationBuilder.lifecycleManager(lifecycleManager);
+
+        DefaultAuthenticationEventPublisher eventPublisher = new DefaultAuthenticationEventPublisher();
+        parentAuthenticationBuilder.authenticationEventPublisher(eventPublisher);
+        authenticationBuilder.authenticationEventPublisher(eventPublisher);
+
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
         http = new HttpConfiguration(lifecycleManager,authenticationBuilder);
