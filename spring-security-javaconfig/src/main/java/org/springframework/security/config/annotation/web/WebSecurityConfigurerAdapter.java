@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -45,10 +45,10 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private ApplicationContext context;
 
     @Autowired(required=false)
-    private SecurityBuilderPostProcessor builderPostProcessor = new SecurityBuilderPostProcessor() {
+    private ObjectPostProcessor objectPostProcessor = new ObjectPostProcessor() {
         @Override
         public <T> T postProcess(T object) {
-            throw new IllegalStateException(SecurityBuilderPostProcessor.class.getName()+ " is a required bean. Ensure you have used @"+EnableWebSecurity.class.getName()+" and @Configuration");
+            throw new IllegalStateException(ObjectPostProcessor.class.getName()+ " is a required bean. Ensure you have used @"+EnableWebSecurity.class.getName()+" and @Configuration");
         }
     };
 
@@ -129,15 +129,15 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
             return http;
         }
 
-        authenticationBuilder.builderPostProcessor(builderPostProcessor);
-        parentAuthenticationBuilder.builderPostProcessor(builderPostProcessor);
+        authenticationBuilder.builderPostProcessor(objectPostProcessor);
+        parentAuthenticationBuilder.builderPostProcessor(objectPostProcessor);
 
-        DefaultAuthenticationEventPublisher eventPublisher = builderPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
+        DefaultAuthenticationEventPublisher eventPublisher = objectPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
         parentAuthenticationBuilder.authenticationEventPublisher(eventPublisher);
 
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
-        http = new HttpConfiguration(builderPostProcessor,authenticationBuilder);
+        http = new HttpConfiguration(objectPostProcessor,authenticationBuilder);
         http.setSharedObject(UserDetailsService.class, userDetailsService());
         if(!disableDefaults) {
             http

@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.authentication.logout.LogoutFilter
 
@@ -26,10 +26,10 @@ import org.springframework.security.web.authentication.logout.LogoutFilter
  */
 class LogoutConfigurerTests extends BaseSpringSpec {
 
-    def "logout LifecycleManager"() {
+    def "logout ObjectPostProcessor"() {
         setup:
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            ObjectPostProcessor opp = Mock()
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
         when:
             http
                 .logout()
@@ -37,6 +37,6 @@ class LogoutConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "LogoutFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as LogoutFilter) >> {LogoutFilter o -> o}
+            1 * opp.postProcess(_ as LogoutFilter) >> {LogoutFilter o -> o}
     }
 }

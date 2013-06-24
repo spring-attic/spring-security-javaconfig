@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler
@@ -316,11 +316,11 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
         }
     }
 
-    def "DefaultLoginPage LifecycleManager"() {
+    def "DefaultLoginPage ObjectPostProcessor"() {
         setup:
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
+            ObjectPostProcessor objectPostProcessor = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr)
             http
                 // must set builder manually due to groovy not selecting correct method
                 .apply(new DefaultLoginPageConfigurer([builder:http])).and()
@@ -329,6 +329,6 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "DefaultLoginPageGeneratingFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as DefaultLoginPageGeneratingFilter) >> {DefaultLoginPageGeneratingFilter o -> o}
+            1 * objectPostProcessor.postProcess(_ as DefaultLoginPageGeneratingFilter) >> {DefaultLoginPageGeneratingFilter o -> o}
     }
 }

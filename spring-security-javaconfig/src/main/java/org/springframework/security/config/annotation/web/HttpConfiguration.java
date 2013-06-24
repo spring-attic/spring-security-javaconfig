@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
@@ -89,7 +89,7 @@ import org.springframework.util.Assert;
  * @see EnableWebSecurity
  */
 public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain>, HttpBuilder<HttpConfiguration> {
-    private final SecurityBuilderPostProcessor lifecycleManager;
+    private final ObjectPostProcessor objectPostProcessor;
     private AuthenticationManager authenticationManager;
 
     private List<Filter> filters =  new ArrayList<Filter>();
@@ -99,14 +99,14 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
 
     /**
      * Creates a new instance
-     * @param lifecycleManager the {@link SecurityBuilderPostProcessor} that should be used
+     * @param objectPostProcessor the {@link ObjectPostProcessor} that should be used
      * @param authenticationBuilder the {@link AuthenticationManagerBuilder} to use for additional updates
      * @see WebSecurityConfiguration
      */
-    HttpConfiguration(SecurityBuilderPostProcessor lifecycleManager, AuthenticationManagerBuilder authenticationBuilder) {
-        Assert.notNull(lifecycleManager,"lifecycleManager cannot be null");
+    HttpConfiguration(ObjectPostProcessor objectPostProcessor, AuthenticationManagerBuilder authenticationBuilder) {
+        Assert.notNull(objectPostProcessor,"objectPostProcessor cannot be null");
         Assert.notNull(authenticationBuilder, "authenticationBuilder cannot be null");
-        this.lifecycleManager = lifecycleManager;
+        this.objectPostProcessor = objectPostProcessor;
         setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
     }
 
@@ -1013,7 +1013,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     }
 
     public final <T> T postProcess(T object) {
-        return lifecycleManager.postProcess(object);
+        return objectPostProcessor.postProcess(object);
     }
 
     private AuthenticationManagerBuilder getAuthenticationRegistry() {

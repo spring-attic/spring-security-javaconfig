@@ -25,6 +25,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.security.core.userdetails.UserCache;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 /**
@@ -136,6 +137,19 @@ public class JdbcUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B
      */
     public JdbcUserDetailsManagerConfigurer<B> rolePrefix(String rolePrefix) throws Exception {
         getUserDetailsService().setRolePrefix(rolePrefix);
+        return this;
+    }
+
+
+    /**
+     * Defines the {@link UserCache} to use
+     *
+     * @param userCache the {@link UserCache} to use
+     * @return the {@link JdbcUserDetailsManagerConfigurer} for further customizations
+     * @throws Exception
+     */
+    public JdbcUserDetailsManagerConfigurer<B> userCache(UserCache userCache) throws Exception {
+        getUserDetailsService().setUserCache(userCache);
         return this;
     }
 

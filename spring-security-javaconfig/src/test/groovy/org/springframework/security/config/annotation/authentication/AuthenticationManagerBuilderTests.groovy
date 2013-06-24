@@ -19,7 +19,7 @@ import org.springframework.security.authentication.AuthenticationEventPublisher
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor
+import org.springframework.security.config.annotation.ObjectPostProcessor
 
 /**
  *
@@ -29,14 +29,14 @@ import org.springframework.security.config.annotation.SecurityBuilderPostProcess
 class AuthenticationManagerBuilderTests extends BaseSpringSpec {
     def "add(AuthenticationProvider) does not perform registration"() {
         setup:
-            SecurityBuilderPostProcessor builderPostProcessor = Mock()
+            ObjectPostProcessor opp = Mock()
             AuthenticationProvider provider = Mock()
-            AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder().builderPostProcessor(builderPostProcessor)
+            AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder().builderPostProcessor(opp)
         when: "Adding an AuthenticationProvider"
             builder.add(provider)
             builder.build()
         then: "AuthenticationProvider is not passed into LifecycleManager (it should be managed externally)"
-            0 * builderPostProcessor._(_ as AuthenticationProvider)
+            0 * opp._(_ as AuthenticationProvider)
     }
 
     // https://github.com/SpringSource/spring-security-javaconfig/issues/132

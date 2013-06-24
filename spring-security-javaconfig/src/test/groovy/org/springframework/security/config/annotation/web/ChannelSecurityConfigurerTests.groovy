@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
@@ -29,11 +29,11 @@ import org.springframework.security.web.access.channel.SecureChannelProcessor
  */
 class ChannelSecurityConfigurerTests extends BaseSpringSpec {
 
-    def "requiresChannel LifecycleManager"() {
+    def "requiresChannel ObjectPostProcessor"() {
         setup: "initialize the AUTH_FILTER as a mock"
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
+            ObjectPostProcessor objectPostProcessor = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr)
             http
                 .requiresChannel()
                     .anyRequest().requiresSecure()
@@ -41,12 +41,12 @@ class ChannelSecurityConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "InsecureChannelProcessor is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as InsecureChannelProcessor) >> {InsecureChannelProcessor o -> o}
+            1 * objectPostProcessor.postProcess(_ as InsecureChannelProcessor) >> {InsecureChannelProcessor o -> o}
         and: "SecureChannelProcessor is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as SecureChannelProcessor) >> {SecureChannelProcessor o -> o}
+            1 * objectPostProcessor.postProcess(_ as SecureChannelProcessor) >> {SecureChannelProcessor o -> o}
         and: "ChannelDecisionManagerImpl is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as ChannelDecisionManagerImpl) >> {ChannelDecisionManagerImpl o -> o}
+            1 * objectPostProcessor.postProcess(_ as ChannelDecisionManagerImpl) >> {ChannelDecisionManagerImpl o -> o}
         and: "ChannelProcessingFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as ChannelProcessingFilter) >> {ChannelProcessingFilter o -> o}
+            1 * objectPostProcessor.postProcess(_ as ChannelProcessingFilter) >> {ChannelProcessingFilter o -> o}
     }
 }

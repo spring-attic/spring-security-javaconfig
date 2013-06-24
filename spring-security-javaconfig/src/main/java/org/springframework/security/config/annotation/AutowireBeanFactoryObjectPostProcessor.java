@@ -35,12 +35,12 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-final class AutowireBeanFactoryPostProcessor implements SecurityBuilderPostProcessor, DisposableBean {
+final class AutowireBeanFactoryObjectPostProcessor implements ObjectPostProcessor, DisposableBean {
     private final Log logger = LogFactory.getLog(getClass());
     private final AutowireCapableBeanFactory autowireBeanFactory;
     private final List<DisposableBean> disposableBeans = new ArrayList<DisposableBean>();
 
-    public AutowireBeanFactoryPostProcessor(
+    public AutowireBeanFactoryObjectPostProcessor(
             AutowireCapableBeanFactory autowireBeanFactory) {
         Assert.notNull(autowireBeanFactory, "autowireBeanFactory cannot be null");
         this.autowireBeanFactory = autowireBeanFactory;

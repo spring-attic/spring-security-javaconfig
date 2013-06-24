@@ -26,9 +26,12 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.BaseSpringSpec
+import org.springframework.security.config.annotation.authentication.NamespaceJdbcUserServiceTests.CustomJdbcUserServiceSampleConfig.CustomUserCache;
 import org.springframework.security.config.annotation.web.EnableWebSecurity
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UserCache
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.JdbcUserDetailsManager
 
 /**
@@ -114,7 +117,10 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
         when:
             loadConfig(CustomDataSourceConfig,CustomJdbcUserServiceSampleConfig)
         then:
+            findAuthenticationProvider(DaoAuthenticationProvider).userDetailsService.userCache instanceof CustomUserCache
+        when:
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user", "password"))
+        then:
             auth.authorities.collect {it.authority}.sort() == ['ROLE_DBA','ROLE_USER']
             auth.name == 'user'
     }
@@ -130,6 +136,8 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
                 .jdbcUserDetailsManager()
                     // jdbc-user-service@dataSource
                     .dataSource(dataSource)
+                    // jdbc-user-service@cache-ref
+                    .userCache(new CustomUserCache())
                     // jdbc-user-service@users-byusername-query
                     .usersByUsernameQuery("select principal,credentials,true from users where principal = ?")
                     // jdbc-user-service@authorities-by-username-query
@@ -147,6 +155,22 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
         public AuthenticationManager authenticationManagerBean()
                 throws Exception {
             return super.authenticationManagerBean();
+        }
+
+        static class CustomUserCache implements UserCache {
+
+            @Override
+            public UserDetails getUserFromCache(String username) {
+                return null;
+            }
+
+            @Override
+            public void putUserInCache(UserDetails user) {
+            }
+
+            @Override
+            public void removeUserFromCache(String username) {
+            }
         }
     }
 

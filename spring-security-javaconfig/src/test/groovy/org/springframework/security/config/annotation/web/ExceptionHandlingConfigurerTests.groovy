@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl
@@ -30,17 +30,17 @@ import org.springframework.security.web.access.channel.SecureChannelProcessor
  */
 class ExceptionHandlingConfigurerTests extends BaseSpringSpec {
 
-    def "exception LifecycleManager"() {
+    def "exception ObjectPostProcessor"() {
         setup: "initialize the AUTH_FILTER as a mock"
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
+            ObjectPostProcessor opp = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
             http
                 .exceptionHandling()
                     .and()
                 .build()
 
         then: "ExceptionTranslationFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as ExceptionTranslationFilter) >> {ExceptionTranslationFilter o -> o}
+            1 * opp.postProcess(_ as ExceptionTranslationFilter) >> {ExceptionTranslationFilter o -> o}
     }
 }

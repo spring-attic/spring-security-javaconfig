@@ -17,7 +17,7 @@ package org.springframework.security.config.annotation.web
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.ExceptionTranslationFilter
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
@@ -84,10 +84,10 @@ class SessionManagementConfigurerTests extends BaseSpringSpec {
 
     }
 
-    def "sessionManagement LifecycleManager"() {
+    def "sessionManagement ObjectPostProcessor"() {
         setup:
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            ObjectPostProcessor opp = Mock()
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
         when:
             http
                 .sessionManagement()
@@ -97,8 +97,8 @@ class SessionManagementConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "SessionManagementFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as SessionManagementFilter) >> {SessionManagementFilter o -> o}
+            1 * opp.postProcess(_ as SessionManagementFilter) >> {SessionManagementFilter o -> o}
         and: "ConcurrentSessionFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as ConcurrentSessionFilter) >> {ConcurrentSessionFilter o -> o}
+            1 * opp.postProcess(_ as ConcurrentSessionFilter) >> {ConcurrentSessionFilter o -> o}
     }
 }

@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
 
@@ -26,10 +26,10 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
  */
 class SecurityContextConfigurerTests extends BaseSpringSpec {
 
-    def "securityContext LifecycleManager"() {
+    def "securityContext ObjectPostProcessor"() {
         setup:
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            ObjectPostProcessor opp = Mock()
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
         when:
             http
                 .securityContext()
@@ -37,6 +37,6 @@ class SecurityContextConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "SecurityContextPersistenceFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as SecurityContextPersistenceFilter) >> {SecurityContextPersistenceFilter o -> o}
+            1 * opp.postProcess(_ as SecurityContextPersistenceFilter) >> {SecurityContextPersistenceFilter o -> o}
     }
 }

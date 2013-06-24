@@ -29,7 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author Rob Winch
  * @since 3.2
  */
-public interface SecurityBuilderPostProcessor {
+public interface ObjectPostProcessor {
 
     /**
      * Initialize the object possibly returning a modified instance that should

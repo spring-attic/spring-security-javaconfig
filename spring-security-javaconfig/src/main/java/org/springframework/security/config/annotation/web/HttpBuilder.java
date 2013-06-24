@@ -19,7 +19,7 @@ import javax.servlet.Filter;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -173,7 +173,7 @@ interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<DefaultS
     H addFilter(Filter filter);
 
     /**
-     * Registers the given object with the current {@link SecurityBuilderPostProcessor} if it is available
+     * Registers the given object with the current {@link ObjectPostProcessor} if it is available
      *
      * @param object
      * @return

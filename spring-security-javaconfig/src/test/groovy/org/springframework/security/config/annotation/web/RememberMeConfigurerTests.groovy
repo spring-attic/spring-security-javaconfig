@@ -27,7 +27,7 @@ import org.springframework.mock.web.MockHttpSession
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -72,10 +72,10 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
         }
     }
 
-    def "rememberMe No LogoutConfigurer"() {
+    def "rememberMe No ObjectPostProcessor"() {
         setup:
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            ObjectPostProcessor opp = Mock()
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:
             http
@@ -88,10 +88,10 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
             noExceptionThrown()
     }
 
-    def "rememberMe LifecycleManager"() {
+    def "rememberMe ObjectPostProcessor"() {
         setup:
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            ObjectPostProcessor opp = Mock()
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:
             http
@@ -101,6 +101,6 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "RememberMeAuthenticationFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as RememberMeAuthenticationFilter) >> {RememberMeAuthenticationFilter o -> o}
+            1 * opp.postProcess(_ as RememberMeAuthenticationFilter) >> {RememberMeAuthenticationFilter o -> o}
     }
 }

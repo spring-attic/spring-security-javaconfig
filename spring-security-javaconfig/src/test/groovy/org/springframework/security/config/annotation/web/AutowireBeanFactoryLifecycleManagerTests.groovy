@@ -31,9 +31,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockServletConfig
 import org.springframework.mock.web.MockServletContext
-import org.springframework.security.config.annotation.AutowireBeanFactoryPostProcessor;
+import org.springframework.security.config.annotation.AutowireBeanFactoryObjectPostProcessor;
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.web.context.ServletConfigAware
 import org.springframework.web.context.ServletContextAware
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
@@ -61,7 +61,7 @@ class AutowireBeanFactoryLifecycleManagerTests extends BaseSpringSpec {
             context.refresh()
             context.start()
 
-            SecurityBuilderPostProcessor initializer = context.getBean(SecurityBuilderPostProcessor)
+            ObjectPostProcessor initializer = context.getBean(ObjectPostProcessor)
         when:
             initializer.postProcess(contextAware)
         then:
@@ -113,8 +113,8 @@ class AutowireBeanFactoryLifecycleManagerTests extends BaseSpringSpec {
     @Configuration
     static class Config {
         @Bean
-        public SecurityBuilderPostProcessor lifecycleManager(AutowireCapableBeanFactory beanFactory) {
-            return new AutowireBeanFactoryPostProcessor(beanFactory);
+        public ObjectPostProcessor objectPostProcessor(AutowireCapableBeanFactory beanFactory) {
+            return new AutowireBeanFactoryObjectPostProcessor(beanFactory);
         }
     }
 }

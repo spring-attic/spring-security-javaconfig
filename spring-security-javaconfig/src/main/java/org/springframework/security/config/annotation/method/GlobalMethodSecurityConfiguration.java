@@ -59,7 +59,7 @@ import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.util.Assert;
@@ -78,10 +78,10 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     @Autowired
     private ApplicationContext context;
     @Autowired(required=false)
-    private SecurityBuilderPostProcessor builderPostProcessor = new SecurityBuilderPostProcessor() {
+    private ObjectPostProcessor objectPostProcessor = new ObjectPostProcessor() {
         @Override
         public <T> T postProcess(T object) {
-            throw new IllegalStateException(SecurityBuilderPostProcessor.class.getName()+ " is a required bean. Ensure you have used @"+EnableGlobalMethodSecurity.class.getName());
+            throw new IllegalStateException(ObjectPostProcessor.class.getName()+ " is a required bean. Ensure you have used @"+EnableGlobalMethodSecurity.class.getName());
         }
     };
     private AuthenticationManager authenticationManager;
@@ -232,9 +232,9 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
      */
     protected AuthenticationManager authenticationManager() throws Exception {
         if(authenticationManager == null) {
-            DefaultAuthenticationEventPublisher eventPublisher = builderPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
+            DefaultAuthenticationEventPublisher eventPublisher = objectPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
             auth.authenticationEventPublisher(eventPublisher);
-            auth.builderPostProcessor(builderPostProcessor);
+            auth.builderPostProcessor(objectPostProcessor);
             registerAuthentication(auth);
             if(!disableAuthenticationRegistry) {
                 authenticationManager = auth.build();

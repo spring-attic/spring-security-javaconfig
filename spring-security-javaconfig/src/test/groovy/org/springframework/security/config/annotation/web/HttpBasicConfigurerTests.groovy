@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl
@@ -31,10 +31,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  */
 class HttpBasicConfigurerTests extends BaseSpringSpec {
 
-    def "httBasic LifecycleManager"() {
+    def "httBasic ObjectPostProcessor"() {
         setup:
-            SecurityBuilderPostProcessor lifecycleManager = Mock()
-            HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
+            ObjectPostProcessor opp = Mock()
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
         when:
             http
                 .httpBasic()
@@ -42,6 +42,6 @@ class HttpBasicConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "ExceptionTranslationFilter is registered with LifecycleManager"
-            1 * lifecycleManager.postProcess(_ as BasicAuthenticationFilter) >> {BasicAuthenticationFilter o -> o}
+            1 * opp.postProcess(_ as BasicAuthenticationFilter) >> {BasicAuthenticationFilter o -> o}
     }
 }

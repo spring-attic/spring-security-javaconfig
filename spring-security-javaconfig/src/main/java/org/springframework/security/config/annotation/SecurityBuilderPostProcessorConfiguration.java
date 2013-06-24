@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 public class SecurityBuilderPostProcessorConfiguration {
 
     @Bean
-    public SecurityBuilderPostProcessor lifecycleManager(AutowireCapableBeanFactory beanFactory) {
-        return new AutowireBeanFactoryPostProcessor(beanFactory);
+    public ObjectPostProcessor objectPostProcessor(AutowireCapableBeanFactory beanFactory) {
+        return new AutowireBeanFactoryObjectPostProcessor(beanFactory);
     }
 }

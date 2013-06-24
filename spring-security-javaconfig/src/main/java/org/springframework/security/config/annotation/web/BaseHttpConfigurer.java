@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -31,7 +31,7 @@ abstract class BaseHttpConfigurer<B extends HttpBuilder<B>> extends SecurityConf
 
     /**
      * Convenience method to invoke
-     * {@link SecurityBuilderPostProcessor#postProcess(Object)}
+     * {@link ObjectPostProcessor#postProcess(Object)}
      *
      * @param object
      *            the Object to register

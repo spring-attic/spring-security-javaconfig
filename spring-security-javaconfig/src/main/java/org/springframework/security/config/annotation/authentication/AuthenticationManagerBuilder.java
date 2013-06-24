@@ -23,7 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
  */
 public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder> implements ProviderManagerBuilder<AuthenticationManagerBuilder> {
 
-    private SecurityBuilderPostProcessor postProcessor;
+    private ObjectPostProcessor objectPostProcessor;
 
     private AuthenticationManager parentAuthenticationManager;
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
@@ -49,12 +49,12 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     private AuthenticationEventPublisher eventPublisher;
 
     /**
-     * Sets the {@link SecurityBuilderPostProcessor} to be used on the {@link AuthenticationManagerBuilder}
-     * @param builderPostProcessor
+     * Sets the {@link ObjectPostProcessor} to be used on the {@link AuthenticationManagerBuilder}
+     * @param objectPostProcessor
      * @return the {@link AuthenticationManagerBuilder} for further customizations
      */
-    public AuthenticationManagerBuilder builderPostProcessor(SecurityBuilderPostProcessor builderPostProcessor) {
-        this.postProcessor = builderPostProcessor;
+    public AuthenticationManagerBuilder builderPostProcessor(ObjectPostProcessor objectPostProcessor) {
+        this.objectPostProcessor = objectPostProcessor;
         return this;
     }
 
@@ -208,7 +208,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     }
 
     public <T> T postProcess(T object) {
-        return postProcessor == null ? object : postProcessor.postProcess(object);
+        return objectPostProcessor == null ? object : objectPostProcessor.postProcess(object);
     }
 
     /**
