@@ -72,22 +72,6 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
         }
     }
 
-    def "rememberMe No ObjectPostProcessor"() {
-        setup:
-            ObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
-            UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
-        when:
-            http
-                .rememberMe()
-                    .userDetailsService(uds)
-                    .and()
-                .build()
-
-        then:
-            noExceptionThrown()
-    }
-
     def "rememberMe ObjectPostProcessor"() {
         setup:
             ObjectPostProcessor opp = Mock()

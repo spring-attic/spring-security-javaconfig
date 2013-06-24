@@ -203,8 +203,8 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "UsernamePasswordAuthenticationFilter is registered with LifecycleManager"
-            1 * opp.postProcess(_ as UsernamePasswordAuthenticationFilter)
+            1 * opp.postProcess(_ as UsernamePasswordAuthenticationFilter) >> {UsernamePasswordAuthenticationFilter o -> o}
         and: "LoginUrlAuthenticationEntryPoint is registered with LifecycleManager"
-            1 * opp.postProcess(_ as LoginUrlAuthenticationEntryPoint)
+            1 * opp.postProcess(_ as LoginUrlAuthenticationEntryPoint) >> {LoginUrlAuthenticationEntryPoint o -> o}
     }
 }

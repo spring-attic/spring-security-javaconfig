@@ -15,7 +15,6 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -29,16 +28,4 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
  */
 abstract class BaseHttpConfigurer<B extends HttpBuilder<B>> extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, B> {
 
-    /**
-     * Convenience method to invoke
-     * {@link ObjectPostProcessor#postProcess(Object)}
-     *
-     * @param object
-     *            the Object to register
-     * @return the potentially modified version of the Object
-     */
-    final <T> T postProcess(T object) {
-        getBuilder().postProcess(object);
-        return object;
-    }
 }

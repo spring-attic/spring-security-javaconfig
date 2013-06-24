@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import org.springframework.security.config.annotation.web.WebSecurityBuilder;
+import org.springframework.util.Assert;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 /**
@@ -50,6 +51,15 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
 
     private BuildState buildState = BuildState.UNBUILT;
 
+    private ObjectPostProcessor objectPostProcessor;
+
+    protected AbstractConfiguredSecurityBuilder() {
+    }
+
+    protected AbstractConfiguredSecurityBuilder(ObjectPostProcessor objectPostProcessor) {
+        this.objectPostProcessor = objectPostProcessor;
+    }
+
     /**
      * Applies a {@link SecurityConfigurerAdapter} to this
      * {@link SecurityBuilder} and invokes
@@ -63,6 +73,9 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     public <C extends SecurityConfigurerAdapter<T, B>> C apply(C configurer)
             throws Exception {
         add(configurer);
+        if(objectPostProcessor != null) {
+            configurer.setObjectPostProcessor(objectPostProcessor);
+        }
         configurer.setBuilder((B) this);
         return configurer;
     }
@@ -130,6 +143,18 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     @SuppressWarnings("unchecked")
     public <C extends SecurityConfigurer<T,B>> C removeConfigurer(Class<C> clazz) {
         return (C) configurers.remove(clazz);
+    }
+
+    /**
+     * Specifies the {@link ObjectPostProcessor} to use.
+     * @param objectPostProcessor the {@link ObjectPostProcessor} to use. Cannot be null
+     * @return the {@link SecurityBuilder} for further customizations
+     */
+    @SuppressWarnings("unchecked")
+    public T objectPostProcessor(ObjectPostProcessor objectPostProcessor) {
+        Assert.notNull(objectPostProcessor,"objectPostProcessor cannot be null");
+        this.objectPostProcessor = objectPostProcessor;
+        return (T) this;
     }
 
     /**

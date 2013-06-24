@@ -105,10 +105,6 @@ public final class ChannelSecurityConfigurer<H extends HttpBuilder<H>> extends
         return this;
     }
 
-    private <T> T postProcess(T object) {
-        return getBuilder().postProcess(object);
-    }
-
     private List<ChannelProcessor> getChannelProcessors(H http) {
         if(channelProcessors != null) {
             return channelProcessors;

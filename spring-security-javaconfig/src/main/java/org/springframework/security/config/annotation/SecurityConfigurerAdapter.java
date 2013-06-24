@@ -33,6 +33,8 @@ package org.springframework.security.config.annotation;
 public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> implements SecurityConfigurer<O,B> {
     private B securityBuilder;
 
+    private ObjectPostProcessor objectPostProcessor = ObjectPostProcessor.QUIESCENT_POSTPROCESSOR;
+
     @Override
     public void init(B builder) throws Exception {}
 
@@ -60,6 +62,28 @@ public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> 
             throw new IllegalStateException("securityBuilder cannot be null");
         }
         return securityBuilder;
+    }
+
+    /**
+     * Performs post processing of an object. The default is to delegate to the
+     * {@link ObjectPostProcessor}.
+     *
+     * @param object the Object to post process
+     * @return the possibly modified Object to use
+     */
+    protected <T> T postProcess(T object) {
+        return this.objectPostProcessor.postProcess(object);
+    }
+
+    /**
+     * Sets the {@link ObjectPostProcessor} to be used for this
+     * {@link SecurityConfigurerAdapter}. The default implementation does
+     * nothing to the object.
+     *
+     * @param objectPostProcessor the {@link ObjectPostProcessor} to use
+     */
+    public void setObjectPostProcessor(ObjectPostProcessor objectPostProcessor) {
+        this.objectPostProcessor = objectPostProcessor;
     }
 
     public void setBuilder(

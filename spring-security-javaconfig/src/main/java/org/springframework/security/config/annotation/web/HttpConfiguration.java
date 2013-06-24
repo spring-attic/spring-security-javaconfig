@@ -89,7 +89,6 @@ import org.springframework.util.Assert;
  * @see EnableWebSecurity
  */
 public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain>, HttpBuilder<HttpConfiguration> {
-    private final ObjectPostProcessor objectPostProcessor;
     private AuthenticationManager authenticationManager;
 
     private List<Filter> filters =  new ArrayList<Filter>();
@@ -104,9 +103,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @see WebSecurityConfiguration
      */
     HttpConfiguration(ObjectPostProcessor objectPostProcessor, AuthenticationManagerBuilder authenticationBuilder) {
-        Assert.notNull(objectPostProcessor,"objectPostProcessor cannot be null");
+        super(objectPostProcessor);
         Assert.notNull(authenticationBuilder, "authenticationBuilder cannot be null");
-        this.objectPostProcessor = objectPostProcessor;
         setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
     }
 
@@ -1010,10 +1008,6 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     public HttpConfiguration userDetailsService(UserDetailsService userDetailsService) throws Exception {
         getAuthenticationRegistry().userDetailsService(userDetailsService);
         return this;
-    }
-
-    public final <T> T postProcess(T object) {
-        return objectPostProcessor.postProcess(object);
     }
 
     private AuthenticationManagerBuilder getAuthenticationRegistry() {
