@@ -21,9 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessorConfiguration;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -43,6 +46,9 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     @Autowired
     private ApplicationContext context;
+
+    @Autowired
+    private SecurityBuilderPostProcessor builderPostProcessor;
 
     private final AuthenticationManagerBuilder authenticationBuilder = new AuthenticationManagerBuilder();
     private final AuthenticationManagerBuilder parentAuthenticationBuilder = new AuthenticationManagerBuilder() {
@@ -129,7 +135,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
             return http;
         }
 
-        AutowireBeanFactoryPostProcessor builderPostProcessor = new AutowireBeanFactoryPostProcessor(context.getAutowireCapableBeanFactory());
         authenticationBuilder.builderPostProcessor(builderPostProcessor);
         parentAuthenticationBuilder.builderPostProcessor(builderPostProcessor);
 

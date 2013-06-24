@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockServletConfig
 import org.springframework.mock.web.MockServletContext
+import org.springframework.security.config.annotation.AutowireBeanFactoryPostProcessor;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.web.context.ServletConfigAware

@@ -23,6 +23,7 @@ import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessorConfiguration;
 
 /**
  * <p>Enables Spring Security global method security similar to the
@@ -42,7 +43,7 @@ import org.springframework.security.access.annotation.Secured;
 @Retention(value=java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(value={java.lang.annotation.ElementType.TYPE})
 @Documented
-@Import(GlobalMethodSecuritySelector.class)
+@Import({GlobalMethodSecuritySelector.class,SecurityBuilderPostProcessorConfiguration.class})
 public @interface EnableGlobalMethodSecurity {
 
     /**

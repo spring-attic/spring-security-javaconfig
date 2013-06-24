@@ -34,7 +34,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
@@ -69,11 +68,6 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
     private List<SecurityConfigurer<Filter, WebSecurityBuilder>> webSecurityConfigurers;
 
     private ClassLoader beanClassLoader;
-
-    @Bean
-    public SecurityBuilderPostProcessor lifecycleManager() {
-        return new AutowireBeanFactoryPostProcessor(beanFactory);
-    }
 
     @Bean
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {

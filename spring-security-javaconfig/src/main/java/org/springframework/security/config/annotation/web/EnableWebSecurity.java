@@ -20,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessorConfiguration;
 
 /**
  * Add this annotation to an {@code @Configuration} class to have the Spring Security
@@ -74,7 +75,7 @@ import org.springframework.context.annotation.Import;
 @Retention(value=java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(value={java.lang.annotation.ElementType.TYPE})
 @Documented
-@Import(WebSecurityConfiguration.class)
+@Import({WebSecurityConfiguration.class,SecurityBuilderPostProcessorConfiguration.class})
 public @interface EnableWebSecurity {
 
     /**

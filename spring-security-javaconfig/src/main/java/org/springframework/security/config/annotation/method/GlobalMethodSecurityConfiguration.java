@@ -58,6 +58,8 @@ import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.util.Assert;
 
@@ -74,6 +76,8 @@ import org.springframework.util.Assert;
 public class GlobalMethodSecurityConfiguration implements ImportAware {
     @Autowired
     private ApplicationContext context;
+    @Autowired
+    private SecurityBuilderPostProcessor builderPostProcessor;
     private AuthenticationManager authenticationManager;
     private AuthenticationManagerBuilder auth = new AuthenticationManagerBuilder();
     private boolean disableAuthenticationRegistry;
@@ -222,6 +226,9 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
      */
     protected AuthenticationManager authenticationManager() throws Exception {
         if(authenticationManager == null) {
+            DefaultAuthenticationEventPublisher eventPublisher = builderPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
+            auth.authenticationEventPublisher(eventPublisher);
+            auth.builderPostProcessor(builderPostProcessor);
             registerAuthentication(auth);
             if(!disableAuthenticationRegistry) {
                 authenticationManager = auth.build();
