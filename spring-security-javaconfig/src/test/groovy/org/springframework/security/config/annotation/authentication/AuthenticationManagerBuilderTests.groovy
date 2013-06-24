@@ -23,7 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor
 import org.springframework.security.config.annotation.web.EnableWebSecurity
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter
 
@@ -35,14 +35,14 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurerA
 class AuthenticationManagerBuilderTests extends BaseSpringSpec {
     def "add(AuthenticationProvider) does not perform registration"() {
         setup:
-            LifecycleManager lm = Mock()
+            SecurityBuilderPostProcessor builderPostProcessor = Mock()
             AuthenticationProvider provider = Mock()
-            AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder().lifecycleManager(lm)
+            AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder().builderPostProcessor(builderPostProcessor)
         when: "Adding an AuthenticationProvider"
             builder.add(provider)
             builder.build()
         then: "AuthenticationProvider is not passed into LifecycleManager (it should be managed externally)"
-            0 * lm._(_ as AuthenticationProvider)
+            0 * builderPostProcessor._(_ as AuthenticationProvider)
     }
 
     def "messages set when using WebSecurityConfigurerAdapter"() {

@@ -229,7 +229,7 @@ public final class LogoutConfigurer<H extends HttpBuilder<H>> extends BaseHttpCo
         LogoutHandler[] handlers = logoutHandlers.toArray(new LogoutHandler[logoutHandlers.size()]);
         LogoutFilter result = new LogoutFilter(getLogoutSuccessHandler(), handlers);
         result.setFilterProcessesUrl(logoutUrl);
-        result = registerLifecycle(result);
+        result = postProcess(result);
         return result;
     }
 }

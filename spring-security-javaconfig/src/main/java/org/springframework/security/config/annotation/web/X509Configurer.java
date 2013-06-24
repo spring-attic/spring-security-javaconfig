@@ -178,7 +178,7 @@ public final class X509Configurer<H extends HttpBuilder<H>> extends BaseHttpConf
             if(authenticationDetailsSource != null) {
                 x509AuthenticationFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
             }
-            x509AuthenticationFilter = registerLifecycle(x509AuthenticationFilter);
+            x509AuthenticationFilter = postProcess(x509AuthenticationFilter);
         }
 
         return x509AuthenticationFilter;

@@ -121,7 +121,7 @@ public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends
         if(accessDeniedHandler != null) {
             exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);
         }
-        exceptionTranslationFilter = registerLifecycle(exceptionTranslationFilter);
+        exceptionTranslationFilter = postProcess(exceptionTranslationFilter);
         http.addFilter(exceptionTranslationFilter);
     }
 

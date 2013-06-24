@@ -24,7 +24,7 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.util.Assert;
 
 /**
@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-final class AutowireBeanFactoryLifecycleManager implements LifecycleManager, DisposableBean {
+final class AutowireBeanFactoryLifecycleManager implements SecurityBuilderPostProcessor, DisposableBean {
     private final Log logger = LogFactory.getLog(getClass());
     private final AutowireCapableBeanFactory autowireBeanFactory;
     private final List<DisposableBean> disposableBeans = new ArrayList<DisposableBean>();
@@ -52,7 +52,7 @@ final class AutowireBeanFactoryLifecycleManager implements LifecycleManager, Dis
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T registerLifecycle(T object) {
+    public <T> T postProcess(T object) {
         T result = (T) autowireBeanFactory.initializeBean(object, null);
         if(result instanceof DisposableBean) {
             disposableBeans.add((DisposableBean) result);

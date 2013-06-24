@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
@@ -31,7 +31,7 @@ class ChannelSecurityConfigurerTests extends BaseSpringSpec {
 
     def "requiresChannel LifecycleManager"() {
         setup: "initialize the AUTH_FILTER as a mock"
-            LifecycleManager lifecycleManager = Mock()
+            SecurityBuilderPostProcessor lifecycleManager = Mock()
         when:
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
             http
@@ -41,12 +41,12 @@ class ChannelSecurityConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "InsecureChannelProcessor is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as InsecureChannelProcessor) >> {InsecureChannelProcessor o -> o}
+            1 * lifecycleManager.postProcess(_ as InsecureChannelProcessor) >> {InsecureChannelProcessor o -> o}
         and: "SecureChannelProcessor is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as SecureChannelProcessor) >> {SecureChannelProcessor o -> o}
+            1 * lifecycleManager.postProcess(_ as SecureChannelProcessor) >> {SecureChannelProcessor o -> o}
         and: "ChannelDecisionManagerImpl is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as ChannelDecisionManagerImpl) >> {ChannelDecisionManagerImpl o -> o}
+            1 * lifecycleManager.postProcess(_ as ChannelDecisionManagerImpl) >> {ChannelDecisionManagerImpl o -> o}
         and: "ChannelProcessingFilter is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as ChannelProcessingFilter) >> {ChannelProcessingFilter o -> o}
+            1 * lifecycleManager.postProcess(_ as ChannelProcessingFilter) >> {ChannelProcessingFilter o -> o}
     }
 }

@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockServletConfig
 import org.springframework.mock.web.MockServletContext
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.web.context.ServletConfigAware
 import org.springframework.web.context.ServletContextAware
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
@@ -60,49 +60,49 @@ class AutowireBeanFactoryLifecycleManagerTests extends BaseSpringSpec {
             context.refresh()
             context.start()
 
-            LifecycleManager initializer = context.getBean(LifecycleManager)
+            SecurityBuilderPostProcessor initializer = context.getBean(SecurityBuilderPostProcessor)
         when:
-            initializer.registerLifecycle(contextAware)
+            initializer.postProcess(contextAware)
         then:
             1 * contextAware.setApplicationContext(!null)
 
         when:
-            initializer.registerLifecycle(publisher)
+            initializer.postProcess(publisher)
         then:
             1 * publisher.setApplicationEventPublisher(!null)
 
         when:
-            initializer.registerLifecycle(classloader)
+            initializer.postProcess(classloader)
         then:
             1 * classloader.setBeanClassLoader(!null)
 
         when:
-            initializer.registerLifecycle(beanFactory)
+            initializer.postProcess(beanFactory)
         then:
             1 * beanFactory.setBeanFactory(!null)
 
         when:
-            initializer.registerLifecycle(environment)
+            initializer.postProcess(environment)
         then:
             1 * environment.setEnvironment(!null)
 
         when:
-            initializer.registerLifecycle(messageSource)
+            initializer.postProcess(messageSource)
         then:
             1 * messageSource.setMessageSource(!null)
 
         when:
-            initializer.registerLifecycle(servletConfig)
+            initializer.postProcess(servletConfig)
         then:
             1 * servletConfig.setServletConfig(!null)
 
         when:
-            initializer.registerLifecycle(servletContext)
+            initializer.postProcess(servletContext)
         then:
             1 * servletContext.setServletContext(!null)
 
         when:
-            initializer.registerLifecycle(disposable)
+            initializer.postProcess(disposable)
             context.close()
             context = null
         then:
@@ -112,7 +112,7 @@ class AutowireBeanFactoryLifecycleManagerTests extends BaseSpringSpec {
     @Configuration
     static class Config {
         @Bean
-        public LifecycleManager lifecycleManager(AutowireCapableBeanFactory beanFactory) {
+        public SecurityBuilderPostProcessor lifecycleManager(AutowireCapableBeanFactory beanFactory) {
             return new AutowireBeanFactoryLifecycleManager(beanFactory);
         }
     }

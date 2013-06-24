@@ -27,7 +27,7 @@ import org.springframework.mock.web.MockHttpSession
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -74,7 +74,7 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
 
     def "rememberMe No LogoutConfigurer"() {
         setup:
-            LifecycleManager lifecycleManager = Mock()
+            SecurityBuilderPostProcessor lifecycleManager = Mock()
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:
@@ -90,7 +90,7 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
 
     def "rememberMe LifecycleManager"() {
         setup:
-            LifecycleManager lifecycleManager = Mock()
+            SecurityBuilderPostProcessor lifecycleManager = Mock()
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:
@@ -101,6 +101,6 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "RememberMeAuthenticationFilter is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as RememberMeAuthenticationFilter) >> {RememberMeAuthenticationFilter o -> o}
+            1 * lifecycleManager.postProcess(_ as RememberMeAuthenticationFilter) >> {RememberMeAuthenticationFilter o -> o}
     }
 }

@@ -66,7 +66,7 @@ public final class ServletApiConfigurer<H extends HttpBuilder<H>> extends BaseHt
     @Override
     public void configure(H builder)
             throws Exception {
-        securityContextRequestFilter = registerLifecycle(securityContextRequestFilter);
+        securityContextRequestFilter = postProcess(securityContextRequestFilter);
         builder.addFilter(securityContextRequestFilter);
     }
 }

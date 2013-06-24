@@ -34,7 +34,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
@@ -71,7 +71,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
     private ClassLoader beanClassLoader;
 
     @Bean
-    public LifecycleManager lifecycleManager() {
+    public SecurityBuilderPostProcessor lifecycleManager() {
         return new AutowireBeanFactoryLifecycleManager(beanFactory);
     }
 

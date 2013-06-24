@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl
@@ -34,7 +34,7 @@ class RequestCacheConfigurerTests extends BaseSpringSpec {
 
     def "requestCache LifecycleManager"() {
         setup:
-            LifecycleManager lifecycleManager = Mock()
+            SecurityBuilderPostProcessor lifecycleManager = Mock()
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
         when:
             http
@@ -43,6 +43,6 @@ class RequestCacheConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "RequestCacheAwareFilter is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as RequestCacheAwareFilter) >> {RequestCacheAwareFilter o -> o}
+            1 * lifecycleManager.postProcess(_ as RequestCacheAwareFilter) >> {RequestCacheAwareFilter o -> o}
     }
 }

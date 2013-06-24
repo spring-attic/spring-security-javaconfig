@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 
 /**
@@ -44,10 +44,10 @@ interface ProviderManagerBuilder<B extends ProviderManagerBuilder<B>> extends Se
     B add(AuthenticationProvider authenticationProvider);
 
     /**
-     * Shortcut to {@link LifecycleManager#registerLifecycle(Object)}
+     * Shortcut to {@link SecurityBuilderPostProcessor#postProcess(Object)}
      *
      * @param object the Object to register
      * @return a possibly modified instance of the Object passed in
      */
-    <T> T registerLifecycle(T object);
+    <T> T postProcess(T object);
 }

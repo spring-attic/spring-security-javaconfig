@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.authentication.preauth.j2ee.J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource
 import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthenticatedProcessingFilter
@@ -29,7 +29,7 @@ class JeeConfigurerTests extends BaseSpringSpec {
 
     def "jee LifecycleManager"() {
         setup:
-            LifecycleManager lifecycleManager = Mock()
+            SecurityBuilderPostProcessor lifecycleManager = Mock()
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
         when:
             http
@@ -38,8 +38,8 @@ class JeeConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "J2eePreAuthenticatedProcessingFilter is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as J2eePreAuthenticatedProcessingFilter) >> {J2eePreAuthenticatedProcessingFilter o -> o}
+            1 * lifecycleManager.postProcess(_ as J2eePreAuthenticatedProcessingFilter) >> {J2eePreAuthenticatedProcessingFilter o -> o}
         and: "J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource) >> {J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource o -> o}
+            1 * lifecycleManager.postProcess(_ as J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource) >> {J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource o -> o}
     }
 }

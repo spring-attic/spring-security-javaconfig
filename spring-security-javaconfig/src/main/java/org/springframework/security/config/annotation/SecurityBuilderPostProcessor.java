@@ -29,7 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author Rob Winch
  * @since 3.2
  */
-public interface LifecycleManager {
+public interface SecurityBuilderPostProcessor {
 
     /**
      * Initialize the object possibly returning a modified instance that should
@@ -38,5 +38,5 @@ public interface LifecycleManager {
      * @param object the object to initialize
      * @return the initialized version of the object
      */
-    <T> T registerLifecycle(T object);
+    <T> T postProcess(T object);
 }

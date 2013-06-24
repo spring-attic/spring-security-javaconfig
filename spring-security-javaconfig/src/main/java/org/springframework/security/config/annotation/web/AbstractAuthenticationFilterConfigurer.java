@@ -218,7 +218,7 @@ abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuilder<B>,
         if(permitAll) {
             PermitAllSupport.permitAll(http, loginPage, loginProcessingUrl, failureUrl);
         }
-        http.setSharedObject(AuthenticationEntryPoint.class, registerLifecycle(authenticationEntryPoint));
+        http.setSharedObject(AuthenticationEntryPoint.class, postProcess(authenticationEntryPoint));
     }
 
     @Override
@@ -242,7 +242,7 @@ abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuilder<B>,
         if(rememberMeServices != null) {
             authFilter.setRememberMeServices(rememberMeServices);
         }
-        F filter = registerLifecycle(authFilter);
+        F filter = postProcess(authFilter);
         http.addFilter(filter);
     }
 

@@ -227,7 +227,7 @@ public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends Abstr
 
         OpenIDAuthenticationProvider authenticationProvider = new OpenIDAuthenticationProvider();
         authenticationProvider.setAuthenticationUserDetailsService(getAuthenticationUserDetailsService(http));
-        authenticationProvider = registerLifecycle(authenticationProvider);
+        authenticationProvider = postProcess(authenticationProvider);
         http.authenticationProvider(authenticationProvider);
     }
 

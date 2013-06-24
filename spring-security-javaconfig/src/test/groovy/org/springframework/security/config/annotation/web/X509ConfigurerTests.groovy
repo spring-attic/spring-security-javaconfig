@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.authentication.preauth.x509.X509AuthenticationFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter
@@ -31,7 +31,7 @@ class X509ConfigurerTests extends BaseSpringSpec {
 
     def "x509 LifecycleManager"() {
         setup:
-            LifecycleManager lifecycleManager = Mock()
+            SecurityBuilderPostProcessor lifecycleManager = Mock()
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
         when:
             http
@@ -40,6 +40,6 @@ class X509ConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "X509AuthenticationFilter is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as X509AuthenticationFilter) >> {X509AuthenticationFilter o -> o}
+            1 * lifecycleManager.postProcess(_ as X509AuthenticationFilter) >> {X509AuthenticationFilter o -> o}
     }
 }

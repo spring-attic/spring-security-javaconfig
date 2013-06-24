@@ -143,7 +143,7 @@ public final class AnonymousConfigurer<H extends HttpBuilder<H>> extends Securit
         if(authenticationFilter == null) {
             authenticationFilter = new AnonymousAuthenticationFilter(getKey(), principal, authorities);
         }
-        authenticationProvider = http.registerLifecycle(authenticationProvider);
+        authenticationProvider = http.postProcess(authenticationProvider);
         http.authenticationProvider(authenticationProvider);
     }
 

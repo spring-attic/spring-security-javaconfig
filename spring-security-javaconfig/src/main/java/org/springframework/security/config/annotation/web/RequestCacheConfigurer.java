@@ -73,7 +73,7 @@ public final class RequestCacheConfigurer<H extends HttpBuilder<H>> extends Base
     public void configure(H http) throws Exception {
         RequestCache requestCache = getRequestCache(http);
         RequestCacheAwareFilter requestCacheFilter = new RequestCacheAwareFilter(requestCache);
-        requestCacheFilter = registerLifecycle(requestCacheFilter);
+        requestCacheFilter = postProcess(requestCacheFilter);
         http.addFilter(requestCacheFilter);
     }
 

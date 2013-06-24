@@ -195,7 +195,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends BaseHt
 
         RememberMeAuthenticationProvider authenticationProvider = new RememberMeAuthenticationProvider(
                 key);
-        authenticationProvider = registerLifecycle(authenticationProvider);
+        authenticationProvider = postProcess(authenticationProvider);
         http.authenticationProvider(authenticationProvider);
     }
 
@@ -207,7 +207,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends BaseHt
             rememberMeFilter
                     .setAuthenticationSuccessHandler(authenticationSuccessHandler);
         }
-        rememberMeFilter = registerLifecycle(rememberMeFilter);
+        rememberMeFilter = postProcess(rememberMeFilter);
         http.addFilter(rememberMeFilter);
     }
 

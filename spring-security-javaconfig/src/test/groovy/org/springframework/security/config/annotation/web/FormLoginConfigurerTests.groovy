@@ -22,7 +22,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.FilterChainProxy
@@ -194,7 +194,7 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
 
     def "formLogin LifecycleManager"() {
         setup: "initialize the AUTH_FILTER as a mock"
-            LifecycleManager lifecycleManager = Mock(LifecycleManager)
+            SecurityBuilderPostProcessor lifecycleManager = Mock(SecurityBuilderPostProcessor)
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
         when:
             http
@@ -203,8 +203,8 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "UsernamePasswordAuthenticationFilter is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as UsernamePasswordAuthenticationFilter)
+            1 * lifecycleManager.postProcess(_ as UsernamePasswordAuthenticationFilter)
         and: "LoginUrlAuthenticationEntryPoint is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as LoginUrlAuthenticationEntryPoint)
+            1 * lifecycleManager.postProcess(_ as LoginUrlAuthenticationEntryPoint)
     }
 }

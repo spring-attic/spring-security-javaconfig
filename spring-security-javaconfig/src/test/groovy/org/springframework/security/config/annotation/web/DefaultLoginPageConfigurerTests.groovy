@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler
@@ -318,7 +318,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
 
     def "DefaultLoginPage LifecycleManager"() {
         setup:
-            LifecycleManager lifecycleManager = Mock()
+            SecurityBuilderPostProcessor lifecycleManager = Mock()
         when:
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
             http
@@ -329,6 +329,6 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "DefaultLoginPageGeneratingFilter is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as DefaultLoginPageGeneratingFilter) >> {DefaultLoginPageGeneratingFilter o -> o}
+            1 * lifecycleManager.postProcess(_ as DefaultLoginPageGeneratingFilter) >> {DefaultLoginPageGeneratingFilter o -> o}
     }
 }

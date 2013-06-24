@@ -102,7 +102,7 @@ final class DefaultLoginPageConfigurer<H extends HttpBuilder<H>> extends
         }
 
         if(loginPageGeneratingFilter.isEnabled() && authenticationEntryPoint == null) {
-            loginPageGeneratingFilter = registerLifecycle(loginPageGeneratingFilter);
+            loginPageGeneratingFilter = postProcess(loginPageGeneratingFilter);
             http.addFilter(loginPageGeneratingFilter);
         }
     }

@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -31,14 +31,14 @@ abstract class BaseHttpConfigurer<B extends HttpBuilder<B>> extends SecurityConf
 
     /**
      * Convenience method to invoke
-     * {@link LifecycleManager#registerLifecycle(Object)}
+     * {@link SecurityBuilderPostProcessor#postProcess(Object)}
      *
      * @param object
      *            the Object to register
      * @return the potentially modified version of the Object
      */
-    final <T> T registerLifecycle(T object) {
-        getBuilder().registerLifecycle(object);
+    final <T> T postProcess(T object) {
+        getBuilder().postProcess(object);
         return object;
     }
 }

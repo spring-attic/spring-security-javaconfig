@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -32,7 +32,7 @@ class OpenIDLoginConfigurerTests extends BaseSpringSpec {
 
     def "openidLogin LifecycleManager"() {
         setup:
-            LifecycleManager lifecycleManager = Mock()
+            SecurityBuilderPostProcessor lifecycleManager = Mock()
             HttpConfiguration http = new HttpConfiguration(lifecycleManager, authenticationBldr)
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:
@@ -43,8 +43,8 @@ class OpenIDLoginConfigurerTests extends BaseSpringSpec {
                 .build()
 
         then: "OpenIDAuthenticationFilter is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as OpenIDAuthenticationFilter) >> {OpenIDAuthenticationFilter o -> o}
+            1 * lifecycleManager.postProcess(_ as OpenIDAuthenticationFilter) >> {OpenIDAuthenticationFilter o -> o}
         and: "OpenIDAuthenticationProvider is registered with LifecycleManager"
-            1 * lifecycleManager.registerLifecycle(_ as OpenIDAuthenticationProvider) >> {OpenIDAuthenticationProvider o -> o}
+            1 * lifecycleManager.postProcess(_ as OpenIDAuthenticationProvider) >> {OpenIDAuthenticationProvider o -> o}
     }
 }

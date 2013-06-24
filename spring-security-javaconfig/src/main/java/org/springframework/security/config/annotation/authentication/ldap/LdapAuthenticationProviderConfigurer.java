@@ -117,7 +117,7 @@ public class LdapAuthenticationProviderConfigurer extends SecurityConfigurerAdap
 
     @Override
     public void configure(AuthenticationManagerBuilder builder) throws Exception {
-        LdapAuthenticationProvider provider = builder.registerLifecycle(build());
+        LdapAuthenticationProvider provider = builder.postProcess(build());
         builder.add(provider);
     }
 

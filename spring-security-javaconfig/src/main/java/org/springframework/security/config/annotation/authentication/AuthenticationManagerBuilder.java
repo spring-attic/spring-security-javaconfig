@@ -23,7 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
-import org.springframework.security.config.annotation.LifecycleManager;
+import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
  */
 public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder> implements ProviderManagerBuilder<AuthenticationManagerBuilder> {
 
-    private LifecycleManager lifecycleManager;
+    private SecurityBuilderPostProcessor postProcessor;
 
     private AuthenticationManager parentAuthenticationManager;
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
@@ -49,12 +49,12 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     private AuthenticationEventPublisher eventPublisher;
 
     /**
-     * Sets the {@link LifecycleManager} to be used on the {@link AuthenticationManagerBuilder}
-     * @param lifecycleManager
+     * Sets the {@link SecurityBuilderPostProcessor} to be used on the {@link AuthenticationManagerBuilder}
+     * @param builderPostProcessor
      * @return the {@link AuthenticationManagerBuilder} for further customizations
      */
-    public AuthenticationManagerBuilder lifecycleManager(LifecycleManager lifecycleManager) {
-        this.lifecycleManager = lifecycleManager;
+    public AuthenticationManagerBuilder builderPostProcessor(SecurityBuilderPostProcessor builderPostProcessor) {
+        this.postProcessor = builderPostProcessor;
         return this;
     }
 
@@ -203,12 +203,12 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         if(eventPublisher != null) {
             providerManager.setAuthenticationEventPublisher(eventPublisher);
         }
-        providerManager = registerLifecycle(providerManager);
+        providerManager = postProcess(providerManager);
         return providerManager;
     }
 
-    public <T> T registerLifecycle(T object) {
-        return lifecycleManager == null ? object : lifecycleManager.registerLifecycle(object);
+    public <T> T postProcess(T object) {
+        return postProcessor == null ? object : postProcessor.postProcess(object);
     }
 
     /**

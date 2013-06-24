@@ -264,12 +264,12 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
         if(invalidSessionUrl != null) {
             sessionManagementFilter.setInvalidSessionStrategy(new SimpleRedirectInvalidSessionStrategy(invalidSessionUrl));
         }
-        sessionManagementFilter = registerLifecycle(sessionManagementFilter);
+        sessionManagementFilter = postProcess(sessionManagementFilter);
 
         http.addFilter(sessionManagementFilter);
         if(isConcurrentSessionControlEnabled()) {
             ConcurrentSessionFilter concurrentSessionFilter = new ConcurrentSessionFilter(sessionRegistry, expiredUrl);
-            concurrentSessionFilter = registerLifecycle(concurrentSessionFilter);
+            concurrentSessionFilter = postProcess(concurrentSessionFilter);
             http.addFilter(concurrentSessionFilter);
         }
     }

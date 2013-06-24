@@ -130,8 +130,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         }
 
         AutowireBeanFactoryLifecycleManager lifecycleManager = new AutowireBeanFactoryLifecycleManager(context.getAutowireCapableBeanFactory());
-        authenticationBuilder.lifecycleManager(lifecycleManager);
-        parentAuthenticationBuilder.lifecycleManager(lifecycleManager);
+        authenticationBuilder.builderPostProcessor(lifecycleManager);
+        parentAuthenticationBuilder.builderPostProcessor(lifecycleManager);
 
         DefaultAuthenticationEventPublisher eventPublisher = new DefaultAuthenticationEventPublisher();
         parentAuthenticationBuilder.authenticationEventPublisher(eventPublisher);

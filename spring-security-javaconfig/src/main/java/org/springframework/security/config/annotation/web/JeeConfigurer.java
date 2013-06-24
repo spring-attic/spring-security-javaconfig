@@ -193,7 +193,7 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfi
     public void init(H http) throws Exception {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(getUserDetailsService());
-        authenticationProvider = registerLifecycle(authenticationProvider);
+        authenticationProvider = postProcess(authenticationProvider);
 
         http
             .authenticationProvider(authenticationProvider)
@@ -220,7 +220,7 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfi
                     .setAuthenticationManager(authenticationManager);
             j2eePreAuthenticatedProcessingFilter
                     .setAuthenticationDetailsSource(createWebAuthenticationDetailsSource());
-            j2eePreAuthenticatedProcessingFilter = registerLifecycle(j2eePreAuthenticatedProcessingFilter);
+            j2eePreAuthenticatedProcessingFilter = postProcess(j2eePreAuthenticatedProcessingFilter);
         }
 
         return j2eePreAuthenticatedProcessingFilter;
@@ -253,7 +253,7 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfi
         rolesRetriever.setMappableAttributes(mappableRoles);
         detailsSource.setMappableRolesRetriever(rolesRetriever);
 
-        detailsSource = registerLifecycle(detailsSource);
+        detailsSource = postProcess(detailsSource);
         return detailsSource;
     }
 }

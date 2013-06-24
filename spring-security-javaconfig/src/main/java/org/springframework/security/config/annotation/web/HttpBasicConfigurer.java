@@ -119,7 +119,7 @@ public final class HttpBasicConfigurer<B extends HttpBuilder<B>> extends BaseHtt
         if(authenticationDetailsSource != null) {
             basicAuthenticationFilter.setAuthenticationDetailsSource(authenticationDetailsSource);
         }
-        basicAuthenticationFilter = registerLifecycle(basicAuthenticationFilter);
+        basicAuthenticationFilter = postProcess(basicAuthenticationFilter);
         http.addFilter(basicAuthenticationFilter);
     }
 }

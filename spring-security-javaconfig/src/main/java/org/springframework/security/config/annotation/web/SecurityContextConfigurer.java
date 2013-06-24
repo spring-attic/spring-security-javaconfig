@@ -87,7 +87,7 @@ public final class SecurityContextConfigurer<H extends HttpBuilder<H>> extends B
         if (SessionCreationPolicy.always == sessionCreationPolicy) {
             securityContextFilter.setForceEagerSessionCreation(true);
         }
-        securityContextFilter = registerLifecycle(securityContextFilter);
+        securityContextFilter = postProcess(securityContextFilter);
         http.addFilter(securityContextFilter);
     }
 }
