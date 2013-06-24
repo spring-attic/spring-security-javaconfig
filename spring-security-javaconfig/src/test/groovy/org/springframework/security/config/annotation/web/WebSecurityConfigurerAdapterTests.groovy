@@ -57,20 +57,6 @@ class WebSecurityConfigurerAdapterTests extends BaseSpringSpec {
     @EnableWebSecurity
     static class MessageSourcesPopulatedConfig extends WebSecurityConfigurerAdapter {
         @Override
-        public void configure(WebSecurityBuilder builder)	throws Exception {
-            builder
-                .ignoring()
-                    .antMatchers("/ignore1","/ignore2");
-        }
-
-        @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean()
-                throws Exception {
-            return super.authenticationManagerBean();
-        }
-
-        @Override
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .antMatcher("/role1/**")

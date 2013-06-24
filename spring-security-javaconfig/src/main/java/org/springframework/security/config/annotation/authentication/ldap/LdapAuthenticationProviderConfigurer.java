@@ -21,6 +21,7 @@ import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
@@ -43,6 +44,7 @@ public class LdapAuthenticationProviderConfigurer extends SecurityConfigurerAdap
     private String[] userDnPatterns;
     private BaseLdapPathContextSource contextSource;
     private UserDetailsContextMapper userDetailsContextMapper;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public LdapAuthenticationProvider build() throws Exception {
@@ -77,6 +79,11 @@ public class LdapAuthenticationProviderConfigurer extends SecurityConfigurerAdap
 
     public LdapAuthenticationProviderConfigurer contextSource(BaseLdapPathContextSource contextSource) {
         this.contextSource = contextSource;
+        return this;
+    }
+
+    public LdapAuthenticationProviderConfigurer passwordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
         return this;
     }
 

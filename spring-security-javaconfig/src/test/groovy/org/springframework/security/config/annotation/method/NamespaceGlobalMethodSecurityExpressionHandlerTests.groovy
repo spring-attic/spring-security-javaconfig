@@ -29,7 +29,7 @@ import org.springframework.security.access.expression.method.DefaultMethodSecuri
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
 import org.springframework.security.authentication.TestingAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurityTests.BaseMethodConfig
+import org.springframework.security.config.annotation.method.NamespaceGlobalMethodSecurityTests.BaseMethodConfig;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder
 

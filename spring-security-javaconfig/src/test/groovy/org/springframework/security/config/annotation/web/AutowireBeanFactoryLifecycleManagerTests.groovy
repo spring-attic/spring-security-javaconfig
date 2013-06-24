@@ -61,49 +61,49 @@ class AutowireBeanFactoryLifecycleManagerTests extends BaseSpringSpec {
             context.refresh()
             context.start()
 
-            ObjectPostProcessor initializer = context.getBean(ObjectPostProcessor)
+            ObjectPostProcessor opp = context.getBean(ObjectPostProcessor)
         when:
-            initializer.postProcess(contextAware)
+            opp.postProcess(contextAware)
         then:
             1 * contextAware.setApplicationContext(!null)
 
         when:
-            initializer.postProcess(publisher)
+            opp.postProcess(publisher)
         then:
             1 * publisher.setApplicationEventPublisher(!null)
 
         when:
-            initializer.postProcess(classloader)
+            opp.postProcess(classloader)
         then:
             1 * classloader.setBeanClassLoader(!null)
 
         when:
-            initializer.postProcess(beanFactory)
+            opp.postProcess(beanFactory)
         then:
             1 * beanFactory.setBeanFactory(!null)
 
         when:
-            initializer.postProcess(environment)
+            opp.postProcess(environment)
         then:
             1 * environment.setEnvironment(!null)
 
         when:
-            initializer.postProcess(messageSource)
+            opp.postProcess(messageSource)
         then:
             1 * messageSource.setMessageSource(!null)
 
         when:
-            initializer.postProcess(servletConfig)
+            opp.postProcess(servletConfig)
         then:
             1 * servletConfig.setServletConfig(!null)
 
         when:
-            initializer.postProcess(servletContext)
+            opp.postProcess(servletContext)
         then:
             1 * servletContext.setServletContext(!null)
 
         when:
-            initializer.postProcess(disposable)
+            opp.postProcess(disposable)
             context.close()
             context = null
         then:

@@ -60,7 +60,7 @@ import spock.lang.Specification
  *
  * @author Rob Winch
  */
-public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
+public class NamespaceGlobalMethodSecurityTests extends BaseSpringSpec {
     def setup() {
         SecurityContextHolder.getContext().setAuthentication(
                         new TestingAuthenticationToken("user", "password","ROLE_USER"))

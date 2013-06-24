@@ -20,7 +20,6 @@ import javax.annotation.security.DenyAll
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurityTests.PreAuthorizeConfig;
 import org.springframework.security.core.Authentication
 
 
