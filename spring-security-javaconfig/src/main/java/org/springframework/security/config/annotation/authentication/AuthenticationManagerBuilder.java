@@ -184,6 +184,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         if(eraseCredentials != null) {
             providerManager.setEraseCredentialsAfterAuthentication(eraseCredentials);
         }
+        providerManager = registerLifecycle(providerManager);
         return providerManager;
     }
 

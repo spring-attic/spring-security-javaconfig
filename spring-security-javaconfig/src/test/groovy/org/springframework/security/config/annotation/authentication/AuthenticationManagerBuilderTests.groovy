@@ -34,6 +34,31 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
             builder.add(provider)
             builder.build()
         then: "AuthenticationProvider is not passed into LifecycleManager (it should be managed externally)"
-            0 * lm._
+            0 * lm._(_ as AuthenticationProvider)
+    }
+
+    def "messages set when using WebSecurityConfigurerAdapter"() {
+        when:
+            loadConfig(AuthenticationProviderMessagesWebSecurityConfigurerAdapterConfig)
+        then:
+            authenticationManager.messages.messageSource instanceof ApplicationContext
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class AuthenticationProviderMessagesWebSecurityConfigurerAdapterConfig extends WebSecurityConfigurerAdapter {
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean()
+                throws Exception {
+            return super.authenticationManagerBean();
+        }
+
+        @Override
+        protected void registerAuthentication(AuthenticationManagerBuilder auth)
+                throws Exception {
+            auth
+                .inMemoryAuthentication()
+        }
     }
 }
