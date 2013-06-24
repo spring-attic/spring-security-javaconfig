@@ -19,6 +19,8 @@ import static org.junit.Assert.*
 
 import javax.sql.DataSource
 
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationListener
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder
@@ -26,9 +28,14 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType
 import org.springframework.ldap.core.support.BaseLdapPathContextSource
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurer
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource
 
 /**
@@ -97,6 +104,50 @@ class WebSecurityConfigurerAdapterTests extends BaseSpringSpec {
                     .and()
                 .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
+        }
+    }
+
+
+    def "messages set when using WebSecurityConfigurerAdapter"() {
+        when:
+            loadConfig(InMemoryAuthWithWebSecurityConfigurerAdapter)
+        then:
+            authenticationManager.messages.messageSource instanceof ApplicationContext
+    }
+
+    def "AuthenticationEventPublisher is registered for Web registerAuthentication"() {
+        when:
+            loadConfig(InMemoryAuthWithWebSecurityConfigurerAdapter)
+        then:
+            authenticationManager.eventPublisher instanceof DefaultAuthenticationEventPublisher
+        when:
+            Authentication auth = new UsernamePasswordAuthenticationToken("user",null,AuthorityUtils.createAuthorityList("ROLE_USER"))
+            authenticationManager.eventPublisher.publishAuthenticationSuccess(auth)
+        then:
+            InMemoryAuthWithWebSecurityConfigurerAdapter.EVENT.authentication == auth
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class InMemoryAuthWithWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter implements ApplicationListener<AuthenticationSuccessEvent> {
+        static AuthenticationSuccessEvent EVENT
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean()
+                throws Exception {
+            return super.authenticationManagerBean();
+        }
+
+        @Override
+        protected void registerAuthentication(AuthenticationManagerBuilder auth)
+                throws Exception {
+            auth
+                .inMemoryAuthentication()
+        }
+
+        @Override
+        public void onApplicationEvent(AuthenticationSuccessEvent e) {
+            EVENT = e
         }
     }
 }

@@ -70,16 +70,16 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "custom AccessDecisionManager can be used"() {
         setup: "Create an instance with an AccessDecisionManager that always denies access"
-        context = new AnnotationConfigApplicationContext(BaseMethodConfig,CustomAccessDecisionManagerConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(BaseMethodConfig,CustomAccessDecisionManagerConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         when:
-        service.preAuthorize()
+            service.preAuthorize()
         then:
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
         when:
-        service.secured()
+            service.secured()
         then:
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
     }
 
     @Configuration
@@ -107,11 +107,11 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "custom AuthenticationManager can be used"() {
         when:
-        context = new AnnotationConfigApplicationContext(CustomAuthenticationConfig)
+            context = new AnnotationConfigApplicationContext(CustomAuthenticationConfig)
         MethodSecurityInterceptor interceptor = context.getBean(MethodSecurityInterceptor)
-        interceptor.authenticationManager.authenticate(SecurityContextHolder.context.authentication)
+            interceptor.authenticationManager.authenticate(SecurityContextHolder.context.authentication)
         then:
-        thrown(UnsupportedOperationException)
+            thrown(UnsupportedOperationException)
     }
 
     @Configuration
@@ -131,16 +131,16 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "enable jsr250"() {
         when:
-        context = new AnnotationConfigApplicationContext(Jsr250Config)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(Jsr250Config)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         then: "@Secured and @PreAuthorize are ignored"
-        service.secured() == null
-        service.preAuthorize() ==  null
+            service.secured() == null
+            service.preAuthorize() ==  null
 
         when: "@DenyAll method invoked"
-        service.jsr250()
+            service.jsr250()
         then: "access is denied"
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
     }
 
     @EnableGlobalMethodSecurity(jsr250Enabled = true)
@@ -152,20 +152,20 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "custom MethodSecurityMetadataSource can be used with higher priority than other sources"() {
         setup:
-        context = new AnnotationConfigApplicationContext(BaseMethodConfig,CustomMethodSecurityMetadataSourceConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(BaseMethodConfig,CustomMethodSecurityMetadataSourceConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         when:
-        service.preAuthorize()
+            service.preAuthorize()
         then:
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
         when:
-        service.secured()
+            service.secured()
         then:
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
         when:
-        service.jsr250()
+            service.jsr250()
         then:
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
     }
 
     @Configuration
@@ -189,10 +189,10 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "aspectj mode works"() {
         when:
-        context = new AnnotationConfigApplicationContext(AspectJModeConfig)
+            context = new AnnotationConfigApplicationContext(AspectJModeConfig)
         then:
-        AnnotationAwareAspectJAutoProxyCreator autoProxyCreator = context.getBean(AnnotationAwareAspectJAutoProxyCreator)
-        autoProxyCreator.proxyTargetClass == true
+            AnnotationAwareAspectJAutoProxyCreator autoProxyCreator = context.getBean(AnnotationAwareAspectJAutoProxyCreator)
+            autoProxyCreator.proxyTargetClass == true
     }
 
     @Configuration
@@ -202,10 +202,10 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "aspectj mode works extending GlobalMethodSecurityConfiguration"() {
         when:
-        context = new AnnotationConfigApplicationContext(BaseMethodConfig,AspectJModeExtendsGMSCConfig)
+            context = new AnnotationConfigApplicationContext(BaseMethodConfig,AspectJModeExtendsGMSCConfig)
         then:
-        AnnotationAwareAspectJAutoProxyCreator autoProxyCreator = context.getBean(AnnotationAwareAspectJAutoProxyCreator)
-        autoProxyCreator.proxyTargetClass == false
+            AnnotationAwareAspectJAutoProxyCreator autoProxyCreator = context.getBean(AnnotationAwareAspectJAutoProxyCreator)
+            autoProxyCreator.proxyTargetClass == false
     }
 
     @Configuration
@@ -217,10 +217,10 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def order() {
         when:
-        context = new AnnotationConfigApplicationContext(CustomOrderConfig)
-        MethodSecurityMetadataSourceAdvisor advisor = context.getBean(MethodSecurityMetadataSourceAdvisor)
+            context = new AnnotationConfigApplicationContext(CustomOrderConfig)
+            MethodSecurityMetadataSourceAdvisor advisor = context.getBean(MethodSecurityMetadataSourceAdvisor)
         then:
-        advisor.order == 135
+            advisor.order == 135
     }
 
     @Configuration
@@ -230,10 +230,10 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "order is defaulted to Ordered.LOWEST_PRECEDENCE when using @EnableGlobalMethodSecurity"() {
         when:
-        context = new AnnotationConfigApplicationContext(DefaultOrderConfig)
-        MethodSecurityMetadataSourceAdvisor advisor = context.getBean(MethodSecurityMetadataSourceAdvisor)
+            context = new AnnotationConfigApplicationContext(DefaultOrderConfig)
+            MethodSecurityMetadataSourceAdvisor advisor = context.getBean(MethodSecurityMetadataSourceAdvisor)
         then:
-        advisor.order == Ordered.LOWEST_PRECEDENCE
+            advisor.order == Ordered.LOWEST_PRECEDENCE
     }
 
     @Configuration
@@ -243,10 +243,10 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "order is defaulted to Ordered.LOWEST_PRECEDENCE when extending GlobalMethodSecurityConfiguration"() {
         when:
-        context = new AnnotationConfigApplicationContext(BaseMethodConfig,DefaultOrderExtendsMethodSecurityConfig)
-        MethodSecurityMetadataSourceAdvisor advisor = context.getBean(MethodSecurityMetadataSourceAdvisor)
+            context = new AnnotationConfigApplicationContext(BaseMethodConfig,DefaultOrderExtendsMethodSecurityConfig)
+            MethodSecurityMetadataSourceAdvisor advisor = context.getBean(MethodSecurityMetadataSourceAdvisor)
         then:
-        advisor.order == Ordered.LOWEST_PRECEDENCE
+            advisor.order == Ordered.LOWEST_PRECEDENCE
     }
 
     @Configuration
@@ -258,16 +258,16 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def preAuthorize() {
         when:
-        context = new AnnotationConfigApplicationContext(PreAuthorizeConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(PreAuthorizeConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         then:
-        service.secured() == null
-        service.jsr250() == null
+            service.secured() == null
+            service.jsr250() == null
 
         when:
-        service.preAuthorize()
+            service.preAuthorize()
         then:
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
     }
 
     @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -277,16 +277,16 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "prePostEnabled extends GlobalMethodSecurityConfiguration"() {
         when:
-        context = new AnnotationConfigApplicationContext(BaseMethodConfig,PreAuthorizeExtendsGMSCConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(BaseMethodConfig,PreAuthorizeExtendsGMSCConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         then:
-        service.secured() == null
-        service.jsr250() == null
+            service.secured() == null
+            service.jsr250() == null
 
         when:
-        service.preAuthorize()
+            service.preAuthorize()
         then:
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
     }
 
     @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -298,10 +298,10 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "proxying classes works"() {
         when:
-        context = new AnnotationConfigApplicationContext(ProxyTargetClass)
-        MethodSecurityServiceImpl service = context.getBean(MethodSecurityServiceImpl)
+            context = new AnnotationConfigApplicationContext(ProxyTargetClass)
+            MethodSecurityServiceImpl service = context.getBean(MethodSecurityServiceImpl)
         then:
-        noExceptionThrown()
+            noExceptionThrown()
     }
 
     @EnableGlobalMethodSecurity(proxyTargetClass = true)
@@ -311,24 +311,24 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "proxying interfaces works"() {
         when:
-        context = new AnnotationConfigApplicationContext(PreAuthorizeConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(PreAuthorizeConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         then: "we get an instance of the interface"
-        noExceptionThrown()
+            noExceptionThrown()
         when: "try to cast to the class"
-        MethodSecurityServiceImpl serviceImpl = service
+            MethodSecurityServiceImpl serviceImpl = service
         then: "we get a class cast exception"
-        thrown(ClassCastException)
+            thrown(ClassCastException)
     }
 
     // --- run-as-manager-ref ---
 
     def "custom RunAsManager"() {
         when:
-        context = new AnnotationConfigApplicationContext(BaseMethodConfig,CustomRunAsManagerConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(BaseMethodConfig,CustomRunAsManagerConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         then:
-        service.runAs().authorities.find { it.authority == "ROLE_RUN_AS_SUPER"}
+            service.runAs().authorities.find { it.authority == "ROLE_RUN_AS_SUPER"}
     }
 
     @Configuration
@@ -346,14 +346,14 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "secured enabled"() {
         setup:
-        context = new AnnotationConfigApplicationContext(SecuredConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(SecuredConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         when:
-        service.secured()
+            service.secured()
         then:
-        thrown(AccessDeniedException)
-        service.preAuthorize() == null
-        service.jsr250() == null
+            thrown(AccessDeniedException)
+            service.preAuthorize() == null
+            service.jsr250() == null
     }
 
     @EnableGlobalMethodSecurity(securedEnabled = true)
@@ -365,13 +365,13 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "custom AfterInvocationManager"() {
         setup:
-        context = new AnnotationConfigApplicationContext(BaseMethodConfig,CustomAfterInvocationManagerConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(BaseMethodConfig,CustomAfterInvocationManagerConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         when:
-        service.preAuthorizePermitAll()
+            service.preAuthorizePermitAll()
         then:
-        AccessDeniedException e = thrown()
-        e.message == "custom AfterInvocationManager"
+            AccessDeniedException e = thrown()
+            e.message == "custom AfterInvocationManager"
     }
 
     @Configuration
@@ -401,12 +401,12 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "good error message when no Enable annotation"() {
         when:
-        context = new AnnotationConfigApplicationContext(ExtendsNoEnableAnntoationConfig)
-        MethodSecurityInterceptor interceptor = context.getBean(MethodSecurityInterceptor)
-        interceptor.authenticationManager.authenticate(SecurityContextHolder.context.authentication)
+            context = new AnnotationConfigApplicationContext(ExtendsNoEnableAnntoationConfig)
+            MethodSecurityInterceptor interceptor = context.getBean(MethodSecurityInterceptor)
+            interceptor.authenticationManager.authenticate(SecurityContextHolder.context.authentication)
         then:
-        BeanCreationException e = thrown()
-        e.message.contains(EnableGlobalMethodSecurity.class.getName() + " is required")
+            BeanCreationException e = thrown()
+            e.message.contains(EnableGlobalMethodSecurity.class.getName() + " is required")
     }
 
     @Configuration
@@ -423,16 +423,16 @@ public class EnableGlobalMethodSecurityTests extends BaseSpringSpec {
 
     def "import subclass of GlobalMethodSecurityConfiguration"() {
         when:
-        context = new AnnotationConfigApplicationContext(ImportSubclassGMSCConfig)
-        MethodSecurityService service = context.getBean(MethodSecurityService)
+            context = new AnnotationConfigApplicationContext(ImportSubclassGMSCConfig)
+            MethodSecurityService service = context.getBean(MethodSecurityService)
         then:
-        service.secured() == null
-        service.jsr250() == null
+            ervice.secured() == null
+            service.jsr250() == null
 
         when:
-        service.preAuthorize()
+            service.preAuthorize()
         then:
-        thrown(AccessDeniedException)
+            thrown(AccessDeniedException)
     }
 
     @Configuration

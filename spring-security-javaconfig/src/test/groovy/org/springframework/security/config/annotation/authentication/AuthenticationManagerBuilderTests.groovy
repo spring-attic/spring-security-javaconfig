@@ -15,22 +15,11 @@
  */
 package org.springframework.security.config.annotation.authentication
 
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationEventPublisher
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.authentication.DefaultAuthenticationEventPublisher
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityBuilderPostProcessor
-import org.springframework.security.config.annotation.web.EnableWebSecurity
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.AuthorityUtils
 
 /**
  *
@@ -50,76 +39,17 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
             0 * builderPostProcessor._(_ as AuthenticationProvider)
     }
 
-    def "messages set when using WebSecurityConfigurerAdapter"() {
-        when:
-            loadConfig(InMemoryAuthWithWebSecurityConfigurerAdapter)
-        then:
-            authenticationManager.messages.messageSource instanceof ApplicationContext
-    }
-
-    def "AuthenticationEventPublisher is registered for Web registerAuthentication"() {
-        when:
-            loadConfig(InMemoryAuthWithWebSecurityConfigurerAdapter)
-        then:
-            authenticationManager.eventPublisher instanceof DefaultAuthenticationEventPublisher
-        when:
-            Authentication auth = new UsernamePasswordAuthenticationToken("user",null,AuthorityUtils.createAuthorityList("ROLE_USER"))
-            authenticationManager.eventPublisher.publishAuthenticationSuccess(auth)
-        then:
-            InMemoryAuthWithWebSecurityConfigurerAdapter.EVENT.authentication == auth
-    }
-
-    @EnableWebSecurity
-    @Configuration
-    static class InMemoryAuthWithWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter implements ApplicationListener<AuthenticationSuccessEvent> {
-        static AuthenticationSuccessEvent EVENT
-        @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean()
-                throws Exception {
-            return super.authenticationManagerBean();
-        }
-
-        @Override
-        protected void registerAuthentication(AuthenticationManagerBuilder auth)
-                throws Exception {
-            auth
-                .inMemoryAuthentication()
-        }
-
-        @Override
-        public void onApplicationEvent(AuthenticationSuccessEvent e) {
-            EVENT = e
-        }
-    }
-
     // https://github.com/SpringSource/spring-security-javaconfig/issues/132
     def "#132 Custom AuthenticationEventPublisher with Web registerAuthentication"() {
         setup:
-            InMemoryAuthWithWebCustomAEPSecurityConfigurerAdapterConfig.EVENT_PUBLISHER = Mock(AuthenticationEventPublisher)
+            AuthenticationEventPublisher aep = Mock()
         when:
-            loadConfig(InMemoryAuthWithWebCustomAEPSecurityConfigurerAdapterConfig)
-        then:
-            authenticationManager.eventPublisher == InMemoryAuthWithWebCustomAEPSecurityConfigurerAdapterConfig.EVENT_PUBLISHER
-    }
-
-    @EnableWebSecurity
-    @Configuration
-    static class InMemoryAuthWithWebCustomAEPSecurityConfigurerAdapterConfig extends WebSecurityConfigurerAdapter {
-        static AuthenticationEventPublisher EVENT_PUBLISHER
-        @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean()
-                throws Exception {
-            return super.authenticationManagerBean();
-        }
-
-        @Override
-        protected void registerAuthentication(AuthenticationManagerBuilder auth)
-                throws Exception {
-            auth
-                .authenticationEventPublisher(EVENT_PUBLISHER)
+            AuthenticationManager am = new AuthenticationManagerBuilder()
+                .authenticationEventPublisher(aep)
                 .inMemoryAuthentication()
-        }
+                    .and()
+                .build()
+        then:
+            am.eventPublisher == aep
     }
 }
