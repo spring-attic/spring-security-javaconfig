@@ -23,7 +23,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -132,7 +131,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * JDBC authentication
      * @throws Exception if an error occurs when adding the JDBC authentication
      */
-    public JdbcUserDetailsManagerConfigurer<AuthenticationManagerBuilder> jdbcUserDetailsManager()
+    public JdbcUserDetailsManagerConfigurer<AuthenticationManagerBuilder> jdbcAuthentication()
             throws Exception {
         return apply(new JdbcUserDetailsManagerConfigurer<AuthenticationManagerBuilder>());
     }
@@ -177,7 +176,7 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * @throws Exception
      *             if an error occurs when adding the {@link AuthenticationProvider}
      */
-    public AuthenticationManagerBuilder add(
+    public AuthenticationManagerBuilder authenticationProvider(
             AuthenticationProvider authenticationProvider) {
         this.authenticationProviders.add(authenticationProvider);
         return this;

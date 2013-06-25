@@ -45,8 +45,8 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
         LdapAuthenticationProvider provider = ldapProvider()
         then:
         provider.authoritiesPopulator.groupRoleAttribute == "cn"
-        provider.authoritiesPopulator.groupSearchBase == "ou=groups" // TODO should this default to "" as the namespace does?
-        provider.authoritiesPopulator.groupSearchFilter == "(uniqueMember={0})" // TODO should this default to "(member={0})" to match the sample as groupSearchBase is?
+        provider.authoritiesPopulator.groupSearchBase == ""
+        provider.authoritiesPopulator.groupSearchFilter == "(uniqueMember={0})"
         ReflectionTestUtils.getField(provider,"authoritiesMapper").prefix == "ROLE_"
 
     }
@@ -133,6 +133,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
             auth
                 .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
+                    .groupSearchBase("ou=groups")
                     .userDnPatterns("uid={0},ou=people");
         }
     }

@@ -40,5 +40,5 @@ interface ProviderManagerBuilder<B extends ProviderManagerBuilder<B>> extends Se
      * @throws Exception
      *             if an error occurs when adding the {@link AuthenticationProvider}
      */
-    B add(AuthenticationProvider authenticationProvider);
+    B authenticationProvider(AuthenticationProvider authenticationProvider);
 }

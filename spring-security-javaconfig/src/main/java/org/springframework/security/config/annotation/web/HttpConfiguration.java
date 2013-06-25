@@ -997,7 +997,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      */
     @Override
     public HttpConfiguration authenticationProvider(AuthenticationProvider authenticationProvider) {
-        getAuthenticationRegistry().add(authenticationProvider);
+        getAuthenticationRegistry().authenticationProvider(authenticationProvider);
         return this;
     }
 

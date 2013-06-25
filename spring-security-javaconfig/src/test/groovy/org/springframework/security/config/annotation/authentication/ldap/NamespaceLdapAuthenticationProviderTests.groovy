@@ -24,6 +24,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.ldap.NamespaceLdapAuthenticationProviderTestsConfigs.LdapAuthenticationProviderConfig;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
+import org.springframework.security.ldap.authentication.PasswordComparisonAuthenticator;
+import org.springframework.security.ldap.userdetails.PersonContextMapper;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  *
@@ -35,6 +39,30 @@ class NamespaceLdapAuthenticationProviderTests extends BaseSpringSpec {
         when:
             loadConfig(LdapAuthenticationProviderConfig)
         then:
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user","password"))
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user","password")).authorities*.authority.sort() == ['ROLE_USER']
+    }
+
+    def "ldap-authentication-provider custom"() {
+        when:
+            loadConfig(CustomLdapAuthenticationProviderConfig)
+            LdapAuthenticationProvider provider = findAuthenticationProvider(LdapAuthenticationProvider)
+        then:
+            provider.authoritiesPopulator.groupRoleAttribute == "cn"
+            provider.authoritiesPopulator.groupSearchBase == "ou=groups"
+            provider.authoritiesPopulator.groupSearchFilter == "(member={0})"
+            ReflectionTestUtils.getField(provider,"authoritiesMapper").prefix == "PREFIX_"
+            provider.userDetailsContextMapper instanceof PersonContextMapper
+            provider.authenticator.getUserDns("user") == ["uid=user,ou=people"]
+            provider.authenticator.userSearch.searchBase == "ou=users"
+            provider.authenticator.userSearch.searchFilter == "(uid={0})"
+    }
+
+    def "ldap-authentication-provider password compare"() {
+        when:
+            loadConfig(PasswordCompareLdapConfig)
+            LdapAuthenticationProvider provider = findAuthenticationProvider(LdapAuthenticationProvider)
+        then:
+            provider.authenticator instanceof PasswordComparisonAuthenticator
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user","password")).authorities*.authority.sort() == ['ROLE_USER']
     }
 }

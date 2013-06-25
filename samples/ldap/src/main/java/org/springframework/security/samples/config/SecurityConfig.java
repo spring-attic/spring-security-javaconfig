@@ -24,7 +24,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             AuthenticationManagerBuilder auth) throws Exception {
         auth
             .apply(new LdapAuthenticationProviderConfigurer())
-                .userDnPatterns("uid={0},ou=people");
+                .userDnPatterns("uid={0},ou=people")
+                .groupSearchBase("ou=groups");
     }
 
     @Override

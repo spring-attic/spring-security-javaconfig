@@ -55,7 +55,7 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
 
         protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .jdbcUserDetailsManager()
+                .jdbcAuthentication()
                     .dataSource(dataSource) // jdbc-user-service@data-source-ref
         }
 
@@ -85,7 +85,7 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
 
         protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .jdbcUserDetailsManager()
+                .jdbcAuthentication()
                     .dataSource(dataSource)
                     // imports the default schema (will fail if already exists)
                     .withDefaultSchema()
@@ -133,7 +133,7 @@ class NamespaceJdbcUserServiceTests extends BaseSpringSpec {
 
         protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .jdbcUserDetailsManager()
+                .jdbcAuthentication()
                     // jdbc-user-service@dataSource
                     .dataSource(dataSource)
                     // jdbc-user-service@cache-ref

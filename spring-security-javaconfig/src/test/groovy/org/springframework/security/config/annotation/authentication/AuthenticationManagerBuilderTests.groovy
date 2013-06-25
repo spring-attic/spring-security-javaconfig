@@ -33,7 +33,7 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
             AuthenticationProvider provider = Mock()
             AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder().objectPostProcessor(opp)
         when: "Adding an AuthenticationProvider"
-            builder.add(provider)
+            builder.authenticationProvider(provider)
             builder.build()
         then: "AuthenticationProvider is not passed into LifecycleManager (it should be managed externally)"
             0 * opp._(_ as AuthenticationProvider)

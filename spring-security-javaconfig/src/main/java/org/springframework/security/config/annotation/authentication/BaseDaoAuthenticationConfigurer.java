@@ -80,7 +80,7 @@ abstract class BaseDaoAuthenticationConfigurer<B extends ProviderManagerBuilder<
     @Override
     public void configure(B builder) throws Exception {
         provider = postProcess(provider);
-        builder.add(provider);
+        builder.authenticationProvider(provider);
     }
 
     /**

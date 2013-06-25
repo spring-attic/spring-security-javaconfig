@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth
-            .add(authenticationProvider());
+            .authenticationProvider(authenticationProvider());
     }
 
     @Override

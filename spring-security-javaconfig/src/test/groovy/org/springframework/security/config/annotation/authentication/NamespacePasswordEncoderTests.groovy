@@ -80,7 +80,7 @@ class NamespacePasswordEncoderTests extends BaseSpringSpec {
 
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder()
             auth
-                .jdbcUserDetailsManager()
+                .jdbcAuthentication()
                     .withDefaultSchema()
                     .dataSource(dataSource())
                     .withUser("user").password(encoder.encode("password")).roles("USER").and()

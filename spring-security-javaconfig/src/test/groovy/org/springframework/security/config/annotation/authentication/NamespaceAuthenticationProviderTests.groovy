@@ -43,7 +43,7 @@ class NamespaceAuthenticationProviderTests extends BaseSpringSpec {
         static DaoAuthenticationProvider expected = new DaoAuthenticationProvider()
         protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .add(expected)
+                .authenticationProvider(expected)
         }
 
         // Only necessary to have access to verify the AuthenticationManager

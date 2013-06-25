@@ -63,10 +63,11 @@ public class WebSecurityConfigurerAdapterTestsConfigs {
                 throws Exception {
             auth
                 .inMemoryAuthentication().and()
-                .jdbcUserDetailsManager()
+                .jdbcAuthentication()
                     .dataSource(dataSource())
                     .and()
                 .apply(new LdapAuthenticationProviderConfigurer())
+                    .userDnPatterns("uid={0},ou=people")
                     .contextSource(contextSource());
         }
     }
