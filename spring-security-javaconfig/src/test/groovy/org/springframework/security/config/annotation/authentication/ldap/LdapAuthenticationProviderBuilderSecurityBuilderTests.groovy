@@ -133,8 +133,7 @@ class LdapAuthenticationProviderBuilderSecurityBuilderTests extends BaseSpringSp
             auth
                 .apply(new LdapAuthenticationProviderConfigurer())
                     .contextSource(contextSource())
-                    .userDnPatterns("uid={0},ou=people")
-                    .groupSearchFilter("(member={0})");
+                    .userDnPatterns("uid={0},ou=people");
         }
     }
 

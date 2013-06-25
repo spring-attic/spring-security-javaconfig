@@ -15,6 +15,7 @@
  */
 package org.springframework.security.config.annotation.web;
 
+import static org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapterTestsConfigs.*
 import static org.junit.Assert.*
 
 import javax.sql.DataSource
@@ -51,48 +52,6 @@ class WebSecurityConfigurerAdapterTests extends BaseSpringSpec {
         then:
             providers*.messages*.messageSource == [context,context,context,context]
     }
-
-
-    @Configuration
-    @EnableWebSecurity
-    static class MessageSourcesPopulatedConfig extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpConfiguration http) throws Exception {
-            http
-                .antMatcher("/role1/**")
-                .authorizeUrls()
-                    .anyRequest().hasRole("1");
-        }
-
-        @Bean
-        public BaseLdapPathContextSource contextSource() throws Exception {
-            DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(
-                    "ldap://127.0.0.1:33389/dc=springframework,dc=org")
-            contextSource.userDn = "uid=admin,ou=system"
-            contextSource.password = "secret"
-            contextSource.afterPropertiesSet();
-            return contextSource;
-        }
-
-        @Bean
-        public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.HSQL).build();
-        }
-
-        @Override
-        protected void registerAuthentication(AuthenticationManagerBuilder auth)
-                throws Exception {
-            auth
-                .inMemoryAuthentication().and()
-                .jdbcUserDetailsManager()
-                    .dataSource(dataSource())
-                    .and()
-                .apply(new LdapAuthenticationProviderConfigurer())
-                    .contextSource(contextSource())
-        }
-    }
-
 
     def "messages set when using WebSecurityConfigurerAdapter"() {
         when:

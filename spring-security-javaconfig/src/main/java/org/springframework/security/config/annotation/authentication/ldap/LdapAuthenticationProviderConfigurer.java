@@ -22,9 +22,11 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.security.ldap.server.ApacheDSContainer;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 
@@ -43,6 +45,7 @@ public class LdapAuthenticationProviderConfigurer extends SecurityConfigurerAdap
     private String userSearchFilter = null;//"uid={0}"; // only for search
     private String[] userDnPatterns;
     private BaseLdapPathContextSource contextSource;
+    private ContextSourceBuilder contextSourceBuilder = new ContextSourceBuilder();
     private UserDetailsContextMapper userDetailsContextMapper;
     private PasswordEncoder passwordEncoder;
 
@@ -124,11 +127,80 @@ public class LdapAuthenticationProviderConfigurer extends SecurityConfigurerAdap
 
     @Override
     public void configure(AuthenticationManagerBuilder builder) throws Exception {
-        LdapAuthenticationProvider provider = builder.postProcess(build());
+        LdapAuthenticationProvider provider = postProcess(build());
         builder.add(provider);
     }
 
-    private BaseLdapPathContextSource getContextSource() {
+    public class ContextSourceBuilder {
+        private String ldif = "classpath*:*.ldif";
+        private String managerPassword = "secret";
+        private String managerDn = "uid=admin,ou=system";
+        private int port = 33389;
+        private String root = "dc=springframework,dc=org";
+        private String url;
+
+        public ContextSourceBuilder ldif(String ldif) {
+            this.ldif = ldif;
+            return this;
+        }
+
+        public ContextSourceBuilder managerDn(String managerDn) {
+            this.managerDn = managerDn;
+            return this;
+        }
+
+        public ContextSourceBuilder managerPassword(String managerPassword) {
+            this.managerPassword  = managerPassword;
+            return this;
+        }
+
+        public ContextSourceBuilder port(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public ContextSourceBuilder root(String root) {
+            this.root  = root;
+            return this;
+        }
+
+        public ContextSourceBuilder url(String url) {
+            this.url  = url;
+            return this;
+        }
+
+        public LdapAuthenticationProviderConfigurer and() {
+            return LdapAuthenticationProviderConfigurer.this;
+        }
+
+        private DefaultSpringSecurityContextSource build() throws Exception {
+            DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(getProviderUrl());
+            contextSource.setUserDn(managerDn);
+            contextSource.setPassword(managerPassword);
+            contextSource = postProcess(contextSource);
+            if(url != null) {
+                return contextSource;
+            }
+            ApacheDSContainer apacheDsContainer = new ApacheDSContainer(root, ldif);
+            apacheDsContainer.setPort(port);
+            apacheDsContainer = postProcess(apacheDsContainer);
+            return contextSource;
+        }
+
+        private String getProviderUrl() {
+            if(url == null) {
+                return "ldap://127.0.0.1:" + port + "/" + root;
+            }
+            return url;
+        }
+
+        private ContextSourceBuilder() {}
+    }
+
+    private BaseLdapPathContextSource getContextSource() throws Exception {
+        if(contextSource == null) {
+            contextSource = contextSourceBuilder.build();
+        }
         return contextSource;
     }
 }

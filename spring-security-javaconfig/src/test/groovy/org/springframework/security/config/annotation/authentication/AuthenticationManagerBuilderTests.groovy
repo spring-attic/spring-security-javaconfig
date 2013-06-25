@@ -31,7 +31,7 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
         setup:
             ObjectPostProcessor opp = Mock()
             AuthenticationProvider provider = Mock()
-            AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder().builderPostProcessor(opp)
+            AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder().objectPostProcessor(opp)
         when: "Adding an AuthenticationProvider"
             builder.add(provider)
             builder.build()
