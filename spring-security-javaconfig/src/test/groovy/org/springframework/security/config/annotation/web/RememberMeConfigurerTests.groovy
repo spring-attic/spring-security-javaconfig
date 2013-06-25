@@ -15,33 +15,12 @@
  */
 package org.springframework.security.config.annotation.web
 
-import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-
-import javax.servlet.http.Cookie
-
 import org.springframework.context.annotation.Configuration
-import org.springframework.mock.web.MockFilterChain
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.mock.web.MockHttpSession
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.web.FilterChainProxy
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.security.web.authentication.RememberMeServices
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter
-import org.springframework.security.web.context.HttpRequestResponseHolder
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository
-import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Tests for RememberMeConfigurer that flex edge cases. {@link NamespaceRememberMeTests} demonstrate mapping of the XML namespace to Java Config.
@@ -74,7 +53,7 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
 
     def "rememberMe ObjectPostProcessor"() {
         setup:
-            ObjectPostProcessor opp = Mock()
+            AnyObjectPostProcessor opp = Mock()
             HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:

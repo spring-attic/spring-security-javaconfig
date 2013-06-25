@@ -61,7 +61,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.util.Assert;
 
 /**
@@ -78,7 +77,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
     @Autowired
     private ApplicationContext context;
     @Autowired(required=false)
-    private ObjectPostProcessor objectPostProcessor = new ObjectPostProcessor() {
+    private ObjectPostProcessor<Object> objectPostProcessor = new ObjectPostProcessor<Object>() {
         @Override
         public <T> T postProcess(T object) {
             throw new IllegalStateException(ObjectPostProcessor.class.getName()+ " is a required bean. Ensure you have used @"+EnableGlobalMethodSecurity.class.getName());

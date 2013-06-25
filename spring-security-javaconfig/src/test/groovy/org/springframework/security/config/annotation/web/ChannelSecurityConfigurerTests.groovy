@@ -15,11 +15,11 @@
  */
 package org.springframework.security.config.annotation.web
 
+import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter
 import org.springframework.security.web.access.channel.InsecureChannelProcessor
 import org.springframework.security.web.access.channel.SecureChannelProcessor
 
@@ -31,7 +31,7 @@ class ChannelSecurityConfigurerTests extends BaseSpringSpec {
 
     def "requiresChannel ObjectPostProcessor"() {
         setup: "initialize the AUTH_FILTER as a mock"
-            ObjectPostProcessor objectPostProcessor = Mock()
+            AnyObjectPostProcessor objectPostProcessor = Mock()
         when:
             HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr)
             http

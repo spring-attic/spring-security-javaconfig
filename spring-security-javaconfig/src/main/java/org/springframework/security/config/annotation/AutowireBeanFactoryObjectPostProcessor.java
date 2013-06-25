@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * @author Rob Winch
  * @since 3.2
  */
-final class AutowireBeanFactoryObjectPostProcessor implements ObjectPostProcessor, DisposableBean {
+final class AutowireBeanFactoryObjectPostProcessor implements ObjectPostProcessor<Object>, DisposableBean {
     private final Log logger = LogFactory.getLog(getClass());
     private final AutowireCapableBeanFactory autowireBeanFactory;
     private final List<DisposableBean> disposableBeans = new ArrayList<DisposableBean>();

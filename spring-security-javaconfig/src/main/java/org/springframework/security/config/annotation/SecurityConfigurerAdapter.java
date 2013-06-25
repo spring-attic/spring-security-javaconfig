@@ -15,6 +15,11 @@
  */
 package org.springframework.security.config.annotation;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.core.GenericTypeResolver;
+
 
 
 /**
@@ -33,7 +38,7 @@ package org.springframework.security.config.annotation;
 public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> implements SecurityConfigurer<O,B> {
     private B securityBuilder;
 
-    private ObjectPostProcessor objectPostProcessor = ObjectPostProcessor.QUIESCENT_POSTPROCESSOR;
+    private CompositeObjectPostProcessor objectPostProcessor = new CompositeObjectPostProcessor();
 
     @Override
     public void init(B builder) throws Exception {}
@@ -72,22 +77,42 @@ public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> 
      * @return the possibly modified Object to use
      */
     protected <T> T postProcess(T object) {
-        return this.objectPostProcessor.postProcess(object);
+        return (T) this.objectPostProcessor.postProcess(object);
     }
 
     /**
-     * Sets the {@link ObjectPostProcessor} to be used for this
+     * Adds an {@link ObjectPostProcessor} to be used for this
      * {@link SecurityConfigurerAdapter}. The default implementation does
      * nothing to the object.
      *
      * @param objectPostProcessor the {@link ObjectPostProcessor} to use
      */
-    public void setObjectPostProcessor(ObjectPostProcessor objectPostProcessor) {
-        this.objectPostProcessor = objectPostProcessor;
+    public void addObjectPostProcessor(ObjectPostProcessor<?> objectPostProcessor) {
+        this.objectPostProcessor.addObjectPostProcessor(objectPostProcessor);
     }
 
     public void setBuilder(
             B securityFilterChain) {
         this.securityBuilder = securityFilterChain;
+    }
+
+    private static class CompositeObjectPostProcessor implements ObjectPostProcessor<Object> {
+        private List<ObjectPostProcessor<? extends Object>> postProcessors = new ArrayList<ObjectPostProcessor<?>>();
+
+        @Override
+        public Object postProcess(Object object) {
+            for(ObjectPostProcessor opp : postProcessors) {
+                Class<?> oppClass = opp.getClass();
+                Class<?> oppType = GenericTypeResolver.resolveTypeArgument(oppClass,ObjectPostProcessor.class);
+                if(oppType.isAssignableFrom(object.getClass())) {
+                    object = opp.postProcess(object);
+                }
+            }
+            return object;
+        }
+
+        public boolean addObjectPostProcessor(ObjectPostProcessor<?extends Object> objectPostProcessor) {
+            return this.postProcessors.add(objectPostProcessor);
+        }
     }
 }

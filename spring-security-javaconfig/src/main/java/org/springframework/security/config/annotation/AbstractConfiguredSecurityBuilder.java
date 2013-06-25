@@ -74,7 +74,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     public <C extends SecurityConfigurerAdapter<T, B>> C apply(C configurer)
             throws Exception {
         add(configurer);
-        configurer.setObjectPostProcessor(objectPostProcessor);
+        configurer.addObjectPostProcessor(objectPostProcessor);
         configurer.setBuilder((B) this);
         return configurer;
     }
@@ -150,7 +150,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return the {@link SecurityBuilder} for further customizations
      */
     @SuppressWarnings("unchecked")
-    public T objectPostProcessor(ObjectPostProcessor objectPostProcessor) {
+    public T objectPostProcessor(ObjectPostProcessor<? extends Object> objectPostProcessor) {
         Assert.notNull(objectPostProcessor,"objectPostProcessor cannot be null");
         this.objectPostProcessor = objectPostProcessor;
         return (T) this;
@@ -164,7 +164,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return the possibly modified Object to use
      */
     protected <T> T postProcess(T object) {
-        return this.objectPostProcessor.postProcess(object);
+        return (T) this.objectPostProcessor.postProcess(object);
     }
 
     /**

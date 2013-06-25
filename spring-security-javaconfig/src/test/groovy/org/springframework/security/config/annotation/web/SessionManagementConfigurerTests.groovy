@@ -16,8 +16,8 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.web.access.ExceptionTranslationFilter
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
@@ -86,7 +86,7 @@ class SessionManagementConfigurerTests extends BaseSpringSpec {
 
     def "sessionManagement ObjectPostProcessor"() {
         setup:
-            ObjectPostProcessor opp = Mock()
+            AnyObjectPostProcessor opp = Mock()
             HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
         when:
             http

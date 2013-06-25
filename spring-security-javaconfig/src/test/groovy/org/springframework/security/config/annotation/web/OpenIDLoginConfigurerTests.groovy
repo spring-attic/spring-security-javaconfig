@@ -15,13 +15,13 @@
  */
 package org.springframework.security.config.annotation.web
 
+import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.openid.OpenIDAuthenticationFilter
-import org.springframework.security.openid.OpenIDAuthenticationProvider;
+import org.springframework.security.openid.OpenIDAuthenticationProvider
 import org.springframework.security.openid.OpenIDAuthenticationToken
 
 /**
@@ -32,7 +32,7 @@ class OpenIDLoginConfigurerTests extends BaseSpringSpec {
 
     def "openidLogin ObjectPostProcessor"() {
         setup:
-            ObjectPostProcessor opp = Mock()
+            AnyObjectPostProcessor opp = Mock()
             HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:

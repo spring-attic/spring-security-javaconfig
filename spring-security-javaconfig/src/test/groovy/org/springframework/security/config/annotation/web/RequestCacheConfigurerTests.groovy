@@ -15,16 +15,10 @@
  */
 package org.springframework.security.config.annotation.web
 
+import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
-import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.access.channel.InsecureChannelProcessor
-import org.springframework.security.web.access.channel.SecureChannelProcessor
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
+import org.springframework.security.web.savedrequest.RequestCacheAwareFilter
 
 /**
  *
@@ -34,7 +28,7 @@ class RequestCacheConfigurerTests extends BaseSpringSpec {
 
     def "requestCache ObjectPostProcessor"() {
         setup:
-            ObjectPostProcessor opp = Mock()
+            AnyObjectPostProcessor opp = Mock()
             HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
         when:
             http

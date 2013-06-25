@@ -23,11 +23,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler
 
 /**
@@ -319,12 +319,14 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
 
     def "DefaultLoginPage ObjectPostProcessor"() {
         setup:
-            ObjectPostProcessor objectPostProcessor = Mock()
+            AnyObjectPostProcessor objectPostProcessor = Mock()
         when:
             HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr)
+            DefaultLoginPageConfigurer defaultLoginConfig = new DefaultLoginPageConfigurer([builder:http])
+            defaultLoginConfig.addObjectPostProcessor(objectPostProcessor)
             http
                 // must set builder manually due to groovy not selecting correct method
-                .apply(new DefaultLoginPageConfigurer([builder:http,objectPostProcessor:objectPostProcessor])).and()
+                .apply(defaultLoginConfig).and()
                 .formLogin()
                     .and()
                 .build()

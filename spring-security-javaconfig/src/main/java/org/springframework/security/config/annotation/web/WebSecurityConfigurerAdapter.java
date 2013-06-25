@@ -45,7 +45,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private ApplicationContext context;
 
     @Autowired(required=false)
-    private ObjectPostProcessor objectPostProcessor = new ObjectPostProcessor() {
+    private ObjectPostProcessor<Object> objectPostProcessor = new ObjectPostProcessor<Object>() {
         @Override
         public <T> T postProcess(T object) {
             throw new IllegalStateException(ObjectPostProcessor.class.getName()+ " is a required bean. Ensure you have used @"+EnableWebSecurity.class.getName()+" and @Configuration");

@@ -24,12 +24,12 @@ import org.springframework.beans.factory.InitializingBean;
  * {@link Aware} methods, {@link InitializingBean#afterPropertiesSet()}, and
  * ensure that {@link DisposableBean#destroy()} has been invoked.
  *
- * This interface is intended for internal use only.
+ * @param <T> the bound of the types of Objects this {@link ObjectPostProcessor} supports.
  *
  * @author Rob Winch
  * @since 3.2
  */
-public interface ObjectPostProcessor {
+public interface ObjectPostProcessor<T> {
 
     /**
      * Initialize the object possibly returning a modified instance that should
@@ -38,12 +38,12 @@ public interface ObjectPostProcessor {
      * @param object the object to initialize
      * @return the initialized version of the object
      */
-    <T> T postProcess(T object);
+    <O extends T> O postProcess(O object);
 
     /**
      * A do nothing implementation of the {@link ObjectPostProcessor}
      */
-    ObjectPostProcessor QUIESCENT_POSTPROCESSOR =  new ObjectPostProcessor() {
+    ObjectPostProcessor<Object> QUIESCENT_POSTPROCESSOR =  new ObjectPostProcessor<Object>() {
         @Override
         public <T> T postProcess(T object) {
             return object;
