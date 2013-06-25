@@ -21,14 +21,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.SecurityBuilderPostProcessor;
-import org.springframework.security.config.annotation.SecurityBuilderPostProcessorConfiguration;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.EnableGlobalMethodSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -58,14 +54,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
     private final AuthenticationManagerBuilder authenticationBuilder = new AuthenticationManagerBuilder();
     private final AuthenticationManagerBuilder parentAuthenticationBuilder = new AuthenticationManagerBuilder() {
-
-        @Override
-        public AuthenticationManagerBuilder authenticationEventPublisher(
-                AuthenticationEventPublisher eventPublisher) {
-            authenticationBuilder.authenticationEventPublisher(eventPublisher);
-            return super.authenticationEventPublisher(eventPublisher);
-        }
-
         @Override
         public AuthenticationManagerBuilder eraseCredentials(boolean eraseCredentials) {
             authenticationBuilder.eraseCredentials(eraseCredentials);
@@ -146,7 +134,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
         DefaultAuthenticationEventPublisher eventPublisher = builderPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
         parentAuthenticationBuilder.authenticationEventPublisher(eventPublisher);
-        authenticationBuilder.authenticationEventPublisher(eventPublisher);
 
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);

@@ -119,18 +119,19 @@ class WebSecurityConfigurerAdapterTests extends BaseSpringSpec {
         when:
             loadConfig(InMemoryAuthWithWebSecurityConfigurerAdapter)
         then:
-            authenticationManager.eventPublisher instanceof DefaultAuthenticationEventPublisher
+            authenticationManager.parent.eventPublisher instanceof DefaultAuthenticationEventPublisher
         when:
-            Authentication auth = new UsernamePasswordAuthenticationToken("user",null,AuthorityUtils.createAuthorityList("ROLE_USER"))
-            authenticationManager.eventPublisher.publishAuthenticationSuccess(auth)
-        then:
-            InMemoryAuthWithWebSecurityConfigurerAdapter.EVENT.authentication == auth
+            Authentication token = new UsernamePasswordAuthenticationToken("user","password")
+            authenticationManager.authenticate(token)
+        then: "We only receive the AuthenticationSuccessEvent once"
+            InMemoryAuthWithWebSecurityConfigurerAdapter.EVENTS.size() == 1
+            InMemoryAuthWithWebSecurityConfigurerAdapter.EVENTS[0].authentication.name == token.principal
     }
 
     @EnableWebSecurity
     @Configuration
     static class InMemoryAuthWithWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter implements ApplicationListener<AuthenticationSuccessEvent> {
-        static AuthenticationSuccessEvent EVENT
+        static List<AuthenticationSuccessEvent> EVENTS = []
         @Bean
         @Override
         public AuthenticationManager authenticationManagerBean()
@@ -143,11 +144,12 @@ class WebSecurityConfigurerAdapterTests extends BaseSpringSpec {
                 throws Exception {
             auth
                 .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER")
         }
 
         @Override
         public void onApplicationEvent(AuthenticationSuccessEvent e) {
-            EVENT = e
+            EVENTS.add(e)
         }
     }
 }
