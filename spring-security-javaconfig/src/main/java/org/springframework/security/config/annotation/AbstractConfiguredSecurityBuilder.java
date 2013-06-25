@@ -54,6 +54,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     private ObjectPostProcessor objectPostProcessor;
 
     protected AbstractConfiguredSecurityBuilder() {
+        this(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR);
     }
 
     protected AbstractConfiguredSecurityBuilder(ObjectPostProcessor objectPostProcessor) {
@@ -73,9 +74,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     public <C extends SecurityConfigurerAdapter<T, B>> C apply(C configurer)
             throws Exception {
         add(configurer);
-        if(objectPostProcessor != null) {
-            configurer.setObjectPostProcessor(objectPostProcessor);
-        }
+        configurer.setObjectPostProcessor(objectPostProcessor);
         configurer.setBuilder((B) this);
         return configurer;
     }
@@ -155,6 +154,17 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
         Assert.notNull(objectPostProcessor,"objectPostProcessor cannot be null");
         this.objectPostProcessor = objectPostProcessor;
         return (T) this;
+    }
+
+    /**
+     * Performs post processing of an object. The default is to delegate to the
+     * {@link ObjectPostProcessor}.
+     *
+     * @param object the Object to post process
+     * @return the possibly modified Object to use
+     */
+    protected <T> T postProcess(T object) {
+        return this.objectPostProcessor.postProcess(object);
     }
 
     /**

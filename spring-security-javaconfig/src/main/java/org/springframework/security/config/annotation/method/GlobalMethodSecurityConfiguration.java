@@ -234,7 +234,7 @@ public class GlobalMethodSecurityConfiguration implements ImportAware {
         if(authenticationManager == null) {
             DefaultAuthenticationEventPublisher eventPublisher = objectPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
             auth.authenticationEventPublisher(eventPublisher);
-            auth.builderPostProcessor(objectPostProcessor);
+            auth.objectPostProcessor(objectPostProcessor);
             registerAuthentication(auth);
             if(!disableAuthenticationRegistry) {
                 authenticationManager = auth.build();

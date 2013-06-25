@@ -129,8 +129,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
             return http;
         }
 
-        authenticationBuilder.builderPostProcessor(objectPostProcessor);
-        parentAuthenticationBuilder.builderPostProcessor(objectPostProcessor);
+        authenticationBuilder.objectPostProcessor(objectPostProcessor);
+        parentAuthenticationBuilder.objectPostProcessor(objectPostProcessor);
 
         DefaultAuthenticationEventPublisher eventPublisher = objectPostProcessor.postProcess(new DefaultAuthenticationEventPublisher());
         parentAuthenticationBuilder.authenticationEventPublisher(eventPublisher);

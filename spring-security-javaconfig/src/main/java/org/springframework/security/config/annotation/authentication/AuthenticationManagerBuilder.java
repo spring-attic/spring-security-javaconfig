@@ -40,23 +40,12 @@ import org.springframework.util.Assert;
  */
 public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuilder<AuthenticationManager, AuthenticationManagerBuilder> implements ProviderManagerBuilder<AuthenticationManagerBuilder> {
 
-    private ObjectPostProcessor objectPostProcessor;
-
     private AuthenticationManager parentAuthenticationManager;
     private List<AuthenticationProvider> authenticationProviders = new ArrayList<AuthenticationProvider>();
     private UserDetailsService defaultUserDetailsService;
     private Boolean eraseCredentials;
     private AuthenticationEventPublisher eventPublisher;
 
-    /**
-     * Sets the {@link ObjectPostProcessor} to be used on the {@link AuthenticationManagerBuilder}
-     * @param objectPostProcessor
-     * @return the {@link AuthenticationManagerBuilder} for further customizations
-     */
-    public AuthenticationManagerBuilder builderPostProcessor(ObjectPostProcessor objectPostProcessor) {
-        this.objectPostProcessor = objectPostProcessor;
-        return this;
-    }
 
     /**
      * Allows providing a parent {@link AuthenticationManager} that will be
@@ -205,10 +194,6 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
         }
         providerManager = postProcess(providerManager);
         return providerManager;
-    }
-
-    public <T> T postProcess(T object) {
-        return objectPostProcessor == null ? object : objectPostProcessor.postProcess(object);
     }
 
     /**
