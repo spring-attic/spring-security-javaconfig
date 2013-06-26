@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.openid.OpenIDAuthenticationFilter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -49,7 +50,7 @@ import org.springframework.security.web.session.SessionManagementFilter;
  *
  * @param <H>
  */
-interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<DefaultSecurityFilterChain> {
+public interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<DefaultSecurityFilterChain> {
 
     /**
      * Gets the {@link SecurityConfigurer} by its class name or
@@ -151,7 +152,7 @@ interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<DefaultS
      * <li>{@link UsernamePasswordAuthenticationFilter}</li>
      * <li>{@link ConcurrentSessionFilter}</li>
      * <li>{@link OpenIDAuthenticationFilter}</li>
-     * <li>{@link DefaultLoginPageGeneratingFilter}</li>
+     * <li>{@link DefaultLoginPageViewFilter}</li>
      * <li>{@link ConcurrentSessionFilter}</li>
      * <li>{@link DigestAuthenticationFilter}</li>
      * <li>{@link BasicAuthenticationFilter}</li>

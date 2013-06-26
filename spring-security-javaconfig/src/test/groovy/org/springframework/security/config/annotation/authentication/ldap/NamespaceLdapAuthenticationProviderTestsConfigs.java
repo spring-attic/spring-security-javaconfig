@@ -17,9 +17,9 @@ package org.springframework.security.config.annotation.authentication.ldap;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
-import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.ldap.userdetails.PersonContextMapper;
 
 /**
@@ -34,7 +34,7 @@ public class NamespaceLdapAuthenticationProviderTestsConfigs {
         protected void registerAuthentication(
                 AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .apply(new LdapAuthenticationProviderConfigurer())
+                .ldapAuthentication()
                     .groupSearchBase("ou=groups")
                     .userDnPatterns("uid={0},ou=people"); // ldap-server@user-dn-pattern
         }
@@ -46,7 +46,7 @@ public class NamespaceLdapAuthenticationProviderTestsConfigs {
         protected void registerAuthentication(
                 AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .apply(new LdapAuthenticationProviderConfigurer())
+                .ldapAuthentication()
                     .groupRoleAttribute("cn") // ldap-authentication-provider@group-role-attribute
                     .groupSearchBase("ou=groups") // ldap-authentication-provider@group-search-base
                     .groupSearchFilter("(member={0})") // ldap-authentication-provider@group-search-filter
@@ -73,7 +73,7 @@ public class NamespaceLdapAuthenticationProviderTestsConfigs {
         protected void registerAuthentication(
                 AuthenticationManagerBuilder auth) throws Exception {
             auth
-                .apply(new LdapAuthenticationProviderConfigurer())
+                .ldapAuthentication()
                     .groupSearchBase("ou=groups")
                     .userSearchFilter("(uid={0})")
                     .passwordCompare()

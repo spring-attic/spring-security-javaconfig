@@ -16,8 +16,8 @@ The following configuration
     public class SampleWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
         @Override
-        public void configure(WebSecurityConfiguration builder) throws Exception {
-            builder
+        public void configure(WebSecurity web) throws Exception {
+            web
                 .ignoring()
                     .antMatchers("/resources/**");
         }
@@ -118,8 +118,8 @@ The following configuration
         @Configuration
         public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            public void configure(WebSecurityConfiguration builder) throws Exception {
-                builder
+            public void configure(WebSecurity web) throws Exception {
+                web
                     .ignoring()
                         .antMatchers("/resources/**");
             }

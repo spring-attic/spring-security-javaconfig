@@ -20,12 +20,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
-import org.springframework.security.oauth2.config.annotation.authentication.InMemoryClientDetailsServiceBuilder;
-import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.OAuth2ServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.authentication.builders.InMemoryClientDetailsServiceBuilder;
+import org.springframework.security.oauth2.config.annotation.web.configuration.OAuth2ServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.OAuth2ServerConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 /**
@@ -59,8 +59,8 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurityBuilder builder) throws Exception {
-        builder
+    public void configure(WebSecurity web) throws Exception {
+        web
             .ignoring()
                 .antMatchers("/resources/**");
     }

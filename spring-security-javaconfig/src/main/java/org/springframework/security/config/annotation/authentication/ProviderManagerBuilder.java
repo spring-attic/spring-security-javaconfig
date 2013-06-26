@@ -27,7 +27,7 @@ import org.springframework.security.config.annotation.SecurityBuilder;
  *
  * @param <B> the type of the {@link SecurityBuilder}
  */
-interface ProviderManagerBuilder<B extends ProviderManagerBuilder<B>> extends SecurityBuilder<AuthenticationManager> {
+public interface ProviderManagerBuilder<B extends ProviderManagerBuilder<B>> extends SecurityBuilder<AuthenticationManager> {
 
     /**
      * Add authentication based upon the custom {@link AuthenticationProvider}

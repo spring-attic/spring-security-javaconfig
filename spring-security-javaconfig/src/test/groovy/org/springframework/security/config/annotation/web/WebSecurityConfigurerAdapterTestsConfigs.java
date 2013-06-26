@@ -22,8 +22,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
-import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.ldap.LdapAuthenticationProviderConfigurer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 
 /**
@@ -66,7 +68,7 @@ public class WebSecurityConfigurerAdapterTestsConfigs {
                 .jdbcAuthentication()
                     .dataSource(dataSource())
                     .and()
-                .apply(new LdapAuthenticationProviderConfigurer())
+                .ldapAuthentication()
                     .userDnPatterns("uid={0},ou=people")
                     .contextSource(contextSource());
         }

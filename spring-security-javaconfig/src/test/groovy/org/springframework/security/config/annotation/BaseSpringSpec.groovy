@@ -20,7 +20,7 @@ import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor

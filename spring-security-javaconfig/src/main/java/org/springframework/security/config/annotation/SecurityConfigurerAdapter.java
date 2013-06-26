@@ -76,6 +76,7 @@ public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> 
      * @param object the Object to post process
      * @return the possibly modified Object to use
      */
+    @SuppressWarnings("unchecked")
     protected <T> T postProcess(T object) {
         return (T) this.objectPostProcessor.postProcess(object);
     }
@@ -100,6 +101,7 @@ public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> 
         private List<ObjectPostProcessor<? extends Object>> postProcessors = new ArrayList<ObjectPostProcessor<?>>();
 
         @Override
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         public Object postProcess(Object object) {
             for(ObjectPostProcessor opp : postProcessors) {
                 Class<?> oppClass = opp.getClass();

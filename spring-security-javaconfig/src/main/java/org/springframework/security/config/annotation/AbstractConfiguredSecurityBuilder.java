@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-import org.springframework.security.config.annotation.web.WebSecurityBuilder;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
@@ -35,7 +35,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * populate the {@link SecurityBuilder} with the filters necessary for session
  * management, form based login, authorization, etc.</p>
  *
- * @see WebSecurityBuilder
+ * @see WebSecurity
  *
  * @author Rob Winch
  *
@@ -51,13 +51,13 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
 
     private BuildState buildState = BuildState.UNBUILT;
 
-    private ObjectPostProcessor objectPostProcessor;
+    private ObjectPostProcessor<Object> objectPostProcessor;
 
     protected AbstractConfiguredSecurityBuilder() {
         this(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR);
     }
 
-    protected AbstractConfiguredSecurityBuilder(ObjectPostProcessor objectPostProcessor) {
+    protected AbstractConfiguredSecurityBuilder(ObjectPostProcessor<Object> objectPostProcessor) {
         this.objectPostProcessor = objectPostProcessor;
     }
 
@@ -150,7 +150,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return the {@link SecurityBuilder} for further customizations
      */
     @SuppressWarnings("unchecked")
-    public T objectPostProcessor(ObjectPostProcessor<? extends Object> objectPostProcessor) {
+    public T objectPostProcessor(ObjectPostProcessor<Object> objectPostProcessor) {
         Assert.notNull(objectPostProcessor,"objectPostProcessor cannot be null");
         this.objectPostProcessor = objectPostProcessor;
         return (T) this;
@@ -163,8 +163,8 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @param object the Object to post process
      * @return the possibly modified Object to use
      */
-    protected <T> T postProcess(T object) {
-        return (T) this.objectPostProcessor.postProcess(object);
+    protected <O> O postProcess(O object) {
+        return (O) this.objectPostProcessor.postProcess(object);
     }
 
     /**
