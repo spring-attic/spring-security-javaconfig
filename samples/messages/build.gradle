@@ -1,3 +1,5 @@
+sonarRunner.skipProject = true
+
 dependencies {
     compile project(":spring-security-javaconfig"),
             "org.springframework.data:spring-data-jpa:1.2.0.RELEASE",

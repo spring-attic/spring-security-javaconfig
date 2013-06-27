@@ -1,5 +1,13 @@
 dependencies {
+    jacoco group: "org.jacoco", name: "org.jacoco.agent", version: "0.6.2.201302030002", classifier: "runtime"
+
     compile project(":spring-security-javaconfig"),
             "org.springframework.security:spring-security-taglibs:$springSecurityVersion",
             "org.springframework.security.oauth:spring-security-oauth2:$springOauthVersion"
+
+    testCompile project(":spring-security-javaconfig").sourceSets.test.output
+}
+
+test {
+    jvmArgs "-javaagent:${configurations.jacoco.asPath}=destfile=${buildDir}/jacoco.exec,includes=${project.group}.*"
 }
