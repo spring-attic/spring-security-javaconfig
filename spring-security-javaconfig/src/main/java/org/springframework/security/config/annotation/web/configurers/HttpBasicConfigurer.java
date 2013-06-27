@@ -49,7 +49,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#authenticationManager()} </li>
+ * <li>{@link HttpConfiguration#getAuthenticationManager()} </li>
  * </ul>
  *
  * @author Rob Winch
@@ -116,7 +116,7 @@ public final class HttpBasicConfigurer<B extends HttpBuilder<B>> extends Abstrac
 
     @Override
     public void configure(B http) throws Exception {
-        AuthenticationManager authenticationManager = http.authenticationManager();
+        AuthenticationManager authenticationManager = http.getAuthenticationManager();
         BasicAuthenticationFilter basicAuthenticationFilter = new BasicAuthenticationFilter(authenticationManager, authenticationEntryPoint);
         if(authenticationDetailsSource != null) {
             basicAuthenticationFilter.setAuthenticationDetailsSource(authenticationDetailsSource);

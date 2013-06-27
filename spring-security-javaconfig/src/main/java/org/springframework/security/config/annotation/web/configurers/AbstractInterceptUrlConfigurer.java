@@ -50,7 +50,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  * The following shared objects are used:
  *
  * <ul>
- *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#authenticationManager()}</li>
+ *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#getAuthenticationManager()}</li>
  * </ul>
  *
  * @param <H> the type of {@link HttpBuilder} that is being configured
@@ -102,7 +102,7 @@ abstract class AbstractInterceptUrlConfigurer<H extends HttpBuilder<H>,C,R> exte
         if(metadataSource == null) {
             return;
         }
-        FilterSecurityInterceptor securityInterceptor = createFilterSecurityInterceptor(metadataSource, http.authenticationManager());
+        FilterSecurityInterceptor securityInterceptor = createFilterSecurityInterceptor(metadataSource, http.getAuthenticationManager());
         if(filterSecurityInterceptorOncePerRequest != null) {
             securityInterceptor.setObserveOncePerRequest(filterSecurityInterceptorOncePerRequest);
         }
@@ -127,14 +127,14 @@ abstract class AbstractInterceptUrlConfigurer<H extends HttpBuilder<H>,C,R> exte
      *         default {@link AccessDecisionManager}
      */
     @SuppressWarnings("rawtypes")
-    abstract List<AccessDecisionVoter> decisionVoters();
+    abstract List<AccessDecisionVoter> getDecisionVoters();
 
     /**
      * Creates the default {@code AccessDecisionManager}
      * @return the default {@code AccessDecisionManager}
      */
     private AccessDecisionManager createDefaultAccessDecisionManager() {
-        return new AffirmativeBased(decisionVoters());
+        return new AffirmativeBased(getDecisionVoters());
     }
 
     /**

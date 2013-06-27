@@ -1227,12 +1227,12 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return requestMatcher(new RegexRequestMatcher(pattern, null));
     }
 
-    // FIXME shared object or explicit?
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.HttpBuilder#authenticationManager()
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.security.config.annotation.web.HttpBuilder#getAuthenticationManager()
      */
     @Override
-    public AuthenticationManager authenticationManager() {
+    public AuthenticationManager getAuthenticationManager() {
         return authenticationManager;
     }
 

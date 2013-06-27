@@ -64,7 +64,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#authenticationManager()}</li>
+ * <li>{@link HttpConfiguration#getAuthenticationManager()}</li>
  * <li>{@link UserDetailsService} if no {@link #userDetailsService(UserDetailsService)} was specified.</li>
  * <li> {@link DefaultLoginPageViewFilter} - if present will be populated with information from the configuration</li>
  * </ul>
@@ -210,7 +210,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends Abstra
     @Override
     public void configure(H http) throws Exception {
         RememberMeAuthenticationFilter rememberMeFilter = new RememberMeAuthenticationFilter(
-                http.authenticationManager(), rememberMeServices);
+                http.getAuthenticationManager(), rememberMeServices);
         if (authenticationSuccessHandler != null) {
             rememberMeFilter
                     .setAuthenticationSuccessHandler(authenticationSuccessHandler);

@@ -55,7 +55,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#authenticationManager()}</li>
+ * <li>{@link HttpConfiguration#getAuthenticationManager()}</li>
  * <li>{@link RememberMeServices} - is optionally used. See {@link RememberMeConfigurer}</li>
  * <li>{@link SessionAuthenticationStrategy} - is optionally used. See {@link SessionManagementConfigurer}</li>
  * <li>{@link DefaultLoginPageViewFilter} - if present will be populated with information from the configuration</li>

@@ -104,7 +104,7 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
 
         clientCredentialsTokenEndpointFilter = new ClientCredentialsTokenEndpointFilter();
         clientCredentialsTokenEndpointFilter.setAuthenticationManager(http
-                .authenticationManager());
+                .getAuthenticationManager());
         clientCredentialsTokenEndpointFilter = postProcess(clientCredentialsTokenEndpointFilter);
 
         AuthenticationManager oauthAuthenticationManager = oauthAuthenticationManager(http);
@@ -172,7 +172,7 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
     }
 
     private AuthenticationManager authenticationManager(HttpConfiguration http) {
-        return http.authenticationManager();
+        return http.getAuthenticationManager();
     }
 
     public TokenGranter getTokenGranter() {

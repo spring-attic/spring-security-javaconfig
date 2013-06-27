@@ -231,7 +231,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
             authenticationEntryPoint.setPortMapper(portMapper);
         }
 
-        authFilter.setAuthenticationManager(http.authenticationManager());
+        authFilter.setAuthenticationManager(http.getAuthenticationManager());
         authFilter.setAuthenticationSuccessHandler(successHandler);
         authFilter.setAuthenticationFailureHandler(failureHandler);
         if(authenticationDetailsSource != null) {

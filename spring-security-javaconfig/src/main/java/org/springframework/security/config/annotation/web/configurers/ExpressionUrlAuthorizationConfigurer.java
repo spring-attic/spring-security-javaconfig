@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
  * The following shared objects are used:
  *
  * <ul>
- *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#authenticationManager()}</li>
+ *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#getAuthenticationManager()}</li>
  * </ul>
  *
  * @param <H> the type of {@link HttpBuilder} that is being configured
@@ -102,7 +102,7 @@ public final class ExpressionUrlAuthorizationConfigurer<H extends HttpBuilder<H>
 
     @Override
     @SuppressWarnings("rawtypes")
-    final List<AccessDecisionVoter> decisionVoters() {
+    final List<AccessDecisionVoter> getDecisionVoters() {
         List<AccessDecisionVoter> decisionVoters = new ArrayList<AccessDecisionVoter>();
         WebExpressionVoter expressionVoter = new WebExpressionVoter();
         expressionVoter.setExpressionHandler(expressionHandler);

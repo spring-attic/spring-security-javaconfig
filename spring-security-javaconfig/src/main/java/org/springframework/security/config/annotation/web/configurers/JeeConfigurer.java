@@ -62,7 +62,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#authenticationManager()}</li>
+ * <li>{@link HttpConfiguration#getAuthenticationManager()}</li>
  * </ul>
  *
  * @author Rob Winch
@@ -205,7 +205,7 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends AbstractHttpC
     @Override
     public void configure(H http) throws Exception {
         J2eePreAuthenticatedProcessingFilter filter = getFilter(http
-                .authenticationManager());
+                .getAuthenticationManager());
         http.addFilter(filter);
     }
 

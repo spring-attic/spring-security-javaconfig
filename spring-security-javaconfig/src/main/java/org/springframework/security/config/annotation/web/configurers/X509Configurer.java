@@ -163,7 +163,7 @@ public final class X509Configurer<H extends HttpBuilder<H>> extends AbstractHttp
 
     @Override
     public void configure(H http) throws Exception {
-        X509AuthenticationFilter filter = getFilter(http.authenticationManager());
+        X509AuthenticationFilter filter = getFilter(http.getAuthenticationManager());
         http.addFilter(filter);
     }
 

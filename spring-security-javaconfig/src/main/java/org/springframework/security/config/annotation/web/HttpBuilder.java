@@ -173,5 +173,5 @@ public interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<D
     H addFilter(Filter filter);
 
     // FIXME shared object or explicit?
-    AuthenticationManager authenticationManager();
+    AuthenticationManager getAuthenticationManager();
 }
