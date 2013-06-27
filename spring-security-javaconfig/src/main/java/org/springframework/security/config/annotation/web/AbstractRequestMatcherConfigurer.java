@@ -32,17 +32,15 @@ import org.springframework.security.web.util.RequestMatcher;
  * A base class for registering {@link RequestMatcher}'s. For example, it might allow for specifying which
  * {@link RequestMatcher} require a certain level of authorization.
  *
- * @author Rob Winch
- * @since 3.2
  *
+ * @param <B> The Builder that is building Object O and is configured by this {@link BaseRequestMatcherRegistry}
  * @param <C> The object that is returned or Chained after creating the RequestMatcher
  * @param <O> The Object being built by Builder B
- * @param <B> The Builder that is building Object O and is configured by this {@link BaseRequestMatcherRegistry}
  *
  * @author Rob Winch
  * @since 3.2
  */
-public abstract class AbstractRequestMatcherConfigurer<C,O,B extends SecurityBuilder<O>> extends SecurityConfigurerAdapter<O,B> {
+public abstract class AbstractRequestMatcherConfigurer<B extends SecurityBuilder<O>,C,O> extends SecurityConfigurerAdapter<O,B> {
     private static final RequestMatcher ANY_REQUEST = new AnyRequestMatcher();
     /**
      * Maps any request.

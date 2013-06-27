@@ -59,11 +59,14 @@ import org.springframework.util.Assert;
  *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#authenticationManager()}</li>
  * </ul>
  *
+ * @param <H> the type of {@link HttpBuilder} that is being configured
+ * @param <C> the type of object that is being chained
+ *
  * @author Rob Winch
  * @since 3.2
  * @see ExpressionUrlAuthorizationConfigurer
  */
-public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInterceptUrlConfigurer<UrlAuthorizations<H>.AuthorizedUrl,H> {
+public final class UrlAuthorizations<H extends HttpBuilder<H>, C> extends BaseInterceptUrlConfigurer<H,C,UrlAuthorizations<H,C>.AuthorizedUrl> {
 
     /**
      * Creates the default {@link AccessDecisionVoter} instances used if an
@@ -103,7 +106,7 @@ public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInter
      * @param configAttributes the {@link ConfigAttribute} instances that should be mapped by the {@link RequestMatcher} instances
      * @return the {@link UrlAuthorizations} for further customizations
      */
-    private UrlAuthorizations<H> addMapping(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+    private UrlAuthorizations<H,C> addMapping(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
         for(RequestMatcher requestMatcher : requestMatchers) {
             addMapping(new UrlMapping(requestMatcher, configAttributes));
         }
@@ -180,7 +183,7 @@ public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInter
          *            with ROLE_
          * the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations<H> hasRole(String role) {
+        public UrlAuthorizations<H,C> hasRole(String role) {
             return access(UrlAuthorizations.hasRole(role));
         }
 
@@ -193,7 +196,7 @@ public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInter
          *            it is automatically prepended already.
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations<H> hasAnyRole(String... roles) {
+        public UrlAuthorizations<H,C> hasAnyRole(String... roles) {
             return access(UrlAuthorizations.hasAnyRole(roles));
         }
 
@@ -204,7 +207,7 @@ public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInter
          *            the authority that should be required
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations<H> hasAuthority(String authority) {
+        public UrlAuthorizations<H,C> hasAuthority(String authority) {
             return access(authority);
         }
 
@@ -213,7 +216,7 @@ public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInter
          * @param authorities the authorities that the user should have at least one of (i.e. ROLE_USER, ROLE_ADMIN, etc).
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations<H> hasAnyAuthority(String... authorities) {
+        public UrlAuthorizations<H,C> hasAnyAuthority(String... authorities) {
             return access(UrlAuthorizations.hasAnyAuthority(authorities));
         }
 
@@ -221,7 +224,7 @@ public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInter
          * Specifies that an anonymous user is allowed access
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations<H> anonymous() {
+        public UrlAuthorizations<H,C> anonymous() {
             return hasRole("ROLE_ANONYMOUS");
         }
 
@@ -230,7 +233,7 @@ public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInter
          * @param attributes the {@link ConfigAttribute}'s that restrict access to a URL
          * @return the {@link UrlAuthorizations} for further customization
          */
-        public UrlAuthorizations<H> access(String... attributes) {
+        public UrlAuthorizations<H,C> access(String... attributes) {
             addMapping(requestMatchers, SecurityConfig.createList(attributes));
             return UrlAuthorizations.this;
         }

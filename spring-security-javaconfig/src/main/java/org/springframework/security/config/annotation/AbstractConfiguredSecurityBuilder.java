@@ -42,15 +42,15 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  *
  * @author Rob Winch
  *
- * @param <T>
+ * @param <O>
  *            The object that this builder returns
  * @param <B>
  *            The type of this builder (that is returned by the base class)
  */
-public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBuilder<T>> extends AbstractSecurityBuilder<T> {
+public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBuilder<O>> extends AbstractSecurityBuilder<O> {
 
-    private final LinkedHashMap<Class<? extends SecurityConfigurer<T, B>>, SecurityConfigurer<T, B>> configurers =
-            new LinkedHashMap<Class<? extends SecurityConfigurer<T, B>>, SecurityConfigurer<T, B>>();
+    private final LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, SecurityConfigurer<O, B>> configurers =
+            new LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, SecurityConfigurer<O, B>>();
 
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
@@ -58,13 +58,22 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
 
     private ObjectPostProcessor<Object> objectPostProcessor;
 
-
-
+    /**
+     * Creates a new instance without post processing
+     */
     protected AbstractConfiguredSecurityBuilder() {
         this(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR);
     }
 
+    /***
+     * Creates a new instance with the provided {@link ObjectPostProcessor}.
+     * This post processor must support Object since there are many types of
+     * objects that may be post processed.
+     *
+     * @param objectPostProcessor the {@link ObjectPostProcessor} to use
+     */
     protected AbstractConfiguredSecurityBuilder(ObjectPostProcessor<Object> objectPostProcessor) {
+        Assert.notNull(objectPostProcessor, "objectPostProcessor cannot be null");
         this.objectPostProcessor = objectPostProcessor;
     }
 
@@ -78,7 +87,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public <C extends SecurityConfigurerAdapter<T, B>> C apply(C configurer)
+    public <C extends SecurityConfigurerAdapter<O, B>> C apply(C configurer)
             throws Exception {
         add(configurer);
         configurer.addObjectPostProcessor(objectPostProcessor);
@@ -95,17 +104,29 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return
      * @throws Exception
      */
-    public <C extends SecurityConfigurer<T, B>> C apply(C configurer)
+    public <C extends SecurityConfigurer<O, B>> C apply(C configurer)
             throws Exception {
         add(configurer);
         return configurer;
     }
 
+    /**
+     * Sets an object that is shared by multiple {@link SecurityConfigurer}.
+     *
+     * @param sharedType the Class to key the shared object by.
+     * @param object the Object to store
+     */
     @SuppressWarnings("unchecked")
     public <C> void setSharedObject(Class<C> sharedType, C object) {
         this.sharedObjects.put((Class<Object>) sharedType, object);
     }
 
+    /**
+     * Gets a shared Object. Note that object heirarchies are not considered.
+     *
+     * @param sharedType the type of the shared Object
+     * @return the shared Object or null if it is not found
+     */
     @SuppressWarnings("unchecked")
     public <C> C getSharedObject(Class<C> sharedType) {
         return (C) this.sharedObjects.get(sharedType);
@@ -128,8 +149,10 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @throws Exception if an error occurs
      */
     @SuppressWarnings("unchecked")
-    private <C extends SecurityConfigurer<T, B>> void add(C configurer) throws Exception {
-        Class<? extends SecurityConfigurer<T, B>> clazz = (Class<? extends SecurityConfigurer<T, B>>) configurer
+    private <C extends SecurityConfigurer<O, B>> void add(C configurer) throws Exception {
+        Assert.notNull(configurer, "configurer cannot be null");
+
+        Class<? extends SecurityConfigurer<O, B>> clazz = (Class<? extends SecurityConfigurer<O, B>>) configurer
                 .getClass();
         synchronized(configurers) {
             if(buildState.isConfigured()) {
@@ -151,7 +174,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected <C extends SecurityConfigurer<T, B>> C getConfigurer(
+    protected <C extends SecurityConfigurer<O, B>> C getConfigurer(
             Class<C> clazz) {
         return (C) configurers.get(clazz);
     }
@@ -165,7 +188,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <C extends SecurityConfigurer<T,B>> C removeConfigurer(Class<C> clazz) {
+    public <C extends SecurityConfigurer<O,B>> C removeConfigurer(Class<C> clazz) {
         return (C) configurers.remove(clazz);
     }
 
@@ -175,10 +198,10 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @return the {@link SecurityBuilder} for further customizations
      */
     @SuppressWarnings("unchecked")
-    public T objectPostProcessor(ObjectPostProcessor<Object> objectPostProcessor) {
+    public O objectPostProcessor(ObjectPostProcessor<Object> objectPostProcessor) {
         Assert.notNull(objectPostProcessor,"objectPostProcessor cannot be null");
         this.objectPostProcessor = objectPostProcessor;
-        return (T) this;
+        return (O) this;
     }
 
     /**
@@ -188,8 +211,8 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @param object the Object to post process
      * @return the possibly modified Object to use
      */
-    protected <O> O postProcess(O object) {
-        return (O) this.objectPostProcessor.postProcess(object);
+    protected <P> P postProcess(P object) {
+        return (P) this.objectPostProcessor.postProcess(object);
     }
 
     /**
@@ -203,7 +226,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * </ul>
      */
     @Override
-    protected final T doBuild() throws Exception {
+    protected final O doBuild() throws Exception {
         synchronized(configurers) {
             buildState = BuildState.INITIALIZING;
 
@@ -217,7 +240,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
 
             buildState = BuildState.BUILDING;
 
-            T result = performBuild();
+            O result = performBuild();
 
             buildState = BuildState.BUILT;
 
@@ -248,28 +271,28 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      *
      * @return
      */
-    protected abstract T performBuild() throws Exception;
+    protected abstract O performBuild() throws Exception;
 
     @SuppressWarnings("unchecked")
     private void init() throws Exception {
-        Collection<SecurityConfigurer<T,B>> configurers = getConfigurers();
+        Collection<SecurityConfigurer<O,B>> configurers = getConfigurers();
 
-        for(SecurityConfigurer<T,B> configurer : configurers ) {
+        for(SecurityConfigurer<O,B> configurer : configurers ) {
             configurer.init((B) this);
         }
     }
 
     @SuppressWarnings("unchecked")
     private void configure() throws Exception {
-        Collection<SecurityConfigurer<T,B>> configurers = getConfigurers();
+        Collection<SecurityConfigurer<O,B>> configurers = getConfigurers();
 
-        for(SecurityConfigurer<T,B> configurer : configurers ) {
+        for(SecurityConfigurer<O,B> configurer : configurers ) {
             configurer.configure((B) this);
         }
     }
 
-    private Collection<SecurityConfigurer<T, B>> getConfigurers() {
-        return new ArrayList<SecurityConfigurer<T,B>>(this.configurers.values());
+    private Collection<SecurityConfigurer<O, B>> getConfigurers() {
+        return new ArrayList<SecurityConfigurer<O,B>>(this.configurers.values());
     }
 
     /**

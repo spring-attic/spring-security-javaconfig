@@ -53,13 +53,17 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#authenticationManager()}</li>
  * </ul>
  *
+ * @param <H> the type of {@link HttpBuilder} that is being configured
+ * @param <C> the type of object that is changed
+ * @param <R> the type of object that is changed for the {@link BaseRequestMatcherRegistry}
+ *
  * @author Rob Winch
  * @since 3.2
  * @see ExpressionUrlAuthorizationConfigurer
  * @see UrlAuthorizations
  */
-abstract class BaseInterceptUrlConfigurer<T,H extends HttpBuilder<H>> extends
-        BaseRequestMatcherRegistry<T,DefaultSecurityFilterChain,H> implements
+abstract class BaseInterceptUrlConfigurer<H extends HttpBuilder<H>,C,R> extends
+        BaseRequestMatcherRegistry<H,R,DefaultSecurityFilterChain> implements
         SecurityConfigurer<DefaultSecurityFilterChain,H> {
     private Boolean filterSecurityInterceptorOncePerRequest;
 
@@ -72,7 +76,7 @@ abstract class BaseInterceptUrlConfigurer<T,H extends HttpBuilder<H>> extends
      * @param accessDecisionManager the {@link AccessDecisionManager} to use
      * @return  the {@link BaseInterceptUrlConfigurer} for further customization
      */
-    public T accessDecisionManager(
+    public C accessDecisionManager(
             AccessDecisionManager accessDecisionManager) {
         this.accessDecisionManager = accessDecisionManager;
         return getSelf();
@@ -86,7 +90,7 @@ abstract class BaseInterceptUrlConfigurer<T,H extends HttpBuilder<H>> extends
      *                                                once per request
      * @return  the {@link BaseInterceptUrlConfigurer} for further customization
      */
-    public T filterSecurityInterceptorOncePerRequest(
+    public C filterSecurityInterceptorOncePerRequest(
             boolean filterSecurityInterceptorOncePerRequest) {
         this.filterSecurityInterceptorOncePerRequest = filterSecurityInterceptorOncePerRequest;
         return getSelf();
@@ -171,7 +175,7 @@ abstract class BaseInterceptUrlConfigurer<T,H extends HttpBuilder<H>> extends
      * @return a reference to the current object
      */
     @SuppressWarnings("unchecked")
-    private T getSelf() {
-        return (T) this;
+    private C getSelf() {
+        return (C) this;
     }
 }

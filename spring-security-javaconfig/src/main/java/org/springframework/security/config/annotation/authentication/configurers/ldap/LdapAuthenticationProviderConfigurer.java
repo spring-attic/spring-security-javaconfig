@@ -17,12 +17,11 @@ package org.springframework.security.config.annotation.authentication.configurer
 
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
-import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.ProviderManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.authentication.AbstractLdapAuthenticator;
@@ -40,12 +39,14 @@ import org.springframework.security.ldap.userdetails.PersonContextMapper;
 import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 
 /**
+ * Configures LDAP {@link AuthenticationProvider} in the {@link ProviderManagerBuilder}.
+ *
+ * @param <B> the {@link ProviderManagerBuilder} type that this is configuring.
  *
  * @author Rob Winch
  * @since 3.2
  */
-public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuilder<T>> extends SecurityConfigurerAdapter<AuthenticationManager,T> implements
-        SecurityBuilder<LdapAuthenticationProvider> {
+public class LdapAuthenticationProviderConfigurer<B extends ProviderManagerBuilder<B>> extends SecurityConfigurerAdapter<AuthenticationManager,B> {
     private String groupRoleAttribute = "cn";
     private String groupSearchBase = "";
     private String groupSearchFilter = "(uniqueMember={0})";
@@ -59,8 +60,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
     private PasswordEncoder passwordEncoder;
     public String passwordAttribute;
 
-    @Override
-    public LdapAuthenticationProvider build() throws Exception {
+    private LdapAuthenticationProvider build() throws Exception {
         BaseLdapPathContextSource contextSource = getContextSource();
         LdapAuthenticator ldapAuthenticator = createLdapAuthenticator(contextSource);
 
@@ -141,7 +141,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      *         customizations
      * @see #contextSource()
      */
-    public LdapAuthenticationProviderConfigurer<T> contextSource(BaseLdapPathContextSource contextSource) {
+    public LdapAuthenticationProviderConfigurer<B> contextSource(BaseLdapPathContextSource contextSource) {
         this.contextSource = contextSource;
         return this;
     }
@@ -156,7 +156,14 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
         return contextSourceBuilder;
     }
 
-    public LdapAuthenticationProviderConfigurer<T> passwordEncoder(PasswordEncoder passwordEncoder) {
+    /**
+     * Specifies the {@link PasswordEncoder} to be used when authenticating with
+     * password comparison.
+     *
+     * @param passwordEncoder the {@link PasswordEncoder} to use
+     * @return the {@link LdapAuthenticationProviderConfigurer} for further customization
+     */
+    public LdapAuthenticationProviderConfigurer<B> passwordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
         return this;
     }
@@ -173,7 +180,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      * @param userDnPatterns the LDAP patterns for finding the usernames
      * @return the {@link LdapAuthenticationProviderConfigurer} for further customizations
      */
-    public LdapAuthenticationProviderConfigurer<T> userDnPatterns(String...userDnPatterns) {
+    public LdapAuthenticationProviderConfigurer<B> userDnPatterns(String...userDnPatterns) {
         this.userDnPatterns = userDnPatterns;
         return this;
     }
@@ -191,7 +198,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      * @see InetOrgPersonContextMapper
      * @see LdapUserDetailsMapper
      */
-    public LdapAuthenticationProviderConfigurer<T> userDetailsContextMapper(UserDetailsContextMapper userDetailsContextMapper) {
+    public LdapAuthenticationProviderConfigurer<B> userDetailsContextMapper(UserDetailsContextMapper userDetailsContextMapper) {
         this.userDetailsContextMapper = userDetailsContextMapper;
         return this;
     }
@@ -201,7 +208,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      * @param groupRoleAttribute the attribute name that maps a group to a role.
      * @return
      */
-    public LdapAuthenticationProviderConfigurer<T> groupRoleAttribute(String groupRoleAttribute) {
+    public LdapAuthenticationProviderConfigurer<B> groupRoleAttribute(String groupRoleAttribute) {
         this.groupRoleAttribute = groupRoleAttribute;
         return this;
     }
@@ -211,7 +218,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      * @param groupSearchBase
      * @return the {@link LdapAuthenticationProviderConfigurer} for further customizations
      */
-    public LdapAuthenticationProviderConfigurer<T> groupSearchBase(String groupSearchBase) {
+    public LdapAuthenticationProviderConfigurer<B> groupSearchBase(String groupSearchBase) {
         this.groupSearchBase = groupSearchBase;
         return this;
     }
@@ -223,7 +230,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      * @param groupSearchFilter the LDAP filter to search for groups
      * @return the {@link LdapAuthenticationProviderConfigurer} for further customizations
      */
-    public LdapAuthenticationProviderConfigurer<T> groupSearchFilter(String groupSearchFilter) {
+    public LdapAuthenticationProviderConfigurer<B> groupSearchFilter(String groupSearchFilter) {
         this.groupSearchFilter = groupSearchFilter;
         return this;
     }
@@ -236,7 +243,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      * @return the {@link LdapAuthenticationProviderConfigurer} for further customizations
      * @see SimpleAuthorityMapper#setPrefix(String)
      */
-    public LdapAuthenticationProviderConfigurer<T> rolePrefix(String rolePrefix) {
+    public LdapAuthenticationProviderConfigurer<B> rolePrefix(String rolePrefix) {
         this.rolePrefix = rolePrefix;
         return this;
     }
@@ -246,7 +253,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      * @param userSearchBase search base for user searches
      * @return the {@link LdapAuthenticationProviderConfigurer} for further customizations
      */
-    public LdapAuthenticationProviderConfigurer<T> userSearchBase(String userSearchBase) {
+    public LdapAuthenticationProviderConfigurer<B> userSearchBase(String userSearchBase) {
         this.userSearchBase = userSearchBase;
         return this;
     }
@@ -260,13 +267,13 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
      * @return the {@link LdapAuthenticationProviderConfigurer} for further
      *         customizations
      */
-    public LdapAuthenticationProviderConfigurer<T> userSearchFilter(String userSearchFilter) {
+    public LdapAuthenticationProviderConfigurer<B> userSearchFilter(String userSearchFilter) {
         this.userSearchFilter = userSearchFilter;
         return this;
     }
 
     @Override
-    public void configure(T builder) throws Exception {
+    public void configure(B builder) throws Exception {
         LdapAuthenticationProvider provider = postProcess(build());
         builder.authenticationProvider(provider);
     }
@@ -306,7 +313,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
          *
          * @return attribute in the directory which contains the user password
          */
-        public LdapAuthenticationProviderConfigurer<T> and() {
+        public LdapAuthenticationProviderConfigurer<B> and() {
             return LdapAuthenticationProviderConfigurer.this;
         }
 
@@ -411,7 +418,7 @@ public class LdapAuthenticationProviderConfigurer<T extends ProviderManagerBuild
          * @return the {@link LdapAuthenticationProviderConfigurer} for further
          *         customizations
          */
-        public LdapAuthenticationProviderConfigurer<T> and() {
+        public LdapAuthenticationProviderConfigurer<B> and() {
             return LdapAuthenticationProviderConfigurer.this;
         }
 

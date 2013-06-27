@@ -61,11 +61,13 @@ import org.springframework.util.StringUtils;
  *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#authenticationManager()}</li>
  * </ul>
  *
+ * @param <H> the type of {@link HttpBuilder} that is being configured
+ *
  * @author Rob Winch
  * @since 3.2
  * @see {@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#authorizeUrls()}
  */
-public final class ExpressionUrlAuthorizationConfigurer<H extends HttpBuilder<H>> extends BaseInterceptUrlConfigurer<ExpressionUrlAuthorizationConfigurer<H>.AuthorizedUrl,H> {
+public final class ExpressionUrlAuthorizationConfigurer<H extends HttpBuilder<H>> extends BaseInterceptUrlConfigurer<H,ExpressionUrlAuthorizationConfigurer<H>,ExpressionUrlAuthorizationConfigurer<H>.AuthorizedUrl> {
     static final String permitAll = "permitAll";
     private static final String denyAll = "denyAll";
     private static final String anonymous = "anonymous";

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ProviderManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.userdetails.UserDetailsServiceConfigurer;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,11 +35,14 @@ import org.springframework.util.Assert;
  * {@link org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder} with a
  * {@link UserDetailsManager}.
  *
+ * @param <B> the type of the {@link SecurityBuilder} that is being configured
+ * @param <C> the type of {@link UserDetailsManagerConfigurer}
+ *
  * @author Rob Winch
  * @since 3.2
  */
-public class UserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B>, T extends UserDetailsManagerConfigurer<B,T>> extends
-        UserDetailsServiceConfigurer<B,T,UserDetailsManager> {
+public class UserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B>, C extends UserDetailsManagerConfigurer<B,C>> extends
+        UserDetailsServiceConfigurer<B,C,UserDetailsManager> {
 
     private final List<UserDetailsBuilder> userBuilders = new ArrayList<UserDetailsBuilder>();
 
@@ -67,7 +71,7 @@ public class UserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B>, T
      */
     @SuppressWarnings("unchecked")
     public final UserDetailsBuilder withUser(String username) {
-        UserDetailsBuilder userBuilder = new UserDetailsBuilder((T)this);
+        UserDetailsBuilder userBuilder = new UserDetailsBuilder((C)this);
         userBuilder.username(username);
         this.userBuilders.add(userBuilder);
         return userBuilder;
@@ -87,13 +91,13 @@ public class UserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B>, T
         private boolean accountLocked;
         private boolean credentialsExpired;
         private boolean disabled;
-        private final T builder;
+        private final C builder;
 
         /**
          * Creates a new instance
          * @param builder the builder to return
          */
-        private UserDetailsBuilder(T builder) {
+        private UserDetailsBuilder(C builder) {
             this.builder = builder;
         }
 
@@ -102,7 +106,7 @@ public class UserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B>, T
          *
          * @return the {@link UserDetailsManagerRegistry} for method chaining (i.e. to add another user)
          */
-        public T and() {
+        public C and() {
             return builder;
         }
 

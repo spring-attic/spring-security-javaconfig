@@ -21,9 +21,9 @@ package org.springframework.security.config.annotation;
  * @author Rob Winch
  * @since 3.2
  *
- * @param <T> The type of the Object being built
+ * @param <O> The type of the Object being built
  */
-public interface SecurityBuilder<T> {
+public interface SecurityBuilder<O> {
 
     /**
      * Builds the object and returns it or null.
@@ -31,5 +31,5 @@ public interface SecurityBuilder<T> {
      * @return the Object to be built or null if the implementation allows it.
      * @throws Exception if an error occured when building the Object
      */
-    T build() throws Exception;
+    O build() throws Exception;
 }

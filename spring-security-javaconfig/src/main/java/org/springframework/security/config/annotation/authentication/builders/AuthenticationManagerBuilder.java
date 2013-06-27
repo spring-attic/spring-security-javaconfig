@@ -226,12 +226,20 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
      * {@link AuthenticationManagerBuilder}. The result may be null in some
      * circumstances.
      *
-     * @return
+     * @return the default {@link UserDetailsService} for the
+     * {@link AuthenticationManagerBuilder}
      */
     public UserDetailsService getDefaultUserDetailsService() {
         return this.defaultUserDetailsService;
     }
 
+    /**
+     * Captures the {@link UserDetailsService} from any {@link UserDetailsAwareConfigurer}.
+     *
+     * @param configurer the {@link UserDetailsAwareConfigurer} to capture the {@link UserDetailsService} from.
+     * @return the {@link UserDetailsAwareConfigurer} for further customizations
+     * @throws Exception if an error occurs
+     */
     private <C extends UserDetailsAwareConfigurer<AuthenticationManagerBuilder,? extends UserDetailsService>> C apply(C configurer) throws Exception {
         this.defaultUserDetailsService = configurer.getUserDetailsService();
         return (C) super.apply(configurer);

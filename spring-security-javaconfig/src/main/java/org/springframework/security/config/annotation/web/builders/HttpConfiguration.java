@@ -17,7 +17,6 @@ package org.springframework.security.config.annotation.web.builders;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -1243,7 +1242,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @author Rob Winch
      * @since 3.2
      */
-    public final class RequestMatcherRegistry extends AbstractRequestMatcherConfigurer<RequestMatcherRegistry,DefaultSecurityFilterChain,HttpConfiguration> {
+    public final class RequestMatcherRegistry extends AbstractRequestMatcherConfigurer<HttpConfiguration,RequestMatcherRegistry,DefaultSecurityFilterChain> {
 
         protected RequestMatcherRegistry chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             requestMatcher(new OrRequestMatcher(requestMatchers));

@@ -239,7 +239,7 @@ public final class WebSecurity extends
      * @author Rob Winch
      * @since 3.2
      */
-    public final class IgnoredRequestRegistry extends BaseRequestMatcherRegistry<IgnoredRequestRegistry,Filter,WebSecurity> {
+    public final class IgnoredRequestRegistry extends BaseRequestMatcherRegistry<WebSecurity,IgnoredRequestRegistry,Filter> {
 
         @Override
         protected IgnoredRequestRegistry chainRequestMatchersInternal(List<RequestMatcher> requestMatchers) {

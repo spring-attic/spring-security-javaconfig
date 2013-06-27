@@ -25,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 * @author Rob Winch
 * @since 3.2
 *
-* @param <T> This
+* @param <B> The type of {@link ProviderManagerBuilder} this is
 * @param <U> The type of {@link UserDetailsService} that is being used
 *
 */

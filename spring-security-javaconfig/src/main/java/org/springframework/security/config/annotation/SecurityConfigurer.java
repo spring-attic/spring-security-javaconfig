@@ -21,6 +21,8 @@ package org.springframework.security.config.annotation;
  * method invoked. After all {@link #init(SecurityBuilder)} methods have been
  * invoked, each {@link #configure(SecurityBuilder)} method is invoked.
  *
+ * @see AbstractConfiguredSecurityBuilder
+ *
  * @author Rob Winch
  *
  * @param <O>

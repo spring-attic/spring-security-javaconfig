@@ -28,15 +28,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  *
  * @param <B> the type of the {@link SecurityBuilder}
  * @param <C> the {@link SecurityConfigurer} (or this)
- * @param <T> the type of UserDetailsService being used to allow for returning the concrete UserDetailsService.
+ * @param <U> the type of UserDetailsService being used to allow for returning the concrete UserDetailsService.
  */
-public class UserDetailsServiceConfigurer<B extends ProviderManagerBuilder<B>, C extends UserDetailsServiceConfigurer<B, C, T>,T extends UserDetailsService> extends BaseDaoAuthenticationConfigurer<B, C,T> {
+public class UserDetailsServiceConfigurer<B extends ProviderManagerBuilder<B>,
+        C extends UserDetailsServiceConfigurer<B, C, U>,
+        U extends UserDetailsService>
+            extends BaseDaoAuthenticationConfigurer<B, C, U> {
 
     /**
      * Creates a new instance
      * @param userDetailsService the {@link UserDetailsService} that should be used
      */
-    public UserDetailsServiceConfigurer(T userDetailsService) {
+    public UserDetailsServiceConfigurer(U userDetailsService) {
         super(userDetailsService);
     }
 

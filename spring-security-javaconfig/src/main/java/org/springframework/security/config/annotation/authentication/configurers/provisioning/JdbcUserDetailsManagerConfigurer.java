@@ -38,7 +38,7 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
  * The only required method is the {@link #dataSource(javax.sql.DataSource)} all other methods have reasonable defaults.
  * </p>
  *
- * @param <B> the type of the {@link SecurityBuilder}
+ * @param <B> the type of the {@link ProviderManagerBuilder} that is being configured
  *
  * @author Rob Winch
  * @since 3.2
@@ -157,7 +157,7 @@ public class JdbcUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B
     @Override
     protected void initUserDetailsService() throws Exception {
         if(!initScripts.isEmpty()) {
-            initDatabase().afterPropertiesSet();
+            getDataSourceInit().afterPropertiesSet();
         }
         super.initUserDetailsService();
     }
@@ -177,15 +177,15 @@ public class JdbcUserDetailsManagerConfigurer<B extends ProviderManagerBuilder<B
         return this;
     }
 
-    protected DatabasePopulator databasePopulator() {
+    protected DatabasePopulator getDatabasePopulator() {
         ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
         dbp.setScripts(initScripts.toArray(new Resource[initScripts.size()]));
         return dbp;
     }
 
-    private DataSourceInitializer initDatabase() {
+    private DataSourceInitializer getDataSourceInit() {
         DataSourceInitializer dsi = new DataSourceInitializer();
-        dsi.setDatabasePopulator(databasePopulator());
+        dsi.setDatabasePopulator(getDatabasePopulator());
         dsi.setDataSource(dataSource);
         return dsi;
     }

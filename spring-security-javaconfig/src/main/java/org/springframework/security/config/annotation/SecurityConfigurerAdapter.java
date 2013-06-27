@@ -20,8 +20,6 @@ import java.util.List;
 
 import org.springframework.core.GenericTypeResolver;
 
-
-
 /**
  * A base class for {@link SecurityConfigurer} that allows subclasses to only
  * implement the methods they are interested in. It also provides a mechanism
@@ -92,12 +90,24 @@ public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> 
         this.objectPostProcessor.addObjectPostProcessor(objectPostProcessor);
     }
 
-    public void setBuilder(
-            B securityFilterChain) {
-        this.securityBuilder = securityFilterChain;
+    /**
+     * Sets the {@link SecurityBuilder} to be used. This is automatically set
+     * when using
+     * {@link AbstractConfiguredSecurityBuilder#apply(SecurityConfigurerAdapter)}
+     *
+     * @param builder the {@link SecurityBuilder} to set
+     */
+    public void setBuilder(B builder) {
+        this.securityBuilder = builder;
     }
 
-    private static class CompositeObjectPostProcessor implements ObjectPostProcessor<Object> {
+    /**
+     * An {@link ObjectPostProcessor} that delegates work to numerous
+     * {@link ObjectPostProcessor} implementations.
+     *
+     * @author Rob Winch
+     */
+    private static final class CompositeObjectPostProcessor implements ObjectPostProcessor<Object> {
         private List<ObjectPostProcessor<? extends Object>> postProcessors = new ArrayList<ObjectPostProcessor<?>>();
 
         @Override
@@ -106,14 +116,19 @@ public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> 
             for(ObjectPostProcessor opp : postProcessors) {
                 Class<?> oppClass = opp.getClass();
                 Class<?> oppType = GenericTypeResolver.resolveTypeArgument(oppClass,ObjectPostProcessor.class);
-                if(oppType.isAssignableFrom(object.getClass())) {
+                if(oppType != null && oppType.isAssignableFrom(object.getClass())) {
                     object = opp.postProcess(object);
                 }
             }
             return object;
         }
 
-        public boolean addObjectPostProcessor(ObjectPostProcessor<?extends Object> objectPostProcessor) {
+        /**
+         * Adds an {@link ObjectPostProcessor} to use
+         * @param objectPostProcessor the {@link ObjectPostProcessor} to add
+         * @return true if the {@link ObjectPostProcessor} was added, else false
+         */
+        private boolean addObjectPostProcessor(ObjectPostProcessor<?extends Object> objectPostProcessor) {
             return this.postProcessors.add(objectPostProcessor);
         }
     }

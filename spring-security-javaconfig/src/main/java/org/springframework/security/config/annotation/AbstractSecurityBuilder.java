@@ -20,20 +20,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * A base {@link SecurityBuilder} that ensures the object being built is only
  * built one time.
+ * 
+ * @param <O> the type of Object that is being built
  *
  * @author Rob Winch
  *
  */
-public abstract class AbstractSecurityBuilder<T> implements SecurityBuilder<T> {
+public abstract class AbstractSecurityBuilder<O> implements SecurityBuilder<O> {
     private AtomicBoolean building = new AtomicBoolean();
 
-    private T object;
+    private O object;
 
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.SecurityBuilder#build()
      */
     @Override
-    public final T build() throws Exception {
+    public final O build() throws Exception {
         if(building.compareAndSet(false, true)) {
             object = doBuild();
             return object;
@@ -41,12 +43,25 @@ public abstract class AbstractSecurityBuilder<T> implements SecurityBuilder<T> {
         throw new IllegalStateException("This object has already been built");
     }
 
-    public final T getObject() {
+    /**
+     * Gets the object that was built. If it has not been built yet an Exception
+     * is thrown.
+     *
+     * @return the Object that was built
+     */
+    public final O getObject() {
         if(!building.get()) {
             throw new IllegalStateException("This object has not been built");
         }
         return object;
     }
 
-    protected abstract T doBuild() throws Exception;
+    /**
+     * Subclasses should implement this to perform the build.
+     *
+     * @return the object that should be returned by {@link #build()}.
+     *
+     * @throws Exception if an error occurs
+     */
+    protected abstract O doBuild() throws Exception;
 }

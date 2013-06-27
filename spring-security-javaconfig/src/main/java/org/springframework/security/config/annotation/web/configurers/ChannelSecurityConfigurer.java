@@ -65,11 +65,13 @@ import org.springframework.security.web.util.RequestMatcher;
  *     <li>{@link PortMapper} is used to create the default {@link ChannelProcessor} instances</li>
  * </ul>
  *
+ * @param <H> the type of {@link HttpBuilder} that is being configured
+ *
  * @author Rob Winch
  * @since 3.2
  */
 public final class ChannelSecurityConfigurer<H extends HttpBuilder<H>> extends
-        BaseRequestMatcherRegistry<ChannelSecurityConfigurer<H>.AuthorizedUrl,DefaultSecurityFilterChain,H> {
+        BaseRequestMatcherRegistry<H,ChannelSecurityConfigurer<H>.AuthorizedUrl,DefaultSecurityFilterChain> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();
     private List<ChannelProcessor> channelProcessors;

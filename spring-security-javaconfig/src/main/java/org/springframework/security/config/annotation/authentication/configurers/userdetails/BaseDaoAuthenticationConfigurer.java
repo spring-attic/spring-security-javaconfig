@@ -29,7 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @since 3.2
  *
  * @param <B> the type of the {@link SecurityBuilder}
- * @param <T> This
+ * @param <C> the type of {@link BaseDaoAuthenticationConfigurer} this is
  * @param <U> The type of {@link UserDetailsService} that is being used
  *
  */

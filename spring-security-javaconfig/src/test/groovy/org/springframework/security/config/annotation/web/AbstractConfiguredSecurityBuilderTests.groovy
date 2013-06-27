@@ -16,6 +16,7 @@
 package org.springframework.security.config.annotation.web
 
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter
 import org.springframework.test.util.ReflectionTestUtils
@@ -29,6 +30,24 @@ import spock.lang.Specification
 class AbstractConfiguredSecurityBuilderTests extends Specification {
 
     ConcreteAbstractConfiguredBuilder builder = new ConcreteAbstractConfiguredBuilder()
+
+    def "Null ObjectPostProcessor rejected"() {
+        when:
+            new ConcreteAbstractConfiguredBuilder(null)
+        then:
+            thrown(IllegalArgumentException)
+        when:
+            builder.objectPostProcessor(null);
+        then:
+            thrown(IllegalArgumentException)
+    }
+
+    def "apply null is rejected"() {
+        when:
+            builder.apply(null)
+        then:
+            thrown(IllegalArgumentException)
+    }
 
     def "Duplicate configurer is removed"() {
         when:
@@ -78,6 +97,14 @@ class AbstractConfiguredSecurityBuilderTests extends Specification {
     private static class ConcreteConfigurer extends SecurityConfigurerAdapter<Object, ConcreteAbstractConfiguredBuilder> { }
 
     private static class ConcreteAbstractConfiguredBuilder extends AbstractConfiguredSecurityBuilder<Object, ConcreteAbstractConfiguredBuilder> {
+
+        public ConcreteAbstractConfiguredBuilder() {
+        }
+
+        public ConcreteAbstractConfiguredBuilder(ObjectPostProcessor<Object> objectPostProcessor) {
+            super(objectPostProcessor);
+        }
+
         public Object performBuild() throws Exception {
             return "success";
         }
