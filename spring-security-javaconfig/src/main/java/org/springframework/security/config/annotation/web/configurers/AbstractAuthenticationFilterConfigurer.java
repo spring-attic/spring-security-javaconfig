@@ -46,7 +46,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuilder<B>,T extends AbstractAuthenticationFilterConfigurer<B,T, F>, F extends AbstractAuthenticationProcessingFilter> extends BaseHttpConfigurer<B> {
+public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuilder<B>,T extends AbstractAuthenticationFilterConfigurer<B,T, F>, F extends AbstractAuthenticationProcessingFilter> extends AbstractHttpConfigurer<B> {
 
     protected final F authFilter;
 

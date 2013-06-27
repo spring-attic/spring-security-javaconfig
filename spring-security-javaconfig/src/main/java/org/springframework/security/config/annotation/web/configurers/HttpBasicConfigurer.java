@@ -55,7 +55,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public final class HttpBasicConfigurer<B extends HttpBuilder<B>> extends BaseHttpConfigurer<B> {
+public final class HttpBasicConfigurer<B extends HttpBuilder<B>> extends AbstractHttpConfigurer<B> {
     private static final String DEFAULT_REALM = "Spring Security Application";
 
     private AuthenticationEntryPoint authenticationEntryPoint;

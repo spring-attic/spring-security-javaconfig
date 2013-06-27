@@ -57,7 +57,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
  * @author Rob Winch
  * @since 3.2
  */
-public final class SecurityContextConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
+public final class SecurityContextConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
 
     /**
      * Creates a new instance

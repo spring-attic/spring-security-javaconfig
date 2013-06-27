@@ -71,7 +71,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
  * @author Rob Winch
  * @since 3.2
  */
-public final class X509Configurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
+public final class X509Configurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
     private X509AuthenticationFilter x509AuthenticationFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService;
     private String subjectPrincipalRegex;

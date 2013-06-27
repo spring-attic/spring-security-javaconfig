@@ -68,7 +68,7 @@ import org.springframework.util.Assert;
  * @see SessionManagementFilter
  * @see ConcurrentSessionFilter
  */
-public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
+public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
     private Integer maximumSessions;

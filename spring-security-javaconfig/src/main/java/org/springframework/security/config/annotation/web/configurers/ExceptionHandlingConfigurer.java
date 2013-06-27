@@ -57,7 +57,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
  * @author Rob Winch
  * @since 3.2
  */
-public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
+public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
 
     private AuthenticationEntryPoint authenticationEntryPoint;
 

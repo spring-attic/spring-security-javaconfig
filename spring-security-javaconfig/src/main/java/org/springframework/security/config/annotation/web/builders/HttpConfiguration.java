@@ -1125,7 +1125,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * </pre>
      *
      * The configuration differs from the previous configurations because it invokes
-     * {@link #requestMatchers()} twice which resets the {@link RequestMatcherRegistry}.
+     * {@link #requestMatchers()} twice which resets the {@link RequestMatcherConfigurer}.
      * Therefore the configuration below only matches on URLs that start with "/oauth/**".
      *
      * <pre>
@@ -1159,10 +1159,10 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @return the {@link RequestMatcherRegistry} for further customizations
+     * @return the {@link RequestMatcherConfigurer} for further customizations
      */
-    public RequestMatcherRegistry requestMatchers() {
-        return new RequestMatcherRegistry();
+    public RequestMatcherConfigurer requestMatchers() {
+        return new RequestMatcherConfigurer();
     }
 
     /**
@@ -1242,9 +1242,9 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @author Rob Winch
      * @since 3.2
      */
-    public final class RequestMatcherRegistry extends AbstractRequestMatcherConfigurer<HttpConfiguration,RequestMatcherRegistry,DefaultSecurityFilterChain> {
+    public final class RequestMatcherConfigurer extends AbstractRequestMatcherConfigurer<HttpConfiguration,RequestMatcherConfigurer,DefaultSecurityFilterChain> {
 
-        protected RequestMatcherRegistry chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+        protected RequestMatcherConfigurer chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             requestMatcher(new OrRequestMatcher(requestMatchers));
             return this;
         }
@@ -1258,7 +1258,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
             return HttpConfiguration.this;
         }
 
-        private RequestMatcherRegistry(){}
+        private RequestMatcherConfigurer(){}
     }
 
     /**

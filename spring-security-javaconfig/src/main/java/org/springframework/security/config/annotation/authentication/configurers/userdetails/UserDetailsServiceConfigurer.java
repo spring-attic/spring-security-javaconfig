@@ -33,7 +33,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class UserDetailsServiceConfigurer<B extends ProviderManagerBuilder<B>,
         C extends UserDetailsServiceConfigurer<B, C, U>,
         U extends UserDetailsService>
-            extends BaseDaoAuthenticationConfigurer<B, C, U> {
+            extends AbstractDaoAuthenticationConfigurer<B, C, U> {
 
     /**
      * Creates a new instance

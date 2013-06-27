@@ -54,7 +54,7 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
  * @since 3.2
  * @see RequestCache
  */
-public final class RequestCacheConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
+public final class RequestCacheConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
 
     public RequestCacheConfigurer() {
     }

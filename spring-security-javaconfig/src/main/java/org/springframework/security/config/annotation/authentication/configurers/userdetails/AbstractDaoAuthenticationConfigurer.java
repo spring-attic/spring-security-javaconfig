@@ -29,11 +29,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @since 3.2
  *
  * @param <B> the type of the {@link SecurityBuilder}
- * @param <C> the type of {@link BaseDaoAuthenticationConfigurer} this is
+ * @param <C> the type of {@link AbstractDaoAuthenticationConfigurer} this is
  * @param <U> The type of {@link UserDetailsService} that is being used
  *
  */
-abstract class BaseDaoAuthenticationConfigurer<B extends ProviderManagerBuilder<B>, C extends BaseDaoAuthenticationConfigurer<B,C,U>,U extends UserDetailsService> extends UserDetailsAwareConfigurer<B,U> {
+abstract class AbstractDaoAuthenticationConfigurer<B extends ProviderManagerBuilder<B>, C extends AbstractDaoAuthenticationConfigurer<B,C,U>,U extends UserDetailsService> extends UserDetailsAwareConfigurer<B,U> {
     private DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
     private final U userDetailsService;
 
@@ -42,7 +42,7 @@ abstract class BaseDaoAuthenticationConfigurer<B extends ProviderManagerBuilder<
      *
      * @param userDetailsService
      */
-    protected BaseDaoAuthenticationConfigurer(U userDetailsService) {
+    protected AbstractDaoAuthenticationConfigurer(U userDetailsService) {
         this.userDetailsService = userDetailsService;
         provider.setUserDetailsService(userDetailsService);
     }

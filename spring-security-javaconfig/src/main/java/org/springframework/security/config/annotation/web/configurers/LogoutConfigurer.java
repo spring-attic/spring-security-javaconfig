@@ -57,7 +57,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * @since 3.2
  * @see RememberMeConfigurer
  */
-public final class LogoutConfigurer<H extends HttpBuilder<H>> extends BaseHttpConfigurer<H> {
+public final class LogoutConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";
