@@ -30,7 +30,7 @@ class LogoutConfigurerTests extends BaseSpringSpec {
     def "logout ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
         when:
             http
                 .logout()

@@ -325,7 +325,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
         setup:
             AnyObjectPostProcessor objectPostProcessor = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr, [:])
             DefaultLoginPageConfigurer defaultLoginConfig = new DefaultLoginPageConfigurer([builder:http])
             defaultLoginConfig.addObjectPostProcessor(objectPostProcessor)
             http

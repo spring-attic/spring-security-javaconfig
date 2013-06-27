@@ -199,7 +199,7 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
     def "formLogin ObjectPostProcessor"() {
         setup: "initialize the AUTH_FILTER as a mock"
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
         when:
             http
                 .formLogin()

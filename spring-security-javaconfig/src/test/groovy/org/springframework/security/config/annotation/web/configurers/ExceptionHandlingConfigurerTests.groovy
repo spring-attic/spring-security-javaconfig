@@ -31,7 +31,7 @@ class ExceptionHandlingConfigurerTests extends BaseSpringSpec {
         setup: "initialize the AUTH_FILTER as a mock"
             AnyObjectPostProcessor opp = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
             http
                 .exceptionHandling()
                     .and()

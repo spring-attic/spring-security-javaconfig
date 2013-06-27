@@ -115,18 +115,21 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     private List<Filter> filters =  new ArrayList<Filter>();
     private RequestMatcher requestMatcher = new AnyRequestMatcher();
     private FilterComparator comparitor = new FilterComparator();
-    private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
 
     /**
      * Creates a new instance
      * @param objectPostProcessor the {@link ObjectPostProcessor} that should be used
      * @param authenticationBuilder the {@link AuthenticationManagerBuilder} to use for additional updates
+     * @param sharedObjects the shared Objects to initialize the {@link HttpConfiguration} with
      * @see WebSecurityConfiguration
      */
-    public HttpConfiguration(ObjectPostProcessor<Object> objectPostProcessor, AuthenticationManagerBuilder authenticationBuilder) {
+    public HttpConfiguration(ObjectPostProcessor<Object> objectPostProcessor, AuthenticationManagerBuilder authenticationBuilder, Map<Class<Object>,Object> sharedObjects) {
         super(objectPostProcessor);
         Assert.notNull(authenticationBuilder, "authenticationBuilder cannot be null");
         setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
+        for(Map.Entry<Class<Object>, Object> entry : sharedObjects.entrySet()) {
+            setSharedObject(entry.getKey(), entry.getValue());
+        }
     }
 
     /* (non-Javadoc)
@@ -976,24 +979,6 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      */
     public HttpBasicConfigurer<HttpConfiguration> httpBasic() throws Exception {
         return apply(new HttpBasicConfigurer<HttpConfiguration>());
-    }
-
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.HttpBuilder#setSharedObject(java.lang.Class, C)
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <C> void setSharedObject(Class<C> sharedType, C object) {
-        this.sharedObjects.put((Class<Object>) sharedType, object);
-    }
-
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.HttpBuilder#getSharedObject(java.lang.Class)
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <C> C getSharedObject(Class<C> sharedType) {
-        return (C) this.sharedObjects.get(sharedType);
     }
 
     @Override

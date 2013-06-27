@@ -34,7 +34,7 @@ class ChannelSecurityConfigurerTests extends BaseSpringSpec {
         setup: "initialize the AUTH_FILTER as a mock"
             AnyObjectPostProcessor objectPostProcessor = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr, [:])
             http
                 .requiresChannel()
                     .anyRequest().requiresSecure()

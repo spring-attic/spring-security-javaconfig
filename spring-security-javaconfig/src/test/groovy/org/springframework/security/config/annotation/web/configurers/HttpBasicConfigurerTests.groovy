@@ -30,7 +30,7 @@ class HttpBasicConfigurerTests extends BaseSpringSpec {
     def "httBasic ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
         when:
             http
                 .httpBasic()

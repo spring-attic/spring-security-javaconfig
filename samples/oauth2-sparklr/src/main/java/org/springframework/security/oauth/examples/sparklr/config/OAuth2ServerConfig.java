@@ -20,13 +20,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.oauth.examples.sparklr.oauth.SparklrUserApprovalHandler;
-import org.springframework.security.oauth2.config.annotation.authentication.builders.InMemoryClientDetailsServiceBuilder;
+import org.springframework.security.oauth2.config.annotation.authentication.configurers.InMemoryClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.OAuth2ServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.OAuth2ServerConfigurer;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 /**
  * @author Rob Winch
@@ -37,17 +37,17 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
     private static final String SPARKLR_RESOURCE_ID = "sparklr";
 
-    @Bean
-    public ClientDetailsService clientDetails() {
-        return new InMemoryClientDetailsServiceBuilder()
-            .withClient("tonr")
-                .resourceIds(SPARKLR_RESOURCE_ID)
-                .authorizedGrantTypes("authorization_code","implicit")
-                .authorities("ROLE_CLIENT")
-                .scopes("read","write")
-                .secret("secret")
-                .and()
-            .build();
+    @Override
+    protected void registerAuthentication(AuthenticationManagerBuilder auth)
+            throws Exception {
+        auth
+            .apply(new InMemoryClientDetailsServiceConfigurer())
+                .withClient("tonr")
+                    .resourceIds(SPARKLR_RESOURCE_ID)
+                    .authorizedGrantTypes("authorization_code","implicit")
+                    .authorities("ROLE_CLIENT")
+                    .scopes("read","write")
+                    .secret("secret");
     }
 
     @Bean
@@ -87,7 +87,6 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
                 .antMatchers("/photos/**","/oauth/token","/oauth/clients/**","/oauth/users/**")
                 .and()
             .apply(new OAuth2ServerConfigurer())
-                .clientDetails(clientDetails())
                 .resourceId(SPARKLR_RESOURCE_ID);
     }
 }

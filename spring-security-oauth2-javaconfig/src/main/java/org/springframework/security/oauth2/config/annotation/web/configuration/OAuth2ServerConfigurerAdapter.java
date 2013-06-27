@@ -99,5 +99,12 @@ public abstract class OAuth2ServerConfigurerAdapter extends WebSecurityConfigure
         return new FrameworkEndpointHandlerMapping();
     }
 
-    protected abstract ClientDetailsService clientDetails();
+    @Bean
+    public ClientDetailsService clientDetailsServiceBean() throws Exception {
+        return clientDetails();
+    }
+
+    private ClientDetailsService clientDetails() throws Exception {
+        return getHttp().getSharedObject(ClientDetailsService.class);
+    }
 }

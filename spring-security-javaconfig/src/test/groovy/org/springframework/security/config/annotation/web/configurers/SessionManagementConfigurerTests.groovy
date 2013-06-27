@@ -91,7 +91,7 @@ class SessionManagementConfigurerTests extends BaseSpringSpec {
     def "sessionManagement ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
         when:
             http
                 .sessionManagement()

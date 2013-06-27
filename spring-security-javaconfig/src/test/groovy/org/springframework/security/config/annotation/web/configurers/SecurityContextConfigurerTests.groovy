@@ -30,7 +30,7 @@ class SecurityContextConfigurerTests extends BaseSpringSpec {
     def "securityContext ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
         when:
             http
                 .securityContext()

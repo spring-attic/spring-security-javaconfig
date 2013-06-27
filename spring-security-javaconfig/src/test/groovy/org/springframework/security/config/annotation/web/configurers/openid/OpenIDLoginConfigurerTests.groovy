@@ -34,7 +34,7 @@ class OpenIDLoginConfigurerTests extends BaseSpringSpec {
     def "openidLogin ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:
             http

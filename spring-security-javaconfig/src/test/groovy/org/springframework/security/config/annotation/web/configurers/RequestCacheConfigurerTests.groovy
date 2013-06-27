@@ -30,7 +30,7 @@ class RequestCacheConfigurerTests extends BaseSpringSpec {
     def "requestCache ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr)
+            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
         when:
             http
                 .requestCache()

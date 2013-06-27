@@ -17,7 +17,10 @@ package org.springframework.security.config.annotation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.util.Assert;
@@ -49,9 +52,13 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     private final LinkedHashMap<Class<? extends SecurityConfigurer<T, B>>, SecurityConfigurer<T, B>> configurers =
             new LinkedHashMap<Class<? extends SecurityConfigurer<T, B>>, SecurityConfigurer<T, B>>();
 
+    private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
+
     private BuildState buildState = BuildState.UNBUILT;
 
     private ObjectPostProcessor<Object> objectPostProcessor;
+
+
 
     protected AbstractConfiguredSecurityBuilder() {
         this(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR);
@@ -92,6 +99,24 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
             throws Exception {
         add(configurer);
         return configurer;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <C> void setSharedObject(Class<C> sharedType, C object) {
+        this.sharedObjects.put((Class<Object>) sharedType, object);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <C> C getSharedObject(Class<C> sharedType) {
+        return (C) this.sharedObjects.get(sharedType);
+    }
+
+    /**
+     * Gets the shared objects
+     * @return
+     */
+    public Map<Class<Object>,Object> getSharedObjects() {
+        return Collections.unmodifiableMap(this.sharedObjects);
     }
 
     /**

@@ -61,15 +61,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public class OAuth2ServerConfigurer
-        extends
-        SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
+public class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
     private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
     private AccessDeniedHandler accessDeniedHandler = new OAuth2AccessDeniedHandler();
 
     private ClientCredentialsTokenEndpointFilter clientCredentialsTokenEndpointFilter;
     private OAuth2AuthenticationProcessingFilter resourcesServerFilter;
-    private ClientDetailsService clientDetails;
     private AuthorizationServerTokenServices tokenServices;
     private AuthorizationCodeServices authorizationCodeServices;
     private ResourceServerTokenServices resourceTokenServices;
@@ -79,29 +76,12 @@ public class OAuth2ServerConfigurer
     private String resourceId = "oauth2-resource";
     private SecurityExpressionHandler<FilterInvocation> expressionHandler = new OAuth2WebSecurityExpressionHandler();
 
-    public OAuth2ServerConfigurer clientDetails(ClientDetailsService clientDetails) {
-        this.clientDetails = clientDetails;
-        return this;
+    private ClientDetailsService clientDetails() {
+        return getBuilder().getSharedObject(ClientDetailsService.class);
     }
 
     public AuthorizationServerTokenServices getTokenServices() {
         return tokenServices;
-    }
-
-    ResourceServerTokenServices getResourceTokenServices() {
-        return resourceTokenServices;
-    }
-
-    TokenStore getTokenStore() {
-        return tokenStore;
-    }
-
-    UserDetailsService getUserDetailsService() {
-        return new ClientDetailsUserDetailsService(clientDetails);
-    }
-
-    private ClientDetailsService clientDetails() {
-        return clientDetails;
     }
 
     @Override
@@ -111,8 +91,6 @@ public class OAuth2ServerConfigurer
         }
 
         http.getConfigurer(ExpressionUrlAuthorizationConfigurer.class).expressionHandler(expressionHandler);
-
-        http.userDetailsService(getUserDetailsService());
 
         http.setSharedObject(AuthenticationEntryPoint.class, authenticationEntryPoint);
 

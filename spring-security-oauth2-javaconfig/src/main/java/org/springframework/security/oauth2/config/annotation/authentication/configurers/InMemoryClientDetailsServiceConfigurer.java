@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.oauth2.config.annotation.authentication.builders;
+package org.springframework.security.oauth2.config.annotation.authentication.configurers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,16 +23,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.oauth2.provider.BaseClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.InMemoryClientDetailsService;
+import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
 
 /**
  * @author Rob Winch
  *
  */
-public class InMemoryClientDetailsServiceBuilder {
+public class InMemoryClientDetailsServiceConfigurer extends SecurityConfigurerAdapter<AuthenticationManager,AuthenticationManagerBuilder>{
     private List<ClientBuilder> clientBuilders = new ArrayList<ClientBuilder>();
 
     public ClientBuilder withClient(String clientId) {
@@ -41,14 +45,24 @@ public class InMemoryClientDetailsServiceBuilder {
         return clientBuilder;
     }
 
-    public ClientDetailsService build() {
+    @Override
+    public void init(AuthenticationManagerBuilder builder) throws Exception {
         Map<String,ClientDetails> clientDetails = new HashMap<String,ClientDetails>(clientBuilders.size());
-        for(ClientBuilder builder : clientBuilders) {
-            clientDetails.put(builder.clientId, builder.build());
+        for(ClientBuilder clientDetailsBldr : clientBuilders) {
+            clientDetails.put(clientDetailsBldr.clientId, clientDetailsBldr.build());
         }
         InMemoryClientDetailsService clientDetailsService = new InMemoryClientDetailsService();
         clientDetailsService.setClientDetailsStore(clientDetails);
-        return clientDetailsService;
+
+        ClientDetailsUserDetailsService userDetailsService = new ClientDetailsUserDetailsService(clientDetailsService);
+        builder.userDetailsService(userDetailsService);
+
+        builder.setSharedObject(ClientDetailsService.class, clientDetailsService);
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder builder) throws Exception {
+
     }
 
     public class ClientBuilder {
@@ -123,8 +137,8 @@ public class InMemoryClientDetailsServiceBuilder {
             return this;
         }
 
-        public InMemoryClientDetailsServiceBuilder and() {
-            return InMemoryClientDetailsServiceBuilder.this;
+        public InMemoryClientDetailsServiceConfigurer and() {
+            return InMemoryClientDetailsServiceConfigurer.this;
         }
 
 
