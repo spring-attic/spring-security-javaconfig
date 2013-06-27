@@ -1,3 +1,5 @@
+group = "org.springframework.security.oauth"
+
 dependencies {
     jacoco group: "org.jacoco", name: "org.jacoco.agent", version: "0.6.2.201302030002", classifier: "runtime"
 
