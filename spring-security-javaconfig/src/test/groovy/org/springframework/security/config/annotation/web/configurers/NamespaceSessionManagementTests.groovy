@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.ObjectPostProcessor
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.session.SessionRegistry
@@ -48,7 +48,7 @@ class NamespaceSessionManagementTests extends BaseSpringSpec {
     @Configuration
     static class SessionManagementConfig extends WebSecurityConfigurerAdapter {
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             // enabled by default
         }
     }
@@ -72,7 +72,7 @@ class NamespaceSessionManagementTests extends BaseSpringSpec {
     static class CustomSessionManagementConfig extends WebSecurityConfigurerAdapter {
         static SessionRegistry SR
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .sessionManagement()
                     .invalidSessionUrl("/invalid-session") // session-management@invalid-session-url
@@ -98,7 +98,7 @@ class NamespaceSessionManagementTests extends BaseSpringSpec {
     static class RefsSessionManagementConfig extends WebSecurityConfigurerAdapter {
         static SessionAuthenticationStrategy SAS
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .sessionManagement()
                     .sessionAuthenticationStrategy(SAS) // session-management@session-authentication-strategy-ref
@@ -116,7 +116,7 @@ class NamespaceSessionManagementTests extends BaseSpringSpec {
     @Configuration
     static class SFPNoneSessionManagementConfig extends WebSecurityConfigurerAdapter {
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .sessionManagement()
                     .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
@@ -134,7 +134,7 @@ class NamespaceSessionManagementTests extends BaseSpringSpec {
     @Configuration
     static class SFPMigrateSessionManagementConfig extends WebSecurityConfigurerAdapter {
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .sessionManagement()
         }
@@ -151,7 +151,7 @@ class NamespaceSessionManagementTests extends BaseSpringSpec {
     @Configuration
     static class SFPNewSessionSessionManagementConfig extends WebSecurityConfigurerAdapter {
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .sessionManagement()
                     .sessionAuthenticationStrategy(new SessionFixationProtectionStrategy(migrateSessionAttributes : false))

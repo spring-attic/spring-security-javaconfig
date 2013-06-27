@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
@@ -45,7 +45,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
     @Configuration
     static class AnonymousConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER");
@@ -61,7 +61,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousDisabledConfig extends BaseWebConfig {
-      protected void configure(HttpConfiguration http) {
+      protected void configure(HttpSecurity http) {
                 http.anonymous().disable()
         }
     }
@@ -75,7 +75,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousGrantedAuthorityConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .anonymous()
                     .authorities("ROLE_ANON")
@@ -96,7 +96,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousKeyConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -118,7 +118,7 @@ public class NamespaceHttpAnonymousTests extends BaseSpringSpec {
 
     @Configuration
     static class AnonymousUsernameConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")

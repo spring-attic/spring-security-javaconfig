@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.BaseSpringSpec;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
@@ -51,7 +51,7 @@ public class NamespaceHttpRequestCacheTests extends BaseSpringSpec {
     @Configuration
     static class RequestCacheRefConfig extends BaseWebConfig {
         static RequestCache REQUEST_CACHE
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http.
                 requestCache()
                     .requestCache(REQUEST_CACHE)
@@ -67,7 +67,7 @@ public class NamespaceHttpRequestCacheTests extends BaseSpringSpec {
 
     @Configuration
     static class DefaultRequestCacheRefConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
         }
     }
 }

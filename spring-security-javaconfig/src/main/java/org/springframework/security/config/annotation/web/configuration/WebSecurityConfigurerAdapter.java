@@ -29,7 +29,7 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configurers.DefaultLoginPageConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SecurityContextConfigurer;
@@ -72,7 +72,7 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
     private boolean disableAuthenticationRegistration;
     private boolean authenticationManagerInitialized;
     private AuthenticationManager authenticationManager;
-    private HttpConfiguration http;
+    private HttpSecurity http;
     private boolean disableDefaults;
 
     /**
@@ -102,7 +102,7 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
      * the {@link AuthenticationManager}. The resulting {@link AuthenticationManager}
      * will be exposed as a Bean as will the last populated {@link UserDetailsService} that is created with the
      * {@link AuthenticationManagerBuilder}. The {@link UserDetailsService} will also automatically be populated on
-     * {@link HttpConfiguration#getSharedObject(Class)} for use with other {@link SecurityContextConfigurer}
+     * {@link HttpSecurity#getSharedObject(Class)} for use with other {@link SecurityContextConfigurer}
      * (i.e. RememberMeConfigurer )
      *
      * <p>For example, the following configuration could be used to register
@@ -127,12 +127,12 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
     }
 
     /**
-     * Creates the {@link HttpConfiguration} or returns the current instance
+     * Creates the {@link HttpSecurity} or returns the current instance
      *
-     * @return the {@link HttpConfiguration}
+     * @return the {@link HttpSecurity}
      * @throws Exception
      */
-    protected final HttpConfiguration getHttp() throws Exception {
+    protected final HttpSecurity getHttp() throws Exception {
         if(http != null) {
             return http;
         }
@@ -145,7 +145,7 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
 
         AuthenticationManager authenticationManager = authenticationManager();
         authenticationBuilder.parentAuthenticationManager(authenticationManager);
-        http = new HttpConfiguration(objectPostProcessor,authenticationBuilder, parentAuthenticationBuilder.getSharedObjects());
+        http = new HttpSecurity(objectPostProcessor,authenticationBuilder, parentAuthenticationBuilder.getSharedObjects());
         http.setSharedObject(UserDetailsService.class, userDetailsService());
         if(!disableDefaults) {
             http
@@ -155,7 +155,7 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
                 .requestCache().and()
                 .anonymous().and()
                 .servletApi().and()
-                .apply(new DefaultLoginPageConfigurer<HttpConfiguration>()).and()
+                .apply(new DefaultLoginPageConfigurer<HttpSecurity>()).and()
                 .logout();
         }
         configure(http);
@@ -246,7 +246,7 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
 
     @Override
     public void init(WebSecurity web) throws Exception {
-        HttpConfiguration http = getHttp();
+        HttpSecurity http = getHttp();
         FilterSecurityInterceptor securityInterceptor = http.getSharedObject(FilterSecurityInterceptor.class);
         web
             .addSecurityFilterChainBuilder(http)
@@ -262,7 +262,7 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
     }
 
     /**
-     * Override this method to configure the {@link HttpConfiguration}.
+     * Override this method to configure the {@link HttpSecurity}.
      * Typically subclasses should not invoke this method by calling super
      * as it may override their configuration. The default configuration is:
      *
@@ -275,12 +275,12 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
      * </pre>
      *
      * @param http
-     *            the {@link HttpConfiguration} to modify
+     *            the {@link HttpSecurity} to modify
      * @throws Exception
      *             if an error occurs
      */
-    protected void configure(HttpConfiguration http) throws Exception {
-        logger.debug("Using default configure(HttpConfiguration). If subclassed this will potentially override subclass configure(HttpConfiguration).");
+    protected void configure(HttpSecurity http) throws Exception {
+        logger.debug("Using default configure(HttpSecurity). If subclassed this will potentially override subclass configure(HttpSecurity).");
 
         http
             .authorizeUrls()

@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web.configurers;
 
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
@@ -85,7 +85,7 @@ public final class RequestCacheConfigurer<H extends HttpBuilder<H>> extends Abst
      * attempt to find a {@link RequestCache} shared object is made. If that fails, an {@link HttpSessionRequestCache}
      * is used
      *
-     * @param http the {@link HttpConfiguration} to attempt to fined the shared object
+     * @param http the {@link HttpSecurity} to attempt to fined the shared object
      * @return the {@link RequestCache} to use
      */
     private RequestCache getRequestCache(H http) {

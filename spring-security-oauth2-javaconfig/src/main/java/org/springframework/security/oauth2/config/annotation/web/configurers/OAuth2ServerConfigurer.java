@@ -21,7 +21,7 @@ import java.util.List;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
@@ -59,7 +59,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
+public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
     private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
     private AccessDeniedHandler accessDeniedHandler = new OAuth2AccessDeniedHandler();
 
@@ -83,7 +83,7 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
     }
 
     @Override
-    public void init(HttpConfiguration http) throws Exception {
+    public void init(HttpSecurity http) throws Exception {
         if(http.getConfigurer(HttpBasicConfigurer.class) == null) {
             http.httpBasic();
         }
@@ -98,7 +98,7 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
 
     @Override
     @SuppressWarnings("unchecked")
-    public void configure(HttpConfiguration http) throws Exception {
+    public void configure(HttpSecurity http) throws Exception {
 
         http.getConfigurer(ExpressionUrlAuthorizationConfigurer.class).expressionHandler(expressionHandler);
 
@@ -125,7 +125,7 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
 
     }
 
-    private AuthenticationManager oauthAuthenticationManager(HttpConfiguration http) {
+    private AuthenticationManager oauthAuthenticationManager(HttpSecurity http) {
         OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
         oauthAuthenticationManager.setResourceId(resourceId);
         oauthAuthenticationManager
@@ -134,12 +134,12 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
     }
 
     private ResourceServerTokenServices resourceTokenServices(
-            HttpConfiguration http) {
+            HttpSecurity http) {
         tokenServices(http);
         return this.resourceTokenServices;
     }
 
-    private AuthorizationServerTokenServices tokenServices(HttpConfiguration http) {
+    private AuthorizationServerTokenServices tokenServices(HttpSecurity http) {
         if (tokenServices != null) {
             return tokenServices;
         }
@@ -164,14 +164,14 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
     }
 
     private AuthorizationCodeServices authorizationCodeServices(
-            HttpConfiguration http) {
+            HttpSecurity http) {
         if (authorizationCodeServices == null) {
             authorizationCodeServices = new InMemoryAuthorizationCodeServices();
         }
         return authorizationCodeServices;
     }
 
-    private AuthenticationManager authenticationManager(HttpConfiguration http) {
+    private AuthenticationManager authenticationManager(HttpSecurity http) {
         return http.getAuthenticationManager();
     }
 
@@ -183,7 +183,7 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
         return consumerTokenServices;
     }
 
-    private ConsumerTokenServices consumerTokenServices(HttpConfiguration http) {
+    private ConsumerTokenServices consumerTokenServices(HttpSecurity http) {
         if(consumerTokenServices == null) {
             DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
             defaultTokenServices.setClientDetailsService(clientDetails());
@@ -193,7 +193,7 @@ public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<Defa
         return consumerTokenServices;
     }
 
-    private TokenGranter tokenGranter(HttpConfiguration http) throws Exception {
+    private TokenGranter tokenGranter(HttpSecurity http) throws Exception {
         if(tokenGranter == null) {
             ClientDetailsService clientDetails = clientDetails();
             AuthorizationServerTokenServices tokenServices = tokenServices(http);

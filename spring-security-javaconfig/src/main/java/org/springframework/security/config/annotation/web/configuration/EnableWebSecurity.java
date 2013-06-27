@@ -42,7 +42,7 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
  *    }
  *
  *    &#064;Override
- *    protected void configure(HttpConfiguration http) throws Exception {
+ *    protected void configure(HttpSecurity http) throws Exception {
  *        http
  *            .authorizeUrls()
  *                .antMatchers("/public/**").permitAll()

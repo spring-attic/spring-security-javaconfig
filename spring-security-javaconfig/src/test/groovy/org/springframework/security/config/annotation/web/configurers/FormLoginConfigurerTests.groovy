@@ -24,7 +24,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -97,7 +97,7 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -129,7 +129,7 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
     static class FormLoginConfigPermitAll extends BaseWebConfig {
 
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -153,7 +153,7 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
         static PortMapper PORT_MAPPER
 
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -185,7 +185,7 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
         static AuthenticationFailureHandler FAILURE_HANDLER
 
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -199,7 +199,7 @@ class FormLoginConfigurerTests extends BaseSpringSpec {
     def "formLogin ObjectPostProcessor"() {
         setup: "initialize the AUTH_FILTER as a mock"
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
+            HttpSecurity http = new HttpSecurity(opp, authenticationBldr, [:])
         when:
             http
                 .formLogin()

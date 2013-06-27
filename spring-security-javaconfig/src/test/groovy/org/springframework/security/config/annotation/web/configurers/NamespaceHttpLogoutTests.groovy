@@ -33,7 +33,7 @@ import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -99,7 +99,7 @@ public class NamespaceHttpLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpLogoutConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
         }
     }
 
@@ -122,7 +122,7 @@ public class NamespaceHttpLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpLogoutConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .logout()
                     .deleteCookies("remove") // logout@delete-cookies
@@ -149,7 +149,7 @@ public class NamespaceHttpLogoutTests extends BaseSpringSpec {
 
     @Configuration
     static class SuccessHandlerRefHttpLogoutConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             SimpleUrlLogoutSuccessHandler logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler(defaultTargetUrl:"/SuccessHandlerRefHttpLogoutConfig")
             http
                 .logout()

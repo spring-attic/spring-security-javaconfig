@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -43,7 +43,7 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class NullUserDetailsConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -57,7 +57,7 @@ public class RememberMeConfigurerTests extends BaseSpringSpec {
     def "rememberMe ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
+            HttpSecurity http = new HttpSecurity(opp, authenticationBldr, [:])
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:
             http

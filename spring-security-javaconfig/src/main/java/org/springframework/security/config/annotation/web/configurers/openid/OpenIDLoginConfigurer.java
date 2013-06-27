@@ -26,7 +26,7 @@ import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
@@ -62,7 +62,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * public class OpenIDLoginConfig extends WebSecurityConfigurerAdapter {
  *
  * 	&#064;Override
- * 	protected void configure(HttpConfiguration http) {
+ * 	protected void configure(HttpSecurity http) {
  * 		http
  * 			.authorizeUrls()
  * 				.antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -99,7 +99,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * {@link AuthenticationEntryPoint}
  * is populated with a {@link LoginUrlAuthenticationEntryPoint}</li>
  * <li>A {@link OpenIDAuthenticationProvider} is populated into
- * {@link HttpConfiguration#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
+ * {@link HttpSecurity#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
  * </li>
  * </ul>
  *
@@ -108,7 +108,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#getAuthenticationManager()}</li>
+ * <li>{@link HttpSecurity#getAuthenticationManager()}</li>
  * <li>{@link RememberMeServices} - is optionally used. See
  * {@link RememberMeConfigurer}</li>
  * <li>{@link SessionAuthenticationStrategy} - is optionally used. See
@@ -180,7 +180,7 @@ public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends Abstr
      * The {@link AuthenticationUserDetailsService} to use. By default a
      * {@link UserDetailsByNameServiceWrapper} is used with the
      * {@link UserDetailsService} shared object found with
-     * {@link HttpConfiguration#getSharedObject(Class)}.
+     * {@link HttpSecurity#getSharedObject(Class)}.
      *
      * @param authenticationUserDetailsService the {@link AuthenticationDetailsSource} to use
      * @return the {@link OpenIDLoginConfigurer} for further customizations
@@ -289,9 +289,9 @@ public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends Abstr
      * Gets the {@link AuthenticationUserDetailsService} that was configured or
      * defaults to {@link UserDetailsByNameServiceWrapper} that uses a
      * {@link UserDetailsService} looked up using
-     * {@link HttpConfiguration#getSharedObject(Class)}
+     * {@link HttpSecurity#getSharedObject(Class)}
      *
-     * @param http the current {@link HttpConfiguration}
+     * @param http the current {@link HttpSecurity}
      * @return the {@link AuthenticationUserDetailsService}.
      */
     private AuthenticationUserDetailsService<OpenIDAuthenticationToken> getAuthenticationUserDetailsService(

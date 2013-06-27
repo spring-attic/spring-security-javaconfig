@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -49,7 +49,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#getAuthenticationManager()} </li>
+ * <li>{@link HttpSecurity#getAuthenticationManager()} </li>
  * </ul>
  *
  * @author Rob Winch
@@ -64,7 +64,7 @@ public final class HttpBasicConfigurer<B extends HttpBuilder<B>> extends Abstrac
     /**
      * Creates a new instance
      * @throws Exception
-     * @see {@link HttpConfiguration#httpBasic()}
+     * @see {@link HttpSecurity#httpBasic()}
      */
     public HttpBasicConfigurer() throws Exception {
         realmName(DEFAULT_REALM);

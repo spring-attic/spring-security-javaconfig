@@ -22,7 +22,7 @@ import org.springframework.security.authentication.RememberMeAuthenticationToken
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityExpressions.*
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
@@ -56,14 +56,14 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     def "authorizeUrls() uses AffirmativeBased AccessDecisionManager"() {
         when: "Load Config with no specific AccessDecisionManager"
             loadConfig(NoSpecificAccessDecessionManagerConfig)
-        then: "AccessDecessionManager matches the HttpConfigurationBuilder's default"
+        then: "AccessDecessionManager matches the HttpSecurityBuilder's default"
             findFilter(FilterSecurityInterceptor).accessDecisionManager.class == AffirmativeBased
     }
 
     @EnableWebSecurity
     @Configuration
     static class NoSpecificAccessDecessionManagerConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -81,7 +81,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class NoRequestsConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
         }
@@ -98,7 +98,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class IncompleteMappingConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/a").authenticated()
@@ -130,7 +130,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class HasAuthorityConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .httpBasic()
                     .and()
@@ -169,7 +169,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class HasAnyAuthorityConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .httpBasic()
                     .and()
@@ -197,7 +197,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class HasIpAddressConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .httpBasic()
                     .and()
@@ -224,7 +224,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class AnonymousConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .httpBasic()
                     .and()
@@ -251,7 +251,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class RememberMeConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .rememberMe()
                     .and()
@@ -288,7 +288,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class DenyAllConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .httpBasic()
                     .and()
@@ -315,7 +315,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class NotDenyAllConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .httpBasic()
                     .and()
@@ -348,7 +348,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class FullyAuthenticatedConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .rememberMe()
                     .and()
@@ -392,7 +392,7 @@ public class ExpressionUrlAuthorizationConfigurerTests extends BaseSpringSpec {
     @EnableWebSecurity
     @Configuration
     static class AccessConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .rememberMe()
                     .and()

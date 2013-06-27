@@ -18,12 +18,12 @@ package org.springframework.security.config.annotation.web.configurers;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 
 /**
  * Adds a convenient base class for {@link SecurityConfigurer} instances that
- * operate on {@link HttpConfiguration}.
+ * operate on {@link HttpSecurity}.
  *
  * @author Rob Winch
  *

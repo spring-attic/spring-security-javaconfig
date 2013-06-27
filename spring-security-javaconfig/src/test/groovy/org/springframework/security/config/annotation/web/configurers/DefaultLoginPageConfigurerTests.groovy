@@ -25,7 +25,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.config.annotation.web.configurers.DefaultLoginPageConfigurer;
 import org.springframework.security.web.FilterChainProxy
@@ -131,7 +131,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
     @Configuration
     static class DefaultLoginPageConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -156,7 +156,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
     @Configuration
     static class DefaultLoginPageCustomLogoutSuccessHandlerConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -184,7 +184,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
     @Configuration
     static class DefaultLoginPageCustomLogoutConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -219,7 +219,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
     @Configuration
     static class DefaultLoginPageWithRememberMeConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -249,7 +249,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
     @Configuration
     static class DefaultLoginPageWithOpenIDConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -286,7 +286,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
     @Configuration
     static class DefaultLoginPageWithFormLoginOpenIDRememberMeConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -309,7 +309,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
     @Configuration
     static class DefaultLoginWithCustomAuthenticationEntryPointConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .exceptionHandling()
                     .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
@@ -325,7 +325,7 @@ public class DefaultLoginPageConfigurerTests extends BaseSpringSpec {
         setup:
             AnyObjectPostProcessor objectPostProcessor = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr, [:])
+            HttpSecurity http = new HttpSecurity(objectPostProcessor, authenticationBldr, [:])
             DefaultLoginPageConfigurer defaultLoginConfig = new DefaultLoginPageConfigurer([builder:http])
             defaultLoginConfig.addObjectPostProcessor(objectPostProcessor)
             http

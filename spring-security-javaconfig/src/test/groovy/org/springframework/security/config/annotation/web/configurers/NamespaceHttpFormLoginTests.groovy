@@ -22,7 +22,7 @@ import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig
 import org.springframework.security.web.FilterChainProxy
@@ -77,7 +77,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -114,7 +114,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             boolean alwaysUseDefaultSuccess = true;
             http
                 .authorizeUrls()
@@ -155,7 +155,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class FormLoginCustomRefsConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .loginPage("/login")

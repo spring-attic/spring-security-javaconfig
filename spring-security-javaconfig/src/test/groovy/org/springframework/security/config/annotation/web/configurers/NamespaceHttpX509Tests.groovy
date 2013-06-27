@@ -28,7 +28,7 @@ import org.springframework.security.authentication.AuthenticationDetailsSource
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils
@@ -101,7 +101,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -134,7 +134,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -168,7 +168,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -202,7 +202,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -236,7 +236,7 @@ public class NamespaceHttpX509Tests extends BaseSpringSpec {
                     .withUser("rod").password("password").roles("USER","ADMIN");
         }
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")

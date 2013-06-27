@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.SessionCreationPolicy;
@@ -51,7 +51,7 @@ class SessionManagementConfigurerTests extends BaseSpringSpec {
         static RequestCache REQUEST_CACHE
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .requestCache()
                     .requestCache(REQUEST_CACHE)
@@ -77,7 +77,7 @@ class SessionManagementConfigurerTests extends BaseSpringSpec {
         static SecurityContextRepository SECURITY_CONTEXT_REPO
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .securityContext()
                     .securityContextRepository(SECURITY_CONTEXT_REPO)
@@ -91,7 +91,7 @@ class SessionManagementConfigurerTests extends BaseSpringSpec {
     def "sessionManagement ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
+            HttpSecurity http = new HttpSecurity(opp, authenticationBldr, [:])
         when:
             http
                 .sessionManagement()

@@ -21,7 +21,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseWebSpecuritySpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -163,7 +163,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
         }
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/signup","/about").permitAll()
@@ -285,7 +285,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
         @Configuration
         @Order(1)
         public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpSecurity http) throws Exception {
                 http
                     .antMatcher("/api/**")
                     .authorizeUrls()
@@ -306,7 +306,7 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
             }
 
             @Override
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpSecurity http) throws Exception {
                 http
                     .authorizeUrls()
                         .antMatchers("/signup","/about").permitAll()

@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractRequestMatcherMappingConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
@@ -64,7 +64,7 @@ class AbstractRequestMatcherMappingConfigurerTests extends Specification {
         matchers.collect {it.class } == [AntPathRequestMatcher]
     }
 
-    static class ConcreteAbstractRequestMatcherMappingConfigurer extends AbstractRequestMatcherMappingConfigurer<HttpConfiguration,List<RequestMatcher>,DefaultSecurityFilterChain> {
+    static class ConcreteAbstractRequestMatcherMappingConfigurer extends AbstractRequestMatcherMappingConfigurer<HttpSecurity,List<RequestMatcher>,DefaultSecurityFilterChain> {
         List<AccessDecisionVoter> decisionVoters() {
             return null;
         }

@@ -24,12 +24,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.DebugFilter;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
 
 class EnableWebSecurityTests extends BaseSpringSpec {
 
-    def "@Bean(BeanIds.AUTHENTICATION_MANAGER) includes HttpConfiguration's AuthenticationManagerBuilder"() {
+    def "@Bean(BeanIds.AUTHENTICATION_MANAGER) includes HttpSecurity's AuthenticationManagerBuilder"() {
         when:
             loadConfig(SecurityConfig)
             AuthenticationManager authenticationManager = context.getBean(AuthenticationManager)
@@ -60,7 +60,7 @@ class EnableWebSecurityTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/*").hasRole("USER")

@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web.configurers;
 
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
@@ -61,7 +61,7 @@ public final class SecurityContextConfigurer<H extends HttpBuilder<H>> extends A
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#securityContext()
+     * @see HttpSecurity#securityContext()
      */
     public SecurityContextConfigurer() {
     }
@@ -69,7 +69,7 @@ public final class SecurityContextConfigurer<H extends HttpBuilder<H>> extends A
     /**
      * Specifies the shared {@link SecurityContextRepository} that is to be used
      * @param securityContextRepository the {@link SecurityContextRepository} to use
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      */
     public SecurityContextConfigurer<H> securityContextRepository(SecurityContextRepository securityContextRepository) {
         getBuilder().setSharedObject(SecurityContextRepository.class, securityContextRepository);

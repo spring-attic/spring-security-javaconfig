@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.BaseSpringSpec;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
@@ -46,7 +46,7 @@ public class NamespaceHttpAccessDeniedHandlerTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedPageConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http.
                 exceptionHandling()
                     .accessDeniedPage("/AccessDeniedPageConfig")
@@ -62,7 +62,7 @@ public class NamespaceHttpAccessDeniedHandlerTests extends BaseSpringSpec {
 
     @Configuration
     static class AccessDeniedHandlerRefConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler()
             http.
                 exceptionHandling()

@@ -23,7 +23,7 @@ The following configuration
         }
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .antMatchers("/signup","/about").permitAll()
@@ -104,7 +104,7 @@ The following configuration
         @Configuration
         @Order(1)
         public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpSecurity http) throws Exception {
                 http
                     .antMatcher("/api/**")
                     .authorizeUrls()
@@ -125,7 +125,7 @@ The following configuration
             }
 
             @Override
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpSecurity http) throws Exception {
                 http
                     .authorizeUrls()
                         .antMatchers("/signup","/about").permitAll()

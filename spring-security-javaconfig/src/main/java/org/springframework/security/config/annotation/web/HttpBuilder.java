@@ -21,7 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.openid.OpenIDAuthenticationFilter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -92,7 +92,7 @@ public interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<D
      * Allows adding an additional {@link AuthenticationProvider} to be used
      *
      * @param authenticationProvider the {@link AuthenticationProvider} to be added
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      */
     H authenticationProvider(
             AuthenticationProvider authenticationProvider);
@@ -101,7 +101,7 @@ public interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<D
      * Allows adding an additional {@link UserDetailsService} to be used
      *
      * @param userDetailsService the {@link UserDetailsService} to be added
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      */
     H userDetailsService(
             UserDetailsService userDetailsService) throws Exception;
@@ -115,7 +115,7 @@ public interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<D
      *
      * @param filter the {@link Filter} to register before the type {@code afterFilter}
      * @param afterFilter the Class of the known {@link Filter}.
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      */
     H addFilterAfter(Filter filter,
             Class<? extends Filter> afterFilter);
@@ -129,7 +129,7 @@ public interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<D
      *
      * @param filter the {@link Filter} to register before the type {@code beforeFilter}
      * @param beforeFilter the Class of the known {@link Filter}.
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      */
     H addFilterBefore(Filter filter,
             Class<? extends Filter> beforeFilter);
@@ -168,7 +168,7 @@ public interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<D
      * </ul>
      *
      * @param filter the {@link Filter} to add
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      */
     H addFilter(Filter filter);
 

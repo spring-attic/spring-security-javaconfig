@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web.configurers
 import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.preauth.j2ee.J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource
 import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthenticatedProcessingFilter
 
@@ -31,7 +31,7 @@ class JeeConfigurerTests extends BaseSpringSpec {
     def "jee ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
+            HttpSecurity http = new HttpSecurity(opp, authenticationBldr, [:])
         when:
             http
                 .jee()

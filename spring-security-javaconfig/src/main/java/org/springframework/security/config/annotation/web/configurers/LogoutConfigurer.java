@@ -22,7 +22,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -34,7 +34,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
 /**
  * Adds logout support. Other {@link SecurityConfigurer} instances may invoke
  * {@link #addLogoutHandler(LogoutHandler)} in the
- * {@link #init(HttpConfiguration)} phase.
+ * {@link #init(HttpSecurity)} phase.
  *
  * <h2>Security Filters</h2>
  *
@@ -68,7 +68,7 @@ public final class LogoutConfigurer<H extends HttpBuilder<H>> extends AbstractHt
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#logout()
+     * @see HttpSecurity#logout()
      */
     public LogoutConfigurer() {
     }

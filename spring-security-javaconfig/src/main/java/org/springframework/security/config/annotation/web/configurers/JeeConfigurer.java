@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.authority.mapping.SimpleMappableAttributesRetriever;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,7 +53,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  * {@link AuthenticationEntryPoint}
  * is populated with an {@link Http403ForbiddenEntryPoint}</li>
  * <li>A {@link PreAuthenticatedAuthenticationProvider} is populated into
- * {@link HttpConfiguration#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
+ * {@link HttpSecurity#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
  * </li>
  * </ul>
  *
@@ -62,7 +62,7 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eePreAuthe
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#getAuthenticationManager()}</li>
+ * <li>{@link HttpSecurity#getAuthenticationManager()}</li>
  * </ul>
  *
  * @author Rob Winch
@@ -75,7 +75,7 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends AbstractHttpC
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#jee()
+     * @see HttpSecurity#jee()
      */
     public JeeConfigurer() {
     }
@@ -185,9 +185,9 @@ public final class JeeConfigurer<H extends HttpBuilder<H>> extends AbstractHttpC
 
     /**
      * Populates a {@link PreAuthenticatedAuthenticationProvider} into
-     * {@link HttpConfiguration#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
+     * {@link HttpSecurity#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
      * and a {@link Http403ForbiddenEntryPoint} into
-     * {@link HttpConfiguration#authenticationEntryPoint(org.springframework.security.web.AuthenticationEntryPoint)}
+     * {@link HttpSecurity#authenticationEntryPoint(org.springframework.security.web.AuthenticationEntryPoint)}
      *
      * @see org.springframework.security.config.annotation.SecurityConfigurerAdapter#init(org.springframework.security.config.annotation.SecurityBuilder)
      */

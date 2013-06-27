@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web.configurers.openid
 import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.openid.OpenIDAuthenticationFilter
@@ -34,7 +34,7 @@ class OpenIDLoginConfigurerTests extends BaseSpringSpec {
     def "openidLogin ObjectPostProcessor"() {
         setup:
             AnyObjectPostProcessor opp = Mock()
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
+            HttpSecurity http = new HttpSecurity(opp, authenticationBldr, [:])
             UserDetailsService uds = authenticationBldr.getDefaultUserDetailsService()
         when:
             http

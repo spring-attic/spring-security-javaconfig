@@ -29,7 +29,7 @@ import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -79,7 +79,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
             super(true)
         }
 
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
@@ -100,7 +100,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
             super(true)
         }
 
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin()
@@ -121,7 +121,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
             super(true)
         }
 
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 // this works so long as the CustomFilter extends one of the standard filters
                 // if not, use addFilterBefore or addFilterAfter
@@ -130,7 +130,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
 
     }
 
-    def "http/custom-filter no AuthenticationManager in HttpConfiguration"() {
+    def "http/custom-filter no AuthenticationManager in HttpSecurity"() {
         when:
         loadConfig(NoAuthenticationManagerInHtppConfigurationConfig)
         then:
@@ -150,7 +150,7 @@ public class NamespaceHttpCustomFilterTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")

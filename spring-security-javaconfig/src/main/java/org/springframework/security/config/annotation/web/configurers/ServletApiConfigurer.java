@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web.configurers;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
@@ -50,7 +50,7 @@ public final class ServletApiConfigurer<H extends HttpBuilder<H>> extends Abstra
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#servletApi()
+     * @see HttpSecurity#servletApi()
      */
     public ServletApiConfigurer() {
     }

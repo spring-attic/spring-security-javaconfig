@@ -67,7 +67,7 @@ import org.springframework.security.web.util.RequestMatcher;
 import org.springframework.util.Assert;
 
 /**
- * A {@link HttpConfiguration} is similar to Spring Security's XML <http> element in the namespace
+ * A {@link HttpSecurity} is similar to Spring Security's XML <http> element in the namespace
  * configuration. It allows configuring web based security for specific http requests. By default
  * it will be applied to all requests, but can be restricted using {@link #requestMatcher(RequestMatcher)}
  * or other similar methods.
@@ -77,7 +77,7 @@ import org.springframework.util.Assert;
  * The most basic form based configuration can be seen below. The configuration will require that any URL
  * that is requested will require a User with the role "ROLE_USER". It also defines an in memory authentication
  * scheme with a user that has the username "user", the password "password", and the role "ROLE_USER". For
- * additional examples, refer to the Java Doc of individual methods on {@link HttpConfiguration}.
+ * additional examples, refer to the Java Doc of individual methods on {@link HttpSecurity}.
  *
  * <pre>
  * &#064;Configuration
@@ -85,7 +85,7 @@ import org.springframework.util.Assert;
  * public class FormLoginSecurityConfig extends WebSecurityConfigurerAdapter {
  *
  *     &#064;Override
- *     protected void configure(HttpConfiguration http) throws Exception {
+ *     protected void configure(HttpSecurity http) throws Exception {
  *         http
  *             .authorizeUrls()
  *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -108,7 +108,7 @@ import org.springframework.util.Assert;
  * @since 3.2
  * @see EnableWebSecurity
  */
-public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpConfiguration> implements SecurityBuilder<DefaultSecurityFilterChain>, HttpBuilder<HttpConfiguration> {
+public final class HttpSecurity extends AbstractConfiguredSecurityBuilder<DefaultSecurityFilterChain,HttpSecurity> implements SecurityBuilder<DefaultSecurityFilterChain>, HttpBuilder<HttpSecurity> {
     private AuthenticationManager authenticationManager;
 
     private List<Filter> filters =  new ArrayList<Filter>();
@@ -119,10 +119,10 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * Creates a new instance
      * @param objectPostProcessor the {@link ObjectPostProcessor} that should be used
      * @param authenticationBuilder the {@link AuthenticationManagerBuilder} to use for additional updates
-     * @param sharedObjects the shared Objects to initialize the {@link HttpConfiguration} with
+     * @param sharedObjects the shared Objects to initialize the {@link HttpSecurity} with
      * @see WebSecurityConfiguration
      */
-    public HttpConfiguration(ObjectPostProcessor<Object> objectPostProcessor, AuthenticationManagerBuilder authenticationBuilder, Map<Class<Object>,Object> sharedObjects) {
+    public HttpSecurity(ObjectPostProcessor<Object> objectPostProcessor, AuthenticationManagerBuilder authenticationBuilder, Map<Class<Object>,Object> sharedObjects) {
         super(objectPostProcessor);
         Assert.notNull(authenticationBuilder, "authenticationBuilder cannot be null");
         setSharedObject(AuthenticationManagerBuilder.class, authenticationBuilder);
@@ -135,7 +135,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @see org.springframework.security.config.annotation.web.HttpBuilder#getConfigurer(java.lang.Class)
      */
     @Override
-    public <C extends SecurityConfigurer<DefaultSecurityFilterChain, HttpConfiguration>> C getConfigurer(
+    public <C extends SecurityConfigurer<DefaultSecurityFilterChain, HttpSecurity>> C getConfigurer(
             Class<C> clazz) {
         return super.getConfigurer(clazz);
     }
@@ -154,7 +154,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class OpenIDLoginConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) {
+     *     protected void configure(HttpSecurity http) {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -186,7 +186,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class OpenIDLoginConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) {
+     *     protected void configure(HttpSecurity http) {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -243,8 +243,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @throws Exception
      * @see OpenIDLoginConfigurer
      */
-    public OpenIDLoginConfigurer<HttpConfiguration> openidLogin() throws Exception {
-        return apply(new OpenIDLoginConfigurer<HttpConfiguration>());
+    public OpenIDLoginConfigurer<HttpSecurity> openidLogin() throws Exception {
+        return apply(new OpenIDLoginConfigurer<HttpSecurity>());
     }
 
     /**
@@ -266,7 +266,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *         WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .anyRequest().hasRole(&quot;USER&quot;)
@@ -311,13 +311,13 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *         customizations
      * @throws Exception
      */
-    public SessionManagementConfigurer<HttpConfiguration> sessionManagement() throws Exception {
-        return apply(new SessionManagementConfigurer<HttpConfiguration>());
+    public SessionManagementConfigurer<HttpSecurity> sessionManagement() throws Exception {
+        return apply(new SessionManagementConfigurer<HttpSecurity>());
     }
 
     /**
      * Allows configuring a {@link PortMapper} that is available from
-     * {@link HttpConfiguration#getSharedObject(Class)}. Other provided
+     * {@link HttpSecurity#getSharedObject(Class)}. Other provided
      * {@link SecurityConfigurer} objects use this configured
      * {@link PortMapper} as a default {@link PortMapper} when redirecting from
      * HTTP to HTTPS or from HTTPS to HTTP (for example when used in combination
@@ -337,7 +337,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class PortMapperSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -366,8 +366,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @throws Exception
      * @see {@link #requiresChannel()}
      */
-    public PortMapperConfigurer<HttpConfiguration> portMapper() throws Exception {
-        return apply(new PortMapperConfigurer<HttpConfiguration>());
+    public PortMapperConfigurer<HttpSecurity> portMapper() throws Exception {
+        return apply(new PortMapperConfigurer<HttpSecurity>());
     }
 
     /**
@@ -386,7 +386,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class JeeSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -442,8 +442,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link JeeConfigurer} for further customizations
      * @throws Exception
      */
-    public JeeConfigurer<HttpConfiguration> jee() throws Exception {
-        return apply(new JeeConfigurer<HttpConfiguration>());
+    public JeeConfigurer<HttpSecurity> jee() throws Exception {
+        return apply(new JeeConfigurer<HttpSecurity>());
     }
 
     /**
@@ -461,7 +461,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class X509SecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -475,8 +475,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link X509Configurer} for further customizations
      * @throws Exception
      */
-    public X509Configurer<HttpConfiguration> x509() throws Exception {
-        return apply(new X509Configurer<HttpConfiguration>());
+    public X509Configurer<HttpSecurity> x509() throws Exception {
+        return apply(new X509Configurer<HttpSecurity>());
     }
 
     /**
@@ -505,7 +505,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *     }
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -522,8 +522,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link RememberMeConfigurer} for further customizations
      * @throws Exception
      */
-    public RememberMeConfigurer<HttpConfiguration> rememberMe() throws Exception {
-        return apply(new RememberMeConfigurer<HttpConfiguration>());
+    public RememberMeConfigurer<HttpSecurity> rememberMe() throws Exception {
+        return apply(new RememberMeConfigurer<HttpSecurity>());
     }
 
 
@@ -545,7 +545,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class AuthorizeUrlsSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -579,7 +579,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class AuthorizeUrlsSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/admin/**&quot;).hasRole(&quot;ADMIN&quot;)
@@ -619,8 +619,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public ExpressionUrlAuthorizationConfigurer<HttpConfiguration> authorizeUrls() throws Exception {
-        return apply(new ExpressionUrlAuthorizationConfigurer<HttpConfiguration>());
+    public ExpressionUrlAuthorizationConfigurer<HttpSecurity> authorizeUrls() throws Exception {
+        return apply(new ExpressionUrlAuthorizationConfigurer<HttpSecurity>());
     }
 
     /**
@@ -632,8 +632,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link RequestCacheConfigurer} for further customizations
      * @throws Exception
      */
-    public RequestCacheConfigurer<HttpConfiguration> requestCache() throws Exception {
-        return apply(new RequestCacheConfigurer<HttpConfiguration>());
+    public RequestCacheConfigurer<HttpSecurity> requestCache() throws Exception {
+        return apply(new RequestCacheConfigurer<HttpSecurity>());
     }
 
     /**
@@ -643,8 +643,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link ExceptionHandlingConfigurer} for further customizations
      * @throws Exception
      */
-    public ExceptionHandlingConfigurer<HttpConfiguration> exceptionHandling() throws Exception {
-        return apply(new ExceptionHandlingConfigurer<HttpConfiguration>());
+    public ExceptionHandlingConfigurer<HttpSecurity> exceptionHandling() throws Exception {
+        return apply(new ExceptionHandlingConfigurer<HttpSecurity>());
     }
 
     /**
@@ -655,8 +655,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link SecurityContextConfigurer} for further customizations
      * @throws Exception
      */
-    public SecurityContextConfigurer<HttpConfiguration> securityContext() throws Exception {
-        return apply(new SecurityContextConfigurer<HttpConfiguration>());
+    public SecurityContextConfigurer<HttpSecurity> securityContext() throws Exception {
+        return apply(new SecurityContextConfigurer<HttpSecurity>());
     }
 
     /**
@@ -667,8 +667,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link ServletApiConfigurer} for further customizations
      * @throws Exception
      */
-    public ServletApiConfigurer<HttpConfiguration> servletApi() throws Exception {
-        return apply(new ServletApiConfigurer<HttpConfiguration>());
+    public ServletApiConfigurer<HttpSecurity> servletApi() throws Exception {
+        return apply(new ServletApiConfigurer<HttpSecurity>());
     }
 
     /**
@@ -692,7 +692,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class LogoutSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -723,8 +723,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public LogoutConfigurer<HttpConfiguration> logout() throws Exception {
-        return apply(new LogoutConfigurer<HttpConfiguration>());
+    public LogoutConfigurer<HttpSecurity> logout() throws Exception {
+        return apply(new LogoutConfigurer<HttpSecurity>());
     }
 
     /**
@@ -744,7 +744,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class AnononymousSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -777,7 +777,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class AnononymousSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -804,8 +804,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public AnonymousConfigurer<HttpConfiguration> anonymous() throws Exception {
-        return apply(new AnonymousConfigurer<HttpConfiguration>());
+    public AnonymousConfigurer<HttpSecurity> anonymous() throws Exception {
+        return apply(new AnonymousConfigurer<HttpSecurity>());
     }
 
     /**
@@ -826,7 +826,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class FormLoginSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -854,7 +854,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class FormLoginSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -884,8 +884,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public FormLoginConfigurer<HttpConfiguration> formLogin() throws Exception {
-        return apply(new FormLoginConfigurer<HttpConfiguration>());
+    public FormLoginConfigurer<HttpSecurity> formLogin() throws Exception {
+        return apply(new FormLoginConfigurer<HttpSecurity>());
     }
 
     /**
@@ -906,7 +906,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class ChannelSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;)
@@ -933,8 +933,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link ChannelSecurityConfigurer} for further customizations
      * @throws Exception
      */
-    public ChannelSecurityConfigurer<HttpConfiguration> requiresChannel() throws Exception {
-        return apply(new ChannelSecurityConfigurer<HttpConfiguration>());
+    public ChannelSecurityConfigurer<HttpSecurity> requiresChannel() throws Exception {
+        return apply(new ChannelSecurityConfigurer<HttpSecurity>());
     }
 
     /**
@@ -954,7 +954,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class HttpBasicSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .authorizeUrls()
      *                 .antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;).and()
@@ -976,8 +976,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return the {@link HttpBasicConfigurer} for further customizations
      * @throws Exception
      */
-    public HttpBasicConfigurer<HttpConfiguration> httpBasic() throws Exception {
-        return apply(new HttpBasicConfigurer<HttpConfiguration>());
+    public HttpBasicConfigurer<HttpSecurity> httpBasic() throws Exception {
+        return apply(new HttpBasicConfigurer<HttpSecurity>());
     }
 
     @Override
@@ -995,7 +995,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @see org.springframework.security.config.annotation.web.HttpBuilder#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)
      */
     @Override
-    public HttpConfiguration authenticationProvider(AuthenticationProvider authenticationProvider) {
+    public HttpSecurity authenticationProvider(AuthenticationProvider authenticationProvider) {
         getAuthenticationRegistry().authenticationProvider(authenticationProvider);
         return this;
     }
@@ -1004,7 +1004,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @see org.springframework.security.config.annotation.web.HttpBuilder#userDetailsService(org.springframework.security.core.userdetails.UserDetailsService)
      */
     @Override
-    public HttpConfiguration userDetailsService(UserDetailsService userDetailsService) throws Exception {
+    public HttpSecurity userDetailsService(UserDetailsService userDetailsService) throws Exception {
         getAuthenticationRegistry().userDetailsService(userDetailsService);
         return this;
     }
@@ -1017,7 +1017,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @see org.springframework.security.config.annotation.web.HttpBuilder#addFilterAfter(javax.servlet.Filter, java.lang.Class)
      */
     @Override
-    public HttpConfiguration addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
+    public HttpSecurity addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
         comparitor.registerAfter(filter.getClass(), afterFilter);
         return addFilter(filter);
     }
@@ -1026,7 +1026,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @see org.springframework.security.config.annotation.web.HttpBuilder#addFilterBefore(javax.servlet.Filter, java.lang.Class)
      */
     @Override
-    public HttpConfiguration addFilterBefore(Filter filter, Class<? extends Filter> beforeFilter) {
+    public HttpSecurity addFilterBefore(Filter filter, Class<? extends Filter> beforeFilter) {
         comparitor.registerBefore(filter.getClass(), beforeFilter);
         return addFilter(filter);
     }
@@ -1035,7 +1035,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @see org.springframework.security.config.annotation.web.HttpBuilder#addFilter(javax.servlet.Filter)
      */
     @Override
-    public HttpConfiguration addFilter(Filter filter) {
+    public HttpSecurity addFilter(Filter filter) {
         Class<? extends Filter> filterClass = filter.getClass();
         if(!comparitor.isRegistered(filterClass)) {
             throw new IllegalArgumentException(
@@ -1048,8 +1048,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
 
     /**
      * Allows specifying which {@link HttpServletRequest} instances this
-     * {@link HttpConfiguration} will be invoked on.  This method allows for
-     * easily invoking the {@link HttpConfiguration} for multiple
+     * {@link HttpSecurity} will be invoked on.  This method allows for
+     * easily invoking the {@link HttpSecurity} for multiple
      * different {@link RequestMatcher} instances. If only a single {@link RequestMatcher}
      * is necessary consider using {@link #antMatcher(String)},
      * {@link #regexMatcher(String)}, or {@link #requestMatcher(RequestMatcher)}.
@@ -1062,7 +1062,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      *
      * <h3>Example Configurations</h3>
      *
-     * The following configuration enables the {@link HttpConfiguration} for URLs that
+     * The following configuration enables the {@link HttpSecurity} for URLs that
      * begin with "/api/" or "/oauth/".
      *
      * <pre>
@@ -1071,7 +1071,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class RequestMatchersSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .requestMatchers()
      *                 .antMatchers("/api/**","/oauth/**")
@@ -1101,7 +1101,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class RequestMatchersSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .requestMatchers()
      *                 .antMatchers("/api/**")
@@ -1134,7 +1134,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * public class RequestMatchersSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      *     &#064;Override
-     *     protected void configure(HttpConfiguration http) throws Exception {
+     *     protected void configure(HttpSecurity http) throws Exception {
      *         http
      *             .requestMatchers()
      *                 .antMatchers("/api/**")
@@ -1166,7 +1166,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     }
 
     /**
-     * Allows configuring the {@link HttpConfiguration} to only be invoked when
+     * Allows configuring the {@link HttpSecurity} to only be invoked when
      * matching the provided {@link RequestMatcher}. If more advanced configuration is
      * necessary, consider using {@link #requestMatchers()}.
      *
@@ -1177,18 +1177,18 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * </p>
      *
      * @param requestMatcher the {@link RequestMatcher} to use (i.e. new AntPathRequestMatcher("/admin/**","GET") )
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      * @see #requestMatchers()
      * @see #antMatcher(String)
      * @see #regexMatcher(String)
      */
-    public HttpConfiguration requestMatcher(RequestMatcher requestMatcher) {
+    public HttpSecurity requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
         return this;
     }
 
     /**
-     * Allows configuring the {@link HttpConfiguration} to only be invoked when
+     * Allows configuring the {@link HttpSecurity} to only be invoked when
      * matching the provided ant pattern. If more advanced configuration is
      * necessary, consider using {@link #requestMatchers()} or
      * {@link #requestMatcher(RequestMatcher)}.
@@ -1200,15 +1200,15 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * </p>
      *
      * @param antPattern the Ant Pattern to match on (i.e. "/admin/**")
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      * @see AntPathRequestMatcher
      */
-    public HttpConfiguration antMatcher(String antPattern) {
+    public HttpSecurity antMatcher(String antPattern) {
         return requestMatcher(new AntPathRequestMatcher(antPattern));
     }
 
     /**
-     * Allows configuring the {@link HttpConfiguration} to only be invoked when
+     * Allows configuring the {@link HttpSecurity} to only be invoked when
      * matching the provided regex pattern. If more advanced configuration is
      * necessary, consider using {@link #requestMatchers()} or
      * {@link #requestMatcher(RequestMatcher)}.
@@ -1220,10 +1220,10 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * </p>
      *
      * @param pattern the Regular Expression to match on (i.e. "/admin/.+")
-     * @return the {@link HttpConfiguration} for further customizations
+     * @return the {@link HttpSecurity} for further customizations
      * @see RegexRequestMatcher
      */
-    public HttpConfiguration regexMatcher(String pattern) {
+    public HttpSecurity regexMatcher(String pattern) {
         return requestMatcher(new RegexRequestMatcher(pattern, null));
     }
 
@@ -1237,12 +1237,12 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
     }
 
     /**
-     * Allows mapping HTTP requests that this {@link HttpConfiguration} will be used for
+     * Allows mapping HTTP requests that this {@link HttpSecurity} will be used for
      *
      * @author Rob Winch
      * @since 3.2
      */
-    public final class RequestMatcherConfigurer extends AbstractRequestMatcherConfigurer<HttpConfiguration,RequestMatcherConfigurer,DefaultSecurityFilterChain> {
+    public final class RequestMatcherConfigurer extends AbstractRequestMatcherConfigurer<HttpSecurity,RequestMatcherConfigurer,DefaultSecurityFilterChain> {
 
         protected RequestMatcherConfigurer chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             requestMatcher(new OrRequestMatcher(requestMatchers));
@@ -1250,12 +1250,12 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         }
 
         /**
-         * Return the {@link HttpConfiguration} for further customizations
+         * Return the {@link HttpSecurity} for further customizations
          *
-         * @return the {@link HttpConfiguration} for further customizations
+         * @return the {@link HttpSecurity} for further customizations
          */
-        public HttpConfiguration and() {
-            return HttpConfiguration.this;
+        public HttpSecurity and() {
+            return HttpSecurity.this;
         }
 
         private RequestMatcherConfigurer(){}

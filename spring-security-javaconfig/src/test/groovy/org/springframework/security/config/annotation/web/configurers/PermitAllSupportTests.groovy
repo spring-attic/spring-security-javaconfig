@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.util.RequestMatcher
@@ -46,7 +46,7 @@ class PermitAllSupportTests extends BaseSpringSpec {
             loadConfig(NoAuthorizedUrlsConfig)
         then:
             BeanCreationException e = thrown()
-            e.message.contains "permitAll only works with HttpConfiguration.authorizeUrls"
+            e.message.contains "permitAll only works with HttpSecurity.authorizeUrls"
 
     }
 
@@ -62,7 +62,7 @@ class PermitAllSupportTests extends BaseSpringSpec {
         }
 
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .permitAll()

@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web.configurers;
 
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
@@ -47,7 +47,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
  * The following shared objects are used:
  *
  * <ul>
- *     <li>{@link HttpConfiguration#authenticationEntryPoint()} is used to process requests that require
+ *     <li>{@link HttpSecurity#authenticationEntryPoint()} is used to process requests that require
  *     authentication</li>
  *     <li>If no explicit {@link RequestCache}, is provided a {@link RequestCache} shared object is used to replay
  *     the request after authentication is successful</li>
@@ -65,7 +65,7 @@ public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#exceptionHandling()
+     * @see HttpSecurity#exceptionHandling()
      */
     public ExceptionHandlingConfigurer() {
     }
@@ -97,7 +97,7 @@ public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends
 
     /**
      * Sets the {@link AuthenticationEntryPoint} to be used. Defaults to the
-     * {@link HttpConfiguration#getSharedObject(Class)} value. If that is not
+     * {@link HttpSecurity#getSharedObject(Class)} value. If that is not
      * provided defaults to {@link Http403ForbiddenEntryPoint}.
      *
      * @param authenticationEntryPoint the {@link AuthenticationEntryPoint} to use
@@ -129,7 +129,7 @@ public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends
 
     /**
      * Gets the {@link AuthenticationEntryPoint} according to the rules specified by {@link #authenticationEntryPoint(AuthenticationEntryPoint)}
-     * @param http the {@link HttpConfiguration} used to look up shared {@link AuthenticationEntryPoint}
+     * @param http the {@link HttpSecurity} used to look up shared {@link AuthenticationEntryPoint}
      * @return the {@link AuthenticationEntryPoint} to use
      */
     private AuthenticationEntryPoint getEntryPoint(H http) {
@@ -151,7 +151,7 @@ public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends
      * attempt to find a {@link RequestCache} shared object is made. If that fails, an {@link HttpSessionRequestCache}
      * is used
      *
-     * @param http the {@link HttpConfiguration} to attempt to fined the shared object
+     * @param http the {@link HttpSecurity} to attempt to fined the shared object
      * @return the {@link RequestCache} to use
      */
     private RequestCache getRequestCache(H http) {

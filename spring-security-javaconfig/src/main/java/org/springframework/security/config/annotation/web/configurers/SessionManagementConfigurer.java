@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web.configurers;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -81,7 +81,7 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#sessionManagement()
+     * @see HttpSecurity#sessionManagement()
      */
     public SessionManagementConfigurer() {
     }

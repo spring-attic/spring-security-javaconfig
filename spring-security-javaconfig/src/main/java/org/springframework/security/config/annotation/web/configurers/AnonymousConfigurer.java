@@ -23,7 +23,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -32,7 +32,7 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 
 /**
  * Configures Anonymous authentication (i.e. populate an {@link Authentication} that represents an anonymous user
- * instead of having a null value) for an {@link HttpConfiguration}. Specifically this will configure an
+ * instead of having a null value) for an {@link HttpSecurity}. Specifically this will configure an
  * {@link AnonymousAuthenticationFilter} and an {@link AnonymousAuthenticationProvider}. All properties have reasonable
  * defaults, so no additional configuration is required other than applying this {@link SecurityConfigurer}.
  *
@@ -48,7 +48,7 @@ public final class AnonymousConfigurer<H extends HttpBuilder<H>> extends Securit
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#anonymous()
+     * @see HttpSecurity#anonymous()
      */
     public AnonymousConfigurer() {
     }
@@ -56,7 +56,7 @@ public final class AnonymousConfigurer<H extends HttpBuilder<H>> extends Securit
     /**
      * Disables anonymous authentication.
      *
-     * @return the {@link HttpConfiguration} since no further customization of anonymous authentication would be
+     * @return the {@link HttpSecurity} since no further customization of anonymous authentication would be
      *         meaningful.
      */
     @SuppressWarnings("unchecked")

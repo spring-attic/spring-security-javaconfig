@@ -16,7 +16,7 @@
 package org.springframework.security.config.annotation.web.configurers
 
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -110,7 +110,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
 
     @Configuration
     static class RememberMeConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -134,7 +134,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
     @Configuration
     static class RememberMeServicesRefConfig extends BaseWebConfig {
         static RememberMeServices REMEMBER_ME_SERVICES
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()
@@ -155,7 +155,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
     @Configuration
     static class AuthSuccessConfig extends BaseWebConfig {
         static AuthenticationSuccessHandler SUCCESS_HANDLER
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()
@@ -177,7 +177,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
 
     @Configuration
     static class KeyConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()
@@ -208,7 +208,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
     @Configuration
     static class TokenRepositoryRefConfig extends BaseWebConfig {
         static PersistentTokenRepository TOKEN_REPOSITORY
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             // JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl()
             // tokenRepository.setDataSource(dataSource);
             http
@@ -228,7 +228,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
 
     @Configuration
     static class TokenValiditySecondsConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()
@@ -246,7 +246,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
 
     @Configuration
     static class DefaultTokenValiditySecondsConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()
@@ -263,7 +263,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
 
     @Configuration
     static class UseSecureCookieConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()
@@ -281,7 +281,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
 
     @Configuration
     static class DefaultUseSecureCookieConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()
@@ -303,7 +303,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
     static class DefaultsUserDetailsServiceWithDaoConfig extends WebSecurityConfigurerAdapter {
         static UserDetailsService USERDETAILS_SERVICE
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()
@@ -329,7 +329,7 @@ public class NamespaceRememberMeTests extends BaseSpringSpec {
     @Configuration
     static class UserServiceRefConfig extends BaseWebConfig {
         static UserDetailsService USERDETAILS_SERVICE
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .formLogin()
                     .and()

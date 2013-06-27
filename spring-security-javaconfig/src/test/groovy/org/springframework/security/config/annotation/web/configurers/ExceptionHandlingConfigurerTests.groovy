@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web.configurers
 import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.access.ExceptionTranslationFilter
 
 /**
@@ -31,7 +31,7 @@ class ExceptionHandlingConfigurerTests extends BaseSpringSpec {
         setup: "initialize the AUTH_FILTER as a mock"
             AnyObjectPostProcessor opp = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(opp, authenticationBldr, [:])
+            HttpSecurity http = new HttpSecurity(opp, authenticationBldr, [:])
             http
                 .exceptionHandling()
                     .and()

@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.vote.AffirmativeBased
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.SecurityExpressions.*
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.UrlAuthorizationConfigurer;
@@ -63,14 +63,14 @@ public class UrlAuthorizationsTests extends BaseSpringSpec {
     def "uses AffirmativeBased AccessDecisionManager"() {
         when: "Load Config with no specific AccessDecisionManager"
             loadConfig(NoSpecificAccessDecessionManagerConfig)
-        then: "AccessDecessionManager matches the HttpConfigurationBuilder's default"
+        then: "AccessDecessionManager matches the HttpSecurityBuilder's default"
             findFilter(FilterSecurityInterceptor).accessDecisionManager.class == AffirmativeBased
     }
 
     @EnableWebSecurity
     @Configuration
     static class NoSpecificAccessDecessionManagerConfig extends WebSecurityConfigurerAdapter {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .apply(new UrlAuthorizationConfigurer())
                     .anyRequest().hasRole("USER")

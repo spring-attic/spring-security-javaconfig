@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.expression.spel.standard.SpelExpressionParser
 import org.springframework.security.access.expression.SecurityExpressionHandler
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
@@ -45,7 +45,7 @@ public class NamespaceHttpExpressionHandlerTests extends BaseSpringSpec {
     static class ExpressionHandlerConfig extends BaseWebConfig {
         static EXPRESSION_HANDLER;
 
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .expressionHandler(EXPRESSION_HANDLER)

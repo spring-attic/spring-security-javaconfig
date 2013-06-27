@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
@@ -76,7 +76,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class OpenIDLoginConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -127,7 +127,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class OpenIDLoginAttributeExchangeConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -181,7 +181,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
 
     @Configuration
     static class OpenIDLoginCustomConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             boolean alwaysUseDefaultSuccess = true;
             http
                 .authorizeUrls()
@@ -216,7 +216,7 @@ public class NamespaceHttpOpenIDLoginTests extends BaseSpringSpec {
     static class OpenIDLoginCustomRefsConfig extends BaseWebConfig {
         static AuthenticationUserDetailsService AUDS
 
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")

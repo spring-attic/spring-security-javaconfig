@@ -56,7 +56,7 @@ import org.springframework.util.Assert;
  * The following shared objects are used:
  *
  * <ul>
- *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#getAuthenticationManager()}</li>
+ *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpSecurity#getAuthenticationManager()}</li>
  * </ul>
  *
  * @param <H> the type of {@link HttpBuilder} that is being configured

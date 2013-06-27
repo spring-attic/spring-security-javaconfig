@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication
@@ -50,7 +50,7 @@ class Issue55Tests extends BaseSpringSpec {
         public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
 
             @Override
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpSecurity http) throws Exception {
                 http
                     .authorizeUrls()
                         .anyRequest().hasRole("USER");
@@ -81,7 +81,7 @@ class Issue55Tests extends BaseSpringSpec {
         @Order(1)
         public static class ApiWebSecurityAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpSecurity http) throws Exception {
                 http
                     .antMatcher("/api/**")
                     .authorizeUrls()
@@ -91,7 +91,7 @@ class Issue55Tests extends BaseSpringSpec {
         @Component
         public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
             @Override
-            protected void configure(HttpConfiguration http) throws Exception {
+            protected void configure(HttpSecurity http) throws Exception {
                 http
                     .authorizeUrls()
                         .anyRequest().hasRole("USER");

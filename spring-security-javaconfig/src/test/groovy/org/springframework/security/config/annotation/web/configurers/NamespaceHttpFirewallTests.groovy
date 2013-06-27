@@ -23,7 +23,7 @@ import org.springframework.mock.web.MockFilterChain
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig
 import org.springframework.security.web.FilterChainProxy
@@ -62,7 +62,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpFirewallConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
         }
     }
 
@@ -80,7 +80,7 @@ public class NamespaceHttpFirewallTests extends BaseSpringSpec {
     @Configuration
     static class CustomHttpFirewallConfig extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) { }
+        protected void configure(HttpSecurity http) { }
 
         @Override
         public void configure(WebSecurity builder)	throws Exception {

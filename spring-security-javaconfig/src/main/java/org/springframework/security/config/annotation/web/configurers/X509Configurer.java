@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
@@ -56,7 +56,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
  * {@link AuthenticationEntryPoint}
  * is populated with an {@link Http403ForbiddenEntryPoint}</li>
  * <li>A {@link PreAuthenticatedAuthenticationProvider} is populated into
- * {@link HttpConfiguration#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
+ * {@link HttpSecurity#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
  * </li>
  * </ul>
  *
@@ -79,7 +79,7 @@ public final class X509Configurer<H extends HttpBuilder<H>> extends AbstractHttp
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#x509()
+     * @see HttpSecurity#x509()
      */
     public X509Configurer() {
     }

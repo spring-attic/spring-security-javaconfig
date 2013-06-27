@@ -23,7 +23,7 @@ import java.util.List;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl;
@@ -78,7 +78,7 @@ public final class ChannelSecurityConfigurer<H extends HttpBuilder<H>> extends
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#requiresChannel()
+     * @see HttpSecurity#requiresChannel()
      */
     public ChannelSecurityConfigurer() {
     }

@@ -19,7 +19,7 @@ import java.util.UUID;
 
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -53,9 +53,9 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  *
  * <ul>
  * <li>
- * {@link HttpConfiguration#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
+ * {@link HttpSecurity#authenticationProvider(org.springframework.security.authentication.AuthenticationProvider)}
  * is populated with a {@link RememberMeAuthenticationProvider}</li>
- * <li>{@link RememberMeServices} is populated as a shared object and available on {@link HttpConfiguration#getSharedObject(Class)}</li>
+ * <li>{@link RememberMeServices} is populated as a shared object and available on {@link HttpSecurity#getSharedObject(Class)}</li>
  * <li>{@link LogoutConfigurer#addLogoutHandler(LogoutHandler)} is used to add a logout handler to clean up the remember me authentication.</li>
  * </ul>
  *
@@ -64,7 +64,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#getAuthenticationManager()}</li>
+ * <li>{@link HttpSecurity#getAuthenticationManager()}</li>
  * <li>{@link UserDetailsService} if no {@link #userDetailsService(UserDetailsService)} was specified.</li>
  * <li> {@link DefaultLoginPageViewFilter} - if present will be populated with information from the configuration</li>
  * </ul>
@@ -122,7 +122,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends Abstra
      * Specifies the {@link UserDetailsService} used to look up the
      * {@link UserDetails} when a remember me token is valid. The default is to
      * use the {@link UserDetailsService} found by invoking
-     * {@link HttpConfiguration#getSharedObject(Class)} which is set when using
+     * {@link HttpSecurity#getSharedObject(Class)} which is set when using
      * {@link WebSecurityConfigurerAdapter#registerAuthentication(org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder)}.
      * Alternatively, one can populate {@link #rememberMeServices(RememberMeServices)}.
      *
@@ -241,7 +241,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends Abstra
 
     /**
      * Gets the {@link RememberMeServices} or creates the {@link RememberMeServices}.
-     * @param http the {@link HttpConfiguration} to lookup shared objects
+     * @param http the {@link HttpSecurity} to lookup shared objects
      * @param key the {@link #key(String)}
      * @return the {@link RememberMeServices} to use
      * @throws Exception
@@ -278,7 +278,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends Abstra
      * {@link PersistentTokenRepository} is specified, else
      * {@link TokenBasedRememberMeServices}.
      *
-     * @param http the {@link HttpConfiguration} to lookup shared objects
+     * @param http the {@link HttpSecurity} to lookup shared objects
      * @param key the {@link #key(String)}
      * @return the {@link RememberMeServices} to use
      * @throws Exception
@@ -292,7 +292,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends Abstra
     /**
      * Creates {@link TokenBasedRememberMeServices}
      *
-     * @param http the {@link HttpConfiguration} to lookup shared objects
+     * @param http the {@link HttpSecurity} to lookup shared objects
      * @param key the {@link #key(String)}
      * @return the {@link TokenBasedRememberMeServices}
      */
@@ -305,7 +305,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends Abstra
     /**
      * Creates {@link PersistentTokenBasedRememberMeServices}
      *
-     * @param http the {@link HttpConfiguration} to lookup shared objects
+     * @param http the {@link HttpSecurity} to lookup shared objects
      * @param key the {@link #key(String)}
      * @return the {@link PersistentTokenBasedRememberMeServices}
      */
@@ -320,9 +320,9 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends Abstra
      * Gets the {@link UserDetailsService} to use. Either the explicitly
      * configure {@link UserDetailsService} from
      * {@link #userDetailsService(UserDetailsService)} or a shared object from
-     * {@link HttpConfiguration#getSharedObject(Class)}.
+     * {@link HttpSecurity#getSharedObject(Class)}.
      *
-     * @param http {@link HttpConfiguration} to get the shared {@link UserDetailsService}
+     * @param http {@link HttpSecurity} to get the shared {@link UserDetailsService}
      * @return the {@link UserDetailsService} to use
      */
     private UserDetailsService getUserDetailsService(H http) {

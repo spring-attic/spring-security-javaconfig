@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
 import org.springframework.security.web.PortMapperImpl;
@@ -28,7 +28,7 @@ import org.springframework.security.web.PortMapperImpl;
 /**
  * Allows configuring a shared {@link PortMapper} instance used to determine the
  * ports when redirecting between HTTP and HTTPS. The {@link PortMapper} can be
- * obtained from {@link HttpConfiguration#getSharedObject(Class)}.
+ * obtained from {@link HttpSecurity#getSharedObject(Class)}.
  *
  * @author Rob Winch
  * @since 3.2

@@ -34,12 +34,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.filter.OncePerRequestFilter
 
 /**
- * HttpConfiguration tests
+ * HttpSecurity tests
  *
  * @author Rob Winch
  *
  */
-public class HttpConfigurationTests extends BaseSpringSpec {
+public class HttpSecurityTests extends BaseSpringSpec {
     def "addFilter with unregistered Filter"() {
         when:
             loadConfig(UnregisteredFilterConfig)
@@ -50,7 +50,7 @@ public class HttpConfigurationTests extends BaseSpringSpec {
 
     @Configuration
     static class UnregisteredFilterConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .addFilter(new UnregisteredFilter())
         }
@@ -75,7 +75,7 @@ public class HttpConfigurationTests extends BaseSpringSpec {
 
     @Configuration
     static class CasAuthenticationFilterConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
                 .addFilter(new CasAuthenticationFilter())
         }
@@ -105,7 +105,7 @@ public class HttpConfigurationTests extends BaseSpringSpec {
     @Configuration
     static class RequestMatcherRegistryConfigs extends BaseWebConfig {
         @Override
-        protected void configure(HttpConfiguration http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             http
               .requestMatchers()
                   .antMatchers("/api/**")

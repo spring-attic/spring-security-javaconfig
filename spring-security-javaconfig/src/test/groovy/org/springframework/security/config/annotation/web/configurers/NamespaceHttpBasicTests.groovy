@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.config.annotation.BaseSpringSpec;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -74,7 +74,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class HttpBasicConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -97,7 +97,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class CustomHttpBasicConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")
@@ -116,7 +116,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class AuthenticationDetailsSourceHttpBasicConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .httpBasic()
                     .authenticationDetailsSource(new CustomAuthenticationDetailsSource())
@@ -148,7 +148,7 @@ public class NamespaceHttpBasicTests extends BaseSpringSpec {
 
     @Configuration
     static class EntryPointRefHttpBasicConfig extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER")

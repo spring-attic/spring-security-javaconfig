@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -98,7 +98,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
             super(true)
         }
 
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http.formLogin()
         }
     }
@@ -128,7 +128,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
                     .antMatchers("/resources/**");
         }
         @Override
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
             http
                 .authorizeUrls()
                     .anyRequest().hasRole("USER");
@@ -153,7 +153,7 @@ class DefaultFiltersTests extends BaseSpringSpec {
     @Configuration
     @EnableWebSecurity
     static class DefaultFiltersConfigPermitAll extends BaseWebConfig {
-        protected void configure(HttpConfiguration http) {
+        protected void configure(HttpSecurity http) {
         }
     }
 }

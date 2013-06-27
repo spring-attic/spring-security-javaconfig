@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web.configurers
 import org.springframework.security.config.annotation.AnyObjectPostProcessor
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.access.channel.ChannelDecisionManagerImpl
 import org.springframework.security.web.access.channel.ChannelProcessingFilter
 import org.springframework.security.web.access.channel.InsecureChannelProcessor
@@ -34,7 +34,7 @@ class ChannelSecurityConfigurerTests extends BaseSpringSpec {
         setup: "initialize the AUTH_FILTER as a mock"
             AnyObjectPostProcessor objectPostProcessor = Mock()
         when:
-            HttpConfiguration http = new HttpConfiguration(objectPostProcessor, authenticationBldr, [:])
+            HttpSecurity http = new HttpSecurity(objectPostProcessor, authenticationBldr, [:])
             http
                 .requiresChannel()
                     .anyRequest().requiresSecure()

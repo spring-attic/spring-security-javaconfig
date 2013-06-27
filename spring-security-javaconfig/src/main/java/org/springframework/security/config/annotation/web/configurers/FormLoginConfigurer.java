@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -55,7 +55,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * The following shared objects are used:
  *
  * <ul>
- * <li>{@link HttpConfiguration#getAuthenticationManager()}</li>
+ * <li>{@link HttpSecurity#getAuthenticationManager()}</li>
  * <li>{@link RememberMeServices} - is optionally used. See {@link RememberMeConfigurer}</li>
  * <li>{@link SessionAuthenticationStrategy} - is optionally used. See {@link SessionManagementConfigurer}</li>
  * <li>{@link DefaultLoginPageViewFilter} - if present will be populated with information from the configuration</li>
@@ -68,7 +68,7 @@ public final class FormLoginConfigurer<H extends HttpBuilder<H>> extends Abstrac
 
     /**
      * Creates a new instance
-     * @see HttpConfiguration#formLogin()
+     * @see HttpSecurity#formLogin()
      */
     public FormLoginConfigurer() {
         super(createUsernamePasswordAuthenticationFilter(),"/login");
