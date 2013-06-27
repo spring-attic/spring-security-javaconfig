@@ -169,7 +169,7 @@ public final class FormLoginConfigurer<H extends HttpBuilder<H>> extends Abstrac
      * @return the {@link FormLoginConfigurer} for additional customization
      */
     public FormLoginConfigurer<H> usernameParameter(String usernameParameter) {
-        authFilter.setUsernameParameter(usernameParameter);
+        getAuthenticationFilter().setUsernameParameter(usernameParameter);
         return this;
     }
 
@@ -183,7 +183,7 @@ public final class FormLoginConfigurer<H extends HttpBuilder<H>> extends Abstrac
      * @return the {@link FormLoginConfigurer} for additional customization
      */
     public FormLoginConfigurer<H> passwordParameter(String passwordParameter) {
-        authFilter.setPasswordParameter(passwordParameter);
+        getAuthenticationFilter().setPasswordParameter(passwordParameter);
         return this;
     }
 
@@ -199,7 +199,7 @@ public final class FormLoginConfigurer<H extends HttpBuilder<H>> extends Abstrac
      * @return the HTTP parameter that is used to submit the username
      */
     private String getUsernameParameter() {
-        return authFilter.getUsernameParameter();
+        return getAuthenticationFilter().getUsernameParameter();
     }
 
     /**
@@ -208,7 +208,7 @@ public final class FormLoginConfigurer<H extends HttpBuilder<H>> extends Abstrac
      * @return the HTTP parameter that is used to submit the password
      */
     private String getPasswordParameter() {
-        return authFilter.getPasswordParameter();
+        return getAuthenticationFilter().getPasswordParameter();
     }
 
     /**

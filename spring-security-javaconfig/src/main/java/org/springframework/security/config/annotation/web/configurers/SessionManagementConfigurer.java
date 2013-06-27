@@ -175,7 +175,7 @@ public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends
      *
      * @author Rob Winch
      */
-    public class ConcurrencyControlConfigurer {
+    public final class ConcurrencyControlConfigurer {
 
         /**
          * The URL to redirect to if a user tries to access a resource and their

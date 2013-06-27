@@ -48,7 +48,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  */
 public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuilder<B>,T extends AbstractAuthenticationFilterConfigurer<B,T, F>, F extends AbstractAuthenticationProcessingFilter> extends AbstractHttpConfigurer<B> {
 
-    protected final F authFilter;
+    private final F authFilter;
 
     private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
 
@@ -88,7 +88,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      *            the default success url
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public T defaultSuccessUrl(String defaultSuccessUrl) {
+    public final T defaultSuccessUrl(String defaultSuccessUrl) {
         return defaultSuccessUrl(defaultSuccessUrl, false);
     }
 
@@ -106,7 +106,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      *            visited
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public T defaultSuccessUrl(String defaultSuccessUrl, boolean alwaysUse) {
+    public final T defaultSuccessUrl(String defaultSuccessUrl, boolean alwaysUse) {
         SavedRequestAwareAuthenticationSuccessHandler handler = new SavedRequestAwareAuthenticationSuccessHandler();
         handler.setDefaultTargetUrl(defaultSuccessUrl);
         handler.setAlwaysUseDefaultTargetUrl(alwaysUse);
@@ -121,7 +121,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      * @param loginUrl the URL used to perform authentication
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public T loginUrl(String loginUrl) {
+    public final T loginUrl(String loginUrl) {
         loginProcessingUrl(loginUrl);
         return loginPage(loginUrl);
     }
@@ -145,7 +145,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      * @param authenticationDetailsSource the custom {@link AuthenticationDetailsSource}
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public T authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
+    public final T authenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
         return getSelf();
     }
@@ -159,7 +159,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      *            the {@link AuthenticationSuccessHandler}.
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public T successHandler(AuthenticationSuccessHandler successHandler) {
+    public final T successHandler(AuthenticationSuccessHandler successHandler) {
         this.successHandler = successHandler;
         return getSelf();
     }
@@ -168,7 +168,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      * Equivalent of invoking permitAll(true)
      * @return
      */
-    public T permitAll() {
+    public final T permitAll() {
         return permitAll(true);
     }
 
@@ -179,7 +179,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      * @param permitAll true to grant access to the URLs false to skip this step
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public T permitAll(boolean permitAll) {
+    public final T permitAll(boolean permitAll) {
         this.permitAll = permitAll;
         return getSelf();
     }
@@ -194,7 +194,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      *            "/login?error").
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public T failureUrl(String authenticationFailureUrl) {
+    public final T failureUrl(String authenticationFailureUrl) {
         T result = failureHandler(new SimpleUrlAuthenticationFailureHandler(authenticationFailureUrl));
         this.failureUrl = authenticationFailureUrl;
         return result;
@@ -210,7 +210,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
      *            authentication fails.
      * @return the {@link FormLoginConfigurer} for additional customization
      */
-    public T failureHandler(AuthenticationFailureHandler authenticationFailureHandler) {
+    public final T failureHandler(AuthenticationFailureHandler authenticationFailureHandler) {
         this.failureUrl = null;
         this.failureHandler = authenticationFailureHandler;
         return getSelf();
@@ -273,15 +273,23 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
     *
     * @return true if a custom login page has been specified, else false
     */
-   public boolean isCustomLoginPage() {
+   public final boolean isCustomLoginPage() {
        return customLoginPage;
+   }
+
+   /**
+    * Gets the Authentication Filter
+    * @return
+    */
+   protected final F getAuthenticationFilter() {
+       return authFilter;
    }
 
    /**
     * Gets the login page
     * @return the login page
     */
-   public String getLoginPage() {
+   protected final String getLoginPage() {
        return loginPage;
    }
 
@@ -291,7 +299,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
     *
     * @return the URL to submit an authentication request to
     */
-   public String getLoginProcessingUrl() {
+   protected final String getLoginProcessingUrl() {
        return loginProcessingUrl;
    }
 
@@ -299,7 +307,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuil
     * Gets the URL to send users to if authentication fails
     * @return
     */
-   public String getFailureUrl() {
+   protected final String getFailureUrl() {
        return failureUrl;
    }
 

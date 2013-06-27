@@ -131,15 +131,6 @@ public final class HttpSecurity extends AbstractConfiguredSecurityBuilder<Defaul
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.security.config.annotation.web.HttpBuilder#getConfigurer(java.lang.Class)
-     */
-    @Override
-    public <C extends SecurityConfigurer<DefaultSecurityFilterChain, HttpSecurity>> C getConfigurer(
-            Class<C> clazz) {
-        return super.getConfigurer(clazz);
-    }
-
     /**
      * Allows configuring OpenID based authentication. Multiple invocations of
      * {@link #openidLogin()} will override previous invocations.

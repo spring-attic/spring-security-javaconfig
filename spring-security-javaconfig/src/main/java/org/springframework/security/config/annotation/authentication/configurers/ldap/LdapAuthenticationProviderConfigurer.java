@@ -58,7 +58,7 @@ public class LdapAuthenticationProviderConfigurer<B extends ProviderManagerBuild
     private ContextSourceBuilder contextSourceBuilder = new ContextSourceBuilder();
     private UserDetailsContextMapper userDetailsContextMapper;
     private PasswordEncoder passwordEncoder;
-    public String passwordAttribute;
+    private String passwordAttribute;
 
     private LdapAuthenticationProvider build() throws Exception {
         BaseLdapPathContextSource contextSource = getContextSource();
@@ -283,7 +283,7 @@ public class LdapAuthenticationProviderConfigurer<B extends ProviderManagerBuild
      *
      * @author Rob Winch
      */
-    public class PasswordCompareConfigurer {
+    public final class PasswordCompareConfigurer {
 
         /**
          * Allows specifying the {@link PasswordEncoder} to use. The default is {@link PlaintextPasswordEncoder}.
@@ -327,7 +327,7 @@ public class LdapAuthenticationProviderConfigurer<B extends ProviderManagerBuild
      * @author Rob Winch
      * @since 3.2
      */
-    public class ContextSourceBuilder {
+    public final class ContextSourceBuilder {
         private String ldif = "classpath*:*.ldif";
         private String managerPassword;
         private String managerDn;
@@ -437,7 +437,7 @@ public class LdapAuthenticationProviderConfigurer<B extends ProviderManagerBuild
             }
             ApacheDSContainer apacheDsContainer = new ApacheDSContainer(root, ldif);
             apacheDsContainer.setPort(port);
-            apacheDsContainer = postProcess(apacheDsContainer);
+            postProcess(apacheDsContainer);
             return contextSource;
         }
 

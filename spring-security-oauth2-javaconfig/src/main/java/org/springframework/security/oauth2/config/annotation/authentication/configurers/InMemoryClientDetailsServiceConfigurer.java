@@ -65,7 +65,7 @@ public class InMemoryClientDetailsServiceConfigurer extends SecurityConfigurerAd
 
     }
 
-    public class ClientBuilder {
+    public final class ClientBuilder {
         private final String clientId;
         private Collection<String> authorizedGrantTypes = new ArrayList<String>();
         private Collection<String> authorities = new ArrayList<String>();

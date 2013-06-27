@@ -46,7 +46,7 @@ final class PermitAllSupport {
         }
     }
 
-    private static class ExactUrlRequestMatcher implements RequestMatcher {
+    private final static class ExactUrlRequestMatcher implements RequestMatcher {
         private String processUrl;
 
         private ExactUrlRequestMatcher(String processUrl) {
@@ -68,4 +68,6 @@ final class PermitAllSupport {
             return uri.equals(request.getContextPath() + processUrl);
         }
     }
+
+    private PermitAllSupport() {}
 }

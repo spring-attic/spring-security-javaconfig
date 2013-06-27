@@ -174,7 +174,7 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected <C extends SecurityConfigurer<O, B>> C getConfigurer(
+    public <C extends SecurityConfigurer<O, B>> C getConfigurer(
             Class<C> clazz) {
         return (C) configurers.get(clazz);
     }

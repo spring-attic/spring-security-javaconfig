@@ -15,6 +15,7 @@
  */
 package org.springframework.security.config.annotation.web.builders;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +50,8 @@ import org.springframework.security.web.session.SessionManagementFilter;
  * @since 3.2
  */
 
-final class FilterComparator implements Comparator<Filter>{
+@SuppressWarnings("serial")
+final class FilterComparator implements Comparator<Filter>, Serializable {
     private static final int STEP = 100;
     private Map<String,Integer> filterToOrder = new HashMap<String,Integer>();
 

@@ -244,7 +244,7 @@ public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends Abstr
 
     @Override
     public void configure(H http) throws Exception {
-        authFilter.setConsumer(getConsumer());
+        getAuthenticationFilter().setConsumer(getConsumer());
         super.configure(http);
     }
 
@@ -327,7 +327,7 @@ public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends Abstr
      *
      * @author Rob Winch
      */
-    public class AttributeExchangeConfigurer {
+    public final class AttributeExchangeConfigurer {
         private final String identifier;
         private List<OpenIDAttribute> attributes = new ArrayList<OpenIDAttribute>();
         private List<AttributeConfigurer> attributeConfigurers = new ArrayList<AttributeConfigurer>();
@@ -388,7 +388,7 @@ public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends Abstr
          * @author Rob Winch
          * @since 3.2
          */
-        public class AttributeConfigurer {
+        public final class AttributeConfigurer {
             private String name;
             private int count = 1;
             private boolean required = false;

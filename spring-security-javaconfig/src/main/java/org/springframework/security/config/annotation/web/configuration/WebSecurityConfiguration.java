@@ -23,7 +23,6 @@ import javax.servlet.Filter;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
@@ -62,9 +61,6 @@ import org.springframework.util.ClassUtils;
  */
 @Configuration
 public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAware {
-    @Autowired
-    private AutowireCapableBeanFactory beanFactory;
-
     private final WebSecurity webSecurityBuilder = new WebSecurity();
 
     private List<SecurityConfigurer<Filter, WebSecurity>> webSecurityConfigurers;

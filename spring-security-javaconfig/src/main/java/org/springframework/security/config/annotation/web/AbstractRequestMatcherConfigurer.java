@@ -135,7 +135,7 @@ public abstract class AbstractRequestMatcherConfigurer<B extends SecurityBuilder
      * @author Rob Winch
      * @since 3.2
      */
-    private static class RequestMatchers {
+    private static final class RequestMatchers {
 
         /**
          * Create a {@link List} of {@link AntPathRequestMatcher} instances.
