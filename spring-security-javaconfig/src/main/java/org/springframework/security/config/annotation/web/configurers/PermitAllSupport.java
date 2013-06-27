@@ -33,7 +33,7 @@ final class PermitAllSupport {
 
     @SuppressWarnings("unchecked")
     public static void permitAll(HttpBuilder<? extends HttpBuilder<?>> http, String... urls) {
-        ExpressionUrlAuthorizations<?> configurer = http.getConfigurer(ExpressionUrlAuthorizations.class);
+        ExpressionUrlAuthorizationConfigurer<?> configurer = http.getConfigurer(ExpressionUrlAuthorizationConfigurer.class);
 
         if(configurer == null) {
             throw new IllegalStateException("permitAll only works with HttpConfiguration.authorizeUrls()");
@@ -41,7 +41,7 @@ final class PermitAllSupport {
 
         for(String url : urls) {
             if(url != null) {
-                configurer.addMapping(0, new UrlMapping(new ExactUrlRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizations.permitAll)));
+                configurer.addMapping(0, new UrlMapping(new ExactUrlRequestMatcher(url), SecurityConfig.createList(ExpressionUrlAuthorizationConfigurer.permitAll)));
             }
         }
     }

@@ -140,7 +140,7 @@ public final class ChannelSecurityConfigurer<H extends HttpBuilder<H>> extends
     }
 
     @Override
-    protected AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+    protected AuthorizedUrl chainRequestMatchersInternal(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }
 

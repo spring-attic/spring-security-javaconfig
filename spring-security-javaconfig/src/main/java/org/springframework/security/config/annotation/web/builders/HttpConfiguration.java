@@ -31,15 +31,15 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.AbstractRequestMatcherConfigurer;
 import org.springframework.security.config.annotation.web.HttpBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AnonymousConfigurer;
-import org.springframework.security.config.annotation.web.configurers.BaseRequestMatcherRegistry;
 import org.springframework.security.config.annotation.web.configurers.ChannelSecurityConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizations;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.annotation.web.configurers.JeeConfigurer;
@@ -617,8 +617,8 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @return
      * @throws Exception
      */
-    public ExpressionUrlAuthorizations<HttpConfiguration> authorizeUrls() throws Exception {
-        return apply(new ExpressionUrlAuthorizations<HttpConfiguration>());
+    public ExpressionUrlAuthorizationConfigurer<HttpConfiguration> authorizeUrls() throws Exception {
+        return apply(new ExpressionUrlAuthorizationConfigurer<HttpConfiguration>());
     }
 
     /**
@@ -978,12 +978,6 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
         return apply(new HttpBasicConfigurer<HttpConfiguration>());
     }
 
-    public void defaultSharedObject(Class<Object> sharedType, Object object) {
-        if(!sharedObjects.containsKey(sharedType)) {
-            this.sharedObjects.put(sharedType, object);
-        }
-    }
-
     /* (non-Javadoc)
      * @see org.springframework.security.config.annotation.web.HttpBuilder#setSharedObject(java.lang.Class, C)
      */
@@ -1181,7 +1175,7 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * }
      * </pre>
      *
-     * @return the {@link IgnoredRequestRegistry} for further customizations
+     * @return the {@link RequestMatcherRegistry} for further customizations
      */
     public RequestMatcherRegistry requestMatchers() {
         return new RequestMatcherRegistry();
@@ -1264,10 +1258,19 @@ public final class HttpConfiguration extends AbstractConfiguredSecurityBuilder<D
      * @author Rob Winch
      * @since 3.2
      */
-    public final class RequestMatcherRegistry extends BaseRequestMatcherRegistry<HttpConfiguration,DefaultSecurityFilterChain,HttpConfiguration> {
+    public final class RequestMatcherRegistry extends AbstractRequestMatcherConfigurer<RequestMatcherRegistry,DefaultSecurityFilterChain,HttpConfiguration> {
 
-        protected HttpConfiguration chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+        protected RequestMatcherRegistry chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             requestMatcher(new OrRequestMatcher(requestMatchers));
+            return this;
+        }
+
+        /**
+         * Return the {@link HttpConfiguration} for further customizations
+         *
+         * @return the {@link HttpConfiguration} for further customizations
+         */
+        public HttpConfiguration and() {
             return HttpConfiguration.this;
         }
 

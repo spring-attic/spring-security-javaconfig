@@ -55,7 +55,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  *
  * @author Rob Winch
  * @since 3.2
- * @see ExpressionUrlAuthorizations
+ * @see ExpressionUrlAuthorizationConfigurer
  * @see UrlAuthorizations
  */
 abstract class BaseInterceptUrlConfigurer<T,H extends HttpBuilder<H>> extends

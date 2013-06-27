@@ -30,7 +30,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.BaseRequestMatcherRegistry;
-import org.springframework.security.config.annotation.web.configurers.DebugFilter;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
@@ -243,7 +242,7 @@ public final class WebSecurity extends
     public final class IgnoredRequestRegistry extends BaseRequestMatcherRegistry<IgnoredRequestRegistry,Filter,WebSecurity> {
 
         @Override
-        protected IgnoredRequestRegistry chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+        protected IgnoredRequestRegistry chainRequestMatchersInternal(List<RequestMatcher> requestMatchers) {
             ignoredRequests.addAll(requestMatchers);
             return this;
         }

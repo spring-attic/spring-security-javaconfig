@@ -23,7 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizations;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -110,7 +110,7 @@ public class OAuth2ServerConfigurer
             http.httpBasic();
         }
 
-        http.getConfigurer(ExpressionUrlAuthorizations.class).expressionHandler(expressionHandler);
+        http.getConfigurer(ExpressionUrlAuthorizationConfigurer.class).expressionHandler(expressionHandler);
 
         http.userDetailsService(getUserDetailsService());
 

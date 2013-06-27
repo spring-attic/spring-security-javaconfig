@@ -106,12 +106,16 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
      * @param servletContext the {@link ServletContext}
      */
     private void registerSpringSecurityFilterChain(ServletContext servletContext) {
-        DelegatingFilterProxy springSecurityFilterChain = new DelegatingFilterProxy("springSecurityFilterChain");
+        String filterName = "springSecurityFilterChain";
+        DelegatingFilterProxy springSecurityFilterChain = new DelegatingFilterProxy(filterName);
         String contextAttribute = getWebApplicationContextAttribute();
         if(contextAttribute != null) {
             springSecurityFilterChain.setContextAttribute(contextAttribute);
         }
-        Dynamic registration = servletContext.addFilter("springSecurityFilterChain", springSecurityFilterChain);
+        Dynamic registration = servletContext.addFilter(filterName, springSecurityFilterChain);
+        if(registration == null) {
+            throw new IllegalStateException("Duplicate Filter registration for '" + filterName +"'. Check to ensure the Filter is only configured once.");
+        }
         registration.setAsyncSupported(isAsyncSecuritySupported());
         EnumSet<DispatcherType> dispatcherTypes = getSecurityDispatcherTypes();
         registration.addMappingForUrlPatterns(dispatcherTypes, false, "/*");
@@ -132,7 +136,7 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
      * @return the {@link DelegatingFilterProxy#getContextAttribute()} or null
      * if the parent {@link ApplicationContext} should be used
      */
-    protected String getWebApplicationContextAttribute() {
+    private String getWebApplicationContextAttribute() {
         String dispatcherServletName = getDispatcherWebApplicationContextSuffix();
         if(dispatcherServletName == null) {
             return null;
@@ -178,9 +182,12 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
 
     /**
      * Determine if the springSecurityFilterChain should be marked as supporting
-     * asynch.
+     * asynch. Default is true.
+     *
+     * @return true if springSecurityFilterChain should be marked as supporting
+     *         asynch
      */
-    private boolean isAsyncSecuritySupported() {
+    protected boolean isAsyncSecuritySupported() {
         return true;
     }
 

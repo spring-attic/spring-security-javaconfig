@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.config.annotation.web.configurers;
+package org.springframework.security.config.annotation.web.builders;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,7 +48,7 @@ import org.springframework.security.web.util.UrlUtils;
  * @author Rob Winch
  * @since 3.1
  */
-public class DebugFilter implements Filter {
+class DebugFilter implements Filter {
     private static final String ALREADY_FILTERED_ATTR_NAME = DebugFilter.class.getName().concat(".FILTERED");
 
     private final FilterChainProxy fcp;

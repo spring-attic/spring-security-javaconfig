@@ -69,7 +69,7 @@ class BaseRequestMatcherRegistryTests extends Specification {
             return null;
         }
 
-        List<RequestMatcher> chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+        List<RequestMatcher> chainRequestMatchersInternal(List<RequestMatcher> requestMatchers) {
             return requestMatchers;
         }
     }

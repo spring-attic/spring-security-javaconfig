@@ -131,8 +131,6 @@ public abstract class AbstractRequestMatcherConfigurer<C,O,B extends SecurityBui
      */
     protected abstract C chainRequestMatchers(List<RequestMatcher> requestMatchers);
 
-
-
     /**
      * Utilities for creating {@link RequestMatcher} instances.
      *

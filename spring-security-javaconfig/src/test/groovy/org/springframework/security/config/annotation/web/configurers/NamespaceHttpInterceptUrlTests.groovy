@@ -41,22 +41,10 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
  *
  */
 public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
-    FilterChainProxy springSecurityFilterChain
-    MockHttpServletRequest request
-    MockHttpServletResponse response
-    MockFilterChain chain
-
-    def setup() {
-        request = new MockHttpServletRequest()
-        request.setMethod("GET")
-        response = new MockHttpServletResponse()
-        chain = new MockFilterChain()
-    }
 
     def "http/intercept-url denied when not logged in"() {
         setup:
             loadConfig(HttpInterceptUrlConfig)
-            springSecurityFilterChain = context.getBean(FilterChainProxy)
             request.servletPath == "/users"
         when:
             springSecurityFilterChain.doFilter(request,response,chain)
@@ -67,7 +55,6 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
     def "http/intercept-url denied when logged in"() {
         setup:
             loadConfig(HttpInterceptUrlConfig)
-            springSecurityFilterChain = context.getBean(FilterChainProxy)
             login()
             request.setServletPath("/users")
         when:
@@ -79,7 +66,6 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
     def "http/intercept-url allowed when logged in"() {
         setup:
             loadConfig(HttpInterceptUrlConfig)
-            springSecurityFilterChain = context.getBean(FilterChainProxy)
             login("admin","ROLE_ADMIN")
             request.setServletPath("/users")
         when:
@@ -92,7 +78,6 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
     def "http/intercept-url@method=POST"() {
         setup:
             loadConfig(HttpInterceptUrlConfig)
-            springSecurityFilterChain = context.getBean(FilterChainProxy)
         when:
             login()
             request.setServletPath("/admin/post")
@@ -101,7 +86,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
             response.status == HttpServletResponse.SC_OK
             !response.isCommitted()
         when:
-            setup()
+            super.setup()
             login()
             request.setServletPath("/admin/post")
             request.setMethod("POST")
@@ -109,7 +94,7 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
         then:
             response.status == HttpServletResponse.SC_FORBIDDEN
         when:
-            setup()
+            super.setup()
             login("admin","ROLE_ADMIN")
             request.setServletPath("/admin/post")
             request.setMethod("POST")
@@ -122,7 +107,6 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
     def "http/intercept-url@requires-channel"() {
         setup:
             loadConfig(HttpInterceptUrlConfig)
-            springSecurityFilterChain = context.getBean(FilterChainProxy)
         when:
             request.setServletPath("/login")
             request.setRequestURI("/login")
@@ -130,14 +114,14 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
         then:
             response.redirectedUrl == "https://localhost/login"
         when:
-            setup()
+            super.setup()
             request.setServletPath("/secured/a")
             request.setRequestURI("/secured/a")
             springSecurityFilterChain.doFilter(request,response,chain)
         then:
             response.redirectedUrl == "https://localhost/secured/a"
         when:
-            setup()
+            super.setup()
             request.setSecure(true)
             request.setScheme("https")
             request.setServletPath("/user")
@@ -183,12 +167,5 @@ public class NamespaceHttpInterceptUrlTests extends BaseSpringSpec {
                     .withUser("user").password("password").roles("USER").and()
                     .withUser("admin").password("password").roles("USER", "ADMIN")
         }
-    }
-
-    def login(String username="user", String role="ROLE_USER") {
-        HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository()
-        HttpRequestResponseHolder requestResponseHolder = new HttpRequestResponseHolder(request, response)
-        repo.loadContext(requestResponseHolder)
-        repo.saveContext(new SecurityContextImpl(authentication: new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.createAuthorityList(role))), requestResponseHolder.request, requestResponseHolder.response)
     }
 }

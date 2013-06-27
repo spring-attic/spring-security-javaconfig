@@ -39,15 +39,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
  */
 public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
     FilterChainProxy springSecurityFilterChain
-    MockHttpServletRequest request
-    MockHttpServletResponse response
-    MockFilterChain chain
-
-    def setup() {
-        request = new MockHttpServletRequest()
-        response = new MockHttpServletResponse()
-        chain = new MockFilterChain()
-    }
 
     def "http/form-login"() {
         setup:
@@ -58,14 +49,14 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         then:
             response.getRedirectedUrl() == "http://localhost/login"
         when: "fail to log in"
-            setup()
+            super.setup()
             request.requestURI = "/login"
             request.method = "POST"
             springSecurityFilterChain.doFilter(request,response,chain)
         then: "sent to login error page"
             response.getRedirectedUrl() == "/login?error"
         when: "login success"
-            setup()
+            super.setup()
             request.requestURI = "/login"
             request.method = "POST"
             request.parameters.username = ["user"] as String[]
@@ -104,14 +95,14 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         then:
             response.getRedirectedUrl() == "http://localhost/authentication/login"
         when: "fail to log in"
-            setup()
+            super.setup()
             request.requestURI = "/authentication/login/process"
             request.method = "POST"
             springSecurityFilterChain.doFilter(request,response,chain)
             then: "sent to login error page"
             response.getRedirectedUrl() == "/authentication/login?failed"
         when: "login success"
-            setup()
+            super.setup()
             request.requestURI = "/authentication/login/process"
             request.method = "POST"
             request.parameters.j_username = ["user"] as String[]
@@ -152,7 +143,7 @@ public class NamespaceHttpFormLoginTests extends BaseSpringSpec {
         then: "sent to login error page"
             response.getRedirectedUrl() == "/custom/failure"
         when: "login success"
-            setup()
+            super.setup()
             request.requestURI = "/login"
             request.method = "POST"
             request.parameters.username = ["user"] as String[]

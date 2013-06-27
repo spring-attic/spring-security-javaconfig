@@ -15,15 +15,26 @@
  */
 package org.springframework.security.config.annotation;
 
+import javax.servlet.Filter
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.mock.web.MockFilterChain
+import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
+import org.springframework.security.web.context.HttpRequestResponseHolder
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 
 import spock.lang.AutoCleanup
 import spock.lang.Specification
@@ -35,6 +46,16 @@ import spock.lang.Specification
 abstract class BaseSpringSpec extends Specification {
     @AutoCleanup
     ConfigurableApplicationContext context
+
+    MockHttpServletRequest request
+    MockHttpServletResponse response
+    MockFilterChain chain
+
+    def setup() {
+        request = new MockHttpServletRequest(method:"GET")
+        response = new MockHttpServletResponse()
+        chain = new MockFilterChain()
+    }
 
     AuthenticationManagerBuilder authenticationBldr = new AuthenticationManagerBuilder().inMemoryAuthentication().and()
 
@@ -57,6 +78,10 @@ abstract class BaseSpringSpec extends Specification {
 
     def filterChains() {
         context.getBean(FilterChainProxy).filterChains
+    }
+
+    Filter getSpringSecurityFilterChain() {
+        context.getBean("springSecurityFilterChain",Filter.class)
     }
 
     AuthenticationManager authenticationManager() {
@@ -82,5 +107,16 @@ abstract class BaseSpringSpec extends Specification {
 
     AuthenticationProvider findAuthenticationProvider(Class<?> provider) {
         authenticationProviders().find { provider.isAssignableFrom(it.class) }
+    }
+
+    def login(String username="user", String role="ROLE_USER") {
+        login(new UsernamePasswordAuthenticationToken(username, null, AuthorityUtils.createAuthorityList(role)))
+    }
+
+    def login(Authentication auth) {
+        HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository()
+        HttpRequestResponseHolder requestResponseHolder = new HttpRequestResponseHolder(request, response)
+        repo.loadContext(requestResponseHolder)
+        repo.saveContext(new SecurityContextImpl(authentication:auth), requestResponseHolder.request, requestResponseHolder.response)
     }
 }

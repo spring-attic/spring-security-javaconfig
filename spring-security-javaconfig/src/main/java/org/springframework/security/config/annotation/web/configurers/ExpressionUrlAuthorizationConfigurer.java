@@ -65,7 +65,7 @@ import org.springframework.util.StringUtils;
  * @since 3.2
  * @see {@link org.springframework.security.config.annotation.web.builders.HttpConfiguration#authorizeUrls()}
  */
-public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends BaseInterceptUrlConfigurer<ExpressionUrlAuthorizations<H>.AuthorizedUrl,H> {
+public final class ExpressionUrlAuthorizationConfigurer<H extends HttpBuilder<H>> extends BaseInterceptUrlConfigurer<ExpressionUrlAuthorizationConfigurer<H>.AuthorizedUrl,H> {
     static final String permitAll = "permitAll";
     private static final String denyAll = "denyAll";
     private static final String anonymous = "anonymous";
@@ -79,22 +79,22 @@ public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends
      * Creates a new instance
      * @see HttpConfiguration#authorizeUrls()
      */
-    public ExpressionUrlAuthorizations() {
+    public ExpressionUrlAuthorizationConfigurer() {
     }
 
     /**
      * Allows customization of the {@link SecurityExpressionHandler} to be used. The default is {@link DefaultWebSecurityExpressionHandler}
      *
      * @param expressionHandler the {@link SecurityExpressionHandler} to be used
-     * @return the {@link ExpressionUrlAuthorizations} for further customization.
+     * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization.
      */
-    public ExpressionUrlAuthorizations<H> expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
+    public ExpressionUrlAuthorizationConfigurer<H> expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
         this.expressionHandler = expressionHandler;
         return this;
     }
 
     @Override
-    protected final AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+    protected final AuthorizedUrl chainRequestMatchersInternal(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }
 
@@ -111,7 +111,10 @@ public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends
     @Override
     final ExpressionBasedFilterInvocationSecurityMetadataSource createMetadataSource() {
         LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = createRequestMap();
-        return requestMap.isEmpty() ? null : new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, expressionHandler);
+        if(requestMap.isEmpty()) {
+            throw new IllegalStateException("At least one mapping is required (i.e. authorizeUrls().anyRequest.authenticated())");
+        }
+        return new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, expressionHandler);
     }
 
     /**
@@ -119,9 +122,9 @@ public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends
      *
      * @param requestMatchers the {@link RequestMatcher} instances to register to the {@link ConfigAttribute} instances
      * @param configAttributes the {@link ConfigAttribute} to be mapped by the {@link RequestMatcher} instances
-     * @return the {@link ExpressionUrlAuthorizations} for further customization.
+     * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization.
      */
-    private ExpressionUrlAuthorizations<H> interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
+    private ExpressionUrlAuthorizationConfigurer<H> interceptUrl(Iterable<? extends RequestMatcher> requestMatchers, Collection<ConfigAttribute> configAttributes) {
         for(RequestMatcher requestMatcher : requestMatchers) {
             addMapping(new UrlMapping(requestMatcher, configAttributes));
         }
@@ -151,6 +154,7 @@ public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends
 
     public final class AuthorizedUrl {
         private List<RequestMatcher> requestMatchers;
+        private boolean not;
 
         /**
          * Creates a new instance
@@ -162,25 +166,37 @@ public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends
         }
 
         /**
+         * Negates the following expression.
+         *
+         * @param role the role to require (i.e. USER, ADMIN, etc). Note, it should not start with "ROLE_" as
+         *             this is automatically inserted.
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
+         */
+        public AuthorizedUrl not() {
+            this.not = true;
+            return this;
+        }
+
+        /**
          * Shortcut for specifying URLs require a particular role. If you do not want to have "ROLE_" automatically
          * inserted see {@link #hasAuthority(String)}.
          *
          * @param role the role to require (i.e. USER, ADMIN, etc). Note, it should not start with "ROLE_" as
          *             this is automatically inserted.
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> hasRole(String role) {
-            return access(ExpressionUrlAuthorizations.hasRole(role));
+        public ExpressionUrlAuthorizationConfigurer<H> hasRole(String role) {
+            return access(ExpressionUrlAuthorizationConfigurer.hasRole(role));
         }
 
         /**
          * Specify that URLs require a particular authority.
          *
          * @param authority the authority to require (i.e. ROLE_USER, ROLE_ADMIN, etc).
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> hasAuthority(String authority) {
-            return access(ExpressionUrlAuthorizations.hasAuthority(authority));
+        public ExpressionUrlAuthorizationConfigurer<H> hasAuthority(String authority) {
+            return access(ExpressionUrlAuthorizationConfigurer.hasAuthority(authority));
         }
 
         /**
@@ -188,10 +204,10 @@ public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends
          *
          * @param authorities the requests require at least one of the authorities (i.e. "ROLE_USER","ROLE_ADMIN" would
          *                    mean either "ROLE_USER" or "ROLE_ADMIN" is required).
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> hasAnyAuthority(String... authorities) {
-            return access(ExpressionUrlAuthorizations.hasAnyAuthority(authorities));
+        public ExpressionUrlAuthorizationConfigurer<H> hasAnyAuthority(String... authorities) {
+            return access(ExpressionUrlAuthorizationConfigurer.hasAnyAuthority(authorities));
         }
 
         /**
@@ -199,65 +215,65 @@ public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends
          * <a href="http://forum.springsource.org/showthread.php?102783-How-to-use-hasIpAddress&p=343971#post343971">subnet</a>.
          *
          * @param ipaddressExpression the ipaddress (i.e. 192.168.1.79) or local subnet (i.e. 192.168.0/24)
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> hasIpAddress(String ipaddressExpression) {
-            return access(ExpressionUrlAuthorizations.hasIpAddress(ipaddressExpression));
+        public ExpressionUrlAuthorizationConfigurer<H> hasIpAddress(String ipaddressExpression) {
+            return access(ExpressionUrlAuthorizationConfigurer.hasIpAddress(ipaddressExpression));
         }
 
         /**
          * Specify that URLs are allowed by anyone.
          *
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> permitAll() {
+        public ExpressionUrlAuthorizationConfigurer<H> permitAll() {
             return access(permitAll);
         }
 
         /**
          * Specify that URLs are allowed by anonymous users.
          *
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> anonymous() {
+        public ExpressionUrlAuthorizationConfigurer<H> anonymous() {
             return access(anonymous);
         }
 
         /**
          * Specify that URLs are allowed by users that have been remembered.
          *
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          * @see {@link RememberMeConfigurer}
          */
-        public ExpressionUrlAuthorizations<H> rememberMe() {
+        public ExpressionUrlAuthorizationConfigurer<H> rememberMe() {
             return access(rememberMe);
         }
 
         /**
          * Specify that URLs are not allowed by anyone.
          *
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> denyAll() {
+        public ExpressionUrlAuthorizationConfigurer<H> denyAll() {
             return access(denyAll);
         }
 
         /**
          * Specify that URLs are allowed by any authenticated user.
          *
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> authenticated() {
+        public ExpressionUrlAuthorizationConfigurer<H> authenticated() {
             return access(authenticated);
         }
 
         /**
          * Specify that URLs are allowed by users who have authenticated and were not "remembered".
          *
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          * @see {@link RememberMeConfigurer}
          */
-        public ExpressionUrlAuthorizations<H> fullyAuthenticated() {
+        public ExpressionUrlAuthorizationConfigurer<H> fullyAuthenticated() {
             return access(fullyAuthenticated);
         }
 
@@ -265,11 +281,14 @@ public final class ExpressionUrlAuthorizations<H extends HttpBuilder<H>> extends
          * Allows specifying that URLs are secured by an arbitrary expression
          *
          * @param attribute the expression to secure the URLs (i.e. "hasRole('ROLE_USER') and hasRole('ROLE_SUPER')")
-         * @return the {@link ExpressionUrlAuthorizations} for further customization
+         * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customization
          */
-        public ExpressionUrlAuthorizations<H> access(String attribute) {
+        public ExpressionUrlAuthorizationConfigurer<H> access(String attribute) {
+            if(not) {
+                attribute = "!" + attribute;
+            }
             interceptUrl(requestMatchers, SecurityConfig.createList(attribute));
-            return ExpressionUrlAuthorizations.this;
+            return ExpressionUrlAuthorizationConfigurer.this;
         }
     }
 }

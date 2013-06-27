@@ -85,6 +85,7 @@ public class OAuth2ServerConfig extends OAuth2ServerConfigurerAdapter {
                 .and()
             .requestMatchers()
                 .antMatchers("/photos/**","/oauth/token","/oauth/clients/**","/oauth/users/**")
+                .and()
             .apply(new OAuth2ServerConfigurer())
                 .clientDetails(clientDetails())
                 .resourceId(SPARKLR_RESOURCE_ID);

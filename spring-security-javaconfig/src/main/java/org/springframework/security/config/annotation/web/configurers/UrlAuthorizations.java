@@ -61,7 +61,7 @@ import org.springframework.util.Assert;
  *
  * @author Rob Winch
  * @since 3.2
- * @see ExpressionUrlAuthorizations
+ * @see ExpressionUrlAuthorizationConfigurer
  */
 public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInterceptUrlConfigurer<UrlAuthorizations<H>.AuthorizedUrl,H> {
 
@@ -93,7 +93,7 @@ public final class UrlAuthorizations<H extends HttpBuilder<H>> extends BaseInter
      * Chains the {@link RequestMatcher} creation to the {@link AuthorizedUrl} class.
      */
     @Override
-    protected AuthorizedUrl chainRequestMatchers(List<RequestMatcher> requestMatchers) {
+    protected AuthorizedUrl chainRequestMatchersInternal(List<RequestMatcher> requestMatchers) {
         return new AuthorizedUrl(requestMatchers);
     }
 

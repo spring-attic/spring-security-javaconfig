@@ -26,7 +26,7 @@ import spock.lang.Specification
  * @author Rob Winch
  *
  */
-class AbstractConfiguredBuilderTests extends Specification {
+class AbstractConfiguredSecurityBuilderTests extends Specification {
 
     ConcreteAbstractConfiguredBuilder builder = new ConcreteAbstractConfiguredBuilder()
 
@@ -38,6 +38,21 @@ class AbstractConfiguredBuilderTests extends Specification {
             ReflectionTestUtils.getField(builder,"configurers").size() == 1
     }
 
+    def "build twice fails"() {
+        setup:
+            builder.build()
+        when:
+            builder.build()
+        then:
+            thrown(IllegalStateException)
+    }
+
+    def "getObject before build fails"() {
+        when:
+            builder.getObject()
+        then:
+            thrown(IllegalStateException)
+    }
 
     def "Configurer.init can apply another configurer"() {
         setup:

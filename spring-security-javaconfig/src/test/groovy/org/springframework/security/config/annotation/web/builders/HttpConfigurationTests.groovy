@@ -15,6 +15,7 @@
  */
 package org.springframework.security.config.annotation.web.builders
 
+import javax.servlet.Filter
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
@@ -22,10 +23,14 @@ import javax.servlet.http.HttpServletResponse
 
 import org.springframework.beans.factory.BeanCreationException
 import org.springframework.context.annotation.Configuration
+import org.springframework.mock.web.MockFilterChain
+import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.cas.web.CasAuthenticationFilter
 import org.springframework.security.config.annotation.BaseSpringSpec
-import org.springframework.security.config.annotation.web.builders.HttpConfiguration
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.filter.OncePerRequestFilter
 
 /**
@@ -73,6 +78,43 @@ public class HttpConfigurationTests extends BaseSpringSpec {
         protected void configure(HttpConfiguration http) throws Exception {
             http
                 .addFilter(new CasAuthenticationFilter())
+        }
+    }
+
+
+    def "requestMatchers() javadoc"() {
+        setup: "load configuration like the config on the requestMatchers() javadoc"
+            loadConfig(RequestMatcherRegistryConfigs)
+        when:
+            super.setup()
+            request.servletPath = "/oauth/a"
+            springSecurityFilterChain.doFilter(request, response, chain)
+        then:
+            response.status == 403
+        where:
+            servletPath | status
+            "/oauth/a"  | 403
+            "/oauth/b"  | 403
+            "/api/a"    | 403
+            "/api/b"    | 403
+            "/oauth2/b" | 200
+            "/api2/b"   | 200
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class RequestMatcherRegistryConfigs extends BaseWebConfig {
+        @Override
+        protected void configure(HttpConfiguration http) throws Exception {
+            http
+              .requestMatchers()
+                  .antMatchers("/api/**")
+                  .antMatchers("/oauth/**")
+                  .and()
+              .authorizeUrls()
+                  .antMatchers("/**").hasRole("USER")
+                  .and()
+              .httpBasic()
         }
     }
 }
