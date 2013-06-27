@@ -15,6 +15,7 @@
  */
 package org.springframework.security.web.context;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -24,9 +25,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.util.Assert;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.AbstractContextLoaderInitializer;
 import org.springframework.web.context.WebApplicationContext;
@@ -77,8 +80,7 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
         if(enableHttpSessionEventPublisher()) {
             servletContext.addListener(HttpSessionEventPublisher.class);
         }
-        beforeSpringSecurityFilterChain(servletContext);
-        registerSpringSecurityFilterChain(servletContext);
+        insertSpringSecurityFilterChain(servletContext);
         afterSpringSecurityFilterChain(servletContext);
     }
 
@@ -94,31 +96,89 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
     }
 
     /**
-     * Invoked before the springSecurityFilterChain is added.
-     * @param servletContext the {@link ServletContext}
-     */
-    protected void beforeSpringSecurityFilterChain(ServletContext servletContext) {
-
-    }
-
-    /**
      * Registers the springSecurityFilterChain
      * @param servletContext the {@link ServletContext}
      */
-    private void registerSpringSecurityFilterChain(ServletContext servletContext) {
+    private void insertSpringSecurityFilterChain(ServletContext servletContext) {
         String filterName = "springSecurityFilterChain";
         DelegatingFilterProxy springSecurityFilterChain = new DelegatingFilterProxy(filterName);
         String contextAttribute = getWebApplicationContextAttribute();
         if(contextAttribute != null) {
             springSecurityFilterChain.setContextAttribute(contextAttribute);
         }
-        Dynamic registration = servletContext.addFilter(filterName, springSecurityFilterChain);
+        registerFilter(servletContext, true, filterName, springSecurityFilterChain);
+    }
+
+    /**
+     * Inserts the provided {@link Filter}s before existing {@link Filter}s
+     * using default generated names, {@link #getSecurityDispatcherTypes()}, and
+     * {@link #isAsyncSecuritySupported()}.
+     *
+     * @param servletContext
+     *            the {@link ServletContext} to use
+     * @param filters
+     *            the {@link Filter}s to register
+     */
+    protected final void insertFilters(ServletContext servletContext,Filter... filters) {
+        registerFilters(servletContext, true, filters);
+    }
+
+    /**
+     * Inserts the provided {@link Filter}s after existing {@link Filter}s
+     * using default generated names, {@link #getSecurityDispatcherTypes()}, and
+     * {@link #isAsyncSecuritySupported()}.
+     *
+     * @param servletContext
+     *            the {@link ServletContext} to use
+     * @param filters
+     *            the {@link Filter}s to register
+     */
+    protected final void appendFilters(ServletContext servletContext,Filter... filters) {
+        registerFilters(servletContext, false, filters);
+    }
+
+    /**
+     * Registers the provided {@link Filter}s using default generated names,
+     * {@link #getSecurityDispatcherTypes()}, and
+     * {@link #isAsyncSecuritySupported()}.
+     *
+     * @param servletContext
+     *            the {@link ServletContext} to use
+     * @param insertBeforeOtherFilters
+     *            if true, will insert the provided {@link Filter}s before other
+     *            {@link Filter}s. Otherwise, will insert the {@link Filter}s
+     *            after other {@link Filter}s.
+     * @param filters
+     *            the {@link Filter}s to register
+     */
+    private void registerFilters(ServletContext servletContext, boolean insertBeforeOtherFilters, Filter... filters) {
+        Assert.notEmpty(filters, "filters cannot be null or empty");
+
+        for(Filter filter : filters) {
+            if(filter == null) {
+                throw new IllegalArgumentException("filters cannot contain null values. Got " + Arrays.asList(filters));
+            }
+            String filterName = Conventions.getVariableName(filter);
+            registerFilter(servletContext, insertBeforeOtherFilters, filterName, filter);
+        }
+    }
+
+    /**
+     * Registers the provided filter using the {@link #isAsyncSecuritySupported()} and {@link #getSecurityDispatcherTypes()}.
+     *
+     * @param servletContext
+     * @param insertBeforeOtherFilters should this Filter be inserted before or after other {@link Filter}
+     * @param filterName
+     * @param filter
+     */
+    private final void registerFilter(ServletContext servletContext, boolean insertBeforeOtherFilters, String filterName, Filter filter) {
+        Dynamic registration = servletContext.addFilter(filterName, filter);
         if(registration == null) {
             throw new IllegalStateException("Duplicate Filter registration for '" + filterName +"'. Check to ensure the Filter is only configured once.");
         }
         registration.setAsyncSupported(isAsyncSecuritySupported());
         EnumSet<DispatcherType> dispatcherTypes = getSecurityDispatcherTypes();
-        registration.addMappingForUrlPatterns(dispatcherTypes, false, "/*");
+        registration.addMappingForUrlPatterns(dispatcherTypes, !insertBeforeOtherFilters, "/*");
     }
 
     /**

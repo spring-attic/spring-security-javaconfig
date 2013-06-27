@@ -108,4 +108,151 @@ class AbstractSecurityWebApplicationInitializerTests extends Specification {
             IllegalStateException success = thrown()
             success.message == "Duplicate Filter registration for 'springSecurityFilterChain'. Check to ensure the Filter is only configured once."
     }
+
+    def "insertFilters"() {
+        setup:
+            Filter filter1 = Mock()
+            Filter filter2 = Mock()
+            ServletContext context = Mock()
+            FilterRegistration.Dynamic registration = Mock()
+        when:
+            new AbstractSecurityWebApplicationInitializer(){
+                protected void afterSpringSecurityFilterChain(ServletContext servletContext) {
+                    insertFilters(context, filter1, filter2);
+                }
+            }.onStartup(context)
+        then:
+            1 * context.addFilter("springSecurityFilterChain", {DelegatingFilterProxy f -> f.targetBeanName == "springSecurityFilterChain" && f.contextAttribute == null}) >> registration
+            3 * registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false, "/*");
+            3 * registration.setAsyncSupported(true)
+            0 * context.addListener(_)
+            1 * context.addFilter(_, filter1) >> registration
+            1 * context.addFilter(_, filter2) >> registration
+    }
+
+    def "insertFilters already registered"() {
+        setup:
+            Filter filter1 = Mock()
+            ServletContext context = Mock()
+            FilterRegistration.Dynamic registration = Mock()
+        when:
+            new AbstractSecurityWebApplicationInitializer(){
+                protected void afterSpringSecurityFilterChain(ServletContext servletContext) {
+                    insertFilters(context, filter1);
+                }
+            }.onStartup(context)
+        then:
+            1 * context.addFilter("springSecurityFilterChain", {DelegatingFilterProxy f -> f.targetBeanName == "springSecurityFilterChain" && f.contextAttribute == null}) >> registration
+            1 * registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false, "/*");
+            1 * context.addFilter(_, filter1) >> null
+            IllegalStateException success = thrown()
+            success.message == "Duplicate Filter registration for 'filter'. Check to ensure the Filter is only configured once."
+    }
+
+    def "insertFilters no filters"() {
+        setup:
+            ServletContext context = Mock()
+            FilterRegistration.Dynamic registration = Mock()
+        when:
+            new AbstractSecurityWebApplicationInitializer(){
+                protected void afterSpringSecurityFilterChain(ServletContext servletContext) {
+                    insertFilters(context);
+                }
+            }.onStartup(context)
+        then:
+            1 * context.addFilter("springSecurityFilterChain", {DelegatingFilterProxy f -> f.targetBeanName == "springSecurityFilterChain" && f.contextAttribute == null}) >> registration
+            IllegalArgumentException success = thrown()
+            success.message == "filters cannot be null or empty"
+    }
+
+    def "insertFilters filters with null"() {
+        setup:
+            Filter filter1 = Mock()
+            ServletContext context = Mock()
+            FilterRegistration.Dynamic registration = Mock()
+        when:
+            new AbstractSecurityWebApplicationInitializer(){
+                protected void afterSpringSecurityFilterChain(ServletContext servletContext) {
+                    insertFilters(context,  filter1, null);
+                }
+            }.onStartup(context)
+        then:
+            2 * context.addFilter(_, _) >> registration
+            IllegalArgumentException success = thrown()
+            success.message == "filters cannot contain null values. Got [Mock for type 'Filter' named 'filter1', null]"
+    }
+
+    def "appendFilters"() {
+        setup:
+            Filter filter1 = Mock()
+            Filter filter2 = Mock()
+            ServletContext context = Mock()
+            FilterRegistration.Dynamic registration = Mock()
+        when:
+            new AbstractSecurityWebApplicationInitializer(){
+                protected void afterSpringSecurityFilterChain(ServletContext servletContext) {
+                    appendFilters(context,filter1, filter2);
+                }
+            }.onStartup(context)
+        then:
+            1 * context.addFilter("springSecurityFilterChain", {DelegatingFilterProxy f -> f.targetBeanName == "springSecurityFilterChain" && f.contextAttribute == null}) >> registration
+            1 * registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false, "/*");
+            2 * registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), true, "/*");
+            3 * registration.setAsyncSupported(true)
+            0 * context.addListener(_)
+            1 * context.addFilter(_, filter1) >> registration
+            1 * context.addFilter(_, filter2) >> registration
+    }
+
+    def "appendFilters already registered"() {
+        setup:
+            Filter filter1 = Mock()
+            ServletContext context = Mock()
+            FilterRegistration.Dynamic registration = Mock()
+        when:
+            new AbstractSecurityWebApplicationInitializer(){
+                protected void afterSpringSecurityFilterChain(ServletContext servletContext) {
+                    appendFilters(context, filter1);
+                }
+            }.onStartup(context)
+        then:
+            1 * context.addFilter("springSecurityFilterChain", {DelegatingFilterProxy f -> f.targetBeanName == "springSecurityFilterChain" && f.contextAttribute == null}) >> registration
+            1 * registration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR), false, "/*");
+            1 * context.addFilter(_, filter1) >> null
+            IllegalStateException success = thrown()
+            success.message == "Duplicate Filter registration for 'filter'. Check to ensure the Filter is only configured once."
+    }
+
+    def "appendFilters no filters"() {
+        setup:
+            ServletContext context = Mock()
+            FilterRegistration.Dynamic registration = Mock()
+        when:
+            new AbstractSecurityWebApplicationInitializer(){
+                protected void afterSpringSecurityFilterChain(ServletContext servletContext) {
+                    appendFilters(context);
+                }
+            }.onStartup(context)
+        then:
+            1 * context.addFilter("springSecurityFilterChain", {DelegatingFilterProxy f -> f.targetBeanName == "springSecurityFilterChain" && f.contextAttribute == null}) >> registration
+            IllegalArgumentException success = thrown()
+            success.message == "filters cannot be null or empty"
+    }
+
+    def "appendFilters filters with null"() {
+        setup:
+            Filter filter1 = Mock()
+            ServletContext context = Mock()
+            FilterRegistration.Dynamic registration = Mock()
+        when:
+            new AbstractSecurityWebApplicationInitializer(){
+                protected void afterSpringSecurityFilterChain(ServletContext servletContext) {
+                    appendFilters(context,  filter1, null);
+                }
+            }.onStartup(context)
+        then:
+            2 * context.addFilter(_, _) >> registration
+            IllegalArgumentException success = thrown()
+            success.message == "filters cannot contain null values. Got [Mock for type 'Filter' named 'filter1', null]"
+    }
 }
