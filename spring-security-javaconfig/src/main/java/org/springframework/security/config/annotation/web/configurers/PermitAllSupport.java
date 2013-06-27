@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.config.annotation.web.HttpBuilder;
-import org.springframework.security.config.annotation.web.configurers.BaseRequestMatcherRegistry.UrlMapping;
+import org.springframework.security.config.annotation.web.configurers.AbstractRequestMatcherMappingConfigurer.UrlMapping;
 import org.springframework.security.web.util.RequestMatcher;
 
 

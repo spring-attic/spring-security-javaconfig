@@ -32,15 +32,15 @@ import org.springframework.security.web.util.RequestMatcher;
  * @author Rob Winch
  * @since 3.2
  *
- * @param <B> The Builder that is building Object O and is configured by this {@link BaseRequestMatcherRegistry}
+ * @param <B> The Builder that is building Object O and is configured by this {@link AbstractRequestMatcherMappingConfigurer}
  * @param <C> The object that is returned or Chained after creating the RequestMatcher
  * @param <O> The Object being built by Builder B
  *
  * @see ChannelSecurityConfigurer
- * @see UrlAuthorizations
+ * @see UrlAuthorizationConfigurer
  * @see ExpressionUrlAuthorizationConfigurer
  */
-public abstract class BaseRequestMatcherRegistry<B extends SecurityBuilder<O>,C,O> extends AbstractRequestMatcherConfigurer<B,C,O> {
+public abstract class AbstractRequestMatcherMappingConfigurer<B extends SecurityBuilder<O>,C,O> extends AbstractRequestMatcherConfigurer<B,C,O> {
     private List<UrlMapping> urlMappings = new ArrayList<UrlMapping>();
     private List<RequestMatcher> unmappedMatchers;
 

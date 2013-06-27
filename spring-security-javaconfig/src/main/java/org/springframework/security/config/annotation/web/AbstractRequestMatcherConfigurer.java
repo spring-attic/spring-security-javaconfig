@@ -22,7 +22,7 @@ import java.util.List;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.BaseRequestMatcherRegistry;
+import org.springframework.security.config.annotation.web.configurers.AbstractRequestMatcherMappingConfigurer;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.AnyRequestMatcher;
 import org.springframework.security.web.util.RegexRequestMatcher;
@@ -33,7 +33,7 @@ import org.springframework.security.web.util.RequestMatcher;
  * {@link RequestMatcher} require a certain level of authorization.
  *
  *
- * @param <B> The Builder that is building Object O and is configured by this {@link BaseRequestMatcherRegistry}
+ * @param <B> The Builder that is building Object O and is configured by this {@link AbstractRequestMatcherMappingConfigurer}
  * @param <C> The object that is returned or Chained after creating the RequestMatcher
  * @param <O> The Object being built by Builder B
  *
@@ -109,7 +109,7 @@ public abstract class AbstractRequestMatcherConfigurer<B extends SecurityBuilder
     }
 
     /**
-     * Associates a list of {@link RequestMatcher} instances with the {@link BaseRequestMatcherRegistry}
+     * Associates a list of {@link RequestMatcher} instances with the {@link AbstractRequestMatcherMappingConfigurer}
      *
      * @param requestMatchers the {@link RequestMatcher} instances
      *

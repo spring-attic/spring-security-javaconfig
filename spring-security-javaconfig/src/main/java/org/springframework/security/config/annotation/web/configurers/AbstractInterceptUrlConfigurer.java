@@ -55,15 +55,15 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  *
  * @param <H> the type of {@link HttpBuilder} that is being configured
  * @param <C> the type of object that is changed
- * @param <R> the type of object that is changed for the {@link BaseRequestMatcherRegistry}
+ * @param <R> the type of object that is changed for the {@link AbstractRequestMatcherMappingConfigurer}
  *
  * @author Rob Winch
  * @since 3.2
  * @see ExpressionUrlAuthorizationConfigurer
- * @see UrlAuthorizations
+ * @see UrlAuthorizationConfigurer
  */
-abstract class BaseInterceptUrlConfigurer<H extends HttpBuilder<H>,C,R> extends
-        BaseRequestMatcherRegistry<H,R,DefaultSecurityFilterChain> implements
+abstract class AbstractInterceptUrlConfigurer<H extends HttpBuilder<H>,C,R> extends
+        AbstractRequestMatcherMappingConfigurer<H,R,DefaultSecurityFilterChain> implements
         SecurityConfigurer<DefaultSecurityFilterChain,H> {
     private Boolean filterSecurityInterceptorOncePerRequest;
 
@@ -74,7 +74,7 @@ abstract class BaseInterceptUrlConfigurer<H extends HttpBuilder<H>,C,R> extends
      * created.
      *
      * @param accessDecisionManager the {@link AccessDecisionManager} to use
-     * @return  the {@link BaseInterceptUrlConfigurer} for further customization
+     * @return  the {@link AbstractInterceptUrlConfigurer} for further customization
      */
     public C accessDecisionManager(
             AccessDecisionManager accessDecisionManager) {
@@ -88,7 +88,7 @@ abstract class BaseInterceptUrlConfigurer<H extends HttpBuilder<H>,C,R> extends
      *
      * @param filterSecurityInterceptorOncePerRequest if the {@link FilterSecurityInterceptor} should be only applied
      *                                                once per request
-     * @return  the {@link BaseInterceptUrlConfigurer} for further customization
+     * @return  the {@link AbstractInterceptUrlConfigurer} for further customization
      */
     public C filterSecurityInterceptorOncePerRequest(
             boolean filterSecurityInterceptorOncePerRequest) {

@@ -25,11 +25,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.web.AbstractRequestMatcherConfigurer;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.BaseRequestMatcherRegistry;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
@@ -70,8 +70,8 @@ public final class WebSecurity extends
     private final List<SecurityBuilder<? extends SecurityFilterChain>> securityFilterChainBuilders =
             new ArrayList<SecurityBuilder<? extends SecurityFilterChain>>();
 
-    private final IgnoredRequestRegistry ignoredRequestRegistry =
-            new IgnoredRequestRegistry();
+    private final IgnoredRequestConfigurer ignoredRequestRegistry =
+            new IgnoredRequestConfigurer();
 
     private FilterSecurityInterceptor filterSecurityInterceptor;
 
@@ -132,10 +132,10 @@ public final class WebSecurity extends
      * // now both URLs that start with /resources/ and /static/ will be ignored
      * </pre>
      *
-     * @return the {@link IgnoredRequestRegistry} to use for registering request
+     * @return the {@link IgnoredRequestConfigurer} to use for registering request
      *         that should be ignored
      */
-    public IgnoredRequestRegistry ignoring() {
+    public IgnoredRequestConfigurer ignoring() {
         return ignoredRequestRegistry;
     }
 
@@ -239,10 +239,10 @@ public final class WebSecurity extends
      * @author Rob Winch
      * @since 3.2
      */
-    public final class IgnoredRequestRegistry extends BaseRequestMatcherRegistry<WebSecurity,IgnoredRequestRegistry,Filter> {
+    public final class IgnoredRequestConfigurer extends AbstractRequestMatcherConfigurer<WebSecurity,IgnoredRequestConfigurer,Filter> {
 
         @Override
-        protected IgnoredRequestRegistry chainRequestMatchersInternal(List<RequestMatcher> requestMatchers) {
+        protected IgnoredRequestConfigurer chainRequestMatchers(List<RequestMatcher> requestMatchers) {
             ignoredRequests.addAll(requestMatchers);
             return this;
         }
@@ -255,6 +255,6 @@ public final class WebSecurity extends
             return WebSecurity.this;
         }
 
-        private IgnoredRequestRegistry(){}
+        private IgnoredRequestConfigurer(){}
     }
 }

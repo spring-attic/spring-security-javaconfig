@@ -22,7 +22,7 @@ import org.springframework.security.config.annotation.SecurityExpressions.*
 import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.UrlAuthorizations;
+import org.springframework.security.config.annotation.web.configurers.UrlAuthorizationConfigurer;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor
 
 /**
@@ -34,28 +34,28 @@ public class UrlAuthorizationsTests extends BaseSpringSpec {
 
     def "hasAnyAuthority('ROLE_USER')"() {
         when:
-            def expression = UrlAuthorizations.hasAnyAuthority("ROLE_USER")
+            def expression = UrlAuthorizationConfigurer.hasAnyAuthority("ROLE_USER")
         then:
             expression == ["ROLE_USER"]
     }
 
     def "hasAnyAuthority('ROLE_USER','ROLE_ADMIN')"() {
         when:
-            def expression =  UrlAuthorizations.hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
+            def expression =  UrlAuthorizationConfigurer.hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
         then:
             expression == ["ROLE_USER","ROLE_ADMIN"]
     }
 
     def "hasAnyRole('USER')"() {
         when:
-            def expression = UrlAuthorizations.hasAnyRole("USER")
+            def expression = UrlAuthorizationConfigurer.hasAnyRole("USER")
         then:
             expression == ["ROLE_USER"]
     }
 
     def "hasAnyRole('ROLE_USER','ROLE_ADMIN')"() {
         when:
-            def expression =  UrlAuthorizations.hasAnyRole("USER","ADMIN")
+            def expression =  UrlAuthorizationConfigurer.hasAnyRole("USER","ADMIN")
         then:
             expression == ["ROLE_USER","ROLE_ADMIN"]
     }
@@ -72,7 +72,7 @@ public class UrlAuthorizationsTests extends BaseSpringSpec {
     static class NoSpecificAccessDecessionManagerConfig extends WebSecurityConfigurerAdapter {
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .apply(new UrlAuthorizations())
+                .apply(new UrlAuthorizationConfigurer())
                     .anyRequest().hasRole("USER")
         }
     }

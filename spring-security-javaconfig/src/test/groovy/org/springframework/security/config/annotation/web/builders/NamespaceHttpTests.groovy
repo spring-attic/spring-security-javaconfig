@@ -30,7 +30,7 @@ import org.springframework.security.config.annotation.web.builders.NamespaceHttp
 import org.springframework.security.config.annotation.web.configuration.BaseWebConfig
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configurers.SessionCreationPolicy
-import org.springframework.security.config.annotation.web.configurers.UrlAuthorizations
+import org.springframework.security.config.annotation.web.configurers.UrlAuthorizationConfigurer
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.FilterInvocation
@@ -502,7 +502,7 @@ public class NamespaceHttpTests extends BaseSpringSpec {
     static class DisableUseExpressionsConfig extends BaseWebConfig {
         protected void configure(HttpConfiguration http) throws Exception {
             http
-                .apply(new UrlAuthorizations())
+                .apply(new UrlAuthorizationConfigurer())
                     .antMatchers("/users**","/sessions/**").hasRole("USER")
                     .antMatchers("/signup").hasRole("ANONYMOUS")
                     .anyRequest().hasRole("USER")

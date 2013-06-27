@@ -20,7 +20,7 @@ import java.util.List;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.config.annotation.web.builders.HttpConfiguration;
-import org.springframework.security.config.annotation.web.configurers.BaseRequestMatcherRegistry;
+import org.springframework.security.config.annotation.web.configurers.AbstractRequestMatcherMappingConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.AntPathRequestMatcher;
@@ -33,8 +33,8 @@ import spock.lang.Specification;
  * @author Rob Winch
  *
  */
-class BaseRequestMatcherRegistryTests extends Specification {
-    BaseRequestMatcherRegistryStub registry = new BaseRequestMatcherRegistryStub()
+class AbstractRequestMatcherMappingConfigurerTests extends Specification {
+    ConcreteAbstractRequestMatcherMappingConfigurer registry = new ConcreteAbstractRequestMatcherMappingConfigurer()
 
     def "regexMatchers(GET,'/a.*') uses RegexRequestMatcher"() {
         when:
@@ -64,7 +64,7 @@ class BaseRequestMatcherRegistryTests extends Specification {
         matchers.collect {it.class } == [AntPathRequestMatcher]
     }
 
-    static class BaseRequestMatcherRegistryStub extends BaseRequestMatcherRegistry<HttpConfiguration,List<RequestMatcher>,DefaultSecurityFilterChain> {
+    static class ConcreteAbstractRequestMatcherMappingConfigurer extends AbstractRequestMatcherMappingConfigurer<HttpConfiguration,List<RequestMatcher>,DefaultSecurityFilterChain> {
         List<AccessDecisionVoter> decisionVoters() {
             return null;
         }
