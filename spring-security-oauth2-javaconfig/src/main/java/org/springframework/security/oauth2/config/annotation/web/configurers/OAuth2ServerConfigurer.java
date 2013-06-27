@@ -25,7 +25,6 @@ import org.springframework.security.config.annotation.web.builders.HttpConfigura
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.CompositeTokenGranter;
 import org.springframework.security.oauth2.provider.TokenGranter;
@@ -33,7 +32,6 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenGranter;
-import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeTokenGranter;
 import org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices;
@@ -61,7 +59,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
  * @author Rob Winch
  * @since 3.2
  */
-public class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
+public final class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpConfiguration> {
     private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
     private AccessDeniedHandler accessDeniedHandler = new OAuth2AccessDeniedHandler();
 
@@ -90,23 +88,7 @@ public class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<DefaultSec
             http.httpBasic();
         }
 
-        http.getConfigurer(ExpressionUrlAuthorizationConfigurer.class).expressionHandler(expressionHandler);
-
         http.setSharedObject(AuthenticationEntryPoint.class, authenticationEntryPoint);
-
-        clientCredentialsTokenEndpointFilter = new ClientCredentialsTokenEndpointFilter();
-        clientCredentialsTokenEndpointFilter.setAuthenticationManager(http
-                .authenticationManager());
-
-        resourcesServerFilter = new OAuth2AuthenticationProcessingFilter();
-        resourcesServerFilter
-                .setAuthenticationManager(oauthAuthenticationManager(http));
-        this.tokenGranter = tokenGranter(http);
-        this.consumerTokenServices = consumerTokenServices(http);
-
-        http.
-            getConfigurer(ExceptionHandlingConfigurer.class)
-                .accessDeniedHandler(accessDeniedHandler);
     }
 
     public OAuth2ServerConfigurer resourceId(String resourceId) {
@@ -115,15 +97,35 @@ public class OAuth2ServerConfigurer extends SecurityConfigurerAdapter<DefaultSec
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void configure(HttpConfiguration http) throws Exception {
+
+        http.getConfigurer(ExpressionUrlAuthorizationConfigurer.class).expressionHandler(expressionHandler);
+
+        clientCredentialsTokenEndpointFilter = new ClientCredentialsTokenEndpointFilter();
+        clientCredentialsTokenEndpointFilter.setAuthenticationManager(http
+                .authenticationManager());
+        clientCredentialsTokenEndpointFilter = postProcess(clientCredentialsTokenEndpointFilter);
+
+        AuthenticationManager oauthAuthenticationManager = oauthAuthenticationManager(http);
+        resourcesServerFilter = new OAuth2AuthenticationProcessingFilter();
+        resourcesServerFilter.setAuthenticationManager(oauthAuthenticationManager);
+        resourcesServerFilter = postProcess(resourcesServerFilter);
+
+        this.tokenGranter = tokenGranter(http);
+        this.consumerTokenServices = consumerTokenServices(http);
+
+        http.
+            getConfigurer(ExceptionHandlingConfigurer.class)
+                .accessDeniedHandler(accessDeniedHandler);
+
         http
             .addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .addFilterBefore(clientCredentialsTokenEndpointFilter, BasicAuthenticationFilter.class);
 
     }
 
-    private AuthenticationManager oauthAuthenticationManager(
-            HttpConfiguration http) {
+    private AuthenticationManager oauthAuthenticationManager(HttpConfiguration http) {
         OAuth2AuthenticationManager oauthAuthenticationManager = new OAuth2AuthenticationManager();
         oauthAuthenticationManager.setResourceId(resourceId);
         oauthAuthenticationManager
