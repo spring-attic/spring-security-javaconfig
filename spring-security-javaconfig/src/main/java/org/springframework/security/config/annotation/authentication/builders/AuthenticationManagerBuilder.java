@@ -23,6 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.ProviderManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.ldap.LdapAuthenticationProviderConfigurer;
@@ -51,6 +52,12 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     private Boolean eraseCredentials;
     private AuthenticationEventPublisher eventPublisher;
 
+    /**
+     * Creates a new instance
+     */
+    public AuthenticationManagerBuilder() {
+        super(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR,true);
+    }
 
     /**
      * Allows providing a parent {@link AuthenticationManager} that will be

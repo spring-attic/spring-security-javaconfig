@@ -15,12 +15,18 @@
  */
 package org.springframework.security.config.annotation.authentication
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationEventPublisher
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.ObjectPostProcessor
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 
 /**
  *
@@ -52,5 +58,33 @@ class AuthenticationManagerBuilderTests extends BaseSpringSpec {
                 .build()
         then:
             am.eventPublisher == aep
+    }
+
+    def "authentication-manager support multiple DaoAuthenticationProvider's"() {
+        setup:
+            loadConfig(MultiAuthenticationProvidersConfig)
+        when:
+            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("user","password"))
+        then:
+            auth.name == "user"
+            auth.authorities*.authority == ['ROLE_USER']
+        when:
+            auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("admin","password"))
+        then:
+            auth.name == "admin"
+            auth.authorities*.authority.sort() == ['ROLE_ADMIN','ROLE_USER']
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class MultiAuthenticationProvidersConfig extends WebSecurityConfigurerAdapter {
+        protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+            auth
+                .inMemoryAuthentication()
+                    .withUser("user").password("password").roles("USER").and()
+                    .and()
+                .inMemoryAuthentication()
+                    .withUser("admin").password("password").roles("USER","ADMIN")
+        }
     }
 }

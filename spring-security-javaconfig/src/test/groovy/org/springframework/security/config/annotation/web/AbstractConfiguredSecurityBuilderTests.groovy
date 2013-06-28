@@ -84,6 +84,60 @@ class AbstractConfiguredSecurityBuilderTests extends Specification {
             1 * DelegateConfigurer.CONF.configure(builder)
     }
 
+    def "getConfigurer with multi fails"() {
+        setup:
+            ConcreteAbstractConfiguredBuilder builder = new ConcreteAbstractConfiguredBuilder(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR, true)
+            builder.apply(new DelegateConfigurer())
+            builder.apply(new DelegateConfigurer())
+        when:
+            builder.getConfigurer(DelegateConfigurer)
+        then: "Fail due to trying to obtain a single DelegateConfigurer and multiple are provided"
+            thrown(IllegalStateException)
+    }
+
+    def "removeConfigurer with multi fails"() {
+        setup:
+            ConcreteAbstractConfiguredBuilder builder = new ConcreteAbstractConfiguredBuilder(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR, true)
+            builder.apply(new DelegateConfigurer())
+            builder.apply(new DelegateConfigurer())
+        when:
+            builder.removeConfigurer(DelegateConfigurer)
+        then: "Fail due to trying to remove and obtain a single DelegateConfigurer and multiple are provided"
+            thrown(IllegalStateException)
+    }
+
+    def "removeConfigurers with multi"() {
+        setup:
+            DelegateConfigurer c1 = new DelegateConfigurer()
+            DelegateConfigurer c2 = new DelegateConfigurer()
+            ConcreteAbstractConfiguredBuilder builder = new ConcreteAbstractConfiguredBuilder(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR, true)
+            builder.apply(c1)
+            builder.apply(c2)
+        when:
+            def result = builder.removeConfigurers(DelegateConfigurer)
+        then:
+            result.size() == 2
+            result.contains(c1)
+            result.contains(c2)
+            builder.getConfigurers(DelegateConfigurer).empty
+    }
+
+    def "getConfigurers with multi"() {
+        setup:
+            DelegateConfigurer c1 = new DelegateConfigurer()
+            DelegateConfigurer c2 = new DelegateConfigurer()
+            ConcreteAbstractConfiguredBuilder builder = new ConcreteAbstractConfiguredBuilder(ObjectPostProcessor.QUIESCENT_POSTPROCESSOR, true)
+            builder.apply(c1)
+            builder.apply(c2)
+        when:
+            def result = builder.getConfigurers(DelegateConfigurer)
+        then:
+            result.size() == 2
+            result.contains(c1)
+            result.contains(c2)
+            builder.getConfigurers(DelegateConfigurer).size() == 2
+    }
+
     private static class DelegateConfigurer extends SecurityConfigurerAdapter<Object, ConcreteAbstractConfiguredBuilder> {
         private static SecurityConfigurer<Object, ConcreteAbstractConfiguredBuilder> CONF;
 
@@ -103,6 +157,10 @@ class AbstractConfiguredSecurityBuilderTests extends Specification {
 
         public ConcreteAbstractConfiguredBuilder(ObjectPostProcessor<Object> objectPostProcessor) {
             super(objectPostProcessor);
+        }
+
+        public ConcreteAbstractConfiguredBuilder(ObjectPostProcessor<Object> objectPostProcessor, boolean allowMulti) {
+            super(objectPostProcessor,allowMulti);
         }
 
         public Object performBuild() throws Exception {

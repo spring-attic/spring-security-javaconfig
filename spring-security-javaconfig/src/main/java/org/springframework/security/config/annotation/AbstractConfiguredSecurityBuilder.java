@@ -20,11 +20,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.DelegatingFilterProxy;
+
+import com.google.inject.internal.ImmutableList.Builder;
 
 /**
  * <p>A base {@link SecurityBuilder} that allows {@link SecurityConfigurer} to be
@@ -49,10 +52,12 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  */
 public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBuilder<O>> extends AbstractSecurityBuilder<O> {
 
-    private final LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, SecurityConfigurer<O, B>> configurers =
-            new LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, SecurityConfigurer<O, B>>();
+    private final LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, List<SecurityConfigurer<O, B>>> configurers =
+            new LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, List<SecurityConfigurer<O, B>>>();
 
     private final Map<Class<Object>,Object> sharedObjects = new HashMap<Class<Object>,Object>();
+
+    private final boolean allowConfigurersOfSameType;
 
     private BuildState buildState = BuildState.UNBUILT;
 
@@ -73,8 +78,21 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
      * @param objectPostProcessor the {@link ObjectPostProcessor} to use
      */
     protected AbstractConfiguredSecurityBuilder(ObjectPostProcessor<Object> objectPostProcessor) {
+        this(objectPostProcessor,false);
+    }
+
+    /***
+     * Creates a new instance with the provided {@link ObjectPostProcessor}.
+     * This post processor must support Object since there are many types of
+     * objects that may be post processed.
+     *
+     * @param objectPostProcessor the {@link ObjectPostProcessor} to use
+     * @param allowConfigurersOfSameType if true, will not override other {@link SecurityConfigurer}'s when performing apply
+     */
+    protected AbstractConfiguredSecurityBuilder(ObjectPostProcessor<Object> objectPostProcessor, boolean allowConfigurersOfSameType) {
         Assert.notNull(objectPostProcessor, "objectPostProcessor cannot be null");
         this.objectPostProcessor = objectPostProcessor;
+        this.allowConfigurersOfSameType = allowConfigurersOfSameType;
     }
 
     /**
@@ -158,11 +176,50 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
             if(buildState.isConfigured()) {
                 throw new IllegalStateException("Cannot apply "+configurer+" to already built object");
             }
-            this.configurers.put(clazz, configurer);
+            List<SecurityConfigurer<O, B>> configs = allowConfigurersOfSameType ? this.configurers.get(clazz) : null;
+            if(configs == null) {
+                configs = new ArrayList<SecurityConfigurer<O,B>>(1);
+            }
+            configs.add(configurer);
+            this.configurers.put(clazz, configs);
             if(buildState.isInitializing()) {
                 configurer.init((B)this);
             }
         }
+    }
+
+    /**
+     * Gets all the {@link SecurityConfigurer} instances by its class name or an
+     * empty List if not found. Note that object hierarchies are not considered.
+     *
+     * @param clazz the {@link SecurityConfigurer} class to look for
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public <C extends SecurityConfigurer<O, B>> List<C> getConfigurers(
+            Class<C> clazz) {
+        List<C> configs = (List<C>) this.configurers.get(clazz);
+        if(configs == null) {
+            return new ArrayList<C>();
+        }
+        return new ArrayList<C>(configs);
+    }
+
+    /**
+     * Removes all the {@link SecurityConfigurer} instances by its class name or an
+     * empty List if not found. Note that object hierarchies are not considered.
+     *
+     * @param clazz the {@link SecurityConfigurer} class to look for
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public <C extends SecurityConfigurer<O, B>> List<C> removeConfigurers(
+            Class<C> clazz) {
+        List<C> configs = (List<C>) this.configurers.remove(clazz);
+        if(configs == null) {
+            return new ArrayList<C>();
+        }
+        return new ArrayList<C>(configs);
     }
 
     /**
@@ -176,7 +233,14 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
     @SuppressWarnings("unchecked")
     public <C extends SecurityConfigurer<O, B>> C getConfigurer(
             Class<C> clazz) {
-        return (C) configurers.get(clazz);
+        List<SecurityConfigurer<O,B>> configs = this.configurers.get(clazz);
+        if(configs == null) {
+            return null;
+        }
+        if(configs.size() != 1) {
+            throw new IllegalStateException("Only one configurer expected for type " + clazz + ", but got " + configs);
+        }
+        return (C) configs.get(0);
     }
 
     /**
@@ -189,7 +253,14 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
      */
     @SuppressWarnings("unchecked")
     public <C extends SecurityConfigurer<O,B>> C removeConfigurer(Class<C> clazz) {
-        return (C) configurers.remove(clazz);
+        List<SecurityConfigurer<O,B>> configs = this.configurers.remove(clazz);
+        if(configs == null) {
+            return null;
+        }
+        if(configs.size() != 1) {
+            throw new IllegalStateException("Only one configurer expected for type " + clazz + ", but got " + configs);
+        }
+        return (C) configs.get(0);
     }
 
     /**
@@ -292,7 +363,11 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
     }
 
     private Collection<SecurityConfigurer<O, B>> getConfigurers() {
-        return new ArrayList<SecurityConfigurer<O,B>>(this.configurers.values());
+        List<SecurityConfigurer<O,B>> result = new ArrayList<SecurityConfigurer<O,B>>();
+        for(List<SecurityConfigurer<O,B>> configs : this.configurers.values()) {
+            result.addAll(configs);
+        }
+        return result;
     }
 
     /**
