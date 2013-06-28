@@ -17,7 +17,7 @@ package org.springframework.security.config.annotation.web.configurers;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -68,7 +68,7 @@ import org.springframework.util.Assert;
  * @see SessionManagementFilter
  * @see ConcurrentSessionFilter
  */
-public final class SessionManagementConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
+public final class SessionManagementConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractHttpConfigurer<H> {
     private SessionAuthenticationStrategy sessionAuthenticationStrategy = new SessionFixationProtectionStrategy();
     private SessionRegistry sessionRegistry = new SessionRegistryImpl();
     private Integer maximumSessions;

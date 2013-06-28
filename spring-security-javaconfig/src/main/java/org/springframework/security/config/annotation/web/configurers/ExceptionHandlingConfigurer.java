@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web.configurers;
 
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -57,7 +57,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
  * @author Rob Winch
  * @since 3.2
  */
-public final class ExceptionHandlingConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
+public final class ExceptionHandlingConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractHttpConfigurer<H> {
 
     private AuthenticationEntryPoint authenticationEntryPoint;
 

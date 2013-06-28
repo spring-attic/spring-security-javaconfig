@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
@@ -65,12 +65,12 @@ import org.springframework.security.web.util.RequestMatcher;
  *     <li>{@link PortMapper} is used to create the default {@link ChannelProcessor} instances</li>
  * </ul>
  *
- * @param <H> the type of {@link HttpBuilder} that is being configured
+ * @param <H> the type of {@link HttpSecurityBuilder} that is being configured
  *
  * @author Rob Winch
  * @since 3.2
  */
-public final class ChannelSecurityConfigurer<H extends HttpBuilder<H>> extends
+public final class ChannelSecurityConfigurer<H extends HttpSecurityBuilder<H>> extends
         AbstractRequestMatcherMappingConfigurer<H,ChannelSecurityConfigurer<H>.RequiresChannelUrl,DefaultSecurityFilterChain> {
     private ChannelProcessingFilter channelFilter = new ChannelProcessingFilter();
     private LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher,Collection<ConfigAttribute>>();

@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.PortMapper;
@@ -33,7 +33,7 @@ import org.springframework.security.web.PortMapperImpl;
  * @author Rob Winch
  * @since 3.2
  */
-public final class PortMapperConfigurer<H extends HttpBuilder<H>> extends SecurityConfigurerAdapter<DefaultSecurityFilterChain,H> {
+public final class PortMapperConfigurer<H extends HttpSecurityBuilder<H>> extends SecurityConfigurerAdapter<DefaultSecurityFilterChain,H> {
     private PortMapper portMapper;
     private Map<String, String> httpsPortMappings = new HashMap<String,String>();
 

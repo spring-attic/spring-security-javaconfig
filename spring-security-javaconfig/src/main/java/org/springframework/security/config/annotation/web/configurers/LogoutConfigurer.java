@@ -21,7 +21,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.security.config.annotation.SecurityConfigurer;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -57,7 +57,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * @since 3.2
  * @see RememberMeConfigurer
  */
-public final class LogoutConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
+public final class LogoutConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractHttpConfigurer<H> {
     private List<LogoutHandler> logoutHandlers = new ArrayList<LogoutHandler>();
     private SecurityContextLogoutHandler contextLogoutHandler = new SecurityContextLogoutHandler();
     private String logoutSuccessUrl = "/login?logout";

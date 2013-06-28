@@ -50,7 +50,7 @@ import org.springframework.security.web.session.SessionManagementFilter;
  *
  * @param <H>
  */
-public interface HttpBuilder<H extends HttpBuilder<H>> extends SecurityBuilder<DefaultSecurityFilterChain> {
+public interface HttpSecurityBuilder<H extends HttpSecurityBuilder<H>> extends SecurityBuilder<DefaultSecurityFilterChain> {
 
     /**
      * Gets the {@link SecurityConfigurer} by its class name or

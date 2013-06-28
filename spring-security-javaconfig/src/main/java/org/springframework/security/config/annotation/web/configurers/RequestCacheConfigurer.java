@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web.configurers;
 
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -54,7 +54,7 @@ import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
  * @since 3.2
  * @see RequestCache
  */
-public final class RequestCacheConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
+public final class RequestCacheConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractHttpConfigurer<H> {
 
     public RequestCacheConfigurer() {
     }

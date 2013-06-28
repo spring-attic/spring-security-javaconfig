@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
@@ -118,7 +118,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * @author Rob Winch
  * @since 3.2
  */
-public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends AbstractAuthenticationFilterConfigurer<H,OpenIDLoginConfigurer<H>,OpenIDAuthenticationFilter> {
+public final class OpenIDLoginConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractAuthenticationFilterConfigurer<H,OpenIDLoginConfigurer<H>,OpenIDAuthenticationFilter> {
     private OpenIDConsumer openIDConsumer;
     private ConsumerManager consumerManager;
     private AuthenticationUserDetailsService<OpenIDAuthenticationToken> authenticationUserDetailsService;
@@ -305,7 +305,7 @@ public final class OpenIDLoginConfigurer<H extends HttpBuilder<H>> extends Abstr
     /**
      * If available, initializes the {@link DefaultLoginPageViewFilter} shared object.
      *
-     * @param http the {@link HttpBuilder} to use
+     * @param http the {@link HttpSecurityBuilder} to use
      */
     private void initDefaultLoginFilter(H http) {
         DefaultLoginPageViewFilter loginPageGeneratingFilter = http.getSharedObject(DefaultLoginPageViewFilter.class);

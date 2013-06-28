@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
@@ -71,7 +71,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
  * @author Rob Winch
  * @since 3.2
  */
-public final class X509Configurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
+public final class X509Configurer<H extends HttpSecurityBuilder<H>> extends AbstractHttpConfigurer<H> {
     private X509AuthenticationFilter x509AuthenticationFilter;
     private AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> authenticationUserDetailsService;
     private String subjectPrincipalRegex;

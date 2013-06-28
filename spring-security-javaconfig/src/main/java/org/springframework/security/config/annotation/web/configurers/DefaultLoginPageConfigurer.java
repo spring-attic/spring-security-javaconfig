@@ -15,7 +15,7 @@
  */
 package org.springframework.security.config.annotation.web.configurers;
 
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFilter;
@@ -53,7 +53,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * @author Rob Winch
  * @since 3.2
  */
-public final class DefaultLoginPageConfigurer<H extends HttpBuilder<H>> extends
+public final class DefaultLoginPageConfigurer<H extends HttpSecurityBuilder<H>> extends
         AbstractHttpConfigurer<H> {
 
     private DefaultLoginPageViewFilter loginPageGeneratingFilter = new DefaultLoginPageViewFilter();

@@ -17,7 +17,7 @@ package org.springframework.security.config.annotation.web.configurers;
 
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 
@@ -28,6 +28,6 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
  * @author Rob Winch
  *
  */
-abstract class AbstractHttpConfigurer<B extends HttpBuilder<B>> extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, B> {
+abstract class AbstractHttpConfigurer<B extends HttpSecurityBuilder<B>> extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, B> {
 
 }

@@ -22,7 +22,7 @@ import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurer;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
@@ -53,7 +53,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpSecurity#getAuthenticationManager()}</li>
  * </ul>
  *
- * @param <H> the type of {@link HttpBuilder} that is being configured
+ * @param <H> the type of {@link HttpSecurityBuilder} that is being configured
  * @param <C> the type of object that is changed
  * @param <R> the type of object that is changed for the {@link AbstractRequestMatcherMappingConfigurer}
  *
@@ -62,7 +62,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
  * @see ExpressionUrlAuthorizationConfigurer
  * @see UrlAuthorizationConfigurer
  */
-abstract class AbstractInterceptUrlConfigurer<H extends HttpBuilder<H>,C,R> extends
+abstract class AbstractInterceptUrlConfigurer<H extends HttpSecurityBuilder<H>,C,R> extends
         AbstractRequestMatcherMappingConfigurer<H,R,DefaultSecurityFilterChain> implements
         SecurityConfigurer<DefaultSecurityFilterChain,H> {
     private Boolean filterSecurityInterceptorOncePerRequest;

@@ -25,7 +25,7 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.RequestMatcher;
@@ -59,14 +59,14 @@ import org.springframework.util.Assert;
  *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpSecurity#getAuthenticationManager()}</li>
  * </ul>
  *
- * @param <H> the type of {@link HttpBuilder} that is being configured
+ * @param <H> the type of {@link HttpSecurityBuilder} that is being configured
  * @param <C> the type of object that is being chained
  *
  * @author Rob Winch
  * @since 3.2
  * @see ExpressionUrlAuthorizationConfigurer
  */
-public final class UrlAuthorizationConfigurer<H extends HttpBuilder<H>, C> extends AbstractInterceptUrlConfigurer<H,C,UrlAuthorizationConfigurer<H,C>.AuthorizedUrl> {
+public final class UrlAuthorizationConfigurer<H extends HttpSecurityBuilder<H>, C> extends AbstractInterceptUrlConfigurer<H,C,UrlAuthorizationConfigurer<H,C>.AuthorizedUrl> {
 
     /**
      * Creates the default {@link AccessDecisionVoter} instances used if an

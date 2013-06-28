@@ -24,7 +24,7 @@ import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
@@ -61,13 +61,13 @@ import org.springframework.util.StringUtils;
  *     <li>{@link org.springframework.security.config.annotation.web.builders.HttpSecurity#getAuthenticationManager()}</li>
  * </ul>
  *
- * @param <H> the type of {@link HttpBuilder} that is being configured
+ * @param <H> the type of {@link HttpSecurityBuilder} that is being configured
  *
  * @author Rob Winch
  * @since 3.2
  * @see {@link org.springframework.security.config.annotation.web.builders.HttpSecurity#authorizeUrls()}
  */
-public final class ExpressionUrlAuthorizationConfigurer<H extends HttpBuilder<H>> extends AbstractInterceptUrlConfigurer<H,ExpressionUrlAuthorizationConfigurer<H>,ExpressionUrlAuthorizationConfigurer<H>.AuthorizedUrl> {
+public final class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractInterceptUrlConfigurer<H,ExpressionUrlAuthorizationConfigurer<H>,ExpressionUrlAuthorizationConfigurer<H>.AuthorizedUrl> {
     static final String permitAll = "permitAll";
     private static final String denyAll = "denyAll";
     private static final String anonymous = "anonymous";

@@ -19,7 +19,7 @@ package org.springframework.security.config.annotation.web.configurers;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractRequestMatcherMappingConfigurer.UrlMapping;
 import org.springframework.security.web.util.RequestMatcher;
 
@@ -32,7 +32,7 @@ import org.springframework.security.web.util.RequestMatcher;
 final class PermitAllSupport {
 
     @SuppressWarnings("unchecked")
-    public static void permitAll(HttpBuilder<? extends HttpBuilder<?>> http, String... urls) {
+    public static void permitAll(HttpSecurityBuilder<? extends HttpSecurityBuilder<?>> http, String... urls) {
         ExpressionUrlAuthorizationConfigurer<?> configurer = http.getConfigurer(ExpressionUrlAuthorizationConfigurer.class);
 
         if(configurer == null) {

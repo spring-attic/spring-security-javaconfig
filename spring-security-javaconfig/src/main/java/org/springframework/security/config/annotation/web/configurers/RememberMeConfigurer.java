@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web.configurers;
 import java.util.UUID;
 
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -72,7 +72,7 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageViewFi
  * @author Rob Winch
  * @since 3.2
  */
-public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends AbstractHttpConfigurer<H> {
+public final class RememberMeConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractHttpConfigurer<H> {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private String key;
     private RememberMeServices rememberMeServices;
@@ -230,7 +230,7 @@ public final class RememberMeConfigurer<H extends HttpBuilder<H>> extends Abstra
     /**
      * If available, initializes the {@link DefaultLoginPageViewFilter} shared object.
      *
-     * @param http the {@link HttpBuilder} to use
+     * @param http the {@link HttpSecurityBuilder} to use
      */
     private void initDefaultLoginFilter(H http) {
         DefaultLoginPageViewFilter loginPageGeneratingFilter = http.getSharedObject(DefaultLoginPageViewFilter.class);

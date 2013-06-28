@@ -18,7 +18,7 @@ package org.springframework.security.config.annotation.web.configurers;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.AuthenticationDetailsSource;
-import org.springframework.security.config.annotation.web.HttpBuilder;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.openid.OpenIDLoginConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -46,7 +46,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * @author Rob Winch
  * @since 3.2
  */
-public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpBuilder<B>,T extends AbstractAuthenticationFilterConfigurer<B,T, F>, F extends AbstractAuthenticationProcessingFilter> extends AbstractHttpConfigurer<B> {
+public abstract class AbstractAuthenticationFilterConfigurer<B  extends HttpSecurityBuilder<B>,T extends AbstractAuthenticationFilterConfigurer<B,T, F>, F extends AbstractAuthenticationProcessingFilter> extends AbstractHttpConfigurer<B> {
 
     private final F authFilter;
 
