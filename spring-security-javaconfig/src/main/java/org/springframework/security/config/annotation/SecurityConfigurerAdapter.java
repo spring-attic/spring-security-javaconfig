@@ -116,7 +116,7 @@ public abstract class SecurityConfigurerAdapter<O,B extends SecurityBuilder<O>> 
             for(ObjectPostProcessor opp : postProcessors) {
                 Class<?> oppClass = opp.getClass();
                 Class<?> oppType = GenericTypeResolver.resolveTypeArgument(oppClass,ObjectPostProcessor.class);
-                if(oppType != null && oppType.isAssignableFrom(object.getClass())) {
+                if(oppType == null || oppType.isAssignableFrom(object.getClass())) {
                     object = opp.postProcess(object);
                 }
             }
