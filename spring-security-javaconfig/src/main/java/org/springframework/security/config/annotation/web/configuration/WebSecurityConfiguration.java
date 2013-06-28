@@ -25,6 +25,7 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
@@ -38,10 +39,7 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -61,15 +59,16 @@ import org.springframework.util.ClassUtils;
  */
 @Configuration
 public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAware {
-    private final WebSecurity webSecurityBuilder = new WebSecurity();
+    private final WebSecurity webSecurity = new WebSecurity();
 
     private List<SecurityConfigurer<Filter, WebSecurity>> webSecurityConfigurers;
 
     private ClassLoader beanClassLoader;
 
     @Bean
+    @DependsOn("springSecurityFilterChain")
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {
-        return new DefaultWebSecurityExpressionHandler();
+        return webSecurity.getExpressionHandler();
     }
 
     /**
@@ -83,7 +82,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
         if(!hasConfigurers) {
             throw new IllegalStateException("At least one non-null instance of "+ WebSecurityConfigurer.class.getSimpleName()+" must be exposed as a @Bean when using @EnableWebSecurity. Hint try extending "+ WebSecurityConfigurerAdapter.class.getSimpleName());
         }
-        return webSecurityBuilder.build();
+        return webSecurity.build();
     }
 
     /**
@@ -92,9 +91,9 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
      * @throws Exception
      */
     @Bean
+    @DependsOn("springSecurityFilterChain")
     public WebInvocationPrivilegeEvaluator privilegeEvaluator() throws Exception {
-        FilterSecurityInterceptor securityInterceptor = webSecurityBuilder.getSecurityInterceptor();
-        return securityInterceptor == null ? null : new DefaultWebInvocationPrivilegeEvaluator(securityInterceptor);
+        return webSecurity.getPrivilegeEvaluator();
     }
 
     /**
@@ -117,7 +116,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
             previousOrder = order;
         }
         for(SecurityConfigurer<Filter, WebSecurity> webSecurityConfigurer : webSecurityConfigurers) {
-            webSecurityBuilder.apply(webSecurityConfigurer);
+            webSecurity.apply(webSecurityConfigurer);
         }
         this.webSecurityConfigurers = webSecurityConfigurers;
     }
@@ -175,7 +174,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
             }
         }
         boolean debugEnabled = enableWebSecurityAttrs.getBoolean("debug");
-        this.webSecurityBuilder.debug(debugEnabled);
+        this.webSecurity.debug(debugEnabled);
     }
 
     /* (non-Javadoc)

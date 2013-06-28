@@ -17,16 +17,23 @@ package org.springframework.security.config.annotation.web.configuration;
 
 import static org.junit.Assert.*
 
+import java.util.List;
+
 import org.springframework.beans.factory.BeanCreationException
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.config.annotation.BaseSpringSpec
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
+import org.springframework.security.web.access.expression.WebSecurityExpressionHandler;
 import org.springframework.security.web.util.AnyRequestMatcher
 
 /**
@@ -163,4 +170,48 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
         }
     }
 
+    def "Override privilegeEvaluator"() {
+        setup:
+            WebInvocationPrivilegeEvaluator privilegeEvaluator = Mock()
+            PrivilegeEvaluatorConfigurerAdapterConfig.PE = privilegeEvaluator
+        when:
+            loadConfig(PrivilegeEvaluatorConfigurerAdapterConfig)
+        then:
+            context.getBean(WebInvocationPrivilegeEvaluator) == privilegeEvaluator
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class PrivilegeEvaluatorConfigurerAdapterConfig extends WebSecurityConfigurerAdapter {
+        static WebInvocationPrivilegeEvaluator PE
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web
+                .privilegeEvaluator(PE)
+        }
+    }
+
+    def "Override webSecurityExpressionHandler"() {
+        setup:
+            WebSecurityExpressionHandler expressionHandler = Mock()
+            WebSecurityExpressionHandlerConfig.EH = expressionHandler
+        when:
+            loadConfig(WebSecurityExpressionHandlerConfig)
+        then:
+            context.getBean(WebSecurityExpressionHandler) == expressionHandler
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class WebSecurityExpressionHandlerConfig extends WebSecurityConfigurerAdapter {
+        @SuppressWarnings("deprecation")
+        static WebSecurityExpressionHandler EH
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web
+                .expressionHandler(EH)
+        }
+    }
 }

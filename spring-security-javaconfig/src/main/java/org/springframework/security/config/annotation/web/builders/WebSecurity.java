@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.web.AbstractRequestMatcherConfigurer;
@@ -33,7 +34,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator;
+import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
@@ -78,6 +83,10 @@ public final class WebSecurity extends
     private HttpFirewall httpFirewall;
 
     private boolean debugEnabled;
+
+    private WebInvocationPrivilegeEvaluator privilegeEvaluator;
+
+    private SecurityExpressionHandler<FilterInvocation> expressionHandler = new DefaultWebSecurityExpressionHandler();
 
     /**
      * Creates a new instance
@@ -186,6 +195,62 @@ public final class WebSecurity extends
         return this;
     }
 
+    /**
+     * Set the {@link WebInvocationPrivilegeEvaluator} to be used. If this is
+     * null, then a {@link DefaultWebInvocationPrivilegeEvaluator} will be
+     * created when {@link #setSecurityInterceptor(FilterSecurityInterceptor)}
+     * is non null.
+     *
+     * @param privilegeEvaluator
+     *            the {@link WebInvocationPrivilegeEvaluator} to use
+     * @return the {@link WebSecurity} for further customizations
+     */
+    public WebSecurity privilegeEvaluator(WebInvocationPrivilegeEvaluator privilegeEvaluator) {
+        this.privilegeEvaluator = privilegeEvaluator;
+        return this;
+    }
+
+    /**
+     * Set the {@link SecurityExpressionHandler} to be used. If this is null,
+     * then a {@link DefaultWebSecurityExpressionHandler} will be used.
+     *
+     * @param expressionHandler
+     *            the {@link SecurityExpressionHandler} to use
+     * @return the {@link WebSecurity} for further customizations
+     */
+    public WebSecurity expressionHandler(SecurityExpressionHandler<FilterInvocation> expressionHandler) {
+        Assert.notNull(expressionHandler, "expressionHandler cannot be null");
+        this.expressionHandler = expressionHandler;
+        return this;
+    }
+
+    /**
+     * Gets the {@link SecurityExpressionHandler} to be used.
+     * @return
+     */
+    public SecurityExpressionHandler<FilterInvocation> getExpressionHandler() {
+        return expressionHandler;
+    }
+
+    /**
+     * Gets the {@link WebInvocationPrivilegeEvaluator} to be used.
+     * @return
+     */
+    public WebInvocationPrivilegeEvaluator getPrivilegeEvaluator() {
+        if(privilegeEvaluator != null) {
+            return privilegeEvaluator;
+        }
+        return filterSecurityInterceptor == null ? null : new DefaultWebInvocationPrivilegeEvaluator(filterSecurityInterceptor);
+    }
+
+    /**
+     * Sets the {@link FilterSecurityInterceptor}. This is typically invoked by {@link WebSecurityConfigurerAdapter}.
+     * @param securityInterceptor the {@link FilterSecurityInterceptor} to use
+     */
+    public void setSecurityInterceptor(FilterSecurityInterceptor securityInterceptor) {
+        this.filterSecurityInterceptor = securityInterceptor;
+    }
+
     @Override
     protected Filter performBuild() throws Exception {
         Assert.state(!securityFilterChainBuilders.isEmpty(), "At least one SecurityFilterBuilder needs to be specified. Invoke FilterChainProxyBuilder.securityFilterChains");
@@ -214,22 +279,6 @@ public final class WebSecurity extends
             result = new DebugFilter(filterChainProxy);
         }
         return result;
-    }
-
-    /**
-     * Gets one of the {@link FilterSecurityInterceptor}. May be null.
-     * @return a {@link FilterSecurityInterceptor}
-     */
-    public FilterSecurityInterceptor getSecurityInterceptor() {
-        return filterSecurityInterceptor;
-    }
-
-    /**
-     * Sets the {@link FilterSecurityInterceptor}. This is typically invoked by {@link WebSecurityConfigurerAdapter}.
-     * @param securityInterceptor the {@link FilterSecurityInterceptor} to use
-     */
-    public void setSecurityInterceptor(FilterSecurityInterceptor securityInterceptor) {
-        this.filterSecurityInterceptor = securityInterceptor;
     }
 
     /**
