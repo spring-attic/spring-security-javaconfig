@@ -49,10 +49,8 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer<Filter,WebSecurity> {
     private final Log logger = LogFactory.getLog(getClass());
 
-    @Autowired
     private ApplicationContext context;
 
-    @Autowired(required=false)
     private ObjectPostProcessor<Object> objectPostProcessor = new ObjectPostProcessor<Object>() {
         @Override
         public <T> T postProcess(T object) {
@@ -289,6 +287,17 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
             .formLogin().and()
             .httpBasic();
     }
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext context) {
+        this.context = context;
+    }
+
+    @Autowired(required=false)
+    public void setObjectPostProcessor(ObjectPostProcessor<Object> objectPostProcessor) {
+        this.objectPostProcessor = objectPostProcessor;
+    }
+
 
     /**
      * Delays the use of the {@link AuthenticationManager} build from the
