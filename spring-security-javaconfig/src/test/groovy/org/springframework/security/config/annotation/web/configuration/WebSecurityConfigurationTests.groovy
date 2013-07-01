@@ -214,4 +214,24 @@ class WebSecurityConfigurationTests extends BaseSpringSpec {
                 .expressionHandler(EH)
         }
     }
+
+    def "#138 webSecurityExpressionHandler defaults"() {
+        when:
+            loadConfig(WebSecurityExpressionHandlerDefaultsConfig)
+        then:
+            WebSecurityExpressionHandler wseh = context.getBean(WebSecurityExpressionHandler)
+            wseh instanceof DefaultWebSecurityExpressionHandler
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    static class WebSecurityExpressionHandlerDefaultsConfig extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                .authorizeUrls()
+                    .anyRequest().authenticated()
+        }
+    }
 }
