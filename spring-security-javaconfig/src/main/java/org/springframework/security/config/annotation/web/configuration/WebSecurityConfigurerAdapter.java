@@ -243,12 +243,17 @@ public abstract class WebSecurityConfigurerAdapter implements SecurityConfigurer
     }
 
     @Override
-    public void init(WebSecurity web) throws Exception {
-        HttpSecurity http = getHttp();
-        FilterSecurityInterceptor securityInterceptor = http.getSharedObject(FilterSecurityInterceptor.class);
+    public void init(final WebSecurity web) throws Exception {
+        final HttpSecurity http = getHttp();
         web
             .addSecurityFilterChainBuilder(http)
-            .setSecurityInterceptor(securityInterceptor);
+            .postBuildAction(new Runnable() {
+                @Override
+                public void run() {
+                    FilterSecurityInterceptor securityInterceptor = http.getSharedObject(FilterSecurityInterceptor.class);
+                    web.securityInterceptor(securityInterceptor);
+                }
+            });
     }
 
     /**
