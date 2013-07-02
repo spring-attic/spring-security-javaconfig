@@ -1,10 +1,9 @@
 Spring Security Java Config
 ======================
 
-A project for Spring Security Java Configuration Support. We plan to release this jar in a number of milestones
-to be able to iterate quickly. Additionally, this will allow users of Spring Security 3.1.x to use the
-Java Configuration earlier and give more feedback. Eventually (targeting spring-security-config-3.2.0.RELEASE)
-we will merge this code in with spring-security-config.
+A project for Spring Security Java Configuration Support. This project is currently released as a stand alone project that is compatible with Spring Security 3.1.x and Spring 3.2.3 to allow users to try it out
+before the Spring Security 3.2.x release. The code is also migrated into Spring Security 3.2.0.M2+ and will be maintained there. There are no plans to make another release of the stand alone module. Instead users
+will be encouraged to update to Spring Security 3.2 when it is made final.
 
 Getting Started
 ======================
@@ -38,11 +37,9 @@ A: If you are get the error above or something similar, you should ensure you ha
 
 Contributing
 ==============
-Before contributing or logging an issue please be sure to the issue does not already exist in this project's [issue tracking](https://github.com/SpringSource/spring-security-javaconfig/issues). If one does not exist, please create an issue.
 
-If you see anything you'd like to change we encourage taking advantage of github's social coding features by making the change in a [fork of this repository](http://help.github.com/forking/) and sending a pull request.
+The code has been migrated and merged into Spring Security's 3.2.0.M2+ codebase and will be maintained there from now on. Please see [Spring Security's Contributing Guidelines](https://github.com/SpringSource/spring-security/blob/master/CONTRIBUTING.md) for details on how to contribute.
 
-Before we accept a non-trivial patch or pull request we will need you to sign the [contributor's agreement](https://support.springsource.com/spring_committer_signup). Signing the contributor's agreement does not grant anyone commit rights to the main repository, but it does mean that we can accept your contributions, and you will get an author credit if we do. Active contributors might be asked to join the core team, and given the ability to merge pull requests.
 
 License
 ==============
