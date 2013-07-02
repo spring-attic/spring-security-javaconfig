@@ -87,7 +87,7 @@ For reference, the JavaConfig above is similar to the following XML with a few e
     <authentication-manager>
       <authentication-provider>
         <user-service>
-          <user username="user" password="password" authorities="ROLE_USER"/>
+          <user name="user" password="password" authorities="ROLE_USER"/>
         </user-service>
       </authentication-provider>
     </authentication-manager>
