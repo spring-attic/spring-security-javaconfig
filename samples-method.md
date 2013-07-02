@@ -37,8 +37,8 @@ is the equivalent of:
     <authentication-manager>
       <authentication-provider>
         <user-service>
-          <user username="user" password="password" authorities="ROLE_USER"/>
-          <user username="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+          <user name="user" password="password" authorities="ROLE_USER"/>
+          <user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
         </user-service>
       </authentication-provider>
     </authentication-manager>
@@ -85,8 +85,8 @@ The configuration above is the similar to the following XML configuration:
     <authentication-manager>
       <authentication-provider>
         <user-service>
-          <user username="user" password="password" authorities="ROLE_USER"/>
-          <user username="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+          <user name="user" password="password" authorities="ROLE_USER"/>
+          <user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
         </user-service>
       </authentication-provider>
     </authentication-manager>
