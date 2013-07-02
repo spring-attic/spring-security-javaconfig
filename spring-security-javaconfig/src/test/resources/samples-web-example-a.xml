@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns:b="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+   <http security="none" pattern="/resources/**"/>
+    <http use-expressions="true">
+      <intercept-url pattern="/logout" access="permitAll"/>
+      <intercept-url pattern="/login" access="permitAll"/>
+      <intercept-url pattern="/signup" access="permitAll"/>
+      <intercept-url pattern="/about" access="permitAll"/>
+      <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+      <logout
+          logout-success-url="/login?logout"
+          logout-url="/logout"
+      />
+      <form-login
+          authentication-failure-url="/login?error"
+          login-page="/login"
+          login-processing-url="/login"
+          password-parameter="password"
+          username-parameter="username"
+      />
+    </http>
+    <authentication-manager>
+      <authentication-provider>
+        <user-service>
+          <user name="user" password="password" authorities="ROLE_USER"/>
+          <user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+        </user-service>
+      </authentication-provider>
+    </authentication-manager>
+
+</b:beans>

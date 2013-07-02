@@ -63,7 +63,11 @@ Create a `WebSecurityConfigurerAdapter` that is annotated with `@EnableWebSecuri
     }
 ```
 
-For reference, the JavaConfig above is similar to the following XML:
+For reference, the JavaConfig above is similar to the following XML with a few exceptions:
+
+* login-page, logout-success-url, and authentication-failure-url are rendered by Spring Security
+* login-page is only processed for HTTP GET
+* login-processing-url is only processed for HTTP POST
 
 ```xml
     <http use-expressions="true">
@@ -71,16 +75,18 @@ For reference, the JavaConfig above is similar to the following XML:
       <logout
           logout-success-url="/login?logout"
           logout-url="/logout"
+      />
       <form-login
           authentication-failure-url="/login?error"
-          login-page="/login" <!-- Except Spring Security renders the login page -->
-          login-processing-url="/login" <!-- but only POST -->
+          login-page="/login"
+          login-processing-url="/login"
           password-parameter="password"
           username-parameter="username"
       />
     </http>
     <authentication-manager>
       <authentication-provider>
+        <user-service>
           <user username="user" password="password" authorities="ROLE_USER"/>
         </user-service>
       </authentication-provider>

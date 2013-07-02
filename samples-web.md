@@ -46,7 +46,10 @@ The following configuration
     }
 ```
 
-is similar to the following XML configuration:
+is similar to the following XML configuration with the following exceptions:
+
+* login-page is only processed for HTTP GET
+* login-processing-url is only processed for HTTP POST
 
 ```xml
     <http security="none" pattern="/resources/**"/>
@@ -59,10 +62,11 @@ is similar to the following XML configuration:
       <logout
           logout-success-url="/login?logout"
           logout-url="/logout"
+      />
       <form-login
           authentication-failure-url="/login?error"
           login-page="/login"
-          login-processing-url="/login" <!-- but only POST -->
+          login-processing-url="/login"
           password-parameter="password"
           username-parameter="username"
       />
@@ -70,8 +74,8 @@ is similar to the following XML configuration:
     <authentication-manager>
       <authentication-provider>
         <user-service>
-          <user username="user" password="password" authorities="ROLE_USER"/>
-          <user username="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+          <user name="user" password="password" authorities="ROLE_USER"/>
+          <user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
         </user-service>
       </authentication-provider>
     </authentication-manager>
@@ -139,7 +143,11 @@ The following configuration
     }
 ```
 
-is similar to the following XML configuration:
+is similar to the following XML configuration with the following exceptions:
+
+* login-page is only processed for HTTP GET
+* login-processing-url is only processed for HTTP POST
+
 
 ```xml
     <http security="none" pattern="/resources/**"/>
@@ -157,10 +165,11 @@ is similar to the following XML configuration:
       <logout
           logout-success-url="/login?logout"
           logout-url="/logout"
+      />
       <form-login
           authentication-failure-url="/login?error"
           login-page="/login"
-          login-processing-url="/login" <!-- but only POST -->
+          login-processing-url="/login"
           password-parameter="password"
           username-parameter="username"
       />
@@ -168,8 +177,8 @@ is similar to the following XML configuration:
     <authentication-manager>
       <authentication-provider>
         <user-service>
-          <user username="user" password="password" authorities="ROLE_USER"/>
-          <user username="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+          <user name="user" password="password" authorities="ROLE_USER"/>
+          <user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
         </user-service>
       </authentication-provider>
     </authentication-manager>

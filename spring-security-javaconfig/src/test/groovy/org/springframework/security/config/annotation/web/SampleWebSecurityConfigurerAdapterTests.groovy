@@ -65,11 +65,11 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
      *     <intercept-url pattern="/**" access="authenticated"/>
      *     <logout
      *         logout-success-url="/login?logout"
-     *         logout-url="/logout"
+     *         logout-url="/logout"/>
      *     <form-login
      *         authentication-failure-url="/login?error"
-     *         login-page="/login" <!-- Except Spring Security renders the login page -->
-     *         login-processing-url="/login" <!-- but only POST -->
+     *         login-page="/login"
+     *         login-processing-url="/login"
      *         password-parameter="password"
      *         username-parameter="username"
      *     />
@@ -131,11 +131,11 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
      *     <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
      *     <logout
      *         logout-success-url="/login?logout"
-     *         logout-url="/logout"
+     *         logout-url="/logout"/>
      *     <form-login
      *         authentication-failure-url="/login?error"
      *         login-page="/login"
-     *         login-processing-url="/login" <!-- but only POST -->
+     *         login-processing-url="/login"
      *         password-parameter="password"
      *         username-parameter="username"
      *     />
@@ -249,11 +249,11 @@ public class SampleWebSecurityConfigurerAdapterTests extends BaseWebSpecuritySpe
      *     <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
      *     <logout
      *         logout-success-url="/login?logout"
-     *         logout-url="/logout"
+     *         logout-url="/logout"/>
      *     <form-login
      *         authentication-failure-url="/login?error"
      *         login-page="/login"
-     *         login-processing-url="/login" <!-- but only POST -->
+     *         login-processing-url="/login"
      *         password-parameter="password"
      *         username-parameter="username"
      *     />
