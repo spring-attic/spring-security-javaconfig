@@ -55,6 +55,7 @@ import org.springframework.util.ClassUtils;
  * @see WebSecurity
  *
  * @author Rob Winch
+ * @author Keesun Baik
  * @since 3.2
  */
 @Configuration
@@ -65,8 +66,10 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 
     private ClassLoader beanClassLoader;
 
+    public static final String DEFAULT_FILTER_NAME = "springSecurityFilterChain";
+
     @Bean
-    @DependsOn("springSecurityFilterChain")
+    @DependsOn(DEFAULT_FILTER_NAME)
     public SecurityExpressionHandler<FilterInvocation> webSecurityExpressionHandler() {
         return webSecurity.getExpressionHandler();
     }
@@ -76,7 +79,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
      * @return
      * @throws Exception
      */
-    @Bean(name="springSecurityFilterChain")
+    @Bean(name=DEFAULT_FILTER_NAME)
     public Filter springSecurityFilterChain() throws Exception {
         boolean hasConfigurers = webSecurityConfigurers != null && !webSecurityConfigurers.isEmpty();
         if(!hasConfigurers) {
@@ -91,7 +94,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
      * @throws Exception
      */
     @Bean
-    @DependsOn("springSecurityFilterChain")
+    @DependsOn(DEFAULT_FILTER_NAME)
     public WebInvocationPrivilegeEvaluator privilegeEvaluator() throws Exception {
         return webSecurity.getPrivilegeEvaluator();
     }
