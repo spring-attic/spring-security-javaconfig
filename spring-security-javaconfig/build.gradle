@@ -15,7 +15,8 @@ dependencies {
              "org.springframework.security:spring-security-openid:$springSecurityVersion",
              "org.springframework.security:spring-security-cas:$springSecurityVersion",
              "org.springframework.security:spring-security-web:$springSecurityVersion",
-             "javax.annotation:jsr250-api:1.0"
+             "javax.annotation:jsr250-api:1.0",
+             "org.apache.httpcomponents:httpclient:4.2.3"
 
     testCompile "org.springframework.security:spring-security-config:$springSecurityVersion"
     testCompile "org.springframework.data:spring-data-jpa:1.2.0.RELEASE"

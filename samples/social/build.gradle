@@ -13,4 +13,6 @@ dependencies {
             "javax.inject:javax.inject:1",
             "org.apache.tiles:tiles-jsp:2.2.2",
             "org.apache.tiles:tiles-el:2.2.2"
+
+    runtime "org.apache.httpcomponents:httpclient:4.2.3"
 }
