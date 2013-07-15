@@ -27,7 +27,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -43,6 +45,7 @@ import org.springframework.social.security.SocialAuthenticationProvider;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private UserDetailsServiceDelegator userDetailsService = new UserDetailsServiceDelegator();
 
     @Autowired
     private ConfigurableApplicationContext context;
@@ -83,36 +86,71 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public UserDetailsService userDetailsServiceBean() throws Exception {
-        return super.userDetailsServiceBean();
+        return userDetailsService;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeUrls()
-                .antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook").permitAll()
+                .antMatchers("/favicon.ico","/resources/**","/auth/**","/signup/**","/disconnect/facebook","/signout").permitAll()
                 .anyRequest().authenticated()
                 .and()
             .addFilterBefore(socialAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .logout()
                 .deleteCookies("JSESSIONID")
                 .logoutUrl("/signout")
-                .permitAll()
+                .logoutSuccessUrl("/")
                 .and()
             .formLogin()
                 .loginPage("/signin")
                 .loginProcessingUrl("/signin/authenticate")
                 .failureUrl("/signin?param.error=bad_credentials")
+                .usernameParameter("j_username")
+                .passwordParameter("j_password")
                 .permitAll();
     }
 
     @Override
     protected void registerAuthentication(
             AuthenticationManagerBuilder auth) throws Exception {
+        userDetailsService.setBuilder(auth);
         auth
             .jdbcAuthentication()
                 .dataSource(dataSource)
                 .usersByUsernameQuery("select username, password, true from Account where username = ?")
-                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?");
+                .authoritiesByUsernameQuery("select username, 'ROLE_USER' from Account where username = ?")
+                .and()
+            .authenticationProvider(socialAuthenticationProvider);
+    }
+    
+    /**
+     * Workaround for https://jira.springsource.org/browse/SEC-2205
+     *
+     * @author Rob Winch
+     */
+    static final class UserDetailsServiceDelegator implements UserDetailsService {
+        private AuthenticationManagerBuilder delegateBuilder;
+        private UserDetailsService delegate;
+        private final Object delegateMonitor = new Object();
+
+        private void setBuilder(AuthenticationManagerBuilder authentication) {
+            this.delegateBuilder = authentication;
+        }
+
+        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException { 
+            if(delegate != null) {
+                return delegate.loadUserByUsername(username);
+            }
+
+            synchronized(delegateMonitor) {
+                if (delegate == null) {
+                    delegate = this.delegateBuilder.getDefaultUserDetailsService();
+                    this.delegateBuilder = null;
+                }
+            }
+
+            return delegate.loadUserByUsername(username);
+        }
     }
 }
