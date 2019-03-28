@@ -46,7 +46,7 @@ configure(subprojects) { p->
 
     repositories {
         maven { url "https://repo.springsource.org/libs-snapshot" }
-        mavenCentral()
+        maven { url 'https://repo.maven.apache.org/maven2/' }
     }
 
     configurations.all {
