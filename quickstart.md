@@ -14,7 +14,7 @@ In short, if you are using Maven ensure you have the following repository in you
     <repository>
         <id>spring-libs-snapshot</id>
         <name>Spring Snapshot Repository</name>
-        <url>http://repo.springsource.org/snapshot</url>
+        <url>https://repo.springsource.org/snapshot</url>
         <releases>
             <enabled>false</enabled>
         </releases>
@@ -133,7 +133,7 @@ A few important points:
 * The getRootConfigClasses is what initializes the ContextLoaderListener and should somehow include the Spring Security configuration. In our sample, RootConfiguration performs `@ComponentScan` that picks up our `@SecurityConfig`
 * We add the @Order annotation to ensure that this WebApplicationInitializer happens first. This ensures that our SitemeshFilter is added AFTER our springSecurityFilterChain.
 * SitemeshFilter is not required, but happens to be used in this application. If you do not use it do not worry about it
-* WebMvcConfiguration is the Spring Web MVC configuration, if you are not using Spring Web MVC, consider using [AbstractContextLoaderInitializer](http://static.springsource.org/spring/docs/3.2.x/javadoc-api/org/springframework/web/context/AbstractContextLoaderInitializer.html)
+* WebMvcConfiguration is the Spring Web MVC configuration, if you are not using Spring Web MVC, consider using [AbstractContextLoaderInitializer](https://docs.spring.io/spring/docs/3.2.x/javadoc-api/org/springframework/web/context/AbstractContextLoaderInitializer.html)
 
 Last you will want to add the springSecurityFilterChain. This can be done in many ways, but the easiest is to extend AbstractSecurityWebApplicationInitializer. In many instances, the following is all you will need to do:
 
